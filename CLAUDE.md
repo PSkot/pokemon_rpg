@@ -13,6 +13,14 @@ non-commercial project.
 
 - Python + pygame-ce (`import pygame`); dependencies in `requirements.txt`,
   installed into `.venv/`.
+- Run with `.venv/bin/python -m game`. The game renders at 640×360 and
+  scales ×2; the ground is at logical y=300.
+- Test headlessly with `SDL_VIDEODRIVER=dummy`: drive `Player.update()` with
+  `Controls(...)` objects and save frames with `pygame.image.save()`.
+- Each `Animation` aligns its own baseline (lowest opaque row) to the feet
+  position, because rows in a sheet sit at different heights.
+- Controls: arrows move, Shift runs, Space jumps, number keys 1–9 are
+  reserved for attacks (1 = basic attack for now).
 - `tools/` holds standalone helper scripts. `tools/anim_viewer.py` uses only
   the standard library (it renders an HTML page and opens it in the browser).
 - Firefox on this machine is a snap and cannot open files under `/tmp`;
@@ -21,5 +29,6 @@ non-commercial project.
 ## Assets
 
 - Sprite sheets in `assets/sprites/pixellab/`: grid of 64×64 frames, one
-  animation per row, sprites face right (mirror for left).
+  animation per row, sprites face right (mirror for left). Row order:
+  walk, run, jump (crouch/rise/fall/land), attack.
 - `assets/sprites/pokemon_icons/` holds reference icons only, not in-game art.

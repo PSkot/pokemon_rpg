@@ -6,7 +6,7 @@ opens it in your browser, where every row plays side by side.
 
     python3 tools/anim_viewer.py
     python3 tools/anim_viewer.py assets/sprites/pixellab/bulbasaur.png --frame 64 \
-        --rows "walk" "run 1" "run 2" "attack" --fps 8
+        --rows walk run jump attack --fps 8
 
 Uses only the Python standard library.
 """
@@ -19,7 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SHEET = ROOT / "assets" / "sprites" / "pixellab" / "bulbasaur.png"
-DEFAULT_ROWS = ["walk", "run 1", "run 2", "attack"]
+DEFAULT_ROWS = ["walk", "run", "jump", "attack"]
 
 PAGE = """<!doctype html>
 <meta charset="utf-8">

@@ -26,9 +26,32 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## Running
+
+```sh
+source .venv/bin/activate
+python -m game
+```
+
+Currently a test scene for Bulbasaur's animations:
+
+| Key | Action |
+| --- | --- |
+| Left / Right | walk |
+| Shift (held) | run |
+| Space | jump (tap = small hop, hold = full jump) |
+| 1 | attack (attacks will go on 1–9) |
+| F1 | debug boxes (frame, body, feet position) |
+| Esc | quit |
+
 ## Project layout
 
 ```
+game/
+  main.py            Window, game loop, test scene
+  player.py          Player movement + animation states
+  animation.py       Sprite sheet loading, Animation class
+  settings.py        Resolution, colours, paths
 assets/
   sprites/
     pixellab/        Animated sprite sheets made with Pixellab (64x64 frames)
@@ -47,7 +70,7 @@ flip and background controls. Uses only the Python standard library.
 
 ```sh
 python3 tools/anim_viewer.py                      # Bulbasaur sheet
-python3 tools/anim_viewer.py path/to/sheet.png --frame 64 --rows walk "run 1" "run 2" attack
+python3 tools/anim_viewer.py path/to/sheet.png --frame 64 --rows walk run jump attack
 ```
 
 ## Sprite sheet format
@@ -55,4 +78,6 @@ python3 tools/anim_viewer.py path/to/sheet.png --frame 64 --rows walk "run 1" "r
 - Each sheet is a grid of equally sized frames (currently 64×64).
 - Each row is one animation, read left to right.
 - Sprites face **right**; the game mirrors them to face left.
-- Bulbasaur rows: `walk`, `run 1`, `run 2`, `attack`.
+- Bulbasaur rows: `walk`, `run`, `jump`, `attack`.
+- Jump rows have 4 frames: crouch, leap (rising), airborne (falling), landing.
+  The game picks the frame from the jump's phase, not from a timer.
