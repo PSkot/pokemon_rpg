@@ -28,16 +28,23 @@ class Animation:
     That keeps in-frame motion such as a run cycle's bounce. With
     `per_frame_baseline`, every frame is aligned by its own lowest pixel
     instead; use that when the code moves the character itself (e.g. jumps).
+    Pass `baseline` to set the row explicitly, for sheets whose effects (auras,
+    shields) reach below the feet.
     """
 
     def __init__(self, frames: list[pygame.Surface], fps: float, loop: bool = True,
-                 per_frame_baseline: bool = False):
+                 per_frame_baseline: bool = False, baseline: int | None = None):
         self.frames = frames
         self.flipped = [pygame.transform.flip(f, True, False) for f in frames]
         self.fps = fps
         self.loop = loop
         bottoms = [f.get_bounding_rect().bottom for f in frames]
-        self.baselines = bottoms if per_frame_baseline else [max(bottoms)] * len(frames)
+        if baseline is not None:
+            self.baselines = [baseline] * len(frames)
+        elif per_frame_baseline:
+            self.baselines = bottoms
+        else:
+            self.baselines = [max(bottoms)] * len(frames)
 
     @property
     def duration(self) -> float:
@@ -54,3 +61,14 @@ class Animation:
 
     def frame(self, index: int, flip: bool = False) -> pygame.Surface:
         return (self.flipped if flip else self.frames)[index]
+
+    def place(self, index: int, centre_x: float, feet_y: float, flip: bool = False) -> pygame.Rect:
+        """Where frame `index` goes so its baseline sits on `feet_y`."""
+        return self.frame(index, flip).get_rect(topleft=(
+            round(centre_x - self.frames[index].get_width() / 2),
+            round(feet_y - self.baselines[index])))
+
+    def body_rect(self, index: int, centre_x: float, feet_y: float, flip: bool = False) -> pygame.Rect:
+        """The opaque part of frame `index` when placed at `centre_x`, `feet_y`."""
+        top_left = self.place(index, centre_x, feet_y, flip).topleft
+        return self.frame(index, flip).get_bounding_rect().move(top_left)

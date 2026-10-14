@@ -24,6 +24,9 @@ LAND_TIME = 0.10        # seconds the landing frame is held
 # Jump sheet row: crouch, leap (rising), airborne (falling), landing.
 JUMP_CROUCH, JUMP_RISE, JUMP_FALL, JUMP_LAND = range(4)
 
+# Attack key (1-9) -> animation name.
+ATTACKS = {1: "attack", 2: "growth", 3: "solar_beam", 4: "leaf_shield", 5: "tackle"}
+
 
 @dataclass
 class Controls:
@@ -33,7 +36,7 @@ class Controls:
     run: bool = False
     jump: bool = False       # True only on the frame the button is pressed
     jump_held: bool = False
-    attack: bool = False     # True only on the frame the button is pressed
+    attack: int = 0          # attack key (1-9) pressed this frame, 0 = none
 
 
 class Player:
@@ -47,17 +50,30 @@ class Player:
             "jump": Animation(jump, fps=1, loop=False, per_frame_baseline=True),
             "attack": Animation(attack, fps=8, loop=False),
         }
+        # The aura and shield effects reach below the feet, so those rows get
+        # their feet row set by hand.
+        growth, solar_beam, leaf_shield, tackle = load_sheet(
+            settings.ASSETS / "sprites" / "pixellab" / "bulbasaur attacks.png", 64, 64)
+        self.anims |= {
+            "growth": Animation(growth, fps=8, loop=False, baseline=59),
+            "solar_beam": Animation(solar_beam, fps=8, loop=False),
+            "leaf_shield": Animation(leaf_shield, fps=8, loop=False, baseline=60),
+            "tackle": Animation(tackle, fps=8, loop=False),
+        }
         self.x = x                    # centre of the sprite
         self.feet_y = float(settings.GROUND_Y)
         self.vy = 0.0                 # vertical speed, positive = down
         self.facing = 1               # 1 = right, -1 = left
         self.state = "idle"           # idle, walk, run, attack, squat, air, land
         self.state_time = 0.0
+        self.attack = ATTACKS[1]      # animation of the current/last attack
 
     # ------------------------------------------------------------------ state
 
     @property
     def anim_name(self) -> str:
+        if self.state == "attack":
+            return self.attack
         return "jump" if self.state in ("squat", "air", "land") else self.state
 
     @property
@@ -95,7 +111,8 @@ class Player:
             self.set_state("idle")
 
         if self.on_ground and self.state != "squat":
-            if c.attack:
+            if c.attack in ATTACKS:
+                self.attack = ATTACKS[c.attack]
                 self.set_state("attack")
                 return
             if c.jump:
@@ -139,15 +156,16 @@ class Player:
 
     # ------------------------------------------------------------------- draw
 
+    @property
+    def body_rect(self) -> pygame.Rect:
+        """The opaque part of the current frame, for collisions."""
+        return self.anim.body_rect(self.frame_index, self.x, self.feet_y + FOOT_SINK, self.facing < 0)
+
     def draw(self, surface: pygame.Surface, debug: bool = False) -> None:
-        anim, i = self.anim, self.frame_index
-        frame = anim.frame(i, flip=self.facing < 0)
-        top_left = (round(self.x - frame.get_width() / 2),
-                    round(self.feet_y + FOOT_SINK - anim.baselines[i]))
-        surface.blit(frame, top_left)
+        anim, i, flip = self.anim, self.frame_index, self.facing < 0
+        box = anim.place(i, self.x, self.feet_y + FOOT_SINK, flip)
+        surface.blit(anim.frame(i, flip), box)
         if debug:
-            box = frame.get_rect(topleft=top_left)
             pygame.draw.rect(surface, (255, 0, 255), box, 1)
-            body = frame.get_bounding_rect().move(top_left)
-            pygame.draw.rect(surface, (255, 255, 0), body, 1)
+            pygame.draw.rect(surface, (255, 255, 0), self.body_rect, 1)
             pygame.draw.circle(surface, (255, 0, 0), (round(self.x), round(self.feet_y)), 2)

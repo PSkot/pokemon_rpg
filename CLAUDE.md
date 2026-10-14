@@ -17,10 +17,17 @@ non-commercial project.
   scales ×2; the ground is at logical y=300.
 - Test headlessly with `SDL_VIDEODRIVER=dummy`: drive `Player.update()` with
   `Controls(...)` objects and save frames with `pygame.image.save()`.
+- The game is a set of scenes (`scene.Scene`): map (`overworld.py`) and
+  battle (`battle.py`). A scene switches by setting `next_scene`. Scenes
+  draw sprites on the logical canvas and text on the scaled window
+  (`draw_overlay`), so text stays sharp.
+- Battles: separate battle screen, Final Fantasy style (enemies left, party
+  right), strict turn-based (everyone acts once per round, in Speed order).
 - Each `Animation` aligns its own baseline (lowest opaque row) to the feet
-  position, because rows in a sheet sit at different heights.
+  position, because rows in a sheet sit at different heights. Rows whose
+  effects reach below the feet pass an explicit `baseline=` instead.
 - Controls: arrows move, Shift runs, Space jumps, number keys 1–9 are
-  reserved for attacks (1 = basic attack for now).
+  reserved for attacks (1 = basic attack, 2–5 = extra attacks).
 - `tools/` holds standalone helper scripts. `tools/anim_viewer.py` uses only
   the standard library (it renders an HTML page and opens it in the browser).
 - Firefox on this machine is a snap and cannot open files under `/tmp`;
@@ -31,4 +38,8 @@ non-commercial project.
 - Sprite sheets in `assets/sprites/pixellab/`: grid of 64×64 frames, one
   animation per row, sprites face right (mirror for left). Row order:
   walk, run, jump (crouch/rise/fall/land), attack.
+- `bulbasaur attacks.png` holds the extra attacks for keys 2–5, one per row:
+  growth, solar_beam, leaf_shield, tackle.
+- `pidgey.png` rows: walk, fly, gust, tackle. Its frames don't all face
+  right (several fly/gust/tackle frames face left).
 - `assets/sprites/pokemon_icons/` holds reference icons only, not in-game art.
