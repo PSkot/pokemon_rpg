@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Generated output (e.g. tools/anim_viewer.py pages, packaged builds)
+build/
+dist/
+
+# Game runtime files
+saves/
+*.sav
+*.log
+
+# Editors / IDEs
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local Claude Code settings
+.claude/settings.local.json
