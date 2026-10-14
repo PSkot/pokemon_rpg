@@ -34,7 +34,10 @@ python -m game
 ```
 
 Currently a test map with Bulbasaur and a wild Pidgey. Walk into the
-Pidgey to start a battle (only **Run** works there so far).
+Pidgey to start a turn-based battle: choose Fight or a skill and a target
+for each party member, then everyone acts in Speed order. Solar Beam
+charges for a round before firing; Growth raises Attack; Leaf Shield halves
+the damage an ally takes this round and the next.
 
 | Key | Action |
 | --- | --- |
@@ -45,7 +48,9 @@ Pidgey to start a battle (only **Run** works there so far).
 | F1 | debug boxes (frame, body, feet position) |
 | Esc | quit |
 
-In battle: Up/Down choose a command, Enter (or Space/Z) confirms.
+In battle: arrows choose, Enter (or Space/Z) confirms, X (or Backspace) goes
+back. Going back from the command menu undoes the previous party member's
+choice.
 
 ## Project layout
 
@@ -56,7 +61,7 @@ game/
   overworld.py       The map scene; wild Pokémon that start battles
   battle.py          Turn-based battle scene
   ui.py              Menu windows, text, HP bars
-  pokemon.py         Species (base stats, sheets) and Monster (level, HP)
+  pokemon.py         Moves, species (stats, animations) and Monster (level, HP)
   player.py          Player movement + animation states
   animation.py       Sprite sheet loading, Animation class
   settings.py        Resolution, colours, paths

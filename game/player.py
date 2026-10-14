@@ -5,7 +5,8 @@ from dataclasses import dataclass
 import pygame
 
 from . import settings
-from .animation import Animation, load_sheet
+from .animation import Animation
+from .pokemon import SPECIES, animations
 
 WALK_SPEED = 70   # logical pixels per second
 RUN_SPEED = 150
@@ -41,25 +42,7 @@ class Controls:
 
 class Player:
     def __init__(self, x: float):
-        rows = load_sheet(settings.ASSETS / "sprites" / "pixellab" / "bulbasaur.png", 64, 64)
-        walk, run, jump, attack = rows
-        self.anims = {
-            "idle": Animation(walk[:1], fps=1),
-            "walk": Animation(walk, fps=8),
-            "run": Animation(run, fps=12),
-            "jump": Animation(jump, fps=1, loop=False, per_frame_baseline=True),
-            "attack": Animation(attack, fps=8, loop=False),
-        }
-        # The aura and shield effects reach below the feet, so those rows get
-        # their feet row set by hand.
-        growth, solar_beam, leaf_shield, tackle = load_sheet(
-            settings.ASSETS / "sprites" / "pixellab" / "bulbasaur attacks.png", 64, 64)
-        self.anims |= {
-            "growth": Animation(growth, fps=8, loop=False, baseline=59),
-            "solar_beam": Animation(solar_beam, fps=8, loop=False),
-            "leaf_shield": Animation(leaf_shield, fps=8, loop=False, baseline=60),
-            "tackle": Animation(tackle, fps=8, loop=False),
-        }
+        self.anims = animations(SPECIES["bulbasaur"])
         self.x = x                    # centre of the sprite
         self.feet_y = float(settings.GROUND_Y)
         self.vy = 0.0                 # vertical speed, positive = down

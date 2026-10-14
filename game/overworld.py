@@ -5,7 +5,7 @@ import pygame
 from . import settings
 from .battle import BattleScene
 from .player import Controls, Player
-from .pokemon import SPECIES, Monster, idle_animation
+from .pokemon import SPECIES, Monster, animations
 from .scene import Scene, Transition
 
 HELP = "Left/Right: walk   Shift: run   Space: jump (hold = higher)   1-5: attack   F1: debug   Esc: quit"
@@ -17,7 +17,7 @@ class WildPokemon:
 
     def __init__(self, species: str, x: float, encounter: list[tuple[str, int]]):
         self.species = SPECIES[species]
-        self.anim = idle_animation(self.species)
+        self.anim = animations(self.species)["idle"]
         self.x = x
         self.feet_y = settings.GROUND_Y + self.species.foot_sink
         self.encounter = encounter

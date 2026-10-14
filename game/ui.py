@@ -26,12 +26,14 @@ def font(size: int) -> pygame.font.Font:
 
 def text(window: pygame.Surface, s: str, pos: tuple[float, float], color=WHITE,
          size: int = 28, align: str = "left", shadow: bool = True) -> None:
-    """Draw `s`, by default with a drop shadow; `pos` is the logical top-left
-    (or top-right with `align="right"`)."""
+    """Draw `s`, by default with a drop shadow. `pos` is in logical pixels:
+    the top-left, or the top-right / top-centre with `align="right"`/"center"."""
     x, y = round(pos[0] * settings.SCALE), round(pos[1] * settings.SCALE)
     f = font(size)
     if align == "right":
         x -= f.size(s)[0]
+    elif align == "center":
+        x -= f.size(s)[0] // 2
     if shadow:
         window.blit(f.render(s, True, SHADOW), (x + 2, y + 2))
     window.blit(f.render(s, True, color), (x, y))

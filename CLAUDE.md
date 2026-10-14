@@ -22,7 +22,9 @@ non-commercial project.
   draw sprites on the logical canvas and text on the scaled window
   (`draw_overlay`), so text stays sharp.
 - Battles: separate battle screen, Final Fantasy style (enemies left, party
-  right), strict turn-based (everyone acts once per round, in Speed order).
+  right), strict turn-based: the party picks actions, then everyone's
+  actions play out fastest first. Battle sequences are generator "scripts"
+  that yield seconds to wait (`BattleScene._round` / `_perform`).
 - Each `Animation` aligns its own baseline (lowest opaque row) to the feet
   position, because rows in a sheet sit at different heights. Rows whose
   effects reach below the feet pass an explicit `baseline=` instead.
@@ -41,5 +43,7 @@ non-commercial project.
 - `bulbasaur attacks.png` holds the extra attacks for keys 2–5, one per row:
   growth, solar_beam, leaf_shield, tackle.
 - `pidgey.png` rows: walk, fly, gust, tackle. Its frames don't all face
-  right (several fly/gust/tackle frames face left).
+  right; the left-facing ones are listed in `face_left` and mirrored on load.
+- Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,
+  row, fps, baseline, ...) and shared by the map player and battles.
 - `assets/sprites/pokemon_icons/` holds reference icons only, not in-game art.
