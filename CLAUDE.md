@@ -14,11 +14,12 @@ non-commercial project.
 - Python + pygame-ce (`import pygame`); dependencies in `requirements.txt`,
   installed into `.venv/`.
 - Run with `.venv/bin/python -m game`. The game renders at 640×360 and
-  scales ×2; the ground is at logical y=300.
-- Test headlessly with `SDL_VIDEODRIVER=dummy`: drive `Player.update()` with
-  `Controls(...)` objects and save frames with `pygame.image.save()`.
-- The game is a set of scenes (`scene.Scene`): map (`overworld.py`) and
-  battle (`battle.py`). A scene switches by setting `next_scene`. Scenes
+  scales ×2.
+- Test headlessly with `SDL_VIDEODRIVER=dummy`: drive
+  `Player.update(dt, Controls(...), level)` and save frames with
+  `pygame.image.save()`.
+- The game is a set of scenes (`scene.Scene`): map (`overworld.py`),
+  battle (`battle.py`) and party screen (`summary.py`). A scene switches by setting `next_scene`. Scenes
   draw sprites on the logical canvas and text on the scaled window
   (`draw_overlay`), so text stays sharp.
 - Battles: separate battle screen, Final Fantasy style (enemies left, party
@@ -28,7 +29,49 @@ non-commercial project.
 - Each `Animation` aligns its own baseline (lowest opaque row) to the feet
   position, because rows in a sheet sit at different heights. Rows whose
   effects reach below the feet pass an explicit `baseline=` instead.
-- Controls: arrows move, Shift runs, Space jumps, number keys 1–9 are
+- Gear (`items.py`): each Pokémon has typed slots (held, worn, berry). Gear
+  is rolled (`Gear.roll`): the item's own effect plus random affixes
+  (prefixes/suffixes, e.g. "Keen Charcoal of the Pidgeot"; suffixes are
+  named after Pokémon). Rarity (Common/Rare/Epic/Legendary) sets the affix
+  count (1–2 … 4–5) and multiplies rolled bonuses, not penalties. Mods:
+  stats in %, `crit` (% points, base 6.25%), `power` (added to move power),
+  `power:<type>` (% on that type's moves), `added:<type>` (every hit deals
+  that % extra as that type), `status:<status>` (% chance a hit inflicts
+  it), `first` (Quick Claw), `endure` (Focus Band), `super`, `regen`,
+  `drain`, `berry_heal`/`berry_attack`; cure berries use `Item.cures`.
+  Berries are eaten at most once per battle (`BattleScene._berry`), not
+  used up. `Monster.attack` etc. include gear; `base_*` don't.
+- Loot (`loot.py`): `LootTable`s of weighted entries (nothing / medicine /
+  gear at weighted rarities), rolled 1+ times. A won battle rolls the
+  battle's table once per enemy (`WILD_LOOT` by default); a `Chest` on the
+  map (opened with Up) rolls `CHEST_LOOT` once. Both show a `ui.ListPanel`.
+- Medicine (`items.MEDICINE`: potions, Revive, status cures) is counted in
+  `Bag.medicine` and used from the battle's Item menu. Using one takes the
+  user's turn; items act before moves. An item is only used up when it
+  has an effect.
+- Status conditions (`status.py`): burn, poison, paralysis, sleep, freeze;
+  one per Pokémon, stored on `Monster` and kept after battle; cleared on
+  fainting. Asleep/frozen party members skip the menu. Cured by medicine.
+- Types (`type_chart.py`): the 15 Gen 1 types and chart (Ghost→Psychic fixed to
+  2×). Species have 1–2 types, moves one; Fight is typeless. STAB ×1.5.
+- Maps (`level.py`): a tile grid (16 px tiles; "#" solid, "=" one-way
+  platform) generated from a seed and a theme (`themes.py`: tile palette,
+  weighted encounter pool with level ranges, group sizes, battle backdrop,
+  cave ceiling). Maps scroll sideways and end at a doorway (Up) to the next
+  map. Wild groups are shown in full and stay gone once beaten.
+- Dungeon instances (`instance.py`): 3–5 maps of one theme from one seed
+  (a replay rolls a new seed). The last map ends in an arena where a boss
+  group of 4–5 pool Pokémon (normal levels; stronger variants are kept for
+  gyms/legendaries) guards the sealed way out; beating it unseals the door
+  and drops a `BOSS_LOOT` chest. The hub (`hub.py`, a stand-in for towns)
+  starts runs, heals the party, and is where you return after clearing a
+  dungeon or fainting. `tileset.py` draws
+  placeholder tiles, decorations and parallax backgrounds in code (to be
+  replaced by Pixellab tilesets). The player collides with a fixed hitbox.
+- Tab on the map opens the party screen (`summary.py`): stats and gear;
+  Enter on a slot lists the bag's gear for it (or Remove), previewing the
+  stat changes, and equips it.
+- Controls: arrows move, Up opens chests, Shift runs, Space jumps, number keys 1–9 are
   reserved for attacks (1 = basic attack, 2–5 = extra attacks).
 - `tools/` holds standalone helper scripts. `tools/anim_viewer.py` uses only
   the standard library (it renders an HTML page and opens it in the browser).
@@ -46,4 +89,6 @@ non-commercial project.
   right; the left-facing ones are listed in `face_left` and mirrored on load.
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,
   row, fps, baseline, ...) and shared by the map player and battles.
-- `assets/sprites/pokemon_icons/` holds reference icons only, not in-game art.
+- `assets/sprites/pokemon_icons/` holds reference icons. Species without a
+  Pixellab sheet use their icon as a still placeholder sprite
+  (`Species.icon`; mirrored to face right) until they get one.

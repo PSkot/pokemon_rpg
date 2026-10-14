@@ -1,5 +1,6 @@
 """Pokémon species and individual Pokémon (party members and enemies)."""
 
+import random
 from dataclasses import dataclass, field
 from functools import cache
 
@@ -7,6 +8,8 @@ import pygame
 
 from . import settings
 from .animation import Animation, load_sheet
+from .items import SLOTS, Gear, boosted
+from .status import SLEEP_ROUNDS, STATUSES
 
 
 @dataclass(frozen=True)
@@ -19,17 +22,37 @@ class Move:
     # Moves with a charge message spend a round charging (the first half of
     # the animation) and fire the next round (the second half).
     charge: str = ""
+    type: str = ""      # one of type_chart.TYPES; "" = typeless
+    status: str = ""    # a status (see status.STATUSES) a hit may inflict ...
+    status_chance: int = 0  # ... with this % chance
 
 
-# "Fight" is every Pokémon's basic attack; the rest are its skills.
+# "Fight" is every Pokémon's basic attack; the rest are its skills. It has
+# no type: always neutral, no same-type bonus.
 FIGHT = Move("Fight", 30, "enemy")
 
 MOVES = {m.name: m for m in [
-    Move("Tackle", 35, "enemy", "tackle"),
-    Move("Growth", 0, "self", "growth", effect="attack_up"),
-    Move("Solar Beam", 120, "enemy", "solar_beam", charge="{user} took in sunlight!"),
-    Move("Leaf Shield", 0, "ally", "leaf_shield", effect="shield"),
-    Move("Gust", 40, "enemy", "gust"),
+    Move("Tackle", 35, "enemy", "tackle", type="normal"),
+    Move("Growth", 0, "self", "growth", effect="attack_up", type="normal"),
+    Move("Solar Beam", 120, "enemy", "solar_beam", charge="{user} took in sunlight!", type="grass"),
+    Move("Leaf Shield", 0, "ally", "leaf_shield", effect="shield", type="grass"),
+    Move("Gust", 40, "enemy", "gust", type="flying"),  # Normal in Gen 1, Flying since Gen 2
+    # Moves for species without their own animations yet (they use `fight_anim`).
+    Move("Scratch", 40, "enemy", type="normal"),
+    Move("Bite", 60, "enemy", type="normal"),
+    Move("Headbutt", 70, "enemy", type="normal"),
+    Move("Quick Attack", 40, "enemy", type="normal"),
+    Move("Poison Sting", 15, "enemy", type="poison", status="poison", status_chance=30),
+    Move("Acid", 40, "enemy", type="poison", status="poison", status_chance=10),
+    Move("Absorb", 20, "enemy", type="grass"),
+    Move("Vine Whip", 45, "enemy", type="grass"),
+    Move("Thunder Shock", 40, "enemy", type="electric", status="paralysis", status_chance=10),
+    Move("Water Gun", 40, "enemy", type="water"),
+    Move("Bubble", 40, "enemy", type="water"),
+    Move("Powder Snow", 40, "enemy", type="ice", status="freeze", status_chance=10),
+    Move("Aurora Beam", 65, "enemy", type="ice"),
+    Move("Ice Beam", 90, "enemy", type="ice", status="freeze", status_chance=10),
+    Move("Confusion", 50, "enemy", type="psychic"),
 ]}
 
 
@@ -53,17 +76,21 @@ class Species:
     base_attack: int
     base_defense: int
     base_speed: int
+    types: tuple[str, ...]  # one or two of type_chart.TYPES
     moves: tuple[str, ...]  # skills, by name in MOVES
     fight_anim: str         # animation used by Fight
     anims: dict[str, AnimSpec] = field(hash=False, compare=False)
     foot_sink: int = 0   # px the sprite is drawn into the ground (3/4-angle feet)
+    # Placeholder art: a reference icon (assets/sprites/pokemon_icons/), used
+    # as a still sprite until the species gets a Pixellab sheet.
+    icon: str = ""
 
 
 BULBASAUR_ATTACKS = "bulbasaur attacks.png"
 
 SPECIES = {
     "bulbasaur": Species(
-        "Bulbasaur", 45, 49, 49, 45,
+        "Bulbasaur", 45, 49, 49, 45, ("grass", "poison"),
         moves=("Tackle", "Growth", "Solar Beam", "Leaf Shield"),
         fight_anim="attack",
         anims={
@@ -81,7 +108,7 @@ SPECIES = {
         },
         foot_sink=3),
     "pidgey": Species(
-        "Pidgey", 40, 45, 40, 56,
+        "Pidgey", 40, 45, 40, 56, ("normal", "flying"),
         moves=("Gust", "Tackle"),
         fight_anim="tackle",
         anims={
@@ -95,14 +122,58 @@ SPECIES = {
 }
 
 
+def _placeholder(icon: str, name: str, stats: tuple[int, int, int, int], types: tuple[str, ...],
+                 moves: tuple[str, ...]) -> Species:
+    return Species(name, *stats, types, moves, fight_anim="attack", anims={}, icon=icon)
+
+
+# Species that only have a reference icon so far: Gen 1 base stats (HP,
+# Attack, Defense, Speed), types, and a few early moves.
+SPECIES.update({
+    "rattata": _placeholder("019_rattata", "Rattata", (30, 56, 35, 72), ("normal",), ("Tackle", "Quick Attack")),
+    "caterpie": _placeholder("010_caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), ("Tackle",)),
+    "weedle": _placeholder("013_weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"), ("Poison Sting",)),
+    "oddish": _placeholder("043_oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"), ("Absorb", "Acid")),
+    "bellsprout": _placeholder("069_bellsprout", "Bellsprout", (50, 75, 35, 40), ("grass", "poison"),
+                               ("Vine Whip", "Acid")),
+    "pikachu": _placeholder("025_pikachu", "Pikachu", (35, 55, 30, 90), ("electric",),
+                            ("Thunder Shock", "Quick Attack")),
+    "seel": _placeholder("086_seel", "Seel", (65, 45, 55, 45), ("water",), ("Headbutt", "Powder Snow")),
+    "shellder": _placeholder("090_shellder", "Shellder", (30, 65, 100, 40), ("water",), ("Tackle", "Water Gun")),
+    "psyduck": _placeholder("054_psyduck", "Psyduck", (50, 52, 48, 55), ("water",), ("Scratch", "Water Gun")),
+    "horsea": _placeholder("116_horsea", "Horsea", (30, 40, 70, 60), ("water",), ("Bubble", "Water Gun")),
+    "jynx": _placeholder("124_jynx", "Jynx", (65, 50, 35, 95), ("ice", "psychic"), ("Powder Snow", "Confusion")),
+    "dewgong": _placeholder("087_dewgong", "Dewgong", (90, 70, 80, 70), ("water", "ice"),
+                            ("Headbutt", "Aurora Beam")),
+    "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60), ("water", "ice"), ("Water Gun", "Ice Beam")),
+})
+
+ICON_SCALE = 0.75  # icons share one scale, so species keep their relative sizes
+
+
 @cache
 def _sheet(name: str) -> list[list[pygame.Surface]]:
     return load_sheet(settings.ASSETS / "sprites" / "pixellab" / name, 64, 64)
 
 
 @cache
+def _icon_frame(icon: str) -> pygame.Surface:
+    """A reference icon as a still sprite: cropped, scaled, facing right."""
+    image = pygame.image.load(settings.ASSETS / "sprites" / "pokemon_icons" / f"{icon}.png").convert_alpha()
+    image = image.subsurface(image.get_bounding_rect()).copy()
+    image = pygame.transform.smoothscale_by(image, ICON_SCALE)
+    return pygame.transform.flip(image, True, False)  # the icons face left
+
+
+@cache
 def animations(species: Species) -> dict[str, Animation]:
     """The species' animations, all facing right."""
+    if species.icon:  # a placeholder: the same still frame for everything
+        frame = _icon_frame(species.icon)
+        still = Animation([frame], fps=1, loop=True)
+        # Attacks get a few frames, so the battle's timing (impact on the
+        # second-to-last frame) still works.
+        return {"idle": still, "walk": still, "attack": Animation([frame] * 4, fps=8, loop=False)}
     anims = {}
     for name, spec in species.anims.items():
         frames = _sheet(spec.sheet)[spec.row][:spec.frames]
@@ -120,10 +191,13 @@ def _stat(base: int, level: int) -> int:
 
 @dataclass
 class Monster:
-    """One Pokémon: its species, level and current HP."""
+    """One Pokémon: its species, level, current HP, status and equipped gear."""
     species: Species
     level: int
     hp: int = -1  # -1 = full
+    gear: dict[str, Gear] = field(default_factory=dict)  # slot -> gear
+    status: str = ""       # a key of status.STATUSES, or "" for none
+    sleep_rounds: int = 0  # rounds left asleep
 
     def __post_init__(self):
         if self.hp < 0:
@@ -145,21 +219,76 @@ class Monster:
     def moves(self) -> list[Move]:
         return [MOVES[name] for name in self.species.moves]
 
-    def anim_for(self, move: Move) -> str:
-        return move.anim or self.species.fight_anim
+    def inflict(self, status: str) -> bool:
+        """Give it `status`, unless it already has one or its type is immune."""
+        if self.status or not self.alive or STATUSES[status].immune in self.species.types:
+            return False
+        self.status = status
+        if status == "sleep":
+            self.sleep_rounds = random.randint(*SLEEP_ROUNDS)
+        return True
 
+    def cure(self) -> None:
+        self.status, self.sleep_rounds = "", 0
+
+    def anim_for(self, move: Move) -> str:
+        """The move's own animation if this species has one (placeholders
+        don't), else its basic attack."""
+        return move.anim if move.anim in self.species.anims else self.species.fight_anim
+
+    def equip(self, gear: Gear) -> Gear | None:
+        """Put on `gear`; returns what was in its slot before."""
+        missing = self.max_hp - self.hp
+        old = self.gear.get(gear.slot)
+        self.gear[gear.slot] = gear
+        self._set_missing_hp(missing)
+        return old
+
+    def unequip(self, slot: str) -> Gear | None:
+        missing = self.max_hp - self.hp
+        old = self.gear.pop(slot, None)
+        self._set_missing_hp(missing)
+        return old
+
+    def _set_missing_hp(self, missing: int) -> None:
+        # Gear changes keep the damage taken, so a full-HP Pokémon stays full.
+        if self.alive:
+            self.hp = max(1, self.max_hp - missing)
+
+    def gear_bonus(self, mod: str) -> int:
+        """Total of `mod` (see `items.MOD_TEXT`) from equipped gear."""
+        return sum(self.gear[slot].mods.get(mod, 0) for slot in SLOTS if slot in self.gear)
+
+    # Stats without gear.
     @property
-    def max_hp(self) -> int:
+    def base_max_hp(self) -> int:
         return self.species.base_hp * 2 * self.level // 100 + self.level + 10
 
     @property
-    def attack(self) -> int:
+    def base_attack(self) -> int:
         return _stat(self.species.base_attack, self.level)
 
     @property
-    def defense(self) -> int:
+    def base_defense(self) -> int:
         return _stat(self.species.base_defense, self.level)
 
     @property
-    def speed(self) -> int:
+    def base_speed(self) -> int:
         return _stat(self.species.base_speed, self.level)
+
+    # Stats with gear: what battles use.
+    @property
+    def max_hp(self) -> int:
+        return boosted(self.base_max_hp, self.gear_bonus("hp"))
+
+    @property
+    def attack(self) -> int:
+        return boosted(self.base_attack, self.gear_bonus("attack"))
+
+    @property
+    def defense(self) -> int:
+        return boosted(self.base_defense, self.gear_bonus("defense"))
+
+    @property
+    def speed(self) -> int:
+        return boosted(self.base_speed, self.gear_bonus("speed"))

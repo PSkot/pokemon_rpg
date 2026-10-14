@@ -1,11 +1,11 @@
-"""The player character."""
+"""The player character: walking, running and jumping around a map's tiles."""
 
 from dataclasses import dataclass
 
 import pygame
 
-from . import settings
 from .animation import Animation
+from .level import TILE, Level
 from .pokemon import SPECIES, animations
 
 WALK_SPEED = 70   # logical pixels per second
@@ -15,12 +15,18 @@ RUN_SPEED = 150
 # otherwise hover over the grass.
 FOOT_SINK = 3
 
-# Jumping. Full jump height = JUMP_VELOCITY**2 / (2 * GRAVITY) ≈ 50 px.
+# Jumping. Full jump height = JUMP_VELOCITY**2 / (2 * GRAVITY) ≈ 62 px: just under
+# 4 tiles, so platforms 3 tiles up are comfortably in reach.
 GRAVITY = 1100          # px/s²
-JUMP_VELOCITY = 330     # px/s upwards at take-off
+JUMP_VELOCITY = 370     # px/s upwards at take-off
 JUMP_CUT_GRAVITY = 3.0  # gravity multiplier while rising with Space released (short hops)
 JUMP_SQUAT = 0.05       # seconds crouched on the ground before leaving it
 LAND_TIME = 0.10        # seconds the landing frame is held
+
+# The box that collides with the map's tiles: a fixed size, so the
+# animation frames don't change what fits where.
+HITBOX_HALF_W = 11
+HITBOX_H = 30
 
 # Jump sheet row: crouch, leap (rising), airborne (falling), landing.
 JUMP_CROUCH, JUMP_RISE, JUMP_FALL, JUMP_LAND = range(4)
@@ -41,10 +47,10 @@ class Controls:
 
 
 class Player:
-    def __init__(self, x: float):
+    def __init__(self, x: float, feet_y: float):
         self.anims = animations(SPECIES["bulbasaur"])
         self.x = x                    # centre of the sprite
-        self.feet_y = float(settings.GROUND_Y)
+        self.feet_y = float(feet_y)
         self.vy = 0.0                 # vertical speed, positive = down
         self.facing = 1               # 1 = right, -1 = left
         self.state = "idle"           # idle, walk, run, attack, squat, air, land
@@ -85,7 +91,7 @@ class Player:
 
     # ----------------------------------------------------------------- update
 
-    def update(self, dt: float, c: Controls) -> None:
+    def update(self, dt: float, c: Controls, level: Level) -> None:
         self.state_time += dt
 
         if self.state == "attack":
@@ -101,22 +107,17 @@ class Player:
             if c.jump:
                 self.set_state("squat")
 
-        self._move_horizontally(dt, c)
+        self._move_horizontally(dt, c, level)
 
         if self.state == "squat" and self.state_time >= JUMP_SQUAT:
             self.vy = -JUMP_VELOCITY
             self.set_state("air")
+        elif self.on_ground and not level.supported(*self._span(), self.feet_y):
+            self.vy = 0.0  # walked off a ledge
+            self.set_state("air")
 
         if self.state == "air":
-            gravity = GRAVITY
-            if self.vy < 0 and not c.jump_held:
-                gravity *= JUMP_CUT_GRAVITY
-            self.vy += gravity * dt
-            self.feet_y += self.vy * dt
-            if self.feet_y >= settings.GROUND_Y:
-                self.feet_y = float(settings.GROUND_Y)
-                self.vy = 0.0
-                self.set_state("land")
+            self._fall(dt, c, level)
             return
 
         if self.state in ("squat", "land"):
@@ -128,14 +129,49 @@ class Player:
         moving = c.left != c.right
         self.set_state(("run" if c.run else "walk") if moving else "idle")
 
-    def _move_horizontally(self, dt: float, c: Controls) -> None:
+    def _span(self, x: float | None = None) -> tuple[float, float]:
+        """Left and right edge of the hitbox (at `x`, or where it is now)."""
+        x = self.x if x is None else x
+        return x - HITBOX_HALF_W, x + HITBOX_HALF_W
+
+    def _move_horizontally(self, dt: float, c: Controls, level: Level) -> None:
         direction = int(c.right) - int(c.left)
         if not direction:
             return
         self.facing = direction
         speed = RUN_SPEED if c.run else WALK_SPEED
-        half = 20  # keep the body on screen
-        self.x = max(half, min(settings.LOGICAL_SIZE[0] - half, self.x + direction * speed * dt))
+        x = self.x + direction * speed * dt
+        left, right = self._span(x)
+        if level.hits_solid(left, self.feet_y - HITBOX_H, right, self.feet_y):
+            # Stop against the wall: flush with the tile edge.
+            if direction > 0:
+                x = (right // TILE) * TILE - HITBOX_HALF_W
+            else:
+                x = (left // TILE + 1) * TILE + HITBOX_HALF_W
+            left, right = self._span(x)
+            if level.hits_solid(left, self.feet_y - HITBOX_H, right, self.feet_y):
+                return
+        self.x = x
+
+    def _fall(self, dt: float, c: Controls, level: Level) -> None:
+        """In the air: gravity, landing on ground or platforms, bumping the ceiling."""
+        gravity = GRAVITY
+        if self.vy < 0 and not c.jump_held:
+            gravity *= JUMP_CUT_GRAVITY
+        self.vy += gravity * dt
+        feet = self.feet_y + self.vy * dt
+        left, right = self._span()
+        if self.vy > 0:
+            ground = level.landing(left, right, self.feet_y, feet)
+            if ground is not None:
+                self.feet_y, self.vy = ground, 0.0
+                self.set_state("land")
+                return
+        elif level.hits_solid(left, feet - HITBOX_H, right, feet):
+            # Head against the ceiling: stop rising just below it.
+            feet = (int((feet - HITBOX_H) // TILE) + 1) * TILE + HITBOX_H
+            self.vy = 0.0
+        self.feet_y = feet
 
     # ------------------------------------------------------------------- draw
 

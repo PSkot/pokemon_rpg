@@ -71,3 +71,50 @@ def hp_bar(surface: pygame.Surface, rect: pygame.Rect, fraction: float) -> None:
     inner.w = round(inner.w * max(0.0, min(1.0, fraction)))
     if inner.w:
         pygame.draw.rect(surface, color, inner)
+
+
+BADGE_SIZE = (46, 13)
+
+
+def badge(surface: pygame.Surface, pos: tuple[int, int], color) -> pygame.Rect:
+    """A small coloured label box (for a type) at top-left `pos`; its text
+    goes on the window with `badge_text`."""
+    rect = pygame.Rect(pos, BADGE_SIZE)
+    pygame.draw.rect(surface, SHADOW, rect.move(1, 1), border_radius=3)
+    pygame.draw.rect(surface, color, rect, border_radius=3)
+    pygame.draw.rect(surface, [c // 2 for c in color], rect, 1, border_radius=3)
+    return rect
+
+
+def badge_text(window: pygame.Surface, s: str, pos: tuple[int, int]) -> None:
+    rect = pygame.Rect(pos, BADGE_SIZE)
+    text(window, s.upper(), (rect.centerx, rect.y + 2.5), WHITE, size=19, align="center")
+
+
+class ListPanel:
+    """A window with a title and rows of (text, colour, right-hand text),
+    centred on `center` (e.g. the loot from a battle or a chest)."""
+
+    ROW_H = 17
+    PAD = 9
+
+    def __init__(self, title: str, rows: list[tuple[str, tuple[int, int, int], str]],
+                 center: tuple[int, int], width: int = 320, footer: str = "Enter: continue"):
+        self.title, self.rows, self.footer = title, rows, footer
+        height = self.PAD * 2 + self.ROW_H * (len(rows) + (2 if footer else 1)) + 4
+        self.rect = pygame.Rect(0, 0, width, height)
+        self.rect.center = center
+
+    def draw(self, surface: pygame.Surface) -> None:
+        window_box(surface, self.rect)
+
+    def draw_overlay(self, window: pygame.Surface) -> None:
+        x, right = self.rect.x + 12, self.rect.right - 12
+        y = self.rect.y + self.PAD
+        text(window, self.title, (x, y), YELLOW)
+        for i, (s, color, side) in enumerate(self.rows):
+            row_y = y + self.ROW_H * (i + 1) + 4
+            text(window, s, (x, row_y), color, size=26)
+            text(window, side, (right, row_y), GREY, size=22, align="right")
+        if self.footer:
+            text(window, self.footer, (right, self.rect.bottom - self.PAD - 11), GREY, size=20, align="right")

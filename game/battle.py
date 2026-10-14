@@ -15,8 +15,14 @@ import pygame
 
 from . import settings, ui
 from .animation import Animation
+from .items import MEDICINE, Bag, Medicine
+from .loot import WILD_LOOT, LootTable, merge
 from .pokemon import FIGHT, Monster, Move, animations
 from .scene import Scene, Transition
+from .status import (BURN_ATTACK, FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES,
+                     THAW_CHANCE)
+from .type_chart import COLORS, TYPES, effectiveness
+from .type_chart import name as type_name
 
 HORIZON_Y = 118
 PANEL_Y = 264  # top of the menu windows
@@ -26,12 +32,14 @@ COMMAND_WINDOW = pygame.Rect(180, PANEL_Y, 104, 90)
 PARTY_WINDOW = pygame.Rect(288, PANEL_Y, 346, 90)
 SKILL_WINDOW = pygame.Rect(6, PANEL_Y, 278, 90)  # opens over the enemy + command windows
 ROW_H = 19   # menu line height
+LIST_ROWS = 4  # rows that fit in the skill/item list
 PAD = 9      # space above the first line in a window
 MESSAGE_WINDOW = pygame.Rect(6, 6, 628, PAD * 2 + ROW_H)
+INFO_WINDOW = MESSAGE_WINDOW.move(0, 16)  # item descriptions, below the key hints
 
 COMMANDS = ["Fight", "Skills", "Item", "Run"]
-DISABLED = {"Item"}  # no items yet
 TARGET_TEXT = {"enemy": "Enemy", "ally": "Ally", "self": "Self"}
+HEAL_COLOR = (120, 230, 120)
 
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 CANCEL_KEYS = (pygame.K_x, pygame.K_BACKSPACE)
@@ -44,8 +52,12 @@ ROUND_START_PAUSE = 0.4  # after the last command is chosen
 WIND_UP_TIME = 0.4       # stepping forward, with the move's name shown
 IMPACT_HOLD = 0.35       # extra time on the last frame after the hit lands
 STEP_BACK_TIME = 0.4     # stepping back into line
+STATUS_MESSAGE_TIME = 1.0  # "is fast asleep", "is hurt by poison", ...
+QUICK_MESSAGE_TIME = 0.7   # "is quick to act!"
+REGEN_MESSAGE_TIME = 0.8   # "restored 2 HP."
 ACTION_PAUSE = 0.6       # quiet gap (no message) before the next action
 HIT_TIME = 0.35      # seconds a hit combatant shakes and flickers
+HEAL_TIME = 0.8      # seconds healing sparkles rise around a combatant
 FADE_TIME = 0.5      # seconds a fainting combatant takes to fade
 HP_DRAIN_TIME = 0.6  # seconds for an HP bar to drain completely
 POPUP_TIME = 0.9     # seconds a damage number stays up
@@ -54,6 +66,9 @@ FAINTED_OPACITY = 0.35  # fainted party members stay visible, dimmed
 SHIELD_ROUNDS = 2    # Leaf Shield lasts the round it is used and the next
 SHIELD_FACTOR = 0.5  # damage taken while shielded
 MAX_ATTACK_STAGE = 6
+CRIT_CHANCE = 6.25   # % (1 in 16, as in Gen 2+); gear adds to it
+CRIT_FACTOR = 1.5
+STAB = 1.5           # same-type attack bonus: a move of one of the user's own types
 
 # Feet positions for the player's side, by party size: a diagonal column, as
 # in the classic Final Fantasy games. Enemies use the mirror image.
@@ -61,6 +76,9 @@ PARTY_SLOTS = {
     1: [(492, 205)],
     2: [(472, 180), (512, 236)],
     3: [(452, 160), (492, 200), (532, 240)],
+    # Bigger groups (bosses) stand in two staggered lines.
+    4: [(450, 170), (490, 232), (540, 160), (580, 222)],
+    5: [(440, 160), (470, 205), (500, 250), (555, 180), (590, 232)],
 }
 
 
@@ -79,19 +97,38 @@ class Combatant:
         self.step = 0.0        # how far it has stepped forward, towards the other side
         self.step_goal = 0.0
         self.hit_time = 0.0    # > 0 while shaking from a hit
+        self.heal_time = 0.0   # > 0 while healing sparkles show
         self.opacity = 1.0 if monster.alive else FAINTED_OPACITY
         self.shown_hp = float(monster.hp)  # drains towards the real HP
         self.attack_stage = 0  # raised by Growth
         self.shield = 0        # rounds of Leaf Shield left
         self.charging: Action | None = None  # a charged move that fires next round
+        self.berry_used = False  # its berry can be eaten once per battle
 
     @property
     def alive(self) -> bool:
         return self.monster.alive
 
     @property
+    def status(self) -> str:
+        return self.monster.status
+
+    @property
     def can_choose(self) -> bool:
-        return self.alive and self.charging is None
+        """Alive, not busy charging a move, and awake (asleep or frozen
+        Pokémon don't get to pick anything)."""
+        return self.alive and self.charging is None and self.status not in ("sleep", "freeze")
+
+    @property
+    def speed(self) -> float:
+        speed = self.monster.speed
+        return speed * PARALYSIS_SPEED if self.status == "paralysis" else speed
+
+    def revive(self, hp: int) -> None:
+        """Back on its feet, with its battle-only state and status cleared."""
+        self.monster.hp = hp
+        self.monster.cure()
+        self.attack_stage, self.shield, self.charging = 0, 0, None
 
     @property
     def flip(self) -> bool:
@@ -121,6 +158,7 @@ class Combatant:
         self.anim_time += dt
         self.step += (self.step_goal - self.step) * min(1.0, dt * 14)
         self.hit_time = max(0.0, self.hit_time - dt)
+        self.heal_time = max(0.0, self.heal_time - dt)
         if not self.hit_time:  # a fainting hit finishes shaking before the fade
             goal = 1.0 if self.alive else 0.0 if self.enemy else FAINTED_OPACITY
             rate = dt / FADE_TIME
@@ -128,14 +166,14 @@ class Combatant:
         drain = self.monster.max_hp * dt / HP_DRAIN_TIME
         self.shown_hp += max(-drain, min(drain, self.monster.hp - self.shown_hp))
 
-    def draw(self, surface: pygame.Surface) -> None:
+    def draw(self, surface: pygame.Surface, shadow_color) -> None:
         if self.opacity <= 0:
             return
         x = self.draw_x
         if self.alive:
             shadow = pygame.Rect(0, 0, round(self.body_rect.w * 0.8), 8)
             shadow.center = (round(x), self.feet_y)
-            pygame.draw.ellipse(surface, (60, 110, 50), shadow)
+            pygame.draw.ellipse(surface, shadow_color, shadow)
         if self.hit_time and int(self.hit_time * 30) % 2:
             return  # flicker
         i = self.anim.index_at(self.anim_time)
@@ -146,6 +184,20 @@ class Combatant:
         surface.blit(frame, self.anim.place(i, x, self.sprite_feet_y, self.flip))
         if self.shield and self.alive:
             self._draw_shield(surface)
+        if self.heal_time:
+            self._draw_sparkles(surface)
+
+    def _draw_sparkles(self, surface: pygame.Surface) -> None:
+        """Small crosses rising up through the body while it heals."""
+        t = 1 - self.heal_time / HEAL_TIME  # 0 → 1
+        body = self.body_rect
+        for i in range(6):
+            phase = (t * 1.6 + i / 6) % 1.0
+            x = round(self.draw_x + math.sin(i * 2.4) * body.w * 0.4)
+            y = round(body.bottom - phase * (body.h + 8))
+            color = HEAL_COLOR if i % 2 else ui.WHITE
+            pygame.draw.line(surface, color, (x - 2, y), (x + 2, y))
+            pygame.draw.line(surface, color, (x, y - 2), (x, y + 2))
 
     def _draw_shield(self, surface: pygame.Surface) -> None:
         bubble = self.body_rect.inflate(14, 10)
@@ -156,12 +208,17 @@ class Combatant:
         surface.blit(layer, bubble)
 
 
+Choice = Move | Medicine  # what a combatant can do on its turn
+
+
 @dataclass
 class Action:
-    """What one combatant will do this round."""
+    """What one combatant will do this round. No choice: it couldn't pick
+    one (asleep or frozen), but still gets a turn to wake up or thaw."""
     user: Combatant
-    move: Move
+    choice: Choice | None
     target: Combatant
+    first: bool = False  # gear (Quick Claw) lets it move before the others this round
 
 
 @dataclass
@@ -178,14 +235,50 @@ class Popup:
         return abs(math.sin(self.t * 9)) * 12 * math.exp(-self.t * 4)
 
 
-def damage(user: Combatant, move: Move, target: Combatant) -> int:
-    """The Gen 1 damage formula, simplified (no types, crits or misses)."""
-    attack = user.monster.attack * (2 + user.attack_stage) / 2
-    level_factor = 2 * user.monster.level / 5 + 2
-    amount = level_factor * move.power * attack / target.monster.defense / 50 + 2
+@dataclass
+class Hit:
+    """The outcome of one damaging move."""
+    damage: int          # from the move itself
+    crit: bool
+    effectiveness: float
+    added: list[tuple[str, int]]  # extra damage by type, from gear
+
+    @property
+    def total(self) -> int:
+        return self.damage + sum(amount for _, amount in self.added)
+
+
+def damage(user: Combatant, move: Move, target: Combatant) -> Hit:
+    """The Gen 1 damage formula, simplified (no misses), plus gear."""
+    m, types = user.monster, target.monster.species.types
+    attack = m.attack * (2 + user.attack_stage) / 2
+    if user.status == "burn":
+        attack *= BURN_ATTACK
+    power = move.power + m.gear_bonus("power")
+    level_factor = 2 * m.level / 5 + 2
+    base = level_factor * power * attack / target.monster.defense / 50 + 2
+    crit = random.random() * 100 < CRIT_CHANCE + m.gear_bonus("crit")
+    if crit:
+        base *= CRIT_FACTOR
     if target.shield:
-        amount *= SHIELD_FACTOR
-    return max(1, round(amount * random.uniform(0.85, 1.0)))
+        base *= SHIELD_FACTOR
+    base *= random.uniform(0.85, 1.0)
+
+    multiplier = effectiveness(move.type, types)
+    amount = base * multiplier
+    if move.type:
+        if move.type in m.species.types:
+            amount *= STAB
+        amount *= 1 + m.gear_bonus(f"power:{move.type}") / 100
+    if multiplier > 1:
+        amount *= 1 + m.gear_bonus("super") / 100
+    # Gear's added type damage: a share of the hit, with its own effectiveness.
+    added = []
+    for t in TYPES:
+        extra = round(base * m.gear_bonus(f"added:{t}") / 100 * effectiveness(t, types))
+        if extra:
+            added.append((t, extra))
+    return Hit(max(1, round(amount)) if multiplier else 0, crit, multiplier, added)
 
 
 def _labels(monsters: list[Monster]) -> list[str]:
@@ -210,26 +303,38 @@ def _side(monsters: list[Monster], enemy: bool) -> list[Combatant]:
             for m, label, pos in zip(monsters, _labels(monsters), slots)]
 
 
+@dataclass(frozen=True)
+class Backdrop:
+    """The colours of the battle background (sky, distant hills, field)."""
+    sky_top: tuple[int, int, int] = (104, 168, 232)
+    sky_bottom: tuple[int, int, int] = (196, 228, 244)
+    hills: tuple[tuple[int, int, int], tuple[int, int, int]] = ((120, 176, 112), (104, 160, 100))
+    field_far: tuple[int, int, int] = (112, 184, 88)
+    field_near: tuple[int, int, int] = (84, 160, 68)
+    stripe: tuple[int, int, int] = (96, 168, 76)
+    shadow: tuple[int, int, int] = (60, 110, 50)  # under the combatants
+
+
+MEADOW = Backdrop()
+
+
 @cache
-def _background() -> pygame.Surface:
+def _background(b: Backdrop) -> pygame.Surface:
     w, _ = settings.LOGICAL_SIZE
     bg = pygame.Surface((w, PANEL_Y))
-    sky_top, sky_bottom = (104, 168, 232), (196, 228, 244)
     for y in range(HORIZON_Y):
         t = y / HORIZON_Y
-        pygame.draw.line(bg, [round(a + (b - a) * t) for a, b in zip(sky_top, sky_bottom)], (0, y), (w, y))
+        pygame.draw.line(bg, [round(a + (c - a) * t) for a, c in zip(b.sky_top, b.sky_bottom)], (0, y), (w, y))
     # Distant hills along the horizon.
-    for cx, rw, rh, color in [(80, 260, 60, (120, 176, 112)), (330, 320, 44, (104, 160, 100)),
-                              (560, 280, 70, (120, 176, 112))]:
+    for cx, rw, rh, color in [(80, 260, 60, b.hills[0]), (330, 320, 44, b.hills[1]), (560, 280, 70, b.hills[0])]:
         pygame.draw.ellipse(bg, color, (cx - rw // 2, HORIZON_Y - rh // 2, rw, rh))
     # The field, with stripes spaced further apart towards the viewer.
-    field_far, field_near = (112, 184, 88), (84, 160, 68)
     for y in range(HORIZON_Y, PANEL_Y):
         t = (y - HORIZON_Y) / (PANEL_Y - HORIZON_Y)
-        pygame.draw.line(bg, [round(a + (b - a) * t) for a, b in zip(field_far, field_near)], (0, y), (w, y))
+        pygame.draw.line(bg, [round(a + (c - a) * t) for a, c in zip(b.field_far, b.field_near)], (0, y), (w, y))
     y, gap = HORIZON_Y + 4, 4.0
     while y < PANEL_Y:
-        pygame.draw.line(bg, (96, 168, 76), (0, round(y)), (w, round(y)))
+        pygame.draw.line(bg, b.stripe, (0, round(y)), (w, round(y)))
         y += gap
         gap *= 1.35
     return bg
@@ -241,7 +346,8 @@ class BattleScene(Scene):
     Menus (`self.menu`):
       command  Fight / Skills / Item / Run for the current party member
       skills   the member's moves
-      target   pick who the chosen move is aimed at
+      items    medicine from the bag
+      target   pick who the chosen move or item is aimed at
       busy     a script is playing (intro, or the round's actions)
       end      one side has no Pokémon left standing
 
@@ -249,14 +355,21 @@ class BattleScene(Scene):
     to wait before they continue.
     """
 
-    def __init__(self, return_to: Scene, party: list[Monster], enemies: list[Monster]):
+    def __init__(self, return_to: Scene, party: list[Monster], enemies: list[Monster], bag: Bag,
+                 loot: LootTable = WILD_LOOT, backdrop: Backdrop = MEADOW):
         self.return_to = return_to
+        self.backdrop = backdrop
         self.party = _side(party, enemy=False)
         self.enemies = _side(enemies, enemy=True)
+        self.bag = bag
+        self.loot = loot      # rolled once per enemy when the party wins
+        self.rewards: ui.ListPanel | None = None
         self.command = 0        # cursor positions
         self.skill = 0
+        self.item = 0
+        self.item_top = 0   # first item shown, when the list scrolls
         self.target = 0
-        self.move: Move | None = None   # the move being aimed in the target menu
+        self.aim: Choice | None = None  # the move or item being aimed in the target menu
         self.aim_from = "command"       # menu to go back to from the target menu
         self.blink = 0.0
         self.actions: list[Action] = []
@@ -264,6 +377,7 @@ class BattleScene(Scene):
         self.message = ""
         self.popups: list[Popup] = []
         self.won = False
+        self.lost = False  # the whole party fainted (running away is neither)
         self.menu = "busy"
         self.wait = 0.0
         self.script = self._intro()
@@ -281,7 +395,16 @@ class BattleScene(Scene):
 
     @property
     def choosing(self) -> bool:
-        return self.menu in ("command", "skills", "target")
+        return self.menu in ("command", "skills", "items", "target")
+
+    def _available(self, medicine: Medicine) -> int:
+        """How many are left in the bag, minus those already picked this round."""
+        picked = sum(1 for a in self.actions if a.choice is medicine)
+        return self.bag.medicine[medicine.name] - picked
+
+    def _medicine(self) -> list[Medicine]:
+        """The medicine the current party member can pick from."""
+        return [m for m in MEDICINE.values() if self._available(m) > 0]
 
     def _start_round(self) -> None:
         self.actions = []
@@ -296,7 +419,8 @@ class BattleScene(Scene):
         if i == len(self.party):
             self._run_round()
         else:
-            self.actor_index, self.menu, self.skill = i, "command", 0
+            self.actor_index, self.menu = i, "command"
+            self.skill = self.item = self.item_top = 0
 
     def _previous_actor(self) -> None:
         """Undo the last chosen action and let that party member choose again."""
@@ -304,27 +428,32 @@ class BattleScene(Scene):
             self.actor_index = self.party.index(self.actions.pop().user)
             self.menu = "command"
 
-    def _candidates(self, user: Combatant, move: Move) -> list[Combatant]:
-        """Who `user` can aim `move` at."""
-        if move.target == "self":
+    def _candidates(self, user: Combatant, choice: Choice) -> list[Combatant]:
+        """Who `user` can aim `choice` at."""
+        own_side = self.enemies if user.enemy else self.party
+        if isinstance(choice, Medicine):  # own side; Revive only on the fainted
+            return [c for c in own_side if c.alive != choice.revive]
+        if choice.target == "self":
             return [user] if user.alive else []
-        other_side = move.target == "enemy"
-        side = self.party if user.enemy == other_side else self.enemies
+        side = own_side if choice.target == "ally" else self.party if user.enemy else self.enemies
         return [c for c in side if c.alive]
 
     def _targets(self) -> list[Combatant]:
-        return self._candidates(self.actor, self.move)
+        return self._candidates(self.actor, self.aim)
 
-    def _choose(self, move: Move) -> None:
-        if move.target == "self":
-            self._commit(move, self.actor)
+    def _choose(self, choice: Choice) -> None:
+        if isinstance(choice, Move) and choice.target == "self":
+            self._commit(choice, self.actor)
             return
-        self.aim_from, self.move, self.menu = self.menu, move, "target"
-        targets = self._targets()
+        targets = self._candidates(self.actor, choice)
+        if not targets:
+            return  # e.g. a Revive with nobody fainted
+        self.aim_from, self.aim, self.menu = self.menu, choice, "target"
+        self.blink = 0.0
         self.target = targets.index(self.actor) if self.actor in targets else 0
 
-    def _commit(self, move: Move, target: Combatant) -> None:
-        self.actions.append(Action(self.actor, move, target))
+    def _commit(self, choice: Choice, target: Combatant) -> None:
+        self.actions.append(Action(self.actor, choice, target))
         self._next_actor()
 
     def handle_event(self, event: pygame.event.Event) -> None:
@@ -342,6 +471,8 @@ class BattleScene(Scene):
                     self._choose(FIGHT)
                 elif command == "Skills":
                     self.menu = "skills"
+                elif command == "Item" and self._medicine():
+                    self.menu = "items"
                 elif command == "Run":
                     self.next_scene = Transition(self, self.return_to, flashes=0)
             elif key in CANCEL_KEYS:
@@ -354,13 +485,23 @@ class BattleScene(Scene):
                 self._choose(moves[self.skill])
             elif key in CANCEL_KEYS:
                 self.menu = "command"
+        elif self.menu == "items":
+            medicine = self._medicine()
+            if key in (pygame.K_UP, pygame.K_DOWN):
+                self.item = (self.item + (1 if key == pygame.K_DOWN else -1)) % len(medicine)
+                # Scroll to keep the cursor in view.
+                self.item_top = min(self.item, max(self.item_top, self.item - LIST_ROWS + 1))
+            elif key in CONFIRM_KEYS:
+                self._choose(medicine[self.item])
+            elif key in CANCEL_KEYS:
+                self.menu = "command"
         elif self.menu == "target":
             targets = self._targets()
             if up or down:
                 self.target = (self.target + (1 if down else -1)) % len(targets)
                 self.blink = 0.0
             elif key in CONFIRM_KEYS:
-                self._commit(self.move, targets[self.target])
+                self._commit(self.aim, targets[self.target])
             elif key in CANCEL_KEYS:
                 self.menu = self.aim_from
         elif self.menu == "end" and key in CONFIRM_KEYS:
@@ -369,6 +510,7 @@ class BattleScene(Scene):
                 # battle doesn't start with a fainted party.
                 for c in self.party:
                     c.monster.hp = c.monster.max_hp
+                    c.monster.cure()
             self.next_scene = Transition(self, self.return_to, flashes=0)
 
     # ---------------------------------------------------------------- scripts
@@ -380,6 +522,9 @@ class BattleScene(Scene):
             self.message = "Wild Pokémon appeared!"
         yield 1.2
         self.message = ""
+        for c in self.everyone:  # e.g. a status from the last battle, cured by a berry
+            yield from self._berry(c)
+        self.message = ""
         self._start_round()
 
     def _enemy_action(self, enemy: Combatant) -> Action:
@@ -388,10 +533,24 @@ class BattleScene(Scene):
         return Action(enemy, move, random.choice(self._candidates(enemy, move)))
 
     def _run_round(self) -> None:
-        actions = self.actions + [c.charging for c in self.everyone if c.alive and c.charging]
-        actions += [self._enemy_action(c) for c in self.enemies if c.can_choose]
-        # Fastest first; ties are settled at random.
-        actions.sort(key=lambda a: (-a.user.monster.speed, random.random()))
+        actions = list(self.actions)  # the party's choices
+        for c in self.everyone:
+            if not c.alive:
+                continue
+            if c.charging:
+                actions.append(c.charging)
+            elif not c.can_choose:
+                actions.append(Action(c, None, c))  # asleep or frozen
+            elif c.enemy:
+                actions.append(self._enemy_action(c))
+        # Items first, as in the main games; then those whose gear lets them
+        # move first; then fastest first. Ties are settled at random.
+        for a in actions:
+            a.first = random.random() * 100 < a.user.monster.gear_bonus("first")
+        actions.sort(key=lambda a: (not isinstance(a.choice, Medicine), not a.first, -a.user.speed,
+                                    random.random()))
+        for a in actions:  # only worth a mention if it got ahead of someone faster
+            a.first = a.first and any(not b.first and b.user.speed > a.user.speed for b in actions)
         self.menu = "busy"
         self.script = self._round(actions)
 
@@ -410,24 +569,134 @@ class BattleScene(Scene):
                 self.message = ""
                 yield ACTION_PAUSE
             first = False
+            if action.first and action.choice is not None and not isinstance(action.choice, Medicine):
+                self.message = f"{action.user.label} is quick to act!"
+                self._popup(action.user, "QUICK", ui.YELLOW)
+                yield QUICK_MESSAGE_TIME
             yield from self._perform(action)
+        self.message = ""
+        if not self._over():
+            yield from self._status_damage()
+        if not self._over():
+            yield from self._regen()
         self.message = ""
         for c in self.everyone:
             c.shield = max(0, c.shield - 1)
         if self._over():
             self.won = any(c.alive for c in self.party)
+            self.lost = not self.won
             self.message = "You won!" if self.won else "Your party has fainted..."
+            if self.won:
+                self._give_rewards()
             self.menu = "end"
         else:
             self._start_round()
 
+    def _give_rewards(self) -> None:
+        rewards = merge([r for _ in self.enemies for r in self.loot.roll()])
+        for r in rewards:
+            r.give(self.bag)
+        if rewards:
+            self.rewards = ui.ListPanel("Rewards", [r.row() for r in rewards], (320, 120), footer="")
+
+    def _regen(self):
+        """End of the round: gear that restores HP every round."""
+        for c in self.everyone:
+            percent = c.monster.gear_bonus("regen")
+            if not c.alive or not percent or c.monster.hp == c.monster.max_hp:
+                continue
+            amount = self._heal(c, max(1, round(c.monster.max_hp * percent / 100)))
+            self.message = f"{c.label} restored {amount} HP."
+            yield REGEN_MESSAGE_TIME
+
+    def _heal(self, c: Combatant, amount: int) -> int:
+        """Restore up to `amount` HP, with a popup; returns what was restored."""
+        amount = min(amount, c.monster.max_hp - c.monster.hp)
+        c.monster.hp += amount
+        c.heal_time = HEAL_TIME
+        self._popup(c, f"+{amount}", HEAL_COLOR)
+        return amount
+
+    def _berry(self, c: Combatant):
+        """A script: `c` eats its berry, if it has one left and needs it now."""
+        gear = c.monster.gear.get("berry")
+        if not gear or c.berry_used or not c.alive:
+            return
+        m, mods = c.monster, gear.mods
+        if m.status and m.status in gear.item.cures:
+            note = STATUSES[m.status].cured.format(c.label)
+            m.cure()
+        elif "berry_heal" in mods and m.hp * 2 <= m.max_hp:
+            amount = self._heal(c, max(1, round(m.max_hp * mods["berry_heal"] / 100)))
+            note = f"{c.label} restored {amount} HP!"
+        elif "berry_attack" in mods and m.hp * 4 <= m.max_hp and c.attack_stage < MAX_ATTACK_STAGE:
+            c.attack_stage = min(MAX_ATTACK_STAGE, c.attack_stage + mods["berry_attack"])
+            self._popup(c, "ATK UP", ui.YELLOW)
+            note = f"{c.label}'s attack rose!"
+        else:
+            return
+        c.berry_used = True
+        self.message = f"{c.label} ate its {gear.item.name}! {note}"
+        yield STATUS_MESSAGE_TIME
+
+    def _status_damage(self):
+        """End of the round: burned and poisoned Pokémon lose HP."""
+        for c in self.everyone:
+            if not c.alive or c.status not in ROUND_DAMAGE:
+                continue
+            amount = min(c.monster.hp, max(1, round(c.monster.max_hp * ROUND_DAMAGE[c.status])))
+            c.monster.hp -= amount
+            c.hit_time = HIT_TIME
+            status = STATUSES[c.status]
+            self._popup(c, str(amount), status.color)
+            what = "its burn" if c.status == "burn" else "poison"
+            self.message = f"{c.label} is hurt by {what}!"
+            yield STATUS_MESSAGE_TIME
+            yield from self._berry(c)
+            if not c.alive:
+                c.monster.cure()
+                self.message = f"{c.label} fainted!"
+                yield HIT_TIME + FADE_TIME + 0.4
+            if self._over():
+                return
+
+    def _can_act(self, user: Combatant):
+        """A script: whether `user`'s status lets it act this turn (sleeping,
+        frozen or fully paralyzed Pokémon lose their turn)."""
+        status = user.status
+        if status == "sleep":
+            user.monster.sleep_rounds -= 1
+            if user.monster.sleep_rounds <= 0:
+                user.monster.cure()
+                self.message = f"{user.label} woke up!"
+            else:
+                self.message = f"{user.label} is fast asleep."
+        elif status == "freeze":
+            if random.random() < THAW_CHANCE:
+                user.monster.cure()
+                self.message = f"{user.label} thawed out!"
+            else:
+                self.message = f"{user.label} is frozen solid!"
+        elif status == "paralysis" and random.random() < FULLY_PARALYZED:
+            self.message = f"{user.label} is fully paralyzed! It can't move!"
+        else:
+            return True
+        self._popup(user, STATUSES[status].abbrev, STATUSES[status].color)
+        yield STATUS_MESSAGE_TIME
+        return False
+
     def _perform(self, action: Action):
-        user, move = action.user, action.move
+        user, move = action.user, action.choice
+        if not (yield from self._can_act(user)) or move is None:
+            return  # (an action without a choice only ever wakes up or thaws)
         candidates = self._candidates(user, move)
         if not candidates:
             return
         # The planned target may have fainted since; aim at someone else.
         target = action.target if action.target in candidates else random.choice(candidates)
+        if isinstance(move, Medicine):
+            yield from self._use_item(user, move, target)
+            return
 
         anim = user.anims[user.monster.anim_for(move)]
         charging = bool(move.charge) and user.charging is None
@@ -454,16 +723,78 @@ class BattleScene(Scene):
             user.stand()
         user.step_goal = 0.0
         yield STEP_BACK_TIME
+        yield from self._berry(target)
         if not target.alive:
+            target.monster.cure()  # fainting clears a status
             self.message = f"{target.label} fainted!"
             yield HIT_TIME + FADE_TIME + 0.4
 
+    def _use_item(self, user: Combatant, medicine: Medicine, target: Combatant):
+        on = "" if target is user else f" on {target.label}"
+        self.message = f"{user.label} uses a {medicine.name}{on}!"
+        user.step_goal = ATTACK_STEP
+        yield WIND_UP_TIME
+        if medicine.has_effect(target.monster):
+            self.bag.use_medicine(medicine.name)
+            amount = medicine.heal_amount(target.monster)
+            notes = []
+            if medicine.cures_status(target.monster):
+                notes.append(STATUSES[target.status].cured.format(target.label))
+                target.monster.cure()
+            if medicine.revive:
+                target.revive(amount)
+                notes.append(f"{target.label} was revived!")
+            elif amount:
+                target.monster.hp += amount
+                notes.insert(0, f"{target.label} recovered {amount} HP!")
+            self.message = " ".join(notes)
+            target.heal_time = HEAL_TIME
+            if amount:
+                self._popup(target, f"+{amount}", HEAL_COLOR)
+            yield HEAL_TIME
+        else:
+            self.message = "It won't have any effect."  # and it isn't used up
+            yield IMPACT_HOLD
+        user.step_goal = 0.0
+        yield STEP_BACK_TIME
+
     def _apply(self, user: Combatant, move: Move, target: Combatant) -> None:
         if move.power:
-            amount = min(damage(user, move, target), target.monster.hp)
-            target.monster.hp -= amount
-            target.hit_time = HIT_TIME
-            self._popup(target, str(amount), ui.WHITE)
+            hit = damage(user, move, target)
+            dealt = min(hit.total, target.monster.hp)
+            endured = (dealt == target.monster.hp and dealt > 0
+                       and random.random() * 100 < target.monster.gear_bonus("endure"))
+            if endured:
+                dealt -= 1  # hangs on with 1 HP
+            target.monster.hp -= dealt
+            if hit.total:
+                target.hit_time = HIT_TIME
+            if hit.damage:
+                self._popup(target, str(hit.damage), ui.YELLOW if hit.crit else ui.WHITE)
+            for i, (t, amount) in enumerate(hit.added):  # beside the main number, just after it
+                self._popup(target, f"+{amount}", COLORS[t], offset=(28 + 24 * i, 8), delay=0.12 * (i + 1))
+            notes = ["A critical hit!"] if hit.crit else []
+            if hit.effectiveness == 0:
+                notes.append(f"It doesn't affect {target.label}...")
+            elif hit.effectiveness > 1:
+                notes.append("It's super effective!")
+            elif hit.effectiveness < 1:
+                notes.append("It's not very effective...")
+            if endured:
+                notes.append(f"{target.label} endured the hit!")
+            drain = user.monster.gear_bonus("drain")
+            if drain and dealt and user.alive and user.monster.hp < user.monster.max_hp:
+                amount = self._heal(user, max(1, round(dealt * drain / 100)))
+                notes.append(f"{user.label} drained {amount} HP!")
+            status = self._roll_status(user)
+            if not status and move.status and random.random() * 100 < move.status_chance:
+                status = move.status
+            if status and target.monster.inflict(status):
+                notes.append(STATUSES[status].inflicted.format(target.label))
+                self._popup(target, STATUSES[status].abbrev, STATUSES[status].color, offset=(0, -14),
+                            delay=0.3)
+            if notes:
+                self.message = " ".join(notes)
         elif move.effect == "attack_up":
             if target.attack_stage < MAX_ATTACK_STAGE:
                 target.attack_stage += 1
@@ -476,9 +807,17 @@ class BattleScene(Scene):
             self._popup(target, "SHIELD", (150, 240, 140))
             self.message = f"Leaves protect {target.label}!"
 
-    def _popup(self, c: Combatant, text: str, color) -> None:
+    @staticmethod
+    def _roll_status(user: Combatant) -> str:
+        """A status `user`'s gear inflicts with this hit, if any."""
+        for status in STATUSES:
+            if random.random() * 100 < user.monster.gear_bonus(f"status:{status}"):
+                return status
+        return ""
+
+    def _popup(self, c: Combatant, text: str, color, offset=(0, 0), delay: float = 0.0) -> None:
         body = c.body_rect
-        self.popups.append(Popup(text, (body.centerx, body.top + 4), color))
+        self.popups.append(Popup(text, (body.centerx + offset[0], body.top + 4 + offset[1]), color, -delay))
 
     def update(self, dt: float) -> None:
         self.blink += dt
@@ -507,37 +846,84 @@ class BattleScene(Scene):
     # ------------------------------------------------------------------- draw
 
     @property
-    def _skills_open(self) -> bool:
-        return self.menu == "skills" or (self.menu == "target" and self.aim_from == "skills")
+    def _list_open(self) -> str:
+        """"skills" or "items" while that list covers the enemy and command
+        windows (also while aiming what was picked from it), else ""."""
+        menu = self.aim_from if self.menu == "target" else self.menu
+        return menu if menu in ("skills", "items") else ""
 
     @property
     def _aimed(self) -> Combatant | None:
         """The combatant under the target cursor."""
         return self._targets()[self.target] if self.menu == "target" else None
 
+    @staticmethod
+    def _badge_pos(row: int) -> tuple[int, int]:
+        return SKILL_WINDOW.x + 118, SKILL_WINDOW.y + PAD + 1 + row * ROW_H
+
+    @staticmethod
+    def _party_badge_pos(row: int) -> tuple[int, int]:
+        """A status badge, in place of the level."""
+        return PARTY_WINDOW.x + 108, PARTY_WINDOW.y + PAD + 1 + row * ROW_H
+
+    @staticmethod
+    def _enemy_badge_pos(row: int, row_h: int) -> tuple[int, int]:
+        return ENEMY_WINDOW.right - 10 - ui.BADGE_SIZE[0], ENEMY_WINDOW.y + PAD + 1 + row * row_h
+
+    @property
+    def _enemy_row_h(self) -> int:
+        """Rows in the enemy window squeeze together for big groups."""
+        return ROW_H if len(self.enemies) <= 4 else 15
+
+    def _enemy_rows(self) -> list[Combatant]:
+        """The enemies listed in the enemy window (fainted ones until faded out)."""
+        return [c for c in self.enemies if c.opacity > 0]
+
     def _hint(self) -> str:
         return {
             "command": "Up/Down: choose   Enter: confirm   X: back",
             "skills": "Up/Down: choose skill   Enter: confirm   X: back",
+            "items": "Up/Down: choose item   Enter: confirm   X: back",
             "target": "Arrows: choose target   Enter: confirm   X: back",
         }.get(self.menu, "")
 
     def draw(self, canvas: pygame.Surface) -> None:
         canvas.fill(ui.SHADOW)
-        canvas.blit(_background(), (0, 0))
+        canvas.blit(_background(self.backdrop), (0, 0))
         for c in sorted(self.everyone, key=lambda c: c.feet_y):
-            c.draw(canvas)
+            c.draw(canvas, self.backdrop.shadow)
 
         for rect in (ENEMY_WINDOW, COMMAND_WINDOW, PARTY_WINDOW):
             ui.window_box(canvas, rect)
         if self.choosing:
             ui.cursor(canvas, COMMAND_WINDOW.x + 16, COMMAND_WINDOW.y + PAD + 5 + self.command * ROW_H)
-        if self._skills_open:
+        if self._list_open:
             ui.window_box(canvas, SKILL_WINDOW)
-            ui.cursor(canvas, SKILL_WINDOW.x + 16, SKILL_WINDOW.y + PAD + 5 + self.skill * ROW_H)
+            row = self.skill if self._list_open == "skills" else self.item - self.item_top
+            ui.cursor(canvas, SKILL_WINDOW.x + 16, SKILL_WINDOW.y + PAD + 5 + row * ROW_H)
+        if self._list_open == "items":  # scroll arrows
+            x = SKILL_WINDOW.right - 10
+            if self.item_top > 0:
+                pygame.draw.polygon(canvas, ui.WHITE, [(x - 3, SKILL_WINDOW.y + 9), (x + 3, SKILL_WINDOW.y + 9),
+                                                       (x, SKILL_WINDOW.y + 5)])
+            if self.item_top + LIST_ROWS < len(self._medicine()):
+                y = SKILL_WINDOW.bottom - 9
+                pygame.draw.polygon(canvas, ui.WHITE, [(x - 3, y), (x + 3, y), (x, y + 4)])
+        if self._list_open == "skills":
+            for i, move in enumerate(self.actor.monster.moves):
+                if move.type:
+                    ui.badge(canvas, self._badge_pos(i), COLORS[move.type])
+        if self.menu == "items":
+            ui.window_box(canvas, INFO_WINDOW)
         for i, c in enumerate(self.party):
             bar = pygame.Rect(PARTY_WINDOW.x + 168, PARTY_WINDOW.y + PAD + 3 + i * ROW_H, 90, 6)
             ui.hp_bar(canvas, bar, c.shown_hp / c.monster.max_hp)
+            if c.status:
+                ui.badge(canvas, self._party_badge_pos(i), STATUSES[c.status].color)
+        if not self._list_open:
+            for i, c in enumerate(self._enemy_rows()):
+                if c.status:
+                    ui.badge(canvas, self._enemy_badge_pos(i, self._enemy_row_h), STATUSES[c.status].color)
 
         aimed = self._aimed
         if aimed and self.blink % 0.5 < 0.35:
@@ -545,6 +931,8 @@ class BattleScene(Scene):
             ui.cursor(canvas, body.left - 3, body.centery)
         if self.message:
             ui.window_box(canvas, MESSAGE_WINDOW)
+        if self.rewards:
+            self.rewards.draw(canvas)
 
     def draw_overlay(self, window: pygame.Surface) -> None:
         if self.choosing:
@@ -556,34 +944,57 @@ class BattleScene(Scene):
                         ui.GREY, align="right")
         aimed = self._aimed
 
-        if self._skills_open:  # covers the enemy and command windows
+        if self.rewards:
+            self.rewards.draw_overlay(window)
+        if self.menu == "items":
+            description = self._medicine()[self.item].description
+            ui.text(window, description, (INFO_WINDOW.x + 12, INFO_WINDOW.y + PAD))
+
+        if self._list_open == "items":  # covers the enemy and command windows
+            shown = self._medicine()[self.item_top:self.item_top + LIST_ROWS]
+            for i, medicine in enumerate(shown):
+                y = SKILL_WINDOW.y + PAD + i * ROW_H
+                ui.text(window, medicine.name, (SKILL_WINDOW.x + 22, y))
+                ui.text(window, f"x{self._available(medicine)}", (SKILL_WINDOW.x + 210, y), align="right")
+                ui.text(window, "Fainted" if medicine.revive else "Ally", (SKILL_WINDOW.x + 222, y), ui.GREY)
+        elif self._list_open == "skills":
             for i, move in enumerate(self.actor.monster.moves):
                 y = SKILL_WINDOW.y + PAD + i * ROW_H
                 ui.text(window, move.name, (SKILL_WINDOW.x + 22, y))
-                ui.text(window, str(move.power) if move.power else "-", (SKILL_WINDOW.x + 200, y),
+                if move.type:
+                    ui.badge_text(window, type_name(move.type), self._badge_pos(i))
+                ui.text(window, str(move.power) if move.power else "-", (SKILL_WINDOW.x + 210, y),
                         align="right")
-                ui.text(window, TARGET_TEXT[move.target], (SKILL_WINDOW.x + 212, y), ui.GREY)
+                ui.text(window, TARGET_TEXT[move.target], (SKILL_WINDOW.x + 222, y), ui.GREY)
         else:
-            standing = [c for c in self.enemies if c.opacity > 0]  # until faded out
-            for i, c in enumerate(standing):
+            for i, c in enumerate(self._enemy_rows()):
                 color = ui.YELLOW if c is aimed else ui.WHITE
-                ui.text(window, c.label, (ENEMY_WINDOW.x + 12, ENEMY_WINDOW.y + PAD + i * ROW_H), color)
+                row_h = self._enemy_row_h
+                ui.text(window, c.label, (ENEMY_WINDOW.x + 12, ENEMY_WINDOW.y + PAD + i * row_h), color,
+                        size=28 if row_h == ROW_H else 24)
+                if c.status:
+                    ui.badge_text(window, STATUSES[c.status].abbrev, self._enemy_badge_pos(i, row_h))
             for i, name in enumerate(COMMANDS):
-                color = ui.GREY if name in DISABLED else ui.WHITE
+                color = ui.GREY if name == "Item" and not self._medicine() else ui.WHITE
                 ui.text(window, name, (COMMAND_WINDOW.x + 22, COMMAND_WINDOW.y + PAD + i * ROW_H), color)
 
         for i, c in enumerate(self.party):
             m, y = c.monster, PARTY_WINDOW.y + PAD + i * ROW_H
-            if not c.alive:
-                color = ui.GREY
-            elif c is aimed or (self.menu in ("command", "skills") and c is self.actor):
+            if c is aimed or (self.menu in ("command", "skills", "items") and c is self.actor):
                 color = ui.YELLOW
+            elif not c.alive:
+                color = ui.GREY
             else:
                 color = ui.WHITE
             ui.text(window, c.label, (PARTY_WINDOW.x + 12, y), color)
-            ui.text(window, f"Lv{m.level}", (PARTY_WINDOW.x + 112, y), color)
+            if c.status:
+                ui.badge_text(window, STATUSES[c.status].abbrev, self._party_badge_pos(i))
+            else:
+                ui.text(window, f"Lv{m.level}", (PARTY_WINDOW.x + 112, y), color)
             ui.text(window, f"{math.ceil(c.shown_hp)}/{m.max_hp}", (PARTY_WINDOW.right - 12, y), color,
                     align="right")
 
         for p in self.popups:
+            if p.t < 0:
+                continue  # not shown yet
             ui.text(window, p.text, (p.pos[0], p.pos[1] - 12 - p.lift), p.color, size=32, align="center")

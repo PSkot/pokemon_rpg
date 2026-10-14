@@ -2,15 +2,17 @@
 
     python -m game
 
-Controls (map): Left/Right walk, hold Shift to run, Space jumps (hold for a
-higher jump), 1-5 attack, F1 toggles debug boxes. Walk into the Pidgey to
-start a battle. Esc quits.
+The game starts at the hub: pick a dungeon. On its maps: Left/Right walk,
+hold Shift to run, Space jumps (hold for a higher jump), Up opens chests
+and goes through doorways, Tab opens the party screen, F1 toggles debug
+boxes. Walk into wild Pokémon to battle them. Esc quits.
 """
 
 import pygame
 
 from . import settings
-from .overworld import OverworldScene
+from .hub import HubScene
+from .overworld import new_game
 from .scene import Scene
 
 
@@ -21,7 +23,7 @@ def main() -> None:
     canvas = pygame.Surface(settings.LOGICAL_SIZE)
     clock = pygame.time.Clock()
 
-    scene: Scene = OverworldScene()
+    scene: Scene = HubScene(*new_game())
 
     running = True
     while running:
