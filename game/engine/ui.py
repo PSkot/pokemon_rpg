@@ -8,7 +8,7 @@ from functools import cache
 
 import pygame
 
-from . import settings
+from .. import settings
 
 WHITE = (240, 240, 248)
 GREY = (150, 150, 165)

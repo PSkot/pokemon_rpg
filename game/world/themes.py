@@ -2,11 +2,24 @@
 
 from dataclasses import dataclass
 
-from .battle import MEADOW as MEADOW_BACKDROP
-from .battle import Backdrop
-from .items import Range
+from ..mechanics.items import Range
 
 Color = tuple[int, int, int]
+
+
+@dataclass(frozen=True)
+class Backdrop:
+    """The colours of the battle background (sky, distant hills, field)."""
+    sky_top: tuple[int, int, int] = (104, 168, 232)
+    sky_bottom: tuple[int, int, int] = (196, 228, 244)
+    hills: tuple[tuple[int, int, int], tuple[int, int, int]] = ((120, 176, 112), (104, 160, 100))
+    field_far: tuple[int, int, int] = (112, 184, 88)
+    field_near: tuple[int, int, int] = (84, 160, 68)
+    stripe: tuple[int, int, int] = (96, 168, 76)
+    shadow: tuple[int, int, int] = (60, 110, 50)  # under the combatants
+
+
+MEADOW_BACKDROP = Backdrop()
 
 
 @dataclass(frozen=True)

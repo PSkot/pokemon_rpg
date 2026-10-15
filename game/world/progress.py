@@ -4,8 +4,8 @@ where the player stands)."""
 from collections import Counter
 from dataclasses import dataclass, field
 
-from .items import Bag, Gear
-from .pokemon import Monster
+from ..mechanics.items import Bag, Gear
+from ..mechanics.pokemon import Monster
 
 START_TOWN = "pallet"
 

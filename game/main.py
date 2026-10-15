@@ -13,10 +13,11 @@ load or quit). Battles, chests, fainting and leaving a map autosave.
 
 import pygame
 
-from . import saves, settings, ui
-from .pause import PauseMenu
-from .scene import Scene, Transition
-from .title import TitleScene
+from . import saves, settings
+from .engine import ui
+from .engine.scene import Scene, Transition
+from .scenes.pause import PauseMenu
+from .scenes.title import TitleScene
 
 
 def main() -> None:

@@ -7,7 +7,7 @@ nothing, some medicine, or a piece of gear (rolled at a weighted rarity).
 import random
 from dataclasses import dataclass, field
 
-from . import ui
+from ..engine import ui
 from .items import ITEMS, SLOT_NAMES, Bag, Gear, Range
 
 

@@ -12,18 +12,20 @@ import math
 
 import pygame
 
-from . import saves, settings, tileset, ui
+from .. import saves, settings
+from ..engine import ui
+from ..engine.scene import Scene, Transition
+from ..mechanics.loot import BOSS_LOOT, CHEST_LOOT, LootTable
+from ..mechanics.pokemon import SPECIES, Monster, animations
+from ..world import tileset
+from ..world.instance import Instance
+from ..world.level import Level, Spawn
+from ..world.player import Controls, Player
+from ..world.progress import Game
+from ..world.themes import Palette
+from ..world.towns import TOWNS
 from .battle import BattleScene
-from .instance import Instance
-from .level import Level, Spawn
-from .loot import BOSS_LOOT, CHEST_LOOT, LootTable
-from .player import Controls, Player
-from .pokemon import SPECIES, Monster, animations
-from .scene import Scene, Transition
 from .summary import SummaryScene
-from .themes import Palette
-from .towns import TOWNS
-from .world import Game
 
 HELP = ("Left/Right: walk   Shift: run   Space: jump (hold = higher)   1-5: attack   Up: open / go through"
         "   Tab: party   F1: debug   Esc: menu")

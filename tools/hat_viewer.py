@@ -45,8 +45,9 @@ import pygame
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from game import pokemon, settings  # noqa: E402
-from game.hats import ANCHORS_JSON, HAT, SPRITES, HatSheet, load_data  # noqa: E402
+from game import settings  # noqa: E402
+from game.engine.hats import ANCHORS_JSON, HAT, SPRITES, HatSheet, load_data  # noqa: E402
+from game.mechanics import pokemon  # noqa: E402
 
 SCALES = [0.5, 0.625, 0.75, 0.875, 1.0, 1.125, 1.25]
 ZOOM = 4                    # stage zoom

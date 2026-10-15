@@ -2,9 +2,10 @@
 
 import pygame
 
-from . import saves, settings, ui
+from .. import saves, settings
+from ..engine import ui
+from ..saves import LoadError
 from .save_menu import NEW_SAVE, SaveList
-from .saves import LoadError
 
 PAD = 9
 ROW_H = 19

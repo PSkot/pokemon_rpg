@@ -2,13 +2,14 @@
 
 import pygame
 
-from . import saves, settings, ui
+from .. import saves, settings
+from ..engine import ui
+from ..engine.scene import Scene, Transition
+from ..saves import LoadError
+from ..world.progress import START_TOWN, Game
+from ..world.towns import TOWNS
 from .save_menu import SaveList
-from .saves import LoadError
-from .scene import Scene, Transition
 from .town import TownScene
-from .towns import TOWNS
-from .world import START_TOWN, Game
 
 PAD = 9
 ROW_H = 19

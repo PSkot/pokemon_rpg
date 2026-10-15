@@ -17,7 +17,7 @@ from functools import cache
 
 import pygame
 
-from . import settings
+from .. import settings
 
 SPRITES = settings.ASSETS / "sprites" / "pixellab"
 ANCHORS_JSON = SPRITES / "hat_anchors.json"

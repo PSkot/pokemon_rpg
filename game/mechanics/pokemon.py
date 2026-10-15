@@ -6,8 +6,9 @@ from functools import cache
 
 import pygame
 
-from . import hats, settings
-from .animation import Animation, load_sheet
+from .. import settings
+from ..engine import hats
+from ..engine.animation import Animation, load_sheet
 from .items import SLOTS, Gear, boosted
 from .status import SLEEP_ROUNDS, STATUSES
 

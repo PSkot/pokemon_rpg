@@ -15,9 +15,9 @@ from datetime import datetime
 from pathlib import Path
 
 from . import settings
-from .items import AFFIX_BY_NAME, ITEMS, RARITIES, Bag, Gear, Roll
-from .pokemon import SPECIES, Monster
-from .world import Game
+from .mechanics.items import AFFIX_BY_NAME, ITEMS, RARITIES, Bag, Gear, Roll
+from .mechanics.pokemon import SPECIES, Monster
+from .world.progress import Game
 
 SAVE_DIR = settings.ROOT / "saves"
 AUTOSAVE = SAVE_DIR / "autosave.json"
@@ -145,10 +145,10 @@ def load(info: SaveInfo):
     """The map scene to continue on. Raises `LoadError` if the file is
     damaged or from an incompatible version."""
     # Imported here: the scenes import this module (for autosaves).
-    from .instance import ROUTES, Instance
-    from .overworld import OverworldScene
-    from .town import TownScene
-    from .towns import TOWNS
+    from .world.instance import ROUTES, Instance
+    from .scenes.overworld import OverworldScene
+    from .scenes.town import TownScene
+    from .world.towns import TOWNS
 
     try:
         data = json.loads(info.path.read_text())

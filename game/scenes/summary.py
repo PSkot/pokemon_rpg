@@ -10,14 +10,15 @@ from dataclasses import replace
 
 import pygame
 
-from . import hats, ui
-from .battle import CRIT_CHANCE, XP_COLOR
-from .items import RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text
-from .pokemon import Monster, animations
-from .scene import Scene
-from .status import STATUSES
-from .type_chart import COLORS
-from .type_chart import name as type_name
+from ..engine import hats, ui
+from ..engine.scene import Scene
+from ..mechanics.combat import CRIT_CHANCE
+from ..mechanics.items import RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text
+from ..mechanics.pokemon import Monster, animations
+from ..mechanics.status import STATUSES
+from ..mechanics.type_chart import COLORS
+from ..mechanics.type_chart import name as type_name
+from .battle import XP_COLOR
 
 ROW_H = 19
 PAD = 9

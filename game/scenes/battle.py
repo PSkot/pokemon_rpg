@@ -13,16 +13,18 @@ from functools import cache
 
 import pygame
 
-from . import hats, settings, ui
-from .animation import Animation
-from .items import MEDICINE, Bag, Medicine
-from .loot import WILD_LOOT, LootTable, merge
-from .pokemon import FIGHT, MAX_LEVEL, Monster, Move, animations
-from .scene import Scene, Transition
-from .status import (BURN_ATTACK, FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES,
-                     THAW_CHANCE)
-from .type_chart import COLORS, TYPES, effectiveness
-from .type_chart import name as type_name
+from .. import settings
+from ..engine import hats, ui
+from ..engine.animation import Animation
+from ..engine.scene import Scene, Transition
+from ..mechanics.combat import MAX_ATTACK_STAGE, SHIELD_ROUNDS, damage
+from ..mechanics.items import MEDICINE, Bag, Medicine
+from ..mechanics.loot import WILD_LOOT, LootTable, merge
+from ..mechanics.pokemon import FIGHT, MAX_LEVEL, Monster, Move, animations
+from ..mechanics.status import FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES, THAW_CHANCE
+from ..mechanics.type_chart import COLORS
+from ..mechanics.type_chart import name as type_name
+from ..world.themes import MEADOW_BACKDROP, Backdrop
 
 HORIZON_Y = 118
 PANEL_Y = 264  # top of the menu windows
@@ -67,13 +69,6 @@ FADE_TIME = 0.5      # seconds a fainting combatant takes to fade
 HP_DRAIN_TIME = 0.6  # seconds for an HP bar to drain completely
 POPUP_TIME = 0.9     # seconds a damage number stays up
 FAINTED_OPACITY = 0.35  # fainted party members stay visible, dimmed
-
-SHIELD_ROUNDS = 2    # Leaf Shield lasts the round it is used and the next
-SHIELD_FACTOR = 0.5  # damage taken while shielded
-MAX_ATTACK_STAGE = 6
-CRIT_CHANCE = 6.25   # % (1 in 16, as in Gen 2+); gear adds to it
-CRIT_FACTOR = 1.5
-STAB = 1.5           # same-type attack bonus: a move of one of the user's own types
 
 # Feet positions for the player's side, by party size: a diagonal column, as
 # in the classic Final Fantasy games. Enemies use the mirror image.
@@ -255,52 +250,6 @@ class Popup:
         return abs(math.sin(self.t * 9)) * 12 * math.exp(-self.t * 4)
 
 
-@dataclass
-class Hit:
-    """The outcome of one damaging move."""
-    damage: int          # from the move itself
-    crit: bool
-    effectiveness: float
-    added: list[tuple[str, int]]  # extra damage by type, from gear
-
-    @property
-    def total(self) -> int:
-        return self.damage + sum(amount for _, amount in self.added)
-
-
-def damage(user: Combatant, move: Move, target: Combatant) -> Hit:
-    """The Gen 1 damage formula, simplified (no misses), plus gear."""
-    m, types = user.monster, target.monster.species.types
-    attack = m.attack * (2 + user.attack_stage) / 2
-    if user.status == "burn":
-        attack *= BURN_ATTACK
-    power = move.power + m.gear_bonus("power")
-    level_factor = 2 * m.level / 5 + 2
-    base = level_factor * power * attack / target.monster.defense / 50 + 2
-    crit = random.random() * 100 < CRIT_CHANCE + m.gear_bonus("crit")
-    if crit:
-        base *= CRIT_FACTOR
-    if target.shield:
-        base *= SHIELD_FACTOR
-    base *= random.uniform(0.85, 1.0)
-
-    multiplier = effectiveness(move.type, types)
-    amount = base * multiplier
-    if move.type:
-        if move.type in m.species.types:
-            amount *= STAB
-        amount *= 1 + m.gear_bonus(f"power:{move.type}") / 100
-    if multiplier > 1:
-        amount *= 1 + m.gear_bonus("super") / 100
-    # Gear's added type damage: a share of the hit, with its own effectiveness.
-    added = []
-    for t in TYPES:
-        extra = round(base * m.gear_bonus(f"added:{t}") / 100 * effectiveness(t, types))
-        if extra:
-            added.append((t, extra))
-    return Hit(max(1, round(amount)) if multiplier else 0, crit, multiplier, added)
-
-
 def _labels(monsters: list[Monster]) -> list[str]:
     """Names, with A, B, ... added when a species appears more than once."""
     counts = Counter(m.name for m in monsters)
@@ -321,21 +270,6 @@ def _side(monsters: list[Monster], enemy: bool) -> list[Combatant]:
         slots = [(settings.LOGICAL_SIZE[0] - x, y) for x, y in slots]
     return [Combatant(m, label, pos, enemy)
             for m, label, pos in zip(monsters, _labels(monsters), slots)]
-
-
-@dataclass(frozen=True)
-class Backdrop:
-    """The colours of the battle background (sky, distant hills, field)."""
-    sky_top: tuple[int, int, int] = (104, 168, 232)
-    sky_bottom: tuple[int, int, int] = (196, 228, 244)
-    hills: tuple[tuple[int, int, int], tuple[int, int, int]] = ((120, 176, 112), (104, 160, 100))
-    field_far: tuple[int, int, int] = (112, 184, 88)
-    field_near: tuple[int, int, int] = (84, 160, 68)
-    stripe: tuple[int, int, int] = (96, 168, 76)
-    shadow: tuple[int, int, int] = (60, 110, 50)  # under the combatants
-
-
-MEADOW = Backdrop()
 
 
 @cache
@@ -376,7 +310,7 @@ class BattleScene(Scene):
     """
 
     def __init__(self, return_to: Scene, party: list[Monster], enemies: list[Monster], bag: Bag,
-                 loot: LootTable = WILD_LOOT, backdrop: Backdrop = MEADOW):
+                 loot: LootTable = WILD_LOOT, backdrop: Backdrop = MEADOW_BACKDROP):
         self.return_to = return_to
         self.backdrop = backdrop
         self.party = _side(party, enemy=False)

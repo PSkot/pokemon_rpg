@@ -7,8 +7,9 @@ loading over a game in progress and deleting (Delete key) ask first.
 
 import pygame
 
-from . import saves, settings, ui
-from .saves import SaveInfo
+from .. import saves, settings
+from ..engine import ui
+from ..saves import SaveInfo
 
 PAD = 9
 ROW_H = 19

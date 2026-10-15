@@ -4,10 +4,10 @@ from dataclasses import dataclass
 
 import pygame
 
-from . import hats
-from .animation import Animation
+from ..engine import hats
+from ..engine.animation import Animation
+from ..mechanics.pokemon import SPECIES, Monster, animations
 from .level import TILE, Level
-from .pokemon import SPECIES, Monster, animations
 
 WALK_SPEED = 70   # logical pixels per second
 RUN_SPEED = 150

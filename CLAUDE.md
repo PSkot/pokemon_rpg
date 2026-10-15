@@ -15,11 +15,27 @@ non-commercial project.
   installed into `.venv/`.
 - Run with `.venv/bin/python -m game`. The game renders at 640×360 and
   scales ×2.
+- Code layout (`game/`; module names below are within these folders):
+  - `main.py` (game loop), `settings.py`, `saves.py`
+  - `engine/`: scenes and transitions (`scene.py`), menu windows and text
+    (`ui.py`), sprite animation (`animation.py`), hats on sprites (`hats.py`)
+  - `mechanics/`: game rules and data: species, moves and stats
+    (`pokemon.py`), damage (`combat.py`), types, status conditions, items
+    and gear (`items.py`), loot
+  - `world/`: maps (`level.py`), themes, placeholder map art
+    (`tileset.py`), towns, routes/instances, the player character,
+    progress (`progress.Game`)
+  - `scenes/`: title, map scenes (`overworld.py`, `town.py`), battle,
+    party screen (`summary.py`), pause menu, save/load list
+  Dependencies point downwards: scenes → world/mechanics → engine.
+- `docs/mechanics.md` documents every rule and number (stats, levels/XP,
+  damage, status, healing, gear rolls, loot, wild Pokémon, types). When
+  changing a rule or number, update it in the same change.
 - Test headlessly with `SDL_VIDEODRIVER=dummy`: drive
   `Player.update(dt, Controls(...), level)` and save frames with
   `pygame.image.save()`.
 - The game is a set of scenes (`scene.Scene`): title (`title.py`), maps
-  (`overworld.MapScene`: towns in `town.py`, instance maps in
+  (`scenes/overworld.MapScene`: towns in `town.py`, instance maps in
   `overworld.py`), battle (`battle.py`) and party screen (`summary.py`).
   A scene switches by setting `next_scene`. Scenes
   draw sprites on the logical canvas and text on the scaled window

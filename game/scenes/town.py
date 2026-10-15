@@ -6,13 +6,15 @@ up. The town's name shows for a moment on arrival.
 
 import pygame
 
-from . import saves, settings, tileset, ui
-from .instance import ROUTES, Instance
-from .level import TILE
+from .. import saves, settings
+from ..engine import ui
+from ..engine.scene import Transition
+from ..world import tileset
+from ..world.instance import ROUTES, Instance
+from ..world.level import TILE
+from ..world.progress import Game
+from ..world.towns import Building, Town
 from .overworld import Doorway, MapScene, OverworldScene
-from .scene import Transition
-from .towns import Building, Town
-from .world import Game
 
 BANNER_TIME = 2.5   # seconds the town's name shows on arrival
 ARRIVE_GAP = 3 * TILE  # how far from the doorway the player arrives

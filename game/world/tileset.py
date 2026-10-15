@@ -7,7 +7,7 @@ import random
 
 import pygame
 
-from . import settings
+from .. import settings
 from .level import EMPTY, PLATFORM, ROWS, SOLID, TILE, Level
 from .themes import Palette, Theme
 
