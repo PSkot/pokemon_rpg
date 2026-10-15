@@ -45,11 +45,14 @@ class Animation:
             self.baselines = bottoms
         else:
             self.baselines = [max(bottoms)] * len(frames)
+        # Each frame's head anchor (where a hat goes), if known; see hats.py.
+        self.heads: list[tuple[int, int]] | None = None
 
     def sub(self, start: int, stop: int, loop: bool | None = None) -> "Animation":
         """Frames `start`..`stop` as their own animation, keeping their baselines."""
         part = Animation(self.frames[start:stop], self.fps, self.loop if loop is None else loop)
         part.baselines = self.baselines[start:stop]
+        part.heads = self.heads[start:stop] if self.heads else None
         return part
 
     @property

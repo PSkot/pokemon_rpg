@@ -29,10 +29,10 @@ non-commercial project.
 - Each `Animation` aligns its own baseline (lowest opaque row) to the feet
   position, because rows in a sheet sit at different heights. Rows whose
   effects reach below the feet pass an explicit `baseline=` instead.
-- Gear (`items.py`): each Pokémon has typed slots (held, worn, berry). Gear
-  is rolled (`Gear.roll`): the item's own effect plus random affixes
-  (prefixes/suffixes, e.g. "Keen Charcoal of the Pidgeot"; suffixes are
-  named after Pokémon). Rarity (Common/Rare/Epic/Legendary) sets the affix
+- Gear (`items.py`): each Pokémon has typed slots (head, held, worn, berry).
+  Gear is rolled (`Gear.roll`): the item's own effect plus random affixes
+  (prefixes/suffixes, e.g. "Fierce Red Bandana of the Aerodactyl"; suffixes
+  are named after Pokémon). Rarity (Common/Rare/Epic/Legendary) sets the affix
   count (1–2 … 4–5) and multiplies rolled bonuses, not penalties. Mods:
   stats in %, `crit` (% points, base 6.25%), `power` (added to move power),
   `power:<type>` (% on that type's moves), `added:<type>` (every hit deals
@@ -41,6 +41,12 @@ non-commercial project.
   `drain`, `berry_heal`/`berry_attack`; cure berries use `Item.cures`.
   Berries are eaten at most once per battle (`BattleScene._berry`), not
   used up. `Monster.attack` etc. include gear; `base_*` don't.
+- Hats (`hats.py`): head-slot items (`items.HATS`) are cells of
+  `hats_new.png`, drawn on the Pokémon wearing them (map, battle, party
+  screen). The cells' reference faces are cut out on load, so the Pokémon's
+  face shows through. Placement comes from `hat_anchors.json`: a head anchor
+  per animation frame (`Animation.heads`) and per-hat tweaks. Edit it with
+  `tools/hat_viewer.py`; species without head anchors don't show hats.
 - Loot (`loot.py`): `LootTable`s of weighted entries (nothing / medicine /
   gear at weighted rarities), rolled 1+ times. A won battle rolls the
   battle's table once per enemy (`WILD_LOOT` by default); a `Chest` on the

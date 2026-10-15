@@ -3,9 +3,10 @@ holds what the player owns.
 
 Each Pokémon has one slot of each kind in `SLOTS`. A piece of gear is
 rolled when it drops: its item's own effect plus a number of random
-affixes (prefixes and suffixes, which also name it: "Keen Charcoal of the
-Pidgeot"). Its rarity decides how many affixes it gets and multiplies every
-rolled bonus (penalties stay as they are).
+affixes (prefixes and suffixes, which also name it: "Fierce Red Bandana of
+the Aerodactyl"). Its rarity decides how many affixes it gets and multiplies
+every rolled bonus (penalties stay as they are). Hats (the head slot) are
+drawn on the Pokémon wearing them (see hats.py).
 """
 
 import math
@@ -51,9 +52,9 @@ for _t in TYPES:
 for _s in STATUSES.values():
     MOD_TEXT[f"status:{_s.key}"] = f"{_s.name} chance {{:+d}}%"
 
-SLOTS = ("held", "worn", "berry")
-SLOT_NAMES = {"held": "Held", "worn": "Worn", "berry": "Berry"}
-AFFIX_SLOTS = ("held", "worn")  # berries only have their own effect
+SLOTS = ("head", "held", "worn", "berry")
+SLOT_NAMES = {"head": "Head", "held": "Held", "worn": "Worn", "berry": "Berry"}
+AFFIX_SLOTS = ("head", "held", "worn")  # berries only have their own effect
 
 Range = tuple[int, int]  # a roll's lowest and highest value, at Common
 
@@ -80,6 +81,7 @@ class Item:
     description: str
     mods: dict[str, Range] = field(default_factory=dict, hash=False)  # its own effect
     cures: tuple[str, ...] = ()  # berries: statuses it cures (once per battle)
+    sprite: int = -1   # hats: its cell in the hat sheet (hats.SHEET)
 
 
 TYPE_ITEMS = {  # type -> (held item that powers up its moves, description)
@@ -100,7 +102,37 @@ TYPE_ITEMS = {  # type -> (held item that powers up its moves, description)
     "dragon": ("Dragon Fang", "A hard and sharp fang."),
 }
 
+# Hats: (cell in the hat sheet, name, description, own effect).
+HATS = [
+    (16, "Wizard Hat", "A tall, pointed hat full of arcane power.", {"power": (3, 5)}),
+    (17, "Witch Hat", "Its buckle glints with a sleepy hex.", {"status:sleep": (4, 7)}),
+    (19, "Starry Hat", "Stitched with stars that point out weak spots.", {"crit": (3, 5)}),
+    (20, "Nightcap", "A cosy cap. Its wearer rests even in battle.", {"regen": (3, 5)}),
+    (24, "Mitre", "A tall ceremonial hat that steadies the spirit.", {"hp": (8, 12)}),
+    (26, "Crown", "A crown fit for a champion.", {"attack": (5, 8), "defense": (5, 8)}),
+    (27, "Halo", "A glowing ring. Its wearer may hang on with 1 HP.", {"endure": (8, 12)}),
+    (28, "Tiara", "A jewelled tiara, light and graceful.", {"hp": (5, 8), "speed": (5, 8)}),
+    (29, "Turban", "Thick folds of cloth that soften blows.", {"defense": (8, 12)}),
+    (31, "Mortarboard", "A scholar's cap. Its wearer knows every weakness.", {"super": (10, 15)}),
+    (32, "Archer's Cap", "A feathered cap for sharp-eyed hunters.", {"crit": (2, 4), "speed": (4, 6)}),
+    (36, "Headband", "A plain headband tied tight for focus.", {"attack": (4, 6), "speed": (4, 6)}),
+    (37, "Tricorne", "A buccaneer's hat. Takes a share of every hit.", {"drain": (6, 10)}),
+    (38, "Blue Bandana", "A light bandana for quick getaways.", {"speed": (8, 12)}),
+    (39, "Officer's Cap", "Its wearer is always first to act.", {"first": (8, 12)}),
+    (40, "Jester's Cap", "Its jingling bells can leave foes stunned.", {"status:paralysis": (5, 8)}),
+    (41, "Pirate Hat", "A captain's hat. Bold and ruthless.", {"attack": (6, 10), "crit": (1, 3)}),
+    (42, "Red Bandana", "A fiery bandana that boosts strength.", {"attack": (8, 12)}),
+    (43, "Plumed Hat", "A dashing, feathered hat.", {"speed": (6, 10), "crit": (1, 2)}),
+    (45, "Straw Hat", "A wide hat that keeps its wearer going.", {"hp": (10, 15)}),
+    (56, "Visor Helmet", "A sturdy helmet. Tough, but heavy.", {"defense": (16, 24), "speed": (-8, -8)}),
+    (61, "Alpine Hat", "A warm hat for long climbs.", {"hp": (5, 8), "defense": (5, 8)}),
+    (62, "Fez", "A smart hat with a tassel. It sharpens the aim.", {"power": (2, 4), "crit": (1, 2)}),
+    (63, "Sultan's Turban", "A grand turban with a healing jewel.", {"hp": (6, 10), "regen": (2, 3)}),
+]
+
 ITEMS = {i.name: i for i in [
+    # Head: hats.
+    *(Item(name, "head", description, mods, sprite=cell) for cell, name, description, mods in HATS),
     # Held: type items and battle tools.
     *(Item(name, "held", f"{description} Powers up {type_chart.name(t)} moves.", {f"power:{t}": (10, 15)})
       for t, (name, description) in TYPE_ITEMS.items()),

@@ -4,9 +4,10 @@ from dataclasses import dataclass
 
 import pygame
 
+from . import hats
 from .animation import Animation
 from .level import TILE, Level
-from .pokemon import SPECIES, animations
+from .pokemon import SPECIES, Monster, animations
 
 WALK_SPEED = 70   # logical pixels per second
 RUN_SPEED = 150
@@ -180,10 +181,13 @@ class Player:
         """The opaque part of the current frame, for collisions."""
         return self.anim.body_rect(self.frame_index, self.x, self.feet_y + FOOT_SINK, self.facing < 0)
 
-    def draw(self, surface: pygame.Surface, debug: bool = False) -> None:
+    def draw(self, surface: pygame.Surface, debug: bool = False, monster: Monster | None = None) -> None:
+        """Draw the player; `monster` is the Pokémon it is (for its hat)."""
         anim, i, flip = self.anim, self.frame_index, self.facing < 0
         box = anim.place(i, self.x, self.feet_y + FOOT_SINK, flip)
         surface.blit(anim.frame(i, flip), box)
+        if monster:
+            hats.draw_worn(surface, monster, anim, i, box, flip)
         if debug:
             pygame.draw.rect(surface, (255, 0, 255), box, 1)
             pygame.draw.rect(surface, (255, 255, 0), self.body_rect, 1)

@@ -10,7 +10,7 @@ from dataclasses import replace
 
 import pygame
 
-from . import ui
+from . import hats, ui
 from .battle import CRIT_CHANCE
 from .items import RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text
 from .pokemon import Monster, animations
@@ -23,7 +23,7 @@ ROW_H = 19
 PAD = 9
 
 PARTY_WINDOW = pygame.Rect(6, 6, 150, 348)
-STATS_WINDOW = pygame.Rect(162, 6, 472, PAD * 2 + ROW_H * 8 + 4)
+STATS_WINDOW = pygame.Rect(162, 6, 472, PAD * 2 + ROW_H * 8 - 4)
 GEAR_WINDOW = pygame.Rect(162, STATS_WINDOW.bottom + 6, 472, PAD * 2 + ROW_H * len(SLOTS))
 INFO_WINDOW = pygame.Rect(162, GEAR_WINDOW.bottom + 6, 472, 354 - GEAR_WINDOW.bottom - 6)
 SPRITE_BOX = pygame.Rect(STATS_WINDOW.x + 8, STATS_WINDOW.y + 8, 128, STATS_WINDOW.h - 16)
@@ -134,7 +134,10 @@ class SummaryScene(Scene):
         for rect in (PARTY_WINDOW, STATS_WINDOW, GEAR_WINDOW, INFO_WINDOW):
             ui.window_box(canvas, rect)
         pygame.draw.rect(canvas, (24, 32, 96), SPRITE_BOX, border_radius=3)
-        frame = animations(self.monster.species)["idle"].frame(0, False)
+        idle = animations(self.monster.species)["idle"]
+        frame = idle.frame(0, False).copy()
+        # The hat it wears, or the one being tried on while choosing.
+        hats.draw_worn(frame, self._preview() or self.monster, idle, 0, frame.get_rect(), False)
         sprite = pygame.transform.scale_by(frame, 2)
         canvas.blit(sprite, sprite.get_rect(center=SPRITE_BOX.center))
         for t, pos in _type_badges(self.monster):
@@ -266,10 +269,10 @@ class SummaryScene(Scene):
         ui.text(window, gear.name, (x, y), gear.rarity.color)
         ui.text(window, f"{gear.rarity.name} {SLOT_NAMES[gear.slot]} item", (INFO_WINDOW.right - 12, y),
                 ui.GREY, align="right")
-        ui.text(window, gear.item.description, (x, y + 16), size=24)
+        ui.text(window, gear.item.description, (x, y + 15), size=24)
         mods = gear.mods
         if not mods and not gear.item.cures:  # (a cure berry's description says what it does)
-            ui.text(window, "No stat changes.", (x, y + 33), ui.GREY, size=24)
+            ui.text(window, "No stat changes.", (x, y + 31), ui.GREY, size=24)
         for i, (mod, value) in enumerate(mods.items()):  # three columns, up to 9
-            pos = (x + (i % 3) * 152, y + 33 + 14 * (i // 3))
+            pos = (x + (i % 3) * 152, y + 31 + 12 * (i // 3))
             ui.text(window, mod_text(mod, value), pos, _bonus_color(value), size=22)

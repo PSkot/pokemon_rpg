@@ -13,7 +13,7 @@ from functools import cache
 
 import pygame
 
-from . import settings, ui
+from . import hats, settings, ui
 from .animation import Animation
 from .items import MEDICINE, Bag, Medicine
 from .loot import WILD_LOOT, LootTable, merge
@@ -181,7 +181,9 @@ class Combatant:
         if self.opacity < 1:
             frame = frame.copy()
             frame.set_alpha(round(255 * self.opacity))
-        surface.blit(frame, self.anim.place(i, x, self.sprite_feet_y, self.flip))
+        box = self.anim.place(i, x, self.sprite_feet_y, self.flip)
+        surface.blit(frame, box)
+        hats.draw_worn(surface, self.monster, self.anim, i, box, self.flip, round(255 * self.opacity))
         if self.shield and self.alive:
             self._draw_shield(surface)
         if self.heal_time:

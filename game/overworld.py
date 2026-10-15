@@ -41,11 +41,13 @@ def new_game() -> tuple[list[Monster], Bag]:
     """The starting party and bag (with some gear and items, for trying things out)."""
     party = [Monster.create("bulbasaur", 5)]
     bag = Bag()
-    for gear in [Gear.roll("Poison Barb", "Legendary", affixes=["Venomous", "of the Muk"]),
+    for gear in [Gear.roll("Red Bandana", "Rare", affixes=["Fierce", "of the Aerodactyl"]),
+                 Gear.roll("Poison Barb", "Legendary", affixes=["Venomous", "of the Muk"]),
                  Gear.roll("Power Bracer", "Epic"), Gear.roll("Oran Berry"),
+                 Gear.roll("Wizard Hat"), Gear.roll("Crown", "Epic"),
                  Gear.roll("Scope Lens", "Legendary"), Gear.roll("Assault Vest")]:
         bag.add(gear)
-    for gear in list(bag.gear)[:3]:
+    for gear in list(bag.gear)[:4]:
         bag.equip(party[0], gear)
     for name, count in [("Potion", 3), ("Super Potion", 1), ("Revive", 1), ("Antidote", 2),
                         ("Paralyze Heal", 1), ("Full Heal", 1)]:
@@ -311,7 +313,7 @@ class OverworldScene(Scene):
             chest.draw(self.layer)
         for wild in self.wild:
             wild.draw(self.layer, self.debug)
-        self.player.draw(self.layer, self.debug)
+        self.player.draw(self.layer, self.debug, self.party[0])
         if not self.panel:
             chest = self._chest_at_player()
             if chest:

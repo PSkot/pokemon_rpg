@@ -6,7 +6,7 @@ from functools import cache
 
 import pygame
 
-from . import settings
+from . import hats, settings
 from .animation import Animation, load_sheet
 from .items import SLOTS, Gear, boosted
 from .status import SLEEP_ROUNDS, STATUSES
@@ -181,6 +181,7 @@ def animations(species: Species) -> dict[str, Animation]:
                   for i, f in enumerate(frames)]
         anims[name] = Animation(frames, spec.fps, spec.loop,
                                 per_frame_baseline=spec.per_frame_baseline, baseline=spec.baseline)
+        anims[name].heads = hats.head_anchors(spec.sheet, spec.row, len(frames))
     return anims
 
 
