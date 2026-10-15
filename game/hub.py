@@ -92,4 +92,4 @@ class HubScene(Scene):
             row_y = PARTY_WINDOW.y + PAD + i * ROW_H
             ui.text(window, f"{m.name}  Lv{m.level}", (PARTY_WINDOW.x + 12, row_y))
             ui.text(window, f"{m.hp}/{m.max_hp}", (PARTY_WINDOW.right - 12, row_y), align="right")
-        ui.text(window, "Up/Down: choose   Enter: go   Tab: party   Esc: quit", (6, 342), ui.GREY, size=22)
+        ui.text(window, "Up/Down: choose   Enter: go   Tab: party   Esc: menu", (6, 342), ui.GREY, size=22)

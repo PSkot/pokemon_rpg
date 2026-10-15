@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from .hub import HubScene
 
 HELP = ("Left/Right: walk   Shift: run   Space: jump (hold = higher)   1-5: attack   Up: open / go through"
-        "   Tab: party   F1: debug   Esc: quit")
+        "   Tab: party   F1: debug   Esc: menu")
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z, pygame.K_UP)
 
 WOOD = (150, 96, 48)
