@@ -51,6 +51,11 @@ non-commercial project.
   gear at weighted rarities), rolled 1+ times. A won battle rolls the
   battle's table once per enemy (`WILD_LOOT` by default); a `Chest` on the
   map (opened with Up) rolls `CHEST_LOOT` once. Both show a `ui.ListPanel`.
+- XP (`pokemon.py`): defeating a Pokémon is worth `base_exp × level / 7`
+  (Gen 1; `Species.base_exp`), and reaching a level takes `level³` total XP.
+  A won battle gives every party member still standing the XP of all the
+  enemies (`BattleScene._give_xp`), filling the XP bar and leveling up
+  (keeping the damage taken).
 - Medicine (`items.MEDICINE`: potions, Revive, status cures) is counted in
   `Bag.medicine` and used from the battle's Item menu. Using one takes the
   user's turn; items act before moves. An item is only used up when it

@@ -11,7 +11,7 @@ from dataclasses import replace
 import pygame
 
 from . import hats, ui
-from .battle import CRIT_CHANCE
+from .battle import CRIT_CHANCE, XP_COLOR
 from .items import RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text
 from .pokemon import Monster, animations
 from .scene import Scene
@@ -143,6 +143,10 @@ class SummaryScene(Scene):
         for t, pos in _type_badges(self.monster):
             ui.badge(canvas, pos, COLORS[t])
         ui.cursor(canvas, PARTY_WINDOW.x + 16, PARTY_WINDOW.y + PAD + 5 + self.member * ROW_H * 2)
+        for i, m in enumerate(self.party):
+            done, needed = m.xp_progress
+            bar = pygame.Rect(PARTY_WINDOW.x + 22, PARTY_WINDOW.y + PAD + i * ROW_H * 2 + 29, 110, 4)
+            ui.bar(canvas, bar, done / needed if needed else 0.0, XP_COLOR)
         row = self.slot if self.mode == "slots" else self.choice - self.top
         ui.cursor(canvas, GEAR_WINDOW.x + 16, GEAR_WINDOW.y + PAD + 5 + row * ROW_H)
         if self.mode == "choose":  # scroll arrows
@@ -194,6 +198,8 @@ class SummaryScene(Scene):
         for t, pos in _type_badges(m):
             ui.badge_text(window, type_name(t), pos)
         y += ROW_H + 4
+        done, needed = m.xp_progress
+        ui.text(window, f"XP {done}/{needed}" if needed else "XP max", (x, y), ui.GREY, size=22)
         labels = ("Now", "Gear", "New") if after else ("Base", "Gear", "Total")
         for label, col in zip(labels, COLUMNS):
             ui.text(window, label, (x + col, y), ui.GREY, size=22, align="right")

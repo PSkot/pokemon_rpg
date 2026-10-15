@@ -64,9 +64,14 @@ def cursor(surface: pygame.Surface, right: int, mid_y: int) -> None:
 
 
 def hp_bar(surface: pygame.Surface, rect: pygame.Rect, fraction: float) -> None:
+    color = (88, 208, 96) if fraction > 0.5 else (232, 192, 48) if fraction > 0.2 else (224, 64, 56)
+    bar(surface, rect, fraction, color)
+
+
+def bar(surface: pygame.Surface, rect: pygame.Rect, fraction: float, color) -> None:
+    """A dark bar, filled from the left to `fraction`."""
     rect = pygame.Rect(rect)
     pygame.draw.rect(surface, SHADOW, rect)
-    color = (88, 208, 96) if fraction > 0.5 else (232, 192, 48) if fraction > 0.2 else (224, 64, 56)
     inner = rect.inflate(-2, -2)
     inner.w = round(inner.w * max(0.0, min(1.0, fraction)))
     if inner.w:

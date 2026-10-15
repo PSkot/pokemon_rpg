@@ -84,6 +84,7 @@ class Species:
     # Placeholder art: a reference icon (assets/sprites/pokemon_icons/), used
     # as a still sprite until the species gets a Pixellab sheet.
     icon: str = ""
+    base_exp: int = 64  # Gen 1 base experience yield: XP for defeating one
 
 
 BULBASAUR_ATTACKS = "bulbasaur attacks.png"
@@ -106,7 +107,8 @@ SPECIES = {
             "leaf_shield": AnimSpec(BULBASAUR_ATTACKS, 2, baseline=60),
             "tackle": AnimSpec(BULBASAUR_ATTACKS, 3),
         },
-        foot_sink=3),
+        foot_sink=3,
+        base_exp=64),
     "pidgey": Species(
         "Pidgey", 40, 45, 40, 56, ("normal", "flying"),
         moves=("Gust", "Tackle"),
@@ -118,34 +120,44 @@ SPECIES = {
             "gust": AnimSpec("pidgey.png", 2, face_left=(0, 1)),
             "tackle": AnimSpec("pidgey.png", 3, face_left=(0,)),
         },
-        foot_sink=1),
+        foot_sink=1,
+        base_exp=55),
 }
 
 
 def _placeholder(icon: str, name: str, stats: tuple[int, int, int, int], types: tuple[str, ...],
-                 moves: tuple[str, ...]) -> Species:
-    return Species(name, *stats, types, moves, fight_anim="attack", anims={}, icon=icon)
+                 moves: tuple[str, ...], exp: int) -> Species:
+    return Species(name, *stats, types, moves, fight_anim="attack", anims={}, icon=icon, base_exp=exp)
 
 
 # Species that only have a reference icon so far: Gen 1 base stats (HP,
-# Attack, Defense, Speed), types, and a few early moves.
+# Attack, Defense, Speed), types, a few early moves, and base experience yield.
 SPECIES.update({
-    "rattata": _placeholder("019_rattata", "Rattata", (30, 56, 35, 72), ("normal",), ("Tackle", "Quick Attack")),
-    "caterpie": _placeholder("010_caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), ("Tackle",)),
-    "weedle": _placeholder("013_weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"), ("Poison Sting",)),
-    "oddish": _placeholder("043_oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"), ("Absorb", "Acid")),
+    "rattata": _placeholder("019_rattata", "Rattata", (30, 56, 35, 72), ("normal",),
+                            ("Tackle", "Quick Attack"), exp=57),
+    "caterpie": _placeholder("010_caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), ("Tackle",), exp=53),
+    "weedle": _placeholder("013_weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"),
+                           ("Poison Sting",), exp=52),
+    "oddish": _placeholder("043_oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"),
+                           ("Absorb", "Acid"), exp=78),
     "bellsprout": _placeholder("069_bellsprout", "Bellsprout", (50, 75, 35, 40), ("grass", "poison"),
-                               ("Vine Whip", "Acid")),
+                               ("Vine Whip", "Acid"), exp=84),
     "pikachu": _placeholder("025_pikachu", "Pikachu", (35, 55, 30, 90), ("electric",),
-                            ("Thunder Shock", "Quick Attack")),
-    "seel": _placeholder("086_seel", "Seel", (65, 45, 55, 45), ("water",), ("Headbutt", "Powder Snow")),
-    "shellder": _placeholder("090_shellder", "Shellder", (30, 65, 100, 40), ("water",), ("Tackle", "Water Gun")),
-    "psyduck": _placeholder("054_psyduck", "Psyduck", (50, 52, 48, 55), ("water",), ("Scratch", "Water Gun")),
-    "horsea": _placeholder("116_horsea", "Horsea", (30, 40, 70, 60), ("water",), ("Bubble", "Water Gun")),
-    "jynx": _placeholder("124_jynx", "Jynx", (65, 50, 35, 95), ("ice", "psychic"), ("Powder Snow", "Confusion")),
+                            ("Thunder Shock", "Quick Attack"), exp=82),
+    "seel": _placeholder("086_seel", "Seel", (65, 45, 55, 45), ("water",),
+                         ("Headbutt", "Powder Snow"), exp=100),
+    "shellder": _placeholder("090_shellder", "Shellder", (30, 65, 100, 40), ("water",),
+                             ("Tackle", "Water Gun"), exp=97),
+    "psyduck": _placeholder("054_psyduck", "Psyduck", (50, 52, 48, 55), ("water",),
+                            ("Scratch", "Water Gun"), exp=80),
+    "horsea": _placeholder("116_horsea", "Horsea", (30, 40, 70, 60), ("water",),
+                           ("Bubble", "Water Gun"), exp=83),
+    "jynx": _placeholder("124_jynx", "Jynx", (65, 50, 35, 95), ("ice", "psychic"),
+                         ("Powder Snow", "Confusion"), exp=137),
     "dewgong": _placeholder("087_dewgong", "Dewgong", (90, 70, 80, 70), ("water", "ice"),
-                            ("Headbutt", "Aurora Beam")),
-    "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60), ("water", "ice"), ("Water Gun", "Ice Beam")),
+                            ("Headbutt", "Aurora Beam"), exp=176),
+    "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60), ("water", "ice"),
+                           ("Water Gun", "Ice Beam"), exp=219),
 })
 
 ICON_SCALE = 0.75  # icons share one scale, so species keep their relative sizes
@@ -185,6 +197,14 @@ def animations(species: Species) -> dict[str, Animation]:
     return anims
 
 
+MAX_LEVEL = 100
+
+
+def xp_for_level(level: int) -> int:
+    """Total XP needed to reach `level` (Gen 1's "medium fast" growth rate)."""
+    return 0 if level <= 1 else level ** 3
+
+
 def _stat(base: int, level: int) -> int:
     # The Gen 1 formula without IVs/EVs.
     return base * 2 * level // 100 + 5
@@ -192,17 +212,20 @@ def _stat(base: int, level: int) -> int:
 
 @dataclass
 class Monster:
-    """One Pokémon: its species, level, current HP, status and equipped gear."""
+    """One Pokémon: its species, level, XP, current HP, status and equipped gear."""
     species: Species
     level: int
     hp: int = -1  # -1 = full
     gear: dict[str, Gear] = field(default_factory=dict)  # slot -> gear
     status: str = ""       # a key of status.STATUSES, or "" for none
     sleep_rounds: int = 0  # rounds left asleep
+    xp: int = -1  # total; -1 = just reached its level
 
     def __post_init__(self):
         if self.hp < 0:
             self.hp = self.max_hp
+        if self.xp < 0:
+            self.xp = xp_for_level(self.level)
 
     @classmethod
     def create(cls, species: str, level: int) -> "Monster":
@@ -219,6 +242,30 @@ class Monster:
     @property
     def moves(self) -> list[Move]:
         return [MOVES[name] for name in self.species.moves]
+
+    @property
+    def xp_yield(self) -> int:
+        """XP for defeating it (the Gen 1 formula for wild Pokémon)."""
+        return self.species.base_exp * self.level // 7
+
+    @property
+    def xp_progress(self) -> tuple[int, int]:
+        """(XP gained since its level, XP that level needs to the next)."""
+        if self.level >= MAX_LEVEL:
+            return 0, 0
+        start = xp_for_level(self.level)
+        return self.xp - start, xp_for_level(self.level + 1) - start
+
+    @property
+    def can_level_up(self) -> bool:
+        return self.level < MAX_LEVEL and self.xp >= xp_for_level(self.level + 1)
+
+    def level_up(self) -> None:
+        """One level up. The HP it gains is added to its current HP, so the
+        damage taken stays the same."""
+        missing = self.max_hp - self.hp
+        self.level += 1
+        self._set_missing_hp(missing)
 
     def inflict(self, status: str) -> bool:
         """Give it `status`, unless it already has one or its type is immune."""

@@ -17,7 +17,7 @@ from . import hats, settings, ui
 from .animation import Animation
 from .items import MEDICINE, Bag, Medicine
 from .loot import WILD_LOOT, LootTable, merge
-from .pokemon import FIGHT, Monster, Move, animations
+from .pokemon import FIGHT, MAX_LEVEL, Monster, Move, animations
 from .scene import Scene, Transition
 from .status import (BURN_ATTACK, FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES,
                      THAW_CHANCE)
@@ -40,6 +40,7 @@ INFO_WINDOW = MESSAGE_WINDOW.move(0, 16)  # item descriptions, below the key hin
 COMMANDS = ["Fight", "Skills", "Item", "Run"]
 TARGET_TEXT = {"enemy": "Enemy", "ally": "Ally", "self": "Self"}
 HEAL_COLOR = (120, 230, 120)
+XP_COLOR = (88, 168, 248)
 
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 CANCEL_KEYS = (pygame.K_x, pygame.K_BACKSPACE)
@@ -56,6 +57,10 @@ STATUS_MESSAGE_TIME = 1.0  # "is fast asleep", "is hurt by poison", ...
 QUICK_MESSAGE_TIME = 0.7   # "is quick to act!"
 REGEN_MESSAGE_TIME = 0.8   # "restored 2 HP."
 ACTION_PAUSE = 0.6       # quiet gap (no message) before the next action
+VICTORY_PAUSE = 1.0      # "You won!", before the XP is handed out
+XP_FILL_TIME = 1.2       # seconds for an XP bar to fill completely
+XP_MESSAGE_TIME = 0.8    # after a party member's XP bar has filled
+LEVEL_UP_TIME = 1.2      # "grew to Lv6!"
 HIT_TIME = 0.35      # seconds a hit combatant shakes and flickers
 HEAL_TIME = 0.8      # seconds healing sparkles rise around a combatant
 FADE_TIME = 0.5      # seconds a fainting combatant takes to fade
@@ -104,6 +109,7 @@ class Combatant:
         self.shield = 0        # rounds of Leaf Shield left
         self.charging: Action | None = None  # a charged move that fires next round
         self.berry_used = False  # its berry can be eaten once per battle
+        self.shown_xp = self.xp_goal = self.xp_fraction  # the XP bar fills towards its goal
 
     @property
     def alive(self) -> bool:
@@ -123,6 +129,17 @@ class Combatant:
     def speed(self) -> float:
         speed = self.monster.speed
         return speed * PARALYSIS_SPEED if self.status == "paralysis" else speed
+
+    @property
+    def xp_fraction(self) -> float:
+        """How far it is from its level to the next."""
+        done, needed = self.monster.xp_progress
+        return done / needed if needed else 0.0
+
+    def fill_xp(self, goal: float) -> float:
+        """Let the XP bar fill up to `goal`; returns how long that takes."""
+        self.xp_goal = goal
+        return max(0.0, goal - self.shown_xp) * XP_FILL_TIME
 
     def revive(self, hp: int) -> None:
         """Back on its feet, with its battle-only state and status cleared."""
@@ -165,6 +182,7 @@ class Combatant:
             self.opacity += max(-rate, min(rate, goal - self.opacity))
         drain = self.monster.max_hp * dt / HP_DRAIN_TIME
         self.shown_hp += max(-drain, min(drain, self.monster.hp - self.shown_hp))
+        self.shown_xp = min(self.xp_goal, self.shown_xp + dt / XP_FILL_TIME)
 
     def draw(self, surface: pygame.Surface, shadow_color) -> None:
         if self.opacity <= 0:
@@ -589,10 +607,32 @@ class BattleScene(Scene):
             self.lost = not self.won
             self.message = "You won!" if self.won else "Your party has fainted..."
             if self.won:
+                yield VICTORY_PAUSE
+                yield from self._give_xp()
+                self.message = "You won!"
                 self._give_rewards()
             self.menu = "end"
         else:
             self._start_round()
+
+    def _give_xp(self):
+        """Every party member still standing gets the XP of all the enemies."""
+        xp = sum(c.monster.xp_yield for c in self.enemies)
+        for c in self.party:
+            m = c.monster
+            if not c.alive or m.level >= MAX_LEVEL:
+                continue
+            self.message = f"{c.label} gained {xp} XP!"
+            m.xp += xp
+            while m.can_level_up:
+                yield c.fill_xp(1.0)
+                m.level_up()
+                c.shown_xp = c.xp_goal = 0.0
+                self._popup(c, "LEVEL UP", ui.YELLOW)
+                self.message = f"{c.label} grew to Lv{m.level}!"
+                yield LEVEL_UP_TIME
+            yield c.fill_xp(c.xp_fraction)
+            yield XP_MESSAGE_TIME
 
     def _give_rewards(self) -> None:
         rewards = merge([r for _ in self.enemies for r in self.loot.roll()])
@@ -920,6 +960,7 @@ class BattleScene(Scene):
         for i, c in enumerate(self.party):
             bar = pygame.Rect(PARTY_WINDOW.x + 168, PARTY_WINDOW.y + PAD + 3 + i * ROW_H, 90, 6)
             ui.hp_bar(canvas, bar, c.shown_hp / c.monster.max_hp)
+            ui.bar(canvas, pygame.Rect(bar.x, bar.bottom + 1, bar.w, 4), c.shown_xp, XP_COLOR)
             if c.status:
                 ui.badge(canvas, self._party_badge_pos(i), STATUSES[c.status].color)
         if not self._list_open:
@@ -972,10 +1013,13 @@ class BattleScene(Scene):
             for i, c in enumerate(self._enemy_rows()):
                 color = ui.YELLOW if c is aimed else ui.WHITE
                 row_h = self._enemy_row_h
-                ui.text(window, c.label, (ENEMY_WINDOW.x + 12, ENEMY_WINDOW.y + PAD + i * row_h), color,
-                        size=28 if row_h == ROW_H else 24)
-                if c.status:
+                y, size = ENEMY_WINDOW.y + PAD + i * row_h, 28 if row_h == ROW_H else 24
+                ui.text(window, c.label, (ENEMY_WINDOW.x + 12, y), color, size=size)
+                if c.status:  # in place of the level
                     ui.badge_text(window, STATUSES[c.status].abbrev, self._enemy_badge_pos(i, row_h))
+                else:
+                    ui.text(window, f"Lv{c.monster.level}", (ENEMY_WINDOW.right - 12, y), ui.GREY, size=size,
+                            align="right")
             for i, name in enumerate(COMMANDS):
                 color = ui.GREY if name == "Item" and not self._medicine() else ui.WHITE
                 ui.text(window, name, (COMMAND_WINDOW.x + 22, COMMAND_WINDOW.y + PAD + i * ROW_H), color)
