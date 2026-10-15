@@ -72,6 +72,9 @@ class SummaryScene(Scene):
         self.choice = 0      # cursor in the gear list
         self.top = 0         # first row shown, when the list scrolls
 
+    def save_point(self):
+        return self.return_to.save_point()
+
     @property
     def monster(self) -> Monster:
         return self.party[self.member]

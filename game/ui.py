@@ -123,3 +123,10 @@ class ListPanel:
             text(window, side, (right, row_y), GREY, size=22, align="right")
         if self.footer:
             text(window, self.footer, (right, self.rect.bottom - self.PAD - 11), GREY, size=20, align="right")
+
+
+def blit_scaled(window: pygame.Surface, surface: pygame.Surface, pos: tuple[int, int]) -> None:
+    """Draw a logical-resolution `surface` (e.g. a menu window drawn over
+    everything) on the scaled window, at logical `pos`."""
+    s = settings.SCALE
+    window.blit(pygame.transform.scale_by(surface, s), (pos[0] * s, pos[1] * s))

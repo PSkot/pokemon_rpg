@@ -2,19 +2,21 @@
 
     python -m game
 
-The game starts at the hub: pick a dungeon. On its maps: Left/Right walk,
+The game starts at the title screen (continue, load or start a new game).
+A new game starts in Pallet Town; doorways at a town's edges lead onto
+routes (Route 1 to Viridian City). On the maps: Left/Right walk,
 hold Shift to run, Space jumps (hold for a higher jump), Up opens chests
 and goes through doorways, Tab opens the party screen, F1 toggles debug
-boxes. Walk into wild Pokémon to battle them. Esc pauses (resume or quit).
+boxes. Walk into wild Pokémon to battle them. Esc pauses (resume, save,
+load or quit). Battles, chests, fainting and leaving a map autosave.
 """
 
 import pygame
 
-from . import settings
-from .hub import HubScene
-from .overworld import new_game
+from . import saves, settings, ui
 from .pause import PauseMenu
-from .scene import Scene
+from .scene import Scene, Transition
+from .title import TitleScene
 
 
 def main() -> None:
@@ -24,7 +26,7 @@ def main() -> None:
     canvas = pygame.Surface(settings.LOGICAL_SIZE)
     clock = pygame.time.Clock()
 
-    scene: Scene = HubScene(*new_game())
+    scene: Scene = TitleScene()
 
     pause: PauseMenu | None = None
 
@@ -38,9 +40,11 @@ def main() -> None:
                 pause.handle_event(event)
                 if pause.done:
                     running = not pause.quit
+                    if pause.loaded:
+                        scene = Transition(scene, pause.loaded, flashes=0)
                     pause = None
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                pause = PauseMenu()
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and scene.pausable:
+                pause = PauseMenu(scene.save_point())
             else:
                 scene.handle_event(event)
 
@@ -49,6 +53,9 @@ def main() -> None:
         scene.draw(canvas)
         pygame.transform.scale(canvas, settings.WINDOW_SIZE, window)
         scene.draw_overlay(window)
+        if saves.recently_autosaved():
+            ui.text(window, "Autosaved", (settings.LOGICAL_SIZE[0] - 6, settings.LOGICAL_SIZE[1] - 14), ui.GREY,
+                    size=20, align="right")
         if pause:
             pause.draw_overlay(window)
         pygame.display.flip()

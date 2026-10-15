@@ -11,6 +11,7 @@ class Scene:
     """
 
     next_scene: "Scene | None" = None
+    pausable = True  # Esc opens the pause menu (else the scene gets the key)
 
     def handle_event(self, event: pygame.event.Event) -> None:
         pass
@@ -23,6 +24,11 @@ class Scene:
 
     def draw_overlay(self, window: pygame.Surface) -> None:
         """Draw on the scaled window, after `draw` (crisp text goes here)."""
+
+    def save_point(self):
+        """The map scene to save the game from (see saves.py), or None if
+        the game can't be saved right now (e.g. in a battle)."""
+        return None
 
 
 class Transition(Scene):

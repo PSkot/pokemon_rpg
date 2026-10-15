@@ -209,3 +209,111 @@ def _gradient(surface: pygame.Surface, top, bottom) -> None:
         t = y / (h - 1)
         pygame.draw.line(surface, [round(a + (b - a) * t) for a, b in zip(top, bottom)], (0, y),
                          (surface.get_width(), y))
+
+
+# --------------------------------------------------------------- buildings
+
+OUTLINE = (48, 28, 16)
+WALL = (236, 224, 196)
+WALL_DARK = (200, 186, 156)
+GLASS = (120, 176, 220)
+DOOR = (112, 72, 40)
+
+# kind -> (wall height, roof height, roof colour, wall colour)
+BUILDINGS = {
+    "house": (54, 30, (184, 72, 56), WALL),
+    "lab": (62, 16, (132, 140, 156), (226, 230, 236)),
+    "center": (60, 22, (216, 60, 60), WALL),
+    "mart": (58, 18, (60, 108, 208), WALL),
+    "gym": (80, 20, (150, 116, 76), (214, 196, 150)),
+}
+
+
+def _darker(color, by: int = 40):
+    """`color` darkened by `by` (lightened if negative)."""
+    return tuple(max(0, min(255, c - by)) for c in color)
+
+
+def _window(s: pygame.Surface, x: int, y: int, w: int = 12, h: int = 10) -> None:
+    pygame.draw.rect(s, GLASS, (x, y, w, h))
+    pygame.draw.line(s, (200, 230, 250), (x + 1, y + 1), (x + w // 2, y + 1))
+    pygame.draw.line(s, OUTLINE, (x + w // 2, y), (x + w // 2, y + h - 1))
+    pygame.draw.rect(s, OUTLINE, (x, y, w, h), 1)
+
+
+def draw_building(s: pygame.Surface, kind: str, x: int, ground: int, w: int, roof=None) -> pygame.Rect:
+    """A placeholder building standing on `ground`, `w` px wide at `x`.
+    Returns its outline (walls and roof)."""
+    wall_h, roof_h, roof_color, wall = BUILDINGS[kind]
+    roof_color = roof or roof_color
+    walls = pygame.Rect(x, ground - wall_h, w, wall_h)
+    pygame.draw.rect(s, wall, walls)
+    pygame.draw.line(s, _darker(wall, 30), (walls.x, walls.bottom - 4), (walls.right - 1, walls.bottom - 4))
+    pygame.draw.rect(s, OUTLINE, walls, 1)
+
+    # The roof: sloped for houses, a flat slab with a lip for the rest.
+    top = walls.y - roof_h
+    if kind == "house":
+        roof_shape = [(x - 6, walls.y + 2), (x + 10, top), (x + w - 10, top), (x + w + 6, walls.y + 2)]
+        pygame.draw.polygon(s, roof_color, roof_shape)
+        for y in range(top + 6, walls.y, 6):  # shingle rows, inside the slopes
+            inset = 16 * (walls.y + 2 - y) / (walls.y + 2 - top) - 5
+            pygame.draw.line(s, _darker(roof_color, 25), (x + inset, y), (x + w - inset - 1, y))
+        pygame.draw.polygon(s, OUTLINE, roof_shape, 1)
+    else:
+        slab = pygame.Rect(x - 4, top, w + 8, roof_h)
+        pygame.draw.rect(s, roof_color, slab)
+        pygame.draw.line(s, _darker(roof_color, -40), slab.topleft, (slab.right - 1, slab.top))
+        pygame.draw.rect(s, _darker(roof_color), (slab.x, slab.bottom - 4, slab.w, 4))
+        pygame.draw.rect(s, OUTLINE, slab, 1)
+
+    # The door, in the middle, and windows either side.
+    door_w = 22 if kind in ("center", "mart", "gym") else 14
+    door = pygame.Rect(walls.centerx - door_w // 2, ground - 24, door_w, 24)
+    if kind in ("center", "mart"):  # glass sliding doors
+        pygame.draw.rect(s, GLASS, door)
+        pygame.draw.line(s, OUTLINE, (door.centerx, door.y), (door.centerx, door.bottom - 1))
+    else:
+        pygame.draw.rect(s, DOOR, door)
+        s.set_at((door.right - 4, door.centery), (232, 192, 72))
+    pygame.draw.rect(s, OUTLINE, door, 1)
+    pygame.draw.rect(s, _darker(wall, 60), (door.x - 2, ground - 2, door.w + 4, 2))  # doorstep
+    window_y = walls.y + (38 if kind == "gym" else 12)
+    for wx in range(walls.x + 8, door.x - 14, 20):
+        _window(s, wx, window_y)
+    for wx in range(door.right + 8, walls.right - 18, 20):
+        _window(s, wx, window_y)
+    if kind == "gym":  # a second floor of windows
+        for wx in range(walls.x + 8, walls.right - 18, 20):
+            _window(s, wx, walls.y + 12)
+
+    # Signs.
+    if kind == "center":  # a Poké Ball emblem over the door
+        cx, cy = door.centerx, door.y - 12
+        pygame.draw.circle(s, (250, 250, 250), (cx, cy), 7)
+        pygame.draw.circle(s, (216, 60, 60), (cx, cy), 7, draw_top_right=True, draw_top_left=True)
+        pygame.draw.line(s, OUTLINE, (cx - 7, cy), (cx + 6, cy))
+        pygame.draw.circle(s, OUTLINE, (cx, cy), 7, 1)
+        pygame.draw.circle(s, (250, 250, 250), (cx, cy), 2)
+    elif kind == "mart":  # a blue sign with a white stripe
+        sign = pygame.Rect(door.centerx - 14, door.y - 14, 28, 9)
+        pygame.draw.rect(s, (60, 108, 208), sign)
+        pygame.draw.line(s, (240, 240, 250), (sign.x + 3, sign.centery), (sign.right - 4, sign.centery))
+        pygame.draw.rect(s, OUTLINE, sign, 1)
+    elif kind == "gym":  # a badge-like emblem
+        cx, cy = door.centerx, door.y - 14
+        pygame.draw.polygon(s, (232, 192, 72), [(cx, cy - 7), (cx + 7, cy), (cx, cy + 7), (cx - 7, cy)])
+        pygame.draw.polygon(s, OUTLINE, [(cx, cy - 7), (cx + 7, cy), (cx, cy + 7), (cx - 7, cy)], 1)
+    elif kind == "lab":  # a small antenna on the roof
+        pygame.draw.line(s, OUTLINE, (x + w - 20, top), (x + w - 20, top - 10))
+        pygame.draw.circle(s, (216, 60, 60), (x + w - 20, top - 11), 2)
+    return pygame.Rect(x - 6, top, w + 12, ground - top)
+
+
+def fence(s: pygame.Surface, x: int, ground: int, w: int) -> None:
+    """A low white picket fence."""
+    for px in range(x, x + w, 8):
+        pygame.draw.rect(s, (240, 236, 224), (px, ground - 14, 4, 14))
+        pygame.draw.rect(s, OUTLINE, (px, ground - 14, 4, 14), 1)
+    for y in (ground - 11, ground - 5):
+        pygame.draw.line(s, (220, 214, 200), (x, y), (x + w - 4, y), 2)

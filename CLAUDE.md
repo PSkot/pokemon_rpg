@@ -18,8 +18,10 @@ non-commercial project.
 - Test headlessly with `SDL_VIDEODRIVER=dummy`: drive
   `Player.update(dt, Controls(...), level)` and save frames with
   `pygame.image.save()`.
-- The game is a set of scenes (`scene.Scene`): map (`overworld.py`),
-  battle (`battle.py`) and party screen (`summary.py`). A scene switches by setting `next_scene`. Scenes
+- The game is a set of scenes (`scene.Scene`): title (`title.py`), maps
+  (`overworld.MapScene`: towns in `town.py`, instance maps in
+  `overworld.py`), battle (`battle.py`) and party screen (`summary.py`).
+  A scene switches by setting `next_scene`. Scenes
   draw sprites on the logical canvas and text on the scaled window
   (`draw_overlay`), so text stays sharp.
 - Battles: separate battle screen, Final Fantasy style (enemies left, party
@@ -70,15 +72,32 @@ non-commercial project.
   weighted encounter pool with level ranges, group sizes, battle backdrop,
   cave ceiling). Maps scroll sideways and end at a doorway (Up) to the next
   map. Wild groups are shown in full and stay gone once beaten.
-- Dungeon instances (`instance.py`): 3–5 maps of one theme from one seed
-  (a replay rolls a new seed). The last map ends in an arena where a boss
-  group of 4–5 pool Pokémon (normal levels; stronger variants are kept for
+- World: the game follows the Kanto map. Towns (`towns.py` data,
+  `town.py` scene) are flat maps with placeholder buildings (scenery for
+  now) and doorways at their edges onto routes. A new game starts in
+  Pallet Town; arriving in a town heals the party and makes it the town a
+  fainted party wakes up in (`Game.town`). Progress lives in `world.Game`
+  (party, bag, last town, routes cleared).
+- Instances (`instance.py`): a `Route` (e.g. Route 1: 2 meadow maps
+  between Pallet and Viridian) is walked as an `Instance` of generated maps
+  from one seed; every trip rolls a new seed, and the last map's doorway
+  leads into the town at the other end. Routes have no boss; an instance
+  with `boss=True` (future dungeons) ends in an arena where a boss group of
+  4–5 pool Pokémon (normal levels; stronger variants are kept for
   gyms/legendaries) guards the sealed way out; beating it unseals the door
-  and drops a `BOSS_LOOT` chest. The hub (`hub.py`, a stand-in for towns)
-  starts runs, heals the party, and is where you return after clearing a
-  dungeon or fainting. `tileset.py` draws
-  placeholder tiles, decorations and parallax backgrounds in code (to be
-  replaced by Pixellab tilesets). The player collides with a fixed hitbox.
+  and drops a `BOSS_LOOT` chest. `tileset.py` draws placeholder tiles,
+  decorations, buildings and parallax backgrounds in code (to be replaced
+  by Pixellab tilesets). The player collides with a fixed hitbox.
+- Saves (`saves.py`): JSON files in `saves/`: one `autosave.json` (written
+  after every won battle, opened chest, party faint and leaving a map) and
+  numbered manual saves (pause menu → Save game; not during battles). A
+  save stores the `Game` and the map scene's `location()`: the town and
+  position, or on an instance the route, seed, map number, beaten groups,
+  opened chests and position (`restore` puts it back); maps are
+  regenerated from the seed. Scenes say what can be saved via
+  `Scene.save_point()`. The game starts at
+  the title screen (`title.py`: Continue / Load game / New game); the save
+  and load lists are `save_menu.SaveList`.
 - Tab on the map opens the party screen (`summary.py`): stats and gear;
   Enter on a slot lists the bag's gear for it (or Remove), previewing the
   stat changes, and equips it.
