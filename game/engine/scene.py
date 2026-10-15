@@ -12,6 +12,7 @@ class Scene:
 
     next_scene: "Scene | None" = None
     pausable = True  # Esc opens the pause menu (else the scene gets the key)
+    bag = None       # the player's bag, if the scene has one (dev mode adds items to it)
 
     def handle_event(self, event: pygame.event.Event) -> None:
         pass

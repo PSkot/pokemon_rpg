@@ -62,8 +62,7 @@ def _load_gear(d: dict) -> Gear:
 
 
 def _monster(m: Monster) -> dict:
-    key = next(k for k, s in SPECIES.items() if s is m.species)
-    return {"species": key, "level": m.level, "xp": m.xp, "hp": m.hp, "status": m.status,
+    return {"species": m.species.key, "level": m.level, "xp": m.xp, "hp": m.hp, "status": m.status,
             "sleep_rounds": m.sleep_rounds, "gear": {slot: _gear(g) for slot, g in m.gear.items()}}
 
 

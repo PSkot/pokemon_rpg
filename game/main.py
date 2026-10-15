@@ -45,7 +45,7 @@ def main() -> None:
                         scene = Transition(scene, pause.loaded, flashes=0)
                     pause = None
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and scene.pausable:
-                pause = PauseMenu(scene.save_point())
+                pause = PauseMenu(scene.save_point(), scene.bag)
             else:
                 scene.handle_event(event)
 

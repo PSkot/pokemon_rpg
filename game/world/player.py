@@ -6,7 +6,7 @@ import pygame
 
 from ..engine import hats
 from ..engine.animation import Animation
-from ..mechanics.pokemon import SPECIES, Monster, animations
+from ..mechanics.pokemon import SPECIES, Monster, Species, animations
 from .level import TILE, Level
 
 WALK_SPEED = 70   # logical pixels per second
@@ -48,8 +48,9 @@ class Controls:
 
 
 class Player:
-    def __init__(self, x: float, feet_y: float):
-        self.anims = animations(SPECIES["bulbasaur"])
+    def __init__(self, x: float, feet_y: float, species: Species = SPECIES["bulbasaur"]):
+        self.species = species
+        self.anims = animations(species)
         self.x = x                    # centre of the sprite
         self.feet_y = float(feet_y)
         self.vy = 0.0                 # vertical speed, positive = down
@@ -58,12 +59,17 @@ class Player:
         self.state_time = 0.0
         self.attack = ATTACKS[1]      # animation of the current/last attack
 
+    def become(self, species: Species) -> None:
+        """Look like `species` (the lead Pokémon, e.g. after it evolves)."""
+        if species != self.species:
+            self.species, self.anims = species, animations(species)
+
     # ------------------------------------------------------------------ state
 
     @property
     def anim_name(self) -> str:
-        if self.state == "attack":
-            return self.attack
+        if self.state == "attack":  # its basic attack if it doesn't have this one
+            return self.attack if self.attack in self.anims else "attack"
         return "jump" if self.state in ("squat", "air", "land") else self.state
 
     @property

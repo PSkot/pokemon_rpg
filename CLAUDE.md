@@ -74,6 +74,13 @@ non-commercial project.
   A won battle gives every party member still standing the XP of all the
   enemies (`BattleScene._give_xp`), filling the XP bar and leveling up
   (keeping the damage taken).
+- Evolution (`pokemon.py`): `EVOLUTIONS` lists every Red/Blue level
+  evolution (species key → `Evolution(into, level)`); trade/stone
+  evolutions aren't in yet. An evolution is only active once its target
+  is in `SPECIES` (`Species.evolution`). After a won battle, members that
+  leveled up and reached the level evolve (`BattleScene._evolve`: white
+  flashing; X stops it, retried at the next level-up). The map player
+  takes the lead Pokémon's species (`Player.become`).
 - Medicine (`items.MEDICINE`: potions, Revive, status cures) is counted in
   `Bag.medicine` and used from the battle's Item menu. Using one takes the
   user's turn; items act before moves. An item is only used up when it
@@ -92,7 +99,7 @@ non-commercial project.
   `town.py` scene) are flat maps with placeholder buildings (scenery for
   now) and doorways at their edges onto routes. A new game starts in
   Pallet Town; arriving in a town heals the party and makes it the town a
-  fainted party wakes up in (`Game.town`). Progress lives in `world.Game`
+  fainted party wakes up in (`Game.town`). Progress lives in `progress.Game`
   (party, bag, last town, routes cleared).
 - Instances (`instance.py`): a `Route` (e.g. Route 1: 2 meadow maps
   between Pallet and Viridian) is walked as an `Instance` of generated maps
@@ -117,6 +124,12 @@ non-commercial project.
 - Tab on the map opens the party screen (`summary.py`): stats and gear;
   Enter on a slot lists the bag's gear for it (or Remove), previewing the
   stat changes, and equips it.
+- Dev mode (`dev.py`, `DEV`): switched on in the pause menu; not saved.
+  XP boost (×1/3/5/10/20, `DEV.xp_multiplier` in `_give_xp`), god mode
+  (`DEV.god_mode`: the party takes no damage, every hit knocks an enemy
+  out) and an item maker (`scenes/dev_menu.ItemMaker`: any gear with
+  chosen rarity/affixes and random/min/max values, or medicine, into
+  `Scene.bag`). Active settings show in the window title and on the map.
 - Controls: arrows move, Up opens chests, Shift runs, Space jumps, number keys 1–9 are
   reserved for attacks (1 = basic attack, 2–5 = extra attacks).
 - `tools/` holds standalone helper scripts. `tools/anim_viewer.py` uses only
@@ -133,6 +146,8 @@ non-commercial project.
   growth, solar_beam, leaf_shield, tackle.
 - `pidgey.png` rows: walk, fly, gust, tackle. Its frames don't all face
   right; the left-facing ones are listed in `face_left` and mirrored on load.
+- `ivysaur.png` has the same rows as `bulbasaur.png` (no extra-attack sheet
+  yet: its skills use the basic attack animation).
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,
   row, fps, baseline, ...) and shared by the map player and battles.
 - `assets/sprites/pokemon_icons/` holds reference icons. Species without a

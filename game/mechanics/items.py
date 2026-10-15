@@ -237,10 +237,12 @@ def _pick_affixes(count: int, rng: random.Random) -> list[Affix]:
     return picked
 
 
-def _roll(mods: dict[str, Range], rarity: Rarity, rng: random.Random) -> dict[str, int]:
+def _roll(mods: dict[str, Range], rarity: Rarity, rng: random.Random, values: str = "random") -> dict[str, int]:
+    """Roll each mod's value in its range ("min"/"max" values: the lowest or
+    highest instead), then apply the rarity."""
     rolled = {}
     for mod, (low, high) in mods.items():
-        value = rng.randint(low, high)
+        value = low if values == "min" else high if values == "max" else rng.randint(low, high)
         rolled[mod] = max(1, round(value * rarity.factor)) if value > 0 else value
     return rolled
 
@@ -262,12 +264,13 @@ class Gear:
 
     @classmethod
     def roll(cls, item: str, rarity: str = "Common", rng: random.Random | None = None,
-             affixes: list[str] | None = None) -> "Gear":
+             affixes: list[str] | None = None, values: str = "random") -> "Gear":
         """Roll a new piece. `affixes` picks its affixes by name instead of
-        at random (their values are still rolled)."""
+        at random; `values` "min" or "max" gives every roll its lowest or
+        highest value (both are for testing, see dev.py)."""
         rng = rng or random.Random()
         item_, rarity_ = ITEMS[item], RARITIES[rarity]
-        rolls = [Roll(None, _roll(item_.mods, rarity_, rng))] if item_.mods else []
+        rolls = [Roll(None, _roll(item_.mods, rarity_, rng, values))] if item_.mods else []
         if affixes is not None:
             picked = [AFFIX_BY_NAME[name] for name in affixes]
         elif item_.slot in AFFIX_SLOTS:
@@ -275,7 +278,7 @@ class Gear:
         else:
             picked = []
         for affix in picked:
-            rolls.append(Roll(affix, _roll(affix.mods, rarity_, rng)))
+            rolls.append(Roll(affix, _roll(affix.mods, rarity_, rng, values)))
         return cls(item_, rarity_, rolls)
 
     @property

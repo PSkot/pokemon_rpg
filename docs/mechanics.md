@@ -70,6 +70,65 @@ gives 143 XP to each party member still standing.
 
 ---
 
+## Evolution
+
+`game/mechanics/pokemon.py` (`EVOLUTIONS`, `Monster.evolve`),
+`game/scenes/battle.py` (`_evolve`)
+
+Pokémon evolve **by level**, at the levels from Red/Blue. Trade and stone
+evolutions aren't in yet.
+
+- **When:** at the end of a won battle, after the XP, for each party member
+  that **leveled up in that battle** and is at or above its evolution
+  level. Its sprite flashes white between the two forms, faster and
+  faster.
+- **Stopping it:** pressing **X** during the flashing stops the evolution
+  (B in Red/Blue). It tries again the next time that Pokémon levels up.
+- **What changes:** the species, and with it base stats, types, moves,
+  sprite and XP yield. The level, XP, gear and status stay. Stats are
+  recalculated, and the HP gained is added to current HP (damage taken
+  stays the same).
+- **Only into species that are in the game:** an evolution is skipped
+  while its species isn't defined yet (e.g. Pidgey won't evolve until
+  Pidgeotto is added). The full table is already registered.
+
+The lead Pokémon is also the player character on the map, so evolving it
+changes how the player looks.
+
+| Evolves | Into | Level | | Evolves | Into | Level |
+| --- | --- | --- | --- | --- | --- | --- |
+| Bulbasaur | **Ivysaur** | 16 | | Psyduck | Golduck | 33 |
+| Ivysaur | Venusaur | 32 | | Mankey | Primeape | 28 |
+| Charmander | Charmeleon | 16 | | Poliwag | Poliwhirl | 25 |
+| Charmeleon | Charizard | 36 | | Abra | Kadabra | 16 |
+| Squirtle | Wartortle | 16 | | Machop | Machoke | 28 |
+| Wartortle | Blastoise | 36 | | Bellsprout | Weepinbell | 21 |
+| Caterpie | Metapod | 7 | | Tentacool | Tentacruel | 30 |
+| Metapod | Butterfree | 10 | | Geodude | Graveler | 25 |
+| Weedle | Kakuna | 7 | | Ponyta | Rapidash | 40 |
+| Kakuna | Beedrill | 10 | | Slowpoke | Slowbro | 37 |
+| Pidgey | Pidgeotto | 18 | | Magnemite | Magneton | 30 |
+| Pidgeotto | Pidgeot | 36 | | Doduo | Dodrio | 31 |
+| Rattata | Raticate | 20 | | Seel | Dewgong | 34 |
+| Spearow | Fearow | 20 | | Grimer | Muk | 38 |
+| Ekans | Arbok | 22 | | Gastly | Haunter | 25 |
+| Sandshrew | Sandslash | 22 | | Drowzee | Hypno | 26 |
+| Nidoran♀ | Nidorina | 16 | | Krabby | Kingler | 28 |
+| Nidoran♂ | Nidorino | 16 | | Voltorb | Electrode | 30 |
+| Zubat | Golbat | 22 | | Cubone | Marowak | 28 |
+| Oddish | Gloom | 21 | | Koffing | Weezing | 35 |
+| Paras | Parasect | 24 | | Rhyhorn | Rhydon | 42 |
+| Venonat | Venomoth | 31 | | Horsea | Seadra | 32 |
+| Diglett | Dugtrio | 26 | | Goldeen | Seaking | 33 |
+| Meowth | Persian | 28 | | Magikarp | Gyarados | 20 |
+| Dratini | Dragonair | 30 | | Omanyte | Omastar | 40 |
+| Dragonair | Dragonite | 55 | | Kabuto | Kabutops | 40 |
+
+**Bold** = in the game now. Seel → Dewgong can happen once Seel is in the
+party (Dewgong exists as a placeholder species).
+
+---
+
 ## Damage
 
 `game/mechanics/combat.py` (`damage`), applied in
@@ -357,6 +416,21 @@ Route 1 (Meadow pool):
 
 Wild Pokémon have no gear, and pick a random move and a random target
 each turn.
+
+---
+
+## Dev mode
+
+`game/dev.py` (switched on in the pause menu, for testing; not saved)
+
+- **XP boost** ×3/×5/×10/×20 multiplies the total XP of a won battle
+  before it's shared out.
+- **God mode:** hits on the party deal 0 damage and burn/poison don't hurt
+  it (statuses still land); every hit on an enemy deals exactly its
+  remaining HP, and Endure can't save it.
+- **Add item** rolls gear with `Gear.roll(..., affixes=[...], values=...)`:
+  the chosen affixes (any number, 0–5, regardless of rarity), and every
+  value random, lowest or highest of its range (then × rarity as usual).
 
 ---
 

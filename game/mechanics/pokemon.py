@@ -87,6 +87,18 @@ class Species:
     icon: str = ""
     base_exp: int = 64  # Gen 1 base experience yield: XP for defeating one
 
+    @property
+    def key(self) -> str:
+        """Its key in `SPECIES` ("bulbasaur")."""
+        return _KEYS[self]
+
+    @property
+    def evolution(self) -> "Evolution | None":
+        """How it evolves by level, if it does and what it evolves into is in
+        the game yet."""
+        evolution = EVOLUTIONS.get(self.key)
+        return evolution if evolution and evolution.into in SPECIES else None
+
 
 BULBASAUR_ATTACKS = "bulbasaur attacks.png"
 
@@ -110,6 +122,19 @@ SPECIES = {
         },
         foot_sink=3,
         base_exp=64),
+    "ivysaur": Species(
+        "Ivysaur", 60, 62, 63, 60, ("grass", "poison"),
+        moves=("Tackle", "Growth", "Solar Beam", "Leaf Shield"),
+        fight_anim="attack",
+        anims={
+            "idle": AnimSpec("ivysaur.png", 0, fps=1, loop=True, frames=1),
+            "walk": AnimSpec("ivysaur.png", 0, loop=True),
+            "run": AnimSpec("ivysaur.png", 1, fps=12, loop=True),
+            "jump": AnimSpec("ivysaur.png", 2, fps=1, per_frame_baseline=True),
+            "attack": AnimSpec("ivysaur.png", 3),
+        },
+        foot_sink=3,
+        base_exp=141),
     "pidgey": Species(
         "Pidgey", 40, 45, 40, 56, ("normal", "flying"),
         moves=("Gust", "Tackle"),
@@ -160,6 +185,66 @@ SPECIES.update({
     "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60), ("water", "ice"),
                            ("Water Gun", "Ice Beam"), exp=219),
 })
+
+_KEYS = {species: key for key, species in SPECIES.items()}
+
+
+@dataclass(frozen=True)
+class Evolution:
+    into: str   # species key
+    level: int  # evolves on reaching this level
+
+
+# Every evolution by level in Red/Blue (species key -> evolution). Trade and
+# stone evolutions aren't here yet. An evolution only happens once the
+# species it evolves into is in `SPECIES`.
+EVOLUTIONS = {key: Evolution(into, level) for key, into, level in [
+    ("bulbasaur", "ivysaur", 16), ("ivysaur", "venusaur", 32),
+    ("charmander", "charmeleon", 16), ("charmeleon", "charizard", 36),
+    ("squirtle", "wartortle", 16), ("wartortle", "blastoise", 36),
+    ("caterpie", "metapod", 7), ("metapod", "butterfree", 10),
+    ("weedle", "kakuna", 7), ("kakuna", "beedrill", 10),
+    ("pidgey", "pidgeotto", 18), ("pidgeotto", "pidgeot", 36),
+    ("rattata", "raticate", 20),
+    ("spearow", "fearow", 20),
+    ("ekans", "arbok", 22),
+    ("sandshrew", "sandslash", 22),
+    ("nidoran_f", "nidorina", 16),
+    ("nidoran_m", "nidorino", 16),
+    ("zubat", "golbat", 22),
+    ("oddish", "gloom", 21),
+    ("paras", "parasect", 24),
+    ("venonat", "venomoth", 31),
+    ("diglett", "dugtrio", 26),
+    ("meowth", "persian", 28),
+    ("psyduck", "golduck", 33),
+    ("mankey", "primeape", 28),
+    ("poliwag", "poliwhirl", 25),
+    ("abra", "kadabra", 16),
+    ("machop", "machoke", 28),
+    ("bellsprout", "weepinbell", 21),
+    ("tentacool", "tentacruel", 30),
+    ("geodude", "graveler", 25),
+    ("ponyta", "rapidash", 40),
+    ("slowpoke", "slowbro", 37),
+    ("magnemite", "magneton", 30),
+    ("doduo", "dodrio", 31),
+    ("seel", "dewgong", 34),
+    ("grimer", "muk", 38),
+    ("gastly", "haunter", 25),
+    ("drowzee", "hypno", 26),
+    ("krabby", "kingler", 28),
+    ("voltorb", "electrode", 30),
+    ("cubone", "marowak", 28),
+    ("koffing", "weezing", 35),
+    ("rhyhorn", "rhydon", 42),
+    ("horsea", "seadra", 32),
+    ("goldeen", "seaking", 33),
+    ("magikarp", "gyarados", 20),
+    ("omanyte", "omastar", 40),
+    ("kabuto", "kabutops", 40),
+    ("dratini", "dragonair", 30), ("dragonair", "dragonite", 55),
+]}
 
 ICON_SCALE = 0.75  # icons share one scale, so species keep their relative sizes
 
@@ -260,6 +345,18 @@ class Monster:
     @property
     def can_level_up(self) -> bool:
         return self.level < MAX_LEVEL and self.xp >= xp_for_level(self.level + 1)
+
+    @property
+    def can_evolve(self) -> bool:
+        evolution = self.species.evolution
+        return bool(evolution) and self.level >= evolution.level
+
+    def evolve(self) -> None:
+        """Become what its species evolves into. Like a level up, the HP it
+        gains is added to its current HP."""
+        missing = self.max_hp - self.hp
+        self.species = SPECIES[self.species.evolution.into]
+        self._set_missing_hp(missing)
 
     def level_up(self) -> None:
         """One level up. The HP it gains is added to its current HP, so the

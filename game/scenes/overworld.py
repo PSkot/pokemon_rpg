@@ -13,6 +13,7 @@ import math
 import pygame
 
 from .. import saves, settings
+from ..dev import DEV
 from ..engine import ui
 from ..engine.scene import Scene, Transition
 from ..mechanics.loot import BOSS_LOOT, CHEST_LOOT, LootTable
@@ -172,7 +173,7 @@ class MapScene(Scene):
         self.tiles = tileset.render(level)
         self.backgrounds = tileset.backgrounds(level)
         self.layer = pygame.Surface((level.width, settings.LOGICAL_SIZE[1]), pygame.SRCALPHA)
-        self.player = Player(level.start_x, level.ground_y(level.start_x))
+        self.player = Player(level.start_x, level.ground_y(level.start_x), self.party[0].species)
         self.panel: ui.ListPanel | None = None  # loot or a notice; the map waits
         self.after_panel = None  # what closing the panel does next
         self.camera = 0
@@ -236,6 +237,7 @@ class MapScene(Scene):
         self.t += dt
         if self.panel:
             return
+        self.player.become(self.party[0].species)  # it may have evolved in a battle
         keys = pygame.key.get_pressed()
         self.player.update(dt, Controls(
             left=keys[pygame.K_LEFT],
@@ -272,6 +274,9 @@ class MapScene(Scene):
     def draw_overlay(self, window: pygame.Surface) -> None:
         ui.text(window, HELP, (6, 4), size=20)
         ui.text(window, self.where(), (6, 15), ui.WHITE, size=20)
+        if DEV.enabled:  # what dev mode has on, after the location
+            ui.text(window, DEV.summary(), (6 + ui.font(20).size(self.where())[0] / settings.SCALE + 16, 15),
+                    ui.YELLOW, size=20)
         if self.debug:
             p, level = self.player, self.level
             ui.text(window, f"seed: {level.seed}   state: {p.state}   x: {p.x:.0f}  feet: {p.feet_y:.0f}"

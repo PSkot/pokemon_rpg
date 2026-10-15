@@ -14,13 +14,14 @@ from functools import cache
 import pygame
 
 from .. import settings
+from ..dev import DEV
 from ..engine import hats, ui
 from ..engine.animation import Animation
 from ..engine.scene import Scene, Transition
-from ..mechanics.combat import MAX_ATTACK_STAGE, SHIELD_ROUNDS, damage
+from ..mechanics.combat import MAX_ATTACK_STAGE, SHIELD_ROUNDS, Hit, damage
 from ..mechanics.items import MEDICINE, Bag, Medicine
 from ..mechanics.loot import WILD_LOOT, LootTable, merge
-from ..mechanics.pokemon import FIGHT, MAX_LEVEL, Monster, Move, animations
+from ..mechanics.pokemon import FIGHT, MAX_LEVEL, SPECIES, Monster, Move, animations
 from ..mechanics.status import FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES, THAW_CHANCE
 from ..mechanics.type_chart import COLORS
 from ..mechanics.type_chart import name as type_name
@@ -63,6 +64,9 @@ VICTORY_PAUSE = 1.0      # "You won!", before the XP is handed out
 XP_FILL_TIME = 1.2       # seconds for an XP bar to fill completely
 XP_MESSAGE_TIME = 0.8    # after a party member's XP bar has filled
 LEVEL_UP_TIME = 1.2      # "grew to Lv6!"
+EVOLVE_INTRO_TIME = 1.5  # "What? Bulbasaur is evolving!"
+EVOLVE_TIME = 4.0        # flashing between the old and the new form
+EVOLVE_MESSAGE_TIME = 2.0  # "evolved into Ivysaur!" / "stopped evolving!"
 HIT_TIME = 0.35      # seconds a hit combatant shakes and flickers
 HEAL_TIME = 0.8      # seconds healing sparkles rise around a combatant
 FADE_TIME = 0.5      # seconds a fainting combatant takes to fade
@@ -104,6 +108,8 @@ class Combatant:
         self.shield = 0        # rounds of Leaf Shield left
         self.charging: Action | None = None  # a charged move that fires next round
         self.berry_used = False  # its berry can be eaten once per battle
+        self.evolving: Animation | None = None  # the new form's idle pose, while evolving
+        self.evolve_time = 0.0
         self.shown_xp = self.xp_goal = self.xp_fraction  # the XP bar fills towards its goal
 
     @property
@@ -178,6 +184,8 @@ class Combatant:
         drain = self.monster.max_hp * dt / HP_DRAIN_TIME
         self.shown_hp += max(-drain, min(drain, self.monster.hp - self.shown_hp))
         self.shown_xp = min(self.xp_goal, self.shown_xp + dt / XP_FILL_TIME)
+        if self.evolving:
+            self.evolve_time += dt
 
     def draw(self, surface: pygame.Surface, shadow_color) -> None:
         if self.opacity <= 0:
@@ -187,6 +195,9 @@ class Combatant:
             shadow = pygame.Rect(0, 0, round(self.body_rect.w * 0.8), 8)
             shadow.center = (round(x), self.feet_y)
             pygame.draw.ellipse(surface, shadow_color, shadow)
+        if self.evolving:
+            self._draw_evolving(surface)
+            return
         if self.hit_time and int(self.hit_time * 30) % 2:
             return  # flicker
         i = self.anim.index_at(self.anim_time)
@@ -201,6 +212,15 @@ class Combatant:
             self._draw_shield(surface)
         if self.heal_time:
             self._draw_sparkles(surface)
+
+    def _draw_evolving(self, surface: pygame.Surface) -> None:
+        """A white silhouette switching between the old and the new form,
+        faster and faster (from 1 to 10 times a second)."""
+        t = self.evolve_time
+        cycles = t + 1.125 * t * t
+        anim = self.evolving if math.sin(cycles * 2 * math.pi) > 0 else self.anims["idle"]
+        box = anim.place(0, self.draw_x, self.sprite_feet_y, self.flip)
+        surface.blit(_silhouette(anim.frame(0, self.flip)), box)
 
     def _draw_sparkles(self, surface: pygame.Surface) -> None:
         """Small crosses rising up through the body while it heals."""
@@ -221,6 +241,17 @@ class Combatant:
         pygame.draw.ellipse(layer, (150, 240, 140, 50), layer.get_rect())
         pygame.draw.ellipse(layer, (200, 255, 190, 150), layer.get_rect(), 1)
         surface.blit(layer, bubble)
+
+
+_silhouettes: dict[pygame.Surface, pygame.Surface] = {}
+
+
+def _silhouette(frame: pygame.Surface) -> pygame.Surface:
+    """`frame` in plain white."""
+    if frame not in _silhouettes:
+        _silhouettes[frame] = pygame.mask.from_surface(frame).to_surface(setcolor=(255, 255, 255, 255),
+                                                                         unsetcolor=(0, 0, 0, 0))
+    return _silhouettes[frame]
 
 
 Choice = Move | Medicine  # what a combatant can do on its turn
@@ -331,6 +362,7 @@ class BattleScene(Scene):
         self.message = ""
         self.popups: list[Popup] = []
         self.won = False
+        self.stop_evolving = False  # X pressed while a party member evolves
         self.lost = False  # the whole party fainted (running away is neither)
         self.menu = "busy"
         self.wait = 0.0
@@ -458,6 +490,8 @@ class BattleScene(Scene):
                 self._commit(self.aim, targets[self.target])
             elif key in CANCEL_KEYS:
                 self.menu = self.aim_from
+        elif self.menu == "evolving" and key in CANCEL_KEYS:
+            self.stop_evolving = True
         elif self.menu == "end" and key in CONFIRM_KEYS:
             if not self.won:
                 # Until defeat is handled properly: heal up so the next
@@ -542,7 +576,10 @@ class BattleScene(Scene):
             self.message = "You won!" if self.won else "Your party has fainted..."
             if self.won:
                 yield VICTORY_PAUSE
-                yield from self._give_xp()
+                leveled = yield from self._give_xp()
+                for c in leveled:  # as in Red/Blue: after the battle, on reaching the level
+                    if c.monster.can_evolve:
+                        yield from self._evolve(c)
                 self.message = "You won!"
                 self._give_rewards()
             self.menu = "end"
@@ -550,23 +587,55 @@ class BattleScene(Scene):
             self._start_round()
 
     def _give_xp(self):
-        """Every party member still standing gets the XP of all the enemies."""
-        xp = sum(c.monster.xp_yield for c in self.enemies)
+        """Every party member still standing gets the XP of all the enemies.
+        Returns the members who leveled up."""
+        xp = sum(c.monster.xp_yield for c in self.enemies) * DEV.xp_multiplier
+        boost = f" (×{DEV.xp_multiplier})" if DEV.xp_multiplier > 1 else ""
+        leveled = []
         for c in self.party:
             m = c.monster
             if not c.alive or m.level >= MAX_LEVEL:
                 continue
-            self.message = f"{c.label} gained {xp} XP!"
+            self.message = f"{c.label} gained {xp} XP!{boost}"
             m.xp += xp
             while m.can_level_up:
                 yield c.fill_xp(1.0)
                 m.level_up()
+                if c not in leveled:
+                    leveled.append(c)
                 c.shown_xp = c.xp_goal = 0.0
                 self._popup(c, "LEVEL UP", ui.YELLOW)
                 self.message = f"{c.label} grew to Lv{m.level}!"
                 yield LEVEL_UP_TIME
             yield c.fill_xp(c.xp_fraction)
             yield XP_MESSAGE_TIME
+        return leveled
+
+    def _evolve(self, c: Combatant):
+        """A script: `c` evolves, unless the player stops it (X), in which
+        case it tries again the next time it levels up."""
+        m, old_name = c.monster, c.monster.name
+        into = SPECIES[m.species.evolution.into]
+        self.message = f"What? {c.label} is evolving!"
+        yield EVOLVE_INTRO_TIME
+        c.evolving, c.evolve_time = animations(into)["idle"], 0.0
+        self.menu, self.stop_evolving = "evolving", False
+        while c.evolve_time < EVOLVE_TIME and not self.stop_evolving:
+            yield 0.02
+        c.evolving = None
+        self.menu = "busy"
+        if self.stop_evolving:
+            self.message = f"Huh? {c.label} stopped evolving!"
+            yield EVOLVE_MESSAGE_TIME
+            return
+        old_label = c.label
+        m.evolve()
+        c.anims = animations(m.species)
+        c.stand()
+        c.label = c.label.replace(old_name, m.name)
+        c.heal_time = HEAL_TIME  # sparkles
+        self.message = f"{old_label} evolved into {m.name}!"
+        yield EVOLVE_MESSAGE_TIME
 
     def _give_rewards(self) -> None:
         rewards = merge([r for _ in self.enemies for r in self.loot.roll()])
@@ -618,7 +687,7 @@ class BattleScene(Scene):
     def _status_damage(self):
         """End of the round: burned and poisoned Pokémon lose HP."""
         for c in self.everyone:
-            if not c.alive or c.status not in ROUND_DAMAGE:
+            if not c.alive or c.status not in ROUND_DAMAGE or (DEV.god_mode and not c.enemy):
                 continue
             amount = min(c.monster.hp, max(1, round(c.monster.max_hp * ROUND_DAMAGE[c.status])))
             c.monster.hp -= amount
@@ -737,8 +806,10 @@ class BattleScene(Scene):
     def _apply(self, user: Combatant, move: Move, target: Combatant) -> None:
         if move.power:
             hit = damage(user, move, target)
+            if DEV.god_mode:  # the party takes nothing; enemies go down in one hit
+                hit = Hit(target.monster.hp if target.enemy else 0, hit.crit, hit.effectiveness, [])
             dealt = min(hit.total, target.monster.hp)
-            endured = (dealt == target.monster.hp and dealt > 0
+            endured = (dealt == target.monster.hp and dealt > 0 and not DEV.god_mode
                        and random.random() * 100 < target.monster.gear_bonus("endure"))
             if endured:
                 dealt -= 1  # hangs on with 1 HP
@@ -916,9 +987,10 @@ class BattleScene(Scene):
             ui.text(window, self._hint(), (8, 6), color=ui.SHADOW, size=22, shadow=False)
         if self.message:
             ui.text(window, self.message, (MESSAGE_WINDOW.x + 12, MESSAGE_WINDOW.y + PAD))
-            if self.menu == "end":
-                ui.text(window, "Enter: continue", (MESSAGE_WINDOW.right - 12, MESSAGE_WINDOW.y + PAD),
-                        ui.GREY, align="right")
+            key_hint = {"end": "Enter: continue", "evolving": "X: stop"}.get(self.menu)
+            if key_hint:
+                ui.text(window, key_hint, (MESSAGE_WINDOW.right - 12, MESSAGE_WINDOW.y + PAD), ui.GREY,
+                        align="right")
         aimed = self._aimed
 
         if self.rewards:
