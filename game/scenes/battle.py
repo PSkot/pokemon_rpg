@@ -18,10 +18,11 @@ from ..dev import DEV
 from ..engine import hats, ui
 from ..engine.animation import Animation
 from ..engine.scene import Scene, Transition
-from ..mechanics.combat import MAX_ATTACK_STAGE, SHIELD_ROUNDS, Hit, damage
+from ..mechanics.combat import MAX_STAGE, STAGE_STATS, Hit, damage, stage_factor
 from ..mechanics.items import MEDICINE, Bag, Medicine
 from ..mechanics.loot import WILD_LOOT, LootTable, merge
-from ..mechanics.pokemon import FIGHT, MAX_LEVEL, SPECIES, Monster, Move, animations
+from ..mechanics.moves import Move
+from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, animations
 from ..mechanics.status import FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES, THAW_CHANCE
 from ..mechanics.type_chart import COLORS
 from ..mechanics.type_chart import name as type_name
@@ -42,6 +43,10 @@ INFO_WINDOW = MESSAGE_WINDOW.move(0, 16)  # item descriptions, below the key hin
 
 COMMANDS = ["Fight", "Skills", "Item", "Run"]
 TARGET_TEXT = {"enemy": "Enemy", "ally": "Ally", "self": "Self"}
+SPREAD_TEXT = {"enemy": "All", "ally": "Party"}
+STAT_NAMES = {"attack": "attack", "defense": "defense", "speed": "speed"}
+STAT_ABBREV = {"attack": "ATK", "defense": "DEF", "speed": "SPD"}
+SEED_COLOR = (150, 220, 90)
 HEAL_COLOR = (120, 230, 120)
 XP_COLOR = (88, 168, 248)
 
@@ -88,7 +93,8 @@ PARTY_SLOTS = {
 
 class Combatant:
     """A Pokémon taking part in a battle: where it stands, what it is
-    animating, and its battle-only state (stat boosts, shield, charging)."""
+    animating, and its battle-only state (stat stages, shield, charging,
+    Leech Seed, ...)."""
 
     def __init__(self, monster: Monster, label: str, pos: tuple[int, int], enemy: bool):
         self.monster = monster
@@ -104,9 +110,13 @@ class Combatant:
         self.heal_time = 0.0   # > 0 while healing sparkles show
         self.opacity = 1.0 if monster.alive else FAINTED_OPACITY
         self.shown_hp = float(monster.hp)  # drains towards the real HP
-        self.attack_stage = 0  # raised by Growth
+        self.stages = dict.fromkeys(STAGE_STATS, 0)  # -6 … +6 (Growth, Growl, ...)
         self.shield = 0        # rounds of Leaf Shield left
         self.charging: Action | None = None  # a charged move that fires next round
+        self.recharging = False  # after Hyper Beam: rests next round
+        self.seeded_by: Combatant | None = None  # Leech Seed: who gets the drained HP ...
+        self.seed = 0.0                           # ... and what share of max HP each round
+        self.toxic = 0         # badly poisoned: poison damage is toxic/16 of max HP, growing
         self.berry_used = False  # its berry can be eaten once per battle
         self.evolving: Animation | None = None  # the new form's idle pose, while evolving
         self.evolve_time = 0.0
@@ -122,13 +132,14 @@ class Combatant:
 
     @property
     def can_choose(self) -> bool:
-        """Alive, not busy charging a move, and awake (asleep or frozen
-        Pokémon don't get to pick anything)."""
-        return self.alive and self.charging is None and self.status not in ("sleep", "freeze")
+        """Alive, not busy charging a move or recharging, and awake (asleep
+        or frozen Pokémon don't get to pick anything)."""
+        return (self.alive and self.charging is None and not self.recharging
+                and self.status not in ("sleep", "freeze"))
 
     @property
     def speed(self) -> float:
-        speed = self.monster.speed
+        speed = self.monster.speed * stage_factor(self.stages["speed"])
         return speed * PARALYSIS_SPEED if self.status == "paralysis" else speed
 
     @property
@@ -146,7 +157,9 @@ class Combatant:
         """Back on its feet, with its battle-only state and status cleared."""
         self.monster.hp = hp
         self.monster.cure()
-        self.attack_stage, self.shield, self.charging = 0, 0, None
+        self.stages = dict.fromkeys(STAGE_STATS, 0)
+        self.shield, self.charging, self.recharging = 0, None, False
+        self.seeded_by, self.seed, self.toxic = None, 0.0, 0
 
     @property
     def flip(self) -> bool:
@@ -428,10 +441,11 @@ class BattleScene(Scene):
         return self._candidates(self.actor, self.aim)
 
     def _choose(self, choice: Choice) -> None:
-        if isinstance(choice, Move) and choice.target == "self":
-            self._commit(choice, self.actor)
-            return
         targets = self._candidates(self.actor, choice)
+        if isinstance(choice, Move) and (choice.target == "self" or choice.spread):
+            if targets:  # nothing to aim
+                self._commit(choice, targets[0])
+            return
         if not targets:
             return  # e.g. a Revive with nobody fainted
         self.aim_from, self.aim, self.menu = self.menu, choice, "target"
@@ -454,8 +468,8 @@ class BattleScene(Scene):
             elif key in CONFIRM_KEYS:
                 command = COMMANDS[self.command]
                 if command == "Fight":
-                    self._choose(FIGHT)
-                elif command == "Skills":
+                    self._choose(self.actor.monster.basic_attack)
+                elif command == "Skills" and self.actor.monster.moves:
                     self.menu = "skills"
                 elif command == "Item" and self._medicine():
                     self.menu = "items"
@@ -517,7 +531,7 @@ class BattleScene(Scene):
 
     def _enemy_action(self, enemy: Combatant) -> Action:
         # Random for now; smarter choices can go here later.
-        move = random.choice(enemy.monster.moves)
+        move = random.choice([enemy.monster.basic_attack] + enemy.monster.moves)
         return Action(enemy, move, random.choice(self._candidates(enemy, move)))
 
     def _run_round(self) -> None:
@@ -528,7 +542,7 @@ class BattleScene(Scene):
             if c.charging:
                 actions.append(c.charging)
             elif not c.can_choose:
-                actions.append(Action(c, None, c))  # asleep or frozen
+                actions.append(Action(c, None, c))  # asleep, frozen or recharging
             elif c.enemy:
                 actions.append(self._enemy_action(c))
         # Items first, as in the main games; then those whose gear lets them
@@ -565,6 +579,8 @@ class BattleScene(Scene):
         self.message = ""
         if not self._over():
             yield from self._status_damage()
+        if not self._over():
+            yield from self._leech()
         if not self._over():
             yield from self._regen()
         self.message = ""
@@ -674,8 +690,8 @@ class BattleScene(Scene):
         elif "berry_heal" in mods and m.hp * 2 <= m.max_hp:
             amount = self._heal(c, max(1, round(m.max_hp * mods["berry_heal"] / 100)))
             note = f"{c.label} restored {amount} HP!"
-        elif "berry_attack" in mods and m.hp * 4 <= m.max_hp and c.attack_stage < MAX_ATTACK_STAGE:
-            c.attack_stage = min(MAX_ATTACK_STAGE, c.attack_stage + mods["berry_attack"])
+        elif "berry_attack" in mods and m.hp * 4 <= m.max_hp and c.stages["attack"] < MAX_STAGE:
+            c.stages["attack"] = min(MAX_STAGE, c.stages["attack"] + mods["berry_attack"])
             self._popup(c, "ATK UP", ui.YELLOW)
             note = f"{c.label}'s attack rose!"
         else:
@@ -689,7 +705,10 @@ class BattleScene(Scene):
         for c in self.everyone:
             if not c.alive or c.status not in ROUND_DAMAGE or (DEV.god_mode and not c.enemy):
                 continue
-            amount = min(c.monster.hp, max(1, round(c.monster.max_hp * ROUND_DAMAGE[c.status])))
+            share = c.toxic / 16 if c.status == "poison" and c.toxic else ROUND_DAMAGE[c.status]
+            if c.toxic:
+                c.toxic += 1
+            amount = min(c.monster.hp, max(1, round(c.monster.max_hp * share)))
             c.monster.hp -= amount
             c.hit_time = HIT_TIME
             status = STATUSES[c.status]
@@ -699,9 +718,28 @@ class BattleScene(Scene):
             yield STATUS_MESSAGE_TIME
             yield from self._berry(c)
             if not c.alive:
-                c.monster.cure()
-                self.message = f"{c.label} fainted!"
-                yield HIT_TIME + FADE_TIME + 0.4
+                yield from self._faint(c)
+            if self._over():
+                return
+
+    def _leech(self):
+        """End of the round: Leech Seed drains the seeded, and heals whoever
+        seeded them (if they're still standing)."""
+        for c in self.everyone:
+            if not c.alive or not c.seeded_by or (DEV.god_mode and not c.enemy):
+                continue
+            amount = min(c.monster.hp, max(1, round(c.monster.max_hp * c.seed)))
+            c.monster.hp -= amount
+            c.hit_time = HIT_TIME
+            self._popup(c, str(amount), SEED_COLOR)
+            self.message = f"Leech Seed saps {c.label}!"
+            seeder = c.seeded_by
+            if seeder.alive and seeder.monster.hp < seeder.monster.max_hp:
+                self._heal(seeder, amount)
+            yield STATUS_MESSAGE_TIME
+            yield from self._berry(c)
+            if not c.alive:
+                yield from self._faint(c)
             if self._over():
                 return
 
@@ -732,16 +770,25 @@ class BattleScene(Scene):
 
     def _perform(self, action: Action):
         user, move = action.user, action.choice
+        if user.recharging:
+            user.recharging = False
+            self.message = f"{user.label} must recharge!"
+            yield STATUS_MESSAGE_TIME
+            return
         if not (yield from self._can_act(user)) or move is None:
             return  # (an action without a choice only ever wakes up or thaws)
         candidates = self._candidates(user, move)
         if not candidates:
             return
-        # The planned target may have fainted since; aim at someone else.
-        target = action.target if action.target in candidates else random.choice(candidates)
         if isinstance(move, Medicine):
+            # The planned target may have fainted since; aim at someone else.
+            target = action.target if action.target in candidates else random.choice(candidates)
             yield from self._use_item(user, move, target)
             return
+        if move.spread:
+            targets = candidates
+        else:
+            targets = [action.target if action.target in candidates else random.choice(candidates)]
 
         anim = user.anims[user.monster.anim_for(move)]
         charging = bool(move.charge) and user.charging is None
@@ -757,10 +804,10 @@ class BattleScene(Scene):
         impact = max(0, len(anim.frames) - 2) / anim.fps  # the second-to-last frame
         yield impact
         if charging:
-            user.charging = Action(user, move, target)
+            user.charging = Action(user, move, targets[0])
         else:
             user.charging = None
-            self._apply(user, move, target)
+            self._apply(user, move, targets)
         yield anim.duration - impact + IMPACT_HOLD  # finish, and hold the last frame
         if charging:
             user.play(anim.sub(len(anim.frames) - 1, len(anim.frames), loop=True))  # stay charged
@@ -768,11 +815,17 @@ class BattleScene(Scene):
             user.stand()
         user.step_goal = 0.0
         yield STEP_BACK_TIME
-        yield from self._berry(target)
-        if not target.alive:
-            target.monster.cure()  # fainting clears a status
-            self.message = f"{target.label} fainted!"
-            yield HIT_TIME + FADE_TIME + 0.4
+        for c in dict.fromkeys([*targets, user]):  # (the user can faint from recoil)
+            yield from self._berry(c)
+            if not c.alive:
+                yield from self._faint(c)
+
+    def _faint(self, c: Combatant):
+        """A script: `c` has just fainted (which clears its status and seed)."""
+        c.monster.cure()
+        c.seeded_by, c.toxic = None, 0
+        self.message = f"{c.label} fainted!"
+        yield HIT_TIME + FADE_TIME + 0.4
 
     def _use_item(self, user: Combatant, medicine: Medicine, target: Combatant):
         on = "" if target is user else f" on {target.label}"
@@ -803,56 +856,108 @@ class BattleScene(Scene):
         user.step_goal = 0.0
         yield STEP_BACK_TIME
 
-    def _apply(self, user: Combatant, move: Move, target: Combatant) -> None:
-        if move.power:
-            hit = damage(user, move, target)
-            if DEV.god_mode:  # the party takes nothing; enemies go down in one hit
-                hit = Hit(target.monster.hp if target.enemy else 0, hit.crit, hit.effectiveness, [])
-            dealt = min(hit.total, target.monster.hp)
-            endured = (dealt == target.monster.hp and dealt > 0 and not DEV.god_mode
-                       and random.random() * 100 < target.monster.gear_bonus("endure"))
-            if endured:
-                dealt -= 1  # hangs on with 1 HP
-            target.monster.hp -= dealt
-            if hit.total:
-                target.hit_time = HIT_TIME
-            if hit.damage:
-                self._popup(target, str(hit.damage), ui.YELLOW if hit.crit else ui.WHITE)
-            for i, (t, amount) in enumerate(hit.added):  # beside the main number, just after it
-                self._popup(target, f"+{amount}", COLORS[t], offset=(28 + 24 * i, 8), delay=0.12 * (i + 1))
-            notes = ["A critical hit!"] if hit.crit else []
-            if hit.effectiveness == 0:
+    def _apply(self, user: Combatant, move: Move, targets: list[Combatant]) -> None:
+        """The move lands on each of `targets`; what happened goes in the message."""
+        share = move.spread_share if len(targets) > 1 else 1.0
+        notes: list[str] = []
+        for target in targets:
+            notes += self._hit(user, move, target, share) if move.damaging else self._effect(user, move, target)
+        if move.heal and user.alive and user.monster.hp < user.monster.max_hp:
+            amount = self._heal(user, max(1, round(user.monster.max_hp * move.heal)))
+            notes.append(f"{user.label} restored {amount} HP!")
+        if move.recharge:
+            user.recharging = True
+        if notes:
+            self.message = " ".join(dict.fromkeys(notes))  # (the same note once, for spread moves)
+
+    def _hit(self, user: Combatant, move: Move, target: Combatant, share: float) -> list[str]:
+        """A damaging move hits `target`. Returns notes for the message."""
+        hit = damage(user, move, target, share)
+        if DEV.god_mode:  # the party takes nothing; enemies go down in one hit
+            hit = Hit(target.monster.hp if target.enemy else 0, hit.crit, hit.effectiveness, [])
+        dealt = min(hit.total, target.monster.hp)
+        endured = (dealt == target.monster.hp and dealt > 0 and not DEV.god_mode
+                   and random.random() * 100 < target.monster.gear_bonus("endure"))
+        if endured:
+            dealt -= 1  # hangs on with 1 HP
+        target.monster.hp -= dealt
+        if hit.total:
+            target.hit_time = HIT_TIME
+        if hit.damage:
+            self._popup(target, str(hit.damage), ui.YELLOW if hit.crit else ui.WHITE)
+        for i, (t, amount) in enumerate(hit.added):  # beside the main number, just after it
+            self._popup(target, f"+{amount}", COLORS[t], offset=(28 + 24 * i, 8), delay=0.12 * (i + 1))
+        notes = ["A critical hit!"] if hit.crit else []
+        if hit.effectiveness == 0:
+            notes.append(f"It doesn't affect {target.label}...")
+        elif hit.effectiveness > 1:
+            notes.append("It's super effective!")
+        elif hit.effectiveness < 1:
+            notes.append("It's not very effective...")
+        if endured:
+            notes.append(f"{target.label} endured the hit!")
+        drain = user.monster.gear_bonus("drain")
+        if drain and dealt and user.alive and user.monster.hp < user.monster.max_hp:
+            amount = self._heal(user, max(1, round(dealt * drain / 100)))
+            notes.append(f"{user.label} drained {amount} HP!")
+        if move.recoil and dealt and user.alive and not (DEV.god_mode and not user.enemy):
+            recoil = min(user.monster.hp, max(1, round(dealt * move.recoil)))
+            user.monster.hp -= recoil
+            user.hit_time = HIT_TIME
+            self._popup(user, str(recoil), ui.WHITE)
+            notes.append(f"{user.label} is hit with recoil!")
+        status = self._roll_status(user)
+        if not status and move.status and random.random() * 100 < move.status_chance:
+            status = move.status
+        if status and target.alive:
+            notes.append(self._inflict(target, status, move))
+        return [n for n in notes if n]
+
+    def _effect(self, user: Combatant, move: Move, target: Combatant) -> list[str]:
+        """A status move works on `target`. Returns notes for the message."""
+        notes = []
+        if move.status:
+            notes.append(self._inflict(target, move.status, move) or f"It didn't affect {target.label}...")
+        for stat, change in move.stages:
+            notes.append(self._change_stage(target, stat, change))
+        if move.seed:
+            if "grass" in target.monster.species.types:
                 notes.append(f"It doesn't affect {target.label}...")
-            elif hit.effectiveness > 1:
-                notes.append("It's super effective!")
-            elif hit.effectiveness < 1:
-                notes.append("It's not very effective...")
-            if endured:
-                notes.append(f"{target.label} endured the hit!")
-            drain = user.monster.gear_bonus("drain")
-            if drain and dealt and user.alive and user.monster.hp < user.monster.max_hp:
-                amount = self._heal(user, max(1, round(dealt * drain / 100)))
-                notes.append(f"{user.label} drained {amount} HP!")
-            status = self._roll_status(user)
-            if not status and move.status and random.random() * 100 < move.status_chance:
-                status = move.status
-            if status and target.monster.inflict(status):
-                notes.append(STATUSES[status].inflicted.format(target.label))
-                self._popup(target, STATUSES[status].abbrev, STATUSES[status].color, offset=(0, -14),
-                            delay=0.3)
-            if notes:
-                self.message = " ".join(notes)
-        elif move.effect == "attack_up":
-            if target.attack_stage < MAX_ATTACK_STAGE:
-                target.attack_stage += 1
-                self._popup(target, "ATK UP", ui.YELLOW)
-                self.message = f"{target.label}'s attack rose!"
+            elif target.seeded_by:
+                notes.append(f"{target.label} is already seeded!")
             else:
-                self.message = f"{target.label}'s attack won't go any higher!"
-        elif move.effect == "shield":
-            target.shield = SHIELD_ROUNDS
+                target.seeded_by, target.seed = user, move.seed
+                self._popup(target, "SEED", SEED_COLOR)
+                notes.append(f"{target.label} was seeded!")
+        if move.shield:
+            target.shield = move.shield
             self._popup(target, "SHIELD", (150, 240, 140))
-            self.message = f"Leaves protect {target.label}!"
+            notes.append(f"Leaves protect {target.label}!")
+        return notes
+
+    def _inflict(self, target: Combatant, status: str, move: Move) -> str:
+        """Give `target` a status; returns the message ("" if it didn't take)."""
+        if not target.monster.inflict(status):
+            return ""
+        if status == "sleep":
+            target.monster.sleep_rounds += move.sleep_bonus
+        badly = status == "poison" and move.toxic
+        if badly:
+            target.toxic = 1
+        info = STATUSES[status]
+        self._popup(target, info.abbrev, info.color, offset=(0, -14), delay=0.3)
+        return f"{target.label} was badly poisoned!" if badly else info.inflicted.format(target.label)
+
+    def _change_stage(self, c: Combatant, stat: str, change: int) -> str:
+        old = c.stages[stat]
+        c.stages[stat] = max(-MAX_STAGE, min(MAX_STAGE, old + change))
+        name = STAT_NAMES[stat]
+        if c.stages[stat] == old:
+            return f"{c.label}'s {name} won't go any {'higher' if change > 0 else 'lower'}!"
+        rose = change > 0
+        self._popup(c, f"{STAT_ABBREV[stat]} {'UP' if rose else 'DOWN'}", ui.YELLOW if rose else (150, 170, 255))
+        how = "sharply " if abs(change) > 1 else ""
+        return f"{c.label}'s {name} {how}{'rose' if rose else 'fell'}!"
 
     @staticmethod
     def _roll_status(user: Combatant) -> str:
@@ -1012,9 +1117,10 @@ class BattleScene(Scene):
                 ui.text(window, move.name, (SKILL_WINDOW.x + 22, y))
                 if move.type:
                     ui.badge_text(window, type_name(move.type), self._badge_pos(i))
-                ui.text(window, str(move.power) if move.power else "-", (SKILL_WINDOW.x + 210, y),
-                        align="right")
-                ui.text(window, TARGET_TEXT[move.target], (SKILL_WINDOW.x + 222, y), ui.GREY)
+                power = str(round(move.power * move.scale)) if move.damaging else "-"
+                ui.text(window, power, (SKILL_WINDOW.x + 210, y), align="right")
+                aim = SPREAD_TEXT.get(move.target) if move.spread else TARGET_TEXT[move.target]
+                ui.text(window, aim, (SKILL_WINDOW.x + 222, y), ui.GREY)
         else:
             for i, c in enumerate(self._enemy_rows()):
                 color = ui.YELLOW if c is aimed else ui.WHITE
@@ -1027,7 +1133,9 @@ class BattleScene(Scene):
                     ui.text(window, f"Lv{c.monster.level}", (ENEMY_WINDOW.right - 12, y), ui.GREY, size=size,
                             align="right")
             for i, name in enumerate(COMMANDS):
-                color = ui.GREY if name == "Item" and not self._medicine() else ui.WHITE
+                unavailable = ((name == "Item" and not self._medicine())
+                               or (name == "Skills" and self.choosing and not self.actor.monster.moves))
+                color = ui.GREY if unavailable else ui.WHITE
                 ui.text(window, name, (COMMAND_WINDOW.x + 22, COMMAND_WINDOW.y + PAD + i * ROW_H), color)
 
         for i, c in enumerate(self.party):

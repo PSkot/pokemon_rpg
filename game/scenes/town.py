@@ -21,6 +21,7 @@ ARRIVE_GAP = 3 * TILE  # how far from the doorway the player arrives
 
 
 class TownScene(MapScene):
+    in_town = True
     def __init__(self, game: Game, town: Town, arrive: str = "home"):
         """`arrive`: "home" (a new game, or after fainting), or the side
         ("left"/"right") of the doorway the player came in by."""

@@ -237,7 +237,8 @@ class MapScene(Scene):
         self.t += dt
         if self.panel:
             return
-        self.player.become(self.party[0].species)  # it may have evolved in a battle
+        lead = self.party[0]  # (it may have evolved or learned moves since)
+        self.player.become(lead.species, [lead.anim_for(m) for m in [lead.basic_attack, *lead.moves]])
         keys = pygame.key.get_pressed()
         self.player.update(dt, Controls(
             left=keys[pygame.K_LEFT],

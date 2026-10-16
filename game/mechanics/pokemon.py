@@ -10,51 +10,9 @@ from .. import settings
 from ..engine import hats
 from ..engine.animation import Animation, load_sheet
 from .items import SLOTS, Gear, boosted
+from .moves import Move
+from .skills import MAX_EQUIPPED, TREES, SkillTree, stand_in_tree
 from .status import SLEEP_ROUNDS, STATUSES
-
-
-@dataclass(frozen=True)
-class Move:
-    name: str
-    power: int          # 0 = status move (no damage)
-    target: str         # "enemy" (the other side), "ally" (own side) or "self"
-    anim: str = ""      # animation name; "" = the species' `fight_anim`
-    effect: str = ""    # status moves: "attack_up" or "shield"
-    # Moves with a charge message spend a round charging (the first half of
-    # the animation) and fire the next round (the second half).
-    charge: str = ""
-    type: str = ""      # one of type_chart.TYPES; "" = typeless
-    status: str = ""    # a status (see status.STATUSES) a hit may inflict ...
-    status_chance: int = 0  # ... with this % chance
-
-
-# "Fight" is every Pokémon's basic attack; the rest are its skills. It has
-# no type: always neutral, no same-type bonus.
-FIGHT = Move("Fight", 30, "enemy")
-
-MOVES = {m.name: m for m in [
-    Move("Tackle", 35, "enemy", "tackle", type="normal"),
-    Move("Growth", 0, "self", "growth", effect="attack_up", type="normal"),
-    Move("Solar Beam", 120, "enemy", "solar_beam", charge="{user} took in sunlight!", type="grass"),
-    Move("Leaf Shield", 0, "ally", "leaf_shield", effect="shield", type="grass"),
-    Move("Gust", 40, "enemy", "gust", type="flying"),  # Normal in Gen 1, Flying since Gen 2
-    # Moves for species without their own animations yet (they use `fight_anim`).
-    Move("Scratch", 40, "enemy", type="normal"),
-    Move("Bite", 60, "enemy", type="normal"),
-    Move("Headbutt", 70, "enemy", type="normal"),
-    Move("Quick Attack", 40, "enemy", type="normal"),
-    Move("Poison Sting", 15, "enemy", type="poison", status="poison", status_chance=30),
-    Move("Acid", 40, "enemy", type="poison", status="poison", status_chance=10),
-    Move("Absorb", 20, "enemy", type="grass"),
-    Move("Vine Whip", 45, "enemy", type="grass"),
-    Move("Thunder Shock", 40, "enemy", type="electric", status="paralysis", status_chance=10),
-    Move("Water Gun", 40, "enemy", type="water"),
-    Move("Bubble", 40, "enemy", type="water"),
-    Move("Powder Snow", 40, "enemy", type="ice", status="freeze", status_chance=10),
-    Move("Aurora Beam", 65, "enemy", type="ice"),
-    Move("Ice Beam", 90, "enemy", type="ice", status="freeze", status_chance=10),
-    Move("Confusion", 50, "enemy", type="psychic"),
-]}
 
 
 @dataclass(frozen=True)
@@ -78,8 +36,10 @@ class Species:
     base_defense: int
     base_speed: int
     types: tuple[str, ...]  # one or two of type_chart.TYPES
-    moves: tuple[str, ...]  # skills, by name in MOVES
-    fight_anim: str         # animation used by Fight
+    # Base attacks (by name in moves.MOVES) of a line without a skill tree
+    # yet (see skills.stand_in_tree); lines with a tree get theirs from it.
+    moves: tuple[str, ...]
+    fight_anim: str         # animation for moves without their own
     anims: dict[str, AnimSpec] = field(hash=False, compare=False)
     foot_sink: int = 0   # px the sprite is drawn into the ground (3/4-angle feet)
     # Placeholder art: a reference icon (assets/sprites/pokemon_icons/), used
@@ -99,13 +59,30 @@ class Species:
         evolution = EVOLUTIONS.get(self.key)
         return evolution if evolution and evolution.into in SPECIES else None
 
+    @property
+    def stage(self) -> int:
+        """Its evolution stage: 0 for the first of its line (Bulbasaur), 1
+        once evolved (Ivysaur), ..."""
+        key, stage = self.key, 0
+        while key in _EVOLVES_FROM:
+            key, stage = _EVOLVES_FROM[key], stage + 1
+        return stage
+
+    @property
+    def tree(self) -> SkillTree:
+        """Its line's skill tree."""
+        key = self.key
+        while key in _EVOLVES_FROM:
+            key = _EVOLVES_FROM[key]
+        return TREES.get(key) or stand_in_tree(key, SPECIES[key].moves)
+
 
 BULBASAUR_ATTACKS = "bulbasaur attacks.png"
 
 SPECIES = {
     "bulbasaur": Species(
         "Bulbasaur", 45, 49, 49, 45, ("grass", "poison"),
-        moves=("Tackle", "Growth", "Solar Beam", "Leaf Shield"),
+        moves=("Tackle", "Growl"),
         fight_anim="attack",
         anims={
             "idle": AnimSpec("bulbasaur.png", 0, fps=1, loop=True, frames=1),
@@ -124,7 +101,7 @@ SPECIES = {
         base_exp=64),
     "ivysaur": Species(
         "Ivysaur", 60, 62, 63, 60, ("grass", "poison"),
-        moves=("Tackle", "Growth", "Solar Beam", "Leaf Shield"),
+        moves=("Tackle", "Growl"),
         fight_anim="attack",
         anims={
             "idle": AnimSpec("ivysaur.png", 0, fps=1, loop=True, frames=1),
@@ -246,6 +223,8 @@ EVOLUTIONS = {key: Evolution(into, level) for key, into, level in [
     ("dratini", "dragonair", 30), ("dragonair", "dragonite", 55),
 ]}
 
+_EVOLVES_FROM = {e.into: key for key, e in EVOLUTIONS.items()}
+
 ICON_SCALE = 0.75  # icons share one scale, so species keep their relative sizes
 
 
@@ -298,7 +277,9 @@ def _stat(base: int, level: int) -> int:
 
 @dataclass
 class Monster:
-    """One Pokémon: its species, level, XP, current HP, status and equipped gear."""
+    """One Pokémon: its species, level, XP, current HP, status, equipped
+    gear, and skills (ranks in its line's skill tree, and the moves it has
+    equipped)."""
     species: Species
     level: int
     hp: int = -1  # -1 = full
@@ -306,16 +287,24 @@ class Monster:
     status: str = ""       # a key of status.STATUSES, or "" for none
     sleep_rounds: int = 0  # rounds left asleep
     xp: int = -1  # total; -1 = just reached its level
+    skills: dict[str, int] = field(default_factory=dict)  # skill key -> rank
+    equipped: list[str] = field(default_factory=list)     # skill keys of the moves it uses, besides Fight
 
     def __post_init__(self):
         if self.hp < 0:
             self.hp = self.max_hp
         if self.xp < 0:
             self.xp = xp_for_level(self.level)
+        if not self.skills:  # (a save from before skill trees, too) its base attacks
+            self.reset_skills()
 
     @classmethod
     def create(cls, species: str, level: int) -> "Monster":
-        return cls(SPECIES[species], level)
+        """A Pokémon whose skills are chosen for it (wild ones, and the
+        starter): see `SkillTree.auto_build`."""
+        monster = cls(SPECIES[species], level)
+        monster.skills, monster.equipped = monster.tree.auto_build(level, monster.species.stage)
+        return monster
 
     @property
     def name(self) -> str:
@@ -325,9 +314,52 @@ class Monster:
     def alive(self) -> bool:
         return self.hp > 0
 
+    # ----------------------------------------------------------- skills
+
+    @property
+    def tree(self) -> SkillTree:
+        return self.species.tree
+
+    @property
+    def skill_points(self) -> int:
+        """Points not spent yet."""
+        return self.tree.total_points(self.level) - self.tree.spent(self.skills)
+
+    def why_not(self, key: str) -> str:
+        """Why skill `key` can't be ranked up now ("" if it can)."""
+        return self.tree.why_not(self.skills, key, self.level, self.species.stage)
+
+    def rank_up(self, key: str) -> bool:
+        """Spend a point on skill `key` (learning it at rank 1). A move
+        learned while there's a free slot is equipped."""
+        if self.why_not(key):
+            return False
+        self.skills[key] = self.skills.get(key, 0) + 1
+        skill = self.tree.skills[key]
+        if (self.skills[key] == 1 and skill.kind == "move" and key not in self.equipped
+                and len(self.equipped) < MAX_EQUIPPED):
+            self.equipped.append(key)
+        return True
+
+    def reset_skills(self) -> None:
+        """Take back every point: only the base attacks are left, equipped."""
+        tree = self.tree
+        self.skills = {s.key: 1 for s in tree.base}
+        self.equipped = [s.key for s in tree.base[1:]][:MAX_EQUIPPED]
+
+    def move(self, key: str) -> Move:
+        """Skill `key`'s move, with its rank and modifiers."""
+        return self.tree.effective_move(self.skills, key)
+
+    @property
+    def basic_attack(self) -> Move:
+        """What Fight does: the first base attack."""
+        return self.move(self.tree.basic.key)
+
     @property
     def moves(self) -> list[Move]:
-        return [MOVES[name] for name in self.species.moves]
+        """The equipped moves (the battle's Skills menu)."""
+        return [self.move(key) for key in self.equipped if key in self.skills]
 
     @property
     def xp_yield(self) -> int:

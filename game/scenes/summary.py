@@ -19,6 +19,7 @@ from ..mechanics.status import STATUSES
 from ..mechanics.type_chart import COLORS
 from ..mechanics.type_chart import name as type_name
 from .battle import XP_COLOR
+from .skill_tree import SkillTreeScene
 
 ROW_H = 19
 PAD = 9
@@ -40,7 +41,7 @@ CLOSE_KEYS = (pygame.K_TAB, pygame.K_x, pygame.K_BACKSPACE)
 BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE)
 
 HINTS = {
-    "slots": ("Left/Right: Pokémon", "Up/Down: gear slot", "Enter: change gear", "Tab: close"),
+    "slots": ("Left/Right: Pokémon", "Up/Down: gear slot", "Enter: change gear", "S: skills", "Tab: close"),
     "choose": ("Up/Down: choose gear", "Enter: equip", "X: back"),
 }
 
@@ -114,6 +115,8 @@ class SummaryScene(Scene):
                 self.slot = (self.slot + (1 if key == pygame.K_DOWN else -1)) % len(SLOTS)
             elif key in CONFIRM_KEYS and self._options():
                 self.mode, self.choice, self.top = "choose", 0, 0
+            elif key == pygame.K_s:
+                self.next_scene = SkillTreeScene(self, self.party, self.member, self.return_to.in_town)
             elif key in CLOSE_KEYS:
                 self.next_scene = self.return_to
         elif self.mode == "choose":
@@ -204,6 +207,10 @@ class SummaryScene(Scene):
         y += ROW_H + 4
         done, needed = m.xp_progress
         ui.text(window, f"XP {done}/{needed}" if needed else "XP max", (x, y), ui.GREY, size=22)
+        if m.skill_points:  # a reminder to spend them (S)
+            xp_w = ui.font(22).size(f"XP {done}/{needed}" if needed else "XP max")[0] / 2
+            ui.text(window, f"{m.skill_points} skill point{'s' if m.skill_points > 1 else ''}", (x + xp_w + 10, y),
+                    GREEN, size=22)
         labels = ("Now", "Gear", "New") if after else ("Base", "Gear", "Total")
         for label, col in zip(labels, COLUMNS):
             ui.text(window, label, (x + col, y), ui.GREY, size=22, align="right")

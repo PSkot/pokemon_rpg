@@ -32,10 +32,6 @@ HITBOX_H = 30
 # Jump sheet row: crouch, leap (rising), airborne (falling), landing.
 JUMP_CROUCH, JUMP_RISE, JUMP_FALL, JUMP_LAND = range(4)
 
-# Attack key (1-9) -> animation name.
-ATTACKS = {1: "attack", 2: "growth", 3: "solar_beam", 4: "leaf_shield", 5: "tackle"}
-
-
 @dataclass
 class Controls:
     """One frame of player input, decoupled from the keyboard."""
@@ -57,12 +53,16 @@ class Player:
         self.facing = 1               # 1 = right, -1 = left
         self.state = "idle"           # idle, walk, run, attack, squat, air, land
         self.state_time = 0.0
-        self.attack = ATTACKS[1]      # animation of the current/last attack
+        self.attacks = ["attack"]     # animation per attack key (1 = basic attack, 2-5 = equipped moves)
+        self.attack = "attack"        # animation of the current/last attack
 
-    def become(self, species: Species) -> None:
-        """Look like `species` (the lead Pokémon, e.g. after it evolves)."""
+    def become(self, species: Species, attacks: list[str] | None = None) -> None:
+        """Look like `species` (the lead Pokémon, e.g. after it evolves),
+        with `attacks` as the animations for keys 1, 2, ..."""
         if species != self.species:
             self.species, self.anims = species, animations(species)
+        if attacks:
+            self.attacks = attacks
 
     # ------------------------------------------------------------------ state
 
@@ -107,8 +107,8 @@ class Player:
             self.set_state("idle")
 
         if self.on_ground and self.state != "squat":
-            if c.attack in ATTACKS:
-                self.attack = ATTACKS[c.attack]
+            if 1 <= c.attack <= len(self.attacks):
+                self.attack = self.attacks[c.attack - 1]
                 self.set_state("attack")
                 return
             if c.jump:

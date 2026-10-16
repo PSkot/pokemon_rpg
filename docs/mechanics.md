@@ -84,8 +84,9 @@ evolutions aren't in yet.
   faster.
 - **Stopping it:** pressing **X** during the flashing stops the evolution
   (B in Red/Blue). It tries again the next time that Pokémon levels up.
-- **What changes:** the species, and with it base stats, types, moves,
-  sprite and XP yield. The level, XP, gear and status stay. Stats are
+- **What changes:** the species, and with it base stats, types, sprite,
+  XP yield and its part of the skill tree (see `skill_trees.md`). The
+  level, XP, skills, gear and status stay. Stats are
   recalculated, and the HP gained is added to current HP (damage taken
   stays the same).
 - **Only into species that are in the game:** an evolution is skipped
@@ -137,26 +138,30 @@ party (Dewgong exists as a placeholder species).
 There are no misses: every damaging move hits. A hit is worked out in
 these steps:
 
-1. **Attack:** the user's Attack (with gear) × `(2 + stage) / 2`, where
-   `stage` is 0–6 (Growth adds +1, a Liechi Berry +1 or +2; +1 = ×1.5,
-   +6 = ×4). Halved if the user is **burned**.
-2. **Power:** the move's power + the user's gear `power` bonus. The basic
-   attack *Fight* has power 30 and no type.
+1. **Attack:** the user's Attack (with gear) × its **Attack stage**
+   multiplier (see *Stat stages*). Halved if the user is **burned**.
+2. **Power:** the move's power × its **skill rank** (+15% per rank after
+   the first: R5 = ×1.6), + the user's gear `power` bonus. Fight uses the
+   Pokémon's basic attack (see `skill_trees.md`).
 3. **Base damage** (the Gen 1 formula):
 
    ```
    base = (2 × L / 5 + 2) × power × attack / defense / 50 + 2
    ```
 
-   `L` is the user's level, `defense` the target's Defense with gear.
-4. **Critical hit:** a 6.25% chance (1 in 16), plus the user's gear `crit`
-   in percentage points (e.g. +5 → 11.25%). A crit multiplies `base` by
-   **×1.5** (Gen 2+ style; *not* Gen 1's level-based crits).
+   `L` is the user's level, `defense` the target's Defense with gear ×
+   its **Defense stage** multiplier.
+4. **Critical hit:** a 6.25% chance (1 in 16) × the move's crit ratio
+   (×8 for Razor Leaf, Gen 1's "high critical-hit ratio": 50%), plus the
+   user's gear `crit` in percentage points (e.g. +5 → 11.25%). A crit
+   multiplies `base` by **×1.5** (Gen 2+ style; *not* Gen 1's level-based
+   crits).
 5. **Leaf Shield:** if the target is shielded, `base` × **0.5**.
-6. **Random spread:** `base` × a random number from 0.85 to 1.0.
+6. **Random spread:** `base` × a random number from 0.85 to 1.0, × the
+   move's share if it hits several targets (Whirling Leaves: 0.75).
 7. **Type effectiveness:** × the type chart multiplier for the move's type
    against each of the target's types (multiplied together: 0, ¼, ½, 1,
-   2 or 4). Typeless moves (Fight) are always ×1.
+   2 or 4). Typeless moves are always ×1.
 8. **Same-type bonus (STAB):** × **1.5** if the move's type is one of the
    user's types.
 9. **Type power gear:** × `(1 + power:<type> / 100)` for the move's type
@@ -191,6 +196,8 @@ Normal vs Normal/Flying = ×1, no STAB (Bulbasaur is Grass/Poison)
 → 6 or 7 damage (crit: 8–10)
 ```
 
+At Tackle rank 3 the power is 35 × 1.3 = 45.5, so `base` ≈ 8.2 → 7–8.
+
 ### Effects that happen when a hit lands
 
 In the order the battle checks them:
@@ -205,8 +212,33 @@ In the order the battle checks them:
   **move's own status** roll at its chance (Poison Sting 30% poison,
   Thunder Shock 10% paralysis, ...). See *Status conditions* for who can
   get what.
-- **Berries:** the target may eat its berry right after being hit (see
-  *Berries*).
+- **Recoil** (Take Down, Double-Edge): the user loses 1/4 of the damage
+  it dealt (min 1).
+- **Berries:** the target (and the user, after recoil) may eat its berry
+  right after the move (see *Berries*).
+
+### Moves that aren't attacks
+
+- **Status moves** (Poison Powder, Sleep Powder) always work, unless the
+  target already has a status or its type is immune.
+- **Stat stages** (Growl, Growth, ...): see *Stat stages*.
+- **Leech Seed:** the target is seeded (Grass types can't be); see *End of
+  round*.
+- **Leaf Shield:** the target takes half damage for its rounds.
+- Moves that **hit every target** (Growl R2, Spreading Seeds, ...) need no
+  target choice and work on each Pokémon on that side.
+
+### Stat stages
+
+Attack, Defense and Speed each have a stage from **−6 to +6** for the rest
+of the battle (Gen 1's multipliers):
+
+| Stage | −6 | −5 | −4 | −3 | −2 | −1 | 0 | +1 | +2 | +3 | +4 | +5 | +6 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| × | 1/4 | 2/7 | 1/3 | 2/5 | 1/2 | 2/3 | 1 | 1.5 | 2 | 2.5 | 3 | 3.5 | 4 |
+
+Growl lowers Attack, Growth raises Attack (and Defense at R3), Poison
+Powder R2/R3 lowers Speed, a Liechi Berry raises Attack.
 
 ### Turn order
 
@@ -217,19 +249,25 @@ Each round, everyone picks first, then all actions play out in this order:
 1. **Items** (medicine) before any move.
 2. Then Pokémon whose **"act first"** gear roll succeeded (`first`: Quick
    Claw, Officer's Cap, "Hasty"; rolled every round).
-3. Then **fastest first** by Speed (with gear; **halved if paralyzed**).
+3. Then **fastest first** by Speed (with gear, × its Speed stage
+   multiplier; **halved if paralyzed**).
 4. Ties are settled at random.
 
-**Solar Beam** spends one round charging and hits the next.
+**Solar Beam** spends one round charging and hits the next (unless Quick
+Bloom). After **Hyper Beam** the user must rest the next round.
 
 ### End of round
 
 After all actions, in this order:
 
 1. **Burn and poison damage** (see below), then berries may be eaten.
-2. **Regen** (gear `regen`: Leftovers, Nightcap, "of the Chansey"): heals
+2. **Leech Seed:** each seeded Pokémon loses its seed's share of its max
+   HP (1/16; 1/12 or 1/8 at higher ranks; min 1), and whoever seeded it
+   gets that much back (if it's still standing).
+3. **Regen** (gear `regen`: Leftovers, Nightcap, "of the Chansey"): heals
    `regen`% of max HP (min 1).
-3. **Leaf Shield** counts down: it lasts the round it's used and the next.
+4. **Leaf Shield** counts down: it lasts the round it's used and the next
+   (and more at higher ranks).
 
 ---
 
@@ -244,7 +282,7 @@ cured, it faints (fainting clears it), or the party reaches a town.
 | Status | Effect | Immune type |
 | --- | --- | --- |
 | Burn | Attack ×0.5; loses 1/16 max HP at the end of each round | Fire |
-| Poison | Loses 1/8 max HP at the end of each round | Poison |
+| Poison | Loses 1/8 max HP at the end of each round. **Badly poisoned** (Toxic Spores): 1/16, then 2/16, 3/16, ... for the rest of the battle | Poison |
 | Paralysis | Speed ×0.5; 25% chance each turn to be fully paralyzed (can't act) | Electric |
 | Sleep | Loses 1–3 turns; it wakes up on the last of them | none |
 | Freeze | Loses its turns; each turn a 20% chance to thaw out | Ice |
@@ -414,8 +452,9 @@ Route 1 (Meadow pool):
 | Pikachu | 3 | 3–5 |
 | Bulbasaur | 1 | 4–5 |
 
-Wild Pokémon have no gear, and pick a random move and a random target
-each turn.
+Wild Pokémon have no gear. Their skills are filled in for their level
+(see `skill_trees.md`), and each turn they pick at random between their
+basic attack and their equipped moves, at a random target.
 
 ---
 

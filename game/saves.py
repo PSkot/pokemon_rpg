@@ -63,13 +63,19 @@ def _load_gear(d: dict) -> Gear:
 
 def _monster(m: Monster) -> dict:
     return {"species": m.species.key, "level": m.level, "xp": m.xp, "hp": m.hp, "status": m.status,
-            "sleep_rounds": m.sleep_rounds, "gear": {slot: _gear(g) for slot, g in m.gear.items()}}
+            "sleep_rounds": m.sleep_rounds, "gear": {slot: _gear(g) for slot, g in m.gear.items()},
+            "skills": m.skills, "equipped": m.equipped}
 
 
 def _load_monster(d: dict) -> Monster:
     gear = {slot: _load_gear(g) for slot, g in d["gear"].items()}
-    return Monster(SPECIES[d["species"]], d["level"], hp=d["hp"], gear=gear, status=d["status"],
-                   sleep_rounds=d["sleep_rounds"], xp=d["xp"])
+    species = SPECIES[d["species"]]
+    # Skills its tree no longer has are dropped; saves from before skill
+    # trees have none, so the Pokémon starts with its base attacks.
+    skills = {key: rank for key, rank in d.get("skills", {}).items() if key in species.tree.skills}
+    equipped = [key for key in d.get("equipped", []) if key in skills]
+    return Monster(species, d["level"], hp=d["hp"], gear=gear, status=d["status"],
+                   sleep_rounds=d["sleep_rounds"], xp=d["xp"], skills=skills, equipped=equipped)
 
 
 def snapshot(scene) -> dict:
