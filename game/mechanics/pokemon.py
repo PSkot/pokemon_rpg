@@ -36,9 +36,6 @@ class Species:
     base_defense: int
     base_speed: int
     types: tuple[str, ...]  # one or two of type_chart.TYPES
-    # Base attacks (by name in moves.MOVES) of a line without a skill tree
-    # yet (see skills.stand_in_tree); lines with a tree get theirs from it.
-    moves: tuple[str, ...]
     fight_anim: str         # animation for moves without their own
     anims: dict[str, AnimSpec] = field(hash=False, compare=False)
     foot_sink: int = 0   # px the sprite is drawn into the ground (3/4-angle feet)
@@ -74,7 +71,7 @@ class Species:
         key = self.key
         while key in _EVOLVES_FROM:
             key = _EVOLVES_FROM[key]
-        return TREES.get(key) or stand_in_tree(key, SPECIES[key].moves)
+        return TREES.get(key) or stand_in_tree(key)
 
 
 BULBASAUR_ATTACKS = "bulbasaur attacks.png"
@@ -82,7 +79,6 @@ BULBASAUR_ATTACKS = "bulbasaur attacks.png"
 SPECIES = {
     "bulbasaur": Species(
         "Bulbasaur", 45, 49, 49, 45, ("grass", "poison"),
-        moves=("Tackle", "Growl"),
         fight_anim="attack",
         anims={
             "idle": AnimSpec("bulbasaur.png", 0, fps=1, loop=True, frames=1),
@@ -101,7 +97,6 @@ SPECIES = {
         base_exp=64),
     "ivysaur": Species(
         "Ivysaur", 60, 62, 63, 60, ("grass", "poison"),
-        moves=("Tackle", "Growl"),
         fight_anim="attack",
         anims={
             "idle": AnimSpec("ivysaur.png", 0, fps=1, loop=True, frames=1),
@@ -114,7 +109,6 @@ SPECIES = {
         base_exp=141),
     "pidgey": Species(
         "Pidgey", 40, 45, 40, 56, ("normal", "flying"),
-        moves=("Gust", "Tackle"),
         fight_anim="tackle",
         anims={
             "idle": AnimSpec("pidgey.png", 0, fps=1, loop=True, frames=1),
@@ -129,38 +123,29 @@ SPECIES = {
 
 
 def _placeholder(icon: str, name: str, stats: tuple[int, int, int, int], types: tuple[str, ...],
-                 moves: tuple[str, ...], exp: int) -> Species:
-    return Species(name, *stats, types, moves, fight_anim="attack", anims={}, icon=icon, base_exp=exp)
+                 exp: int) -> Species:
+    return Species(name, *stats, types, fight_anim="attack", anims={}, icon=icon, base_exp=exp)
 
 
 # Species that only have a reference icon so far: Gen 1 base stats (HP,
-# Attack, Defense, Speed), types, a few early moves, and base experience yield.
+# Attack, Defense, Speed), types and base experience yield. (Their moves come
+# from their line's skill tree, skills.TREES.)
 SPECIES.update({
-    "rattata": _placeholder("019_rattata", "Rattata", (30, 56, 35, 72), ("normal",),
-                            ("Tackle", "Quick Attack"), exp=57),
-    "caterpie": _placeholder("010_caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), ("Tackle",), exp=53),
-    "weedle": _placeholder("013_weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"),
-                           ("Poison Sting",), exp=52),
-    "oddish": _placeholder("043_oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"),
-                           ("Absorb", "Acid"), exp=78),
-    "bellsprout": _placeholder("069_bellsprout", "Bellsprout", (50, 75, 35, 40), ("grass", "poison"),
-                               ("Vine Whip", "Acid"), exp=84),
-    "pikachu": _placeholder("025_pikachu", "Pikachu", (35, 55, 30, 90), ("electric",),
-                            ("Thunder Shock", "Quick Attack"), exp=82),
-    "seel": _placeholder("086_seel", "Seel", (65, 45, 55, 45), ("water",),
-                         ("Headbutt", "Powder Snow"), exp=100),
-    "shellder": _placeholder("090_shellder", "Shellder", (30, 65, 100, 40), ("water",),
-                             ("Tackle", "Water Gun"), exp=97),
-    "psyduck": _placeholder("054_psyduck", "Psyduck", (50, 52, 48, 55), ("water",),
-                            ("Scratch", "Water Gun"), exp=80),
-    "horsea": _placeholder("116_horsea", "Horsea", (30, 40, 70, 60), ("water",),
-                           ("Bubble", "Water Gun"), exp=83),
-    "jynx": _placeholder("124_jynx", "Jynx", (65, 50, 35, 95), ("ice", "psychic"),
-                         ("Powder Snow", "Confusion"), exp=137),
-    "dewgong": _placeholder("087_dewgong", "Dewgong", (90, 70, 80, 70), ("water", "ice"),
-                            ("Headbutt", "Aurora Beam"), exp=176),
-    "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60), ("water", "ice"),
-                           ("Water Gun", "Ice Beam"), exp=219),
+    "rattata": _placeholder("019_rattata", "Rattata", (30, 56, 35, 72), ("normal",), exp=57),
+    "caterpie": _placeholder("010_caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), exp=53),
+    "metapod": _placeholder("011_metapod", "Metapod", (50, 20, 55, 30), ("bug",), exp=72),
+    "weedle": _placeholder("013_weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"), exp=52),
+    "kakuna": _placeholder("014_kakuna", "Kakuna", (45, 25, 50, 35), ("bug", "poison"), exp=71),
+    "oddish": _placeholder("043_oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"), exp=78),
+    "bellsprout": _placeholder("069_bellsprout", "Bellsprout", (50, 75, 35, 40), ("grass", "poison"), exp=84),
+    "pikachu": _placeholder("025_pikachu", "Pikachu", (35, 55, 30, 90), ("electric",), exp=82),
+    "seel": _placeholder("086_seel", "Seel", (65, 45, 55, 45), ("water",), exp=100),
+    "shellder": _placeholder("090_shellder", "Shellder", (30, 65, 100, 40), ("water",), exp=97),
+    "psyduck": _placeholder("054_psyduck", "Psyduck", (50, 52, 48, 55), ("water",), exp=80),
+    "horsea": _placeholder("116_horsea", "Horsea", (30, 40, 70, 60), ("water",), exp=83),
+    "jynx": _placeholder("124_jynx", "Jynx", (65, 50, 35, 95), ("ice", "psychic"), exp=137),
+    "dewgong": _placeholder("087_dewgong", "Dewgong", (90, 70, 80, 70), ("water", "ice"), exp=176),
+    "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60), ("water", "ice"), exp=219),
 })
 
 _KEYS = {species: key for key, species in SPECIES.items()}
@@ -243,8 +228,10 @@ def _icon_frame(icon: str) -> pygame.Surface:
 
 
 @cache
-def animations(species: Species) -> dict[str, Animation]:
-    """The species' animations, all facing right."""
+def animations(species: Species, scale: int = 1) -> dict[str, Animation]:
+    """The species' animations, all facing right (`scale` times bigger, for bosses)."""
+    if scale != 1:
+        return {name: anim.scaled(scale) for name, anim in animations(species).items()}
     if species.icon:  # a placeholder: the same still frame for everything
         frame = _icon_frame(species.icon)
         still = Animation([frame], fps=1, loop=True)
@@ -289,6 +276,7 @@ class Monster:
     xp: int = -1  # total; -1 = just reached its level
     skills: dict[str, int] = field(default_factory=dict)  # skill key -> rank
     equipped: list[str] = field(default_factory=list)     # skill keys of the moves it uses, besides Fight
+    scale: int = 1  # drawn this many times bigger (bosses); not saved
 
     def __post_init__(self):
         if self.hp < 0:

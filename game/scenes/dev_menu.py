@@ -1,7 +1,7 @@
 """Dev mode's item maker (pause menu → Add item): any gear or medicine, made
 to order and put in the bag, for testing how items behave.
 
-Gear: pick the item, its rarity, up to `MAX_AFFIXES` affixes of your
+Gear: pick the item, its rarity, its item level, up to `MAX_AFFIXES` affixes of your
 choice, and whether every value rolls at random, lowest or highest.
 Medicine: pick it and how many. It's drawn on top of everything, like the
 pause menu.
@@ -12,13 +12,14 @@ import pygame
 from .. import settings
 from ..engine import ui
 from ..mechanics.items import (AFFIX_BY_NAME, AFFIX_SLOTS, AFFIXES, ITEMS, MEDICINE, RARITIES, SLOT_NAMES, SLOTS,
-                               Bag, Gear, Roll, mod_text)
+                               Bag, Gear, Roll, level_factor, mod_text)
 
 PAD = 9
 ROW_H = 19
 VISIBLE = 10      # rows shown at once in a list; it scrolls
 MAX_AFFIXES = 5
 COUNTS = (1, 99)  # medicine
+LEVELS = (1, 100)  # gear's item level
 VALUES = {"random": "Random", "min": "Lowest", "max": "Highest"}
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE, pygame.K_ESCAPE)
@@ -93,6 +94,7 @@ class ItemMaker:
         self.rarity = "Common"
         self.affixes: list[str] = []
         self.values = "random"
+        self.level = 5
         self.count = 1
         self.row = 0
         self.picker: Picker | None = None
@@ -107,7 +109,7 @@ class ItemMaker:
     def rows(self) -> list[str]:
         rows = ["item"]
         if self.is_gear:
-            rows.append("rarity")
+            rows += ["rarity", "level"]
             if ITEMS[self.item].slot in AFFIX_SLOTS:
                 rows += [f"affix{i}" for i in range(min(len(self.affixes) + 1, MAX_AFFIXES))]
             rows.append("values")
@@ -133,6 +135,8 @@ class ItemMaker:
             self.row = (self.row + (1 if key == pygame.K_DOWN else -1)) % len(rows)
         elif key in (pygame.K_LEFT, pygame.K_RIGHT):
             self._change(row, 1 if key == pygame.K_RIGHT else -1)
+        elif key in (pygame.K_PAGEUP, pygame.K_PAGEDOWN) and row == "level":
+            self._change(row, 10 if key == pygame.K_PAGEUP else -10)
         elif key in CONFIRM_KEYS:
             if row == "item":
                 self.picking, self.picker = "item", Picker("Item", self._item_entries(), self.item)
@@ -159,6 +163,8 @@ class ItemMaker:
             self.values = keys[(keys.index(self.values) + step) % len(keys)]
         elif row == "count":
             self.count = max(COUNTS[0], min(COUNTS[1], self.count + step))
+        elif row == "level":
+            self.level = max(LEVELS[0], min(LEVELS[1], self.level + step))
 
     def _picked(self, value: str | None, row: str | None = None) -> None:
         row = row or self.picking
@@ -193,10 +199,10 @@ class ItemMaker:
             self.bag.add_medicine(self.item, self.count)
             self.message = [(f"Added {self.count} × {self.item} to the bag.", ui.WHITE)]
             return
-        gear = Gear.roll(self.item, self.rarity, affixes=self.affixes, values=self.values)
+        gear = Gear.roll(self.item, self.rarity, affixes=self.affixes, values=self.values, level=self.level)
         self.bag.add(gear)
         mods = ", ".join(mod_text(mod, value) for mod, value in gear.mods.items()) or "No stat changes"
-        self.message = [(f"Added {gear.name} ({gear.rarity.name}) to the bag.", gear.rarity.color),
+        self.message = [(f"Added {gear.name} (Lv{gear.level} {gear.rarity.name}) to the bag.", gear.rarity.color),
                         (mods, ui.GREY)]
 
     # ------------------------------------------------------------------ draw
@@ -230,6 +236,11 @@ class ItemMaker:
                 ui.text(window, "Rarity", (left, y), color)
                 ui.text(window, f"< {self.rarity} >", (value_x, y), rarity.color)
                 ui.text(window, f"bonuses ×{rarity.factor:g}", (right, y + 2), ui.GREY, size=22, align="right")
+            elif row == "level":
+                ui.text(window, "Level", (left, y), color)
+                ui.text(window, f"< Lv{self.level} >", (value_x, y))
+                ui.text(window, f"stat/damage bonuses ×{level_factor(self.level):.2f}   PgUp/PgDn: ±10",
+                        (right, y + 2), ui.GREY, size=22, align="right")
             elif row.startswith("affix"):
                 n = int(row[5:])
                 ui.text(window, f"Affix {n + 1}", (left, y), color)

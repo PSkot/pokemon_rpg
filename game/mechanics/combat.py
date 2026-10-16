@@ -18,7 +18,8 @@ if TYPE_CHECKING:
 
 SHIELD_FACTOR = 0.5  # damage taken while shielded
 MAX_STAGE = 6        # stat stages go from -6 to +6
-STAGE_STATS = ("attack", "defense", "speed")
+STAGE_STATS = ("attack", "defense", "speed", "accuracy")
+FOCUS_CRIT = 4       # Focus Energy: crit chance × this
 CRIT_CHANCE = 6.25   # % (1 in 16, as in Gen 2+); gear adds to it
 CRIT_FACTOR = 1.5
 STAB = 1.5           # same-type attack bonus: a move of one of the user's own types
@@ -47,6 +48,9 @@ def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.
     and gear. `share`: the part of the damage each target takes (a move
     that hits every enemy)."""
     m, types = user.monster, target.monster.species.types
+    if move.halve:  # Super Fang: half the target's HP, whatever the stats
+        multiplier = effectiveness(move.type, types)
+        return Hit(max(1, target.monster.hp // 2) if multiplier else 0, False, multiplier, [])
     attack = m.attack * stage_factor(user.stages["attack"])
     if user.status == "burn":
         attack *= BURN_ATTACK
@@ -54,7 +58,8 @@ def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.
     power = move.power * move.scale + m.gear_bonus("power")
     level_factor = 2 * m.level / 5 + 2
     base = level_factor * power * attack / defense / 50 + 2
-    crit = random.random() * 100 < CRIT_CHANCE * move.crit_ratio + m.gear_bonus("crit")
+    focus = FOCUS_CRIT if user.focused else 1
+    crit = random.random() * 100 < CRIT_CHANCE * move.crit_ratio * focus + m.gear_bonus("crit")
     if crit:
         base *= CRIT_FACTOR
     if target.shield:

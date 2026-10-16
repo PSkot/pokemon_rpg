@@ -9,6 +9,7 @@ chest. Towns are in town.py.
 """
 
 import math
+import random
 
 import pygame
 
@@ -16,7 +17,8 @@ from .. import saves, settings
 from ..dev import DEV
 from ..engine import ui
 from ..engine.scene import Scene, Transition
-from ..mechanics.loot import BOSS_LOOT, CHEST_LOOT, LootTable
+from ..mechanics.items import Range
+from ..mechanics.loot import LootTable, boss_loot, chest_loot, wild_loot
 from ..mechanics.pokemon import SPECIES, Monster, animations
 from ..world import tileset
 from ..world.instance import Instance
@@ -49,14 +51,16 @@ def draw_prompt(surface: pygame.Surface, x: float, top: float, t: float) -> None
 class WildPokemon:
     """A group of wild Pokémon on the map, all shown, standing in a row
     behind the first. Touching them starts a battle against `encounter`:
-    a list of (species, level)."""
+    a list of (species, level). A boss group's leader (the first) can be
+    drawn `scale` times bigger (on the map and in battle)."""
 
-    def __init__(self, spawn: Spawn, boss: bool = False):
+    def __init__(self, spawn: Spawn, boss: bool = False, scale: int = 1):
         self.spawn = spawn
         self.x, self.ground_y = spawn.x, spawn.feet_y
         self.encounter = spawn.encounter
         self.boss = boss
         self.members = [SPECIES[species] for species, _ in self.encounter]
+        self.scales = [scale] + [1] * (len(self.members) - 1)
         self.facing = -1
         # Only trigger once per touch, so returning from a battle (after
         # running away) while still touching them doesn't start another one.
@@ -65,10 +69,13 @@ class WildPokemon:
     def _placed(self):
         """(species, idle animation, x, feet y) per member, the back ones first."""
         behind = -self.facing  # the others stand further from the player
+        offsets = [0.0]  # each one a spacing behind the one before (more next to a big one)
+        for a, b in zip(self.scales, self.scales[1:]):
+            offsets.append(offsets[-1] + GROUP_SPACING * (a + b) / 2)
         for i in reversed(range(len(self.members))):
-            species = self.members[i]
-            yield (species, animations(species)["idle"], self.x + behind * i * GROUP_SPACING,
-                   self.ground_y + species.foot_sink)
+            species, scale = self.members[i], self.scales[i]
+            x = self.x + behind * offsets[i]
+            yield species, animations(species, scale)["idle"], x, self.ground_y + species.foot_sink * scale
 
     @property
     def body_rect(self) -> pygame.Rect:
@@ -84,14 +91,15 @@ class WildPokemon:
 
 
 class Chest:
-    """A chest. Opening it rolls `loot` once; it stays open. A `fancy` one
-    (the boss's reward) is trimmed with gold."""
+    """A chest. Opening it rolls `loot` once, its gear at an item level in
+    `levels`; it stays open. A `fancy` one (the boss's reward) is trimmed
+    with gold."""
 
     W, BODY_H, LID_H = 32, 16, 9  # size in logical px
 
-    def __init__(self, x: float, feet_y: float, loot: LootTable = CHEST_LOOT, fancy: bool = False):
+    def __init__(self, x: float, feet_y: float, loot: LootTable, levels: Range, fancy: bool = False):
         self.x, self.feet_y = x, feet_y
-        self.loot = loot
+        self.loot, self.levels = loot, levels
         self.fancy = fancy
         self.opened = False
 
@@ -257,7 +265,7 @@ class MapScene(Scene):
         self.camera = round(max(0, min(self.level.width - view_w, self.player.x - view_w / 2)))
 
     def draw(self, canvas: pygame.Surface) -> None:
-        for layer, factor in zip(self.backgrounds, tileset.PARALLAX):
+        for layer, factor in self.backgrounds:
             canvas.blit(layer, (-round(self.camera * factor), 0))
         canvas.blit(self.tiles, (-self.camera, 0))
         # Everything on the map is drawn in map coordinates, then the part in
@@ -294,10 +302,11 @@ class OverworldScene(MapScene):
         self.instance = instance
         level, palette = self.level, self.level.theme.palette
         self.wild = [WildPokemon(s) for s in level.spawns]
-        self.boss = WildPokemon(level.boss, boss=True) if level.boss else None
+        self.boss = WildPokemon(level.boss, boss=True, scale=instance.route.boss_scale) if level.boss else None
         if self.boss:
             self.wild.append(self.boss)
-        self.chests = [Chest(x, y) for x, y in level.chests]
+        route = instance.route
+        self.chests = [Chest(x, y, chest_loot(route.loot), level.theme.levels) for x, y in level.chests]
         self.entry = Doorway(level.entry_x, level.ground_y(level.entry_x), palette)
         self.exit = Doorway(level.exit_x, level.ground_y(level.exit_x), palette, sealed=bool(self.boss))
         self.fighting: tuple[WildPokemon, BattleScene] | None = None
@@ -334,7 +343,7 @@ class OverworldScene(MapScene):
 
     def _open(self, chest: Chest) -> None:
         chest.opened = True
-        rewards = chest.loot.roll()
+        rewards = chest.loot.roll(level=random.randint(*chest.levels))
         for r in rewards:
             r.give(self.bag)
         self.panel = ui.ListPanel("The chest contained:", [r.row() for r in rewards], (320, 140))
@@ -370,7 +379,9 @@ class OverworldScene(MapScene):
         """The way out opens, and the boss leaves a reward."""
         self.exit.sealed = False
         x = self.level.boss_chest_x
-        self.chests.append(Chest(x, self.level.ground_y(x), BOSS_LOOT, fancy=True))
+        top = max(lv for _, lv in self.level.boss.encounter)  # the boss group's highest level
+        self.chests.append(Chest(x, self.level.ground_y(x), boss_loot(self.instance.route.boss_loot), (top, top),
+                                 fancy=True))
 
     def _fainted(self) -> None:
         """Back to the last town visited, where the party is healed."""
@@ -390,7 +401,12 @@ class OverworldScene(MapScene):
             touching = self.player.body_rect.colliderect(wild.body_rect)
             if touching and wild.armed:
                 enemies = [Monster.create(species, level) for species, level in wild.encounter]
-                battle = BattleScene(self, self.party, enemies, self.bag, backdrop=self.level.theme.backdrop)
+                for enemy, scale in zip(enemies, wild.scales):
+                    enemy.scale = scale
+                route = self.instance.route
+                loot = wild_loot(route.boss_loot if wild is self.boss else route.loot)
+                battle = BattleScene(self, self.party, enemies, self.bag, loot=loot,
+                                     backdrop=self.level.theme.backdrop, boss=wild is self.boss)
                 self.fighting = (wild, battle)
                 self.next_scene = Transition(self, battle)
             wild.armed = not touching

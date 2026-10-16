@@ -104,9 +104,9 @@ changes how the player looks.
 | Charmeleon | Charizard | 36 | | Abra | Kadabra | 16 |
 | Squirtle | Wartortle | 16 | | Machop | Machoke | 28 |
 | Wartortle | Blastoise | 36 | | Bellsprout | Weepinbell | 21 |
-| Caterpie | Metapod | 7 | | Tentacool | Tentacruel | 30 |
+| Caterpie | **Metapod** | 7 | | Tentacool | Tentacruel | 30 |
 | Metapod | Butterfree | 10 | | Geodude | Graveler | 25 |
-| Weedle | Kakuna | 7 | | Ponyta | Rapidash | 40 |
+| Weedle | **Kakuna** | 7 | | Ponyta | Rapidash | 40 |
 | Kakuna | Beedrill | 10 | | Slowpoke | Slowbro | 37 |
 | Pidgey | Pidgeotto | 18 | | Magnemite | Magneton | 30 |
 | Pidgeotto | Pidgeot | 36 | | Doduo | Dodrio | 31 |
@@ -135,8 +135,8 @@ party (Dewgong exists as a placeholder species).
 `game/mechanics/combat.py` (`damage`), applied in
 `game/scenes/battle.py` (`_apply`)
 
-There are no misses: every damaging move hits. A hit is worked out in
-these steps:
+Moves only miss when the user's **accuracy** has been lowered (see *Stat
+stages*). A hit is worked out in these steps:
 
 1. **Attack:** the user's Attack (with gear) × its **Attack stage**
    multiplier (see *Stat stages*). Halved if the user is **burned**.
@@ -204,8 +204,9 @@ In the order the battle checks them:
 
 - **Endure** (gear `endure`: Focus Band, Halo): if the hit would knock the
   target out, an `endure`% chance to survive with 1 HP instead.
-- **Drain** (gear `drain`: Shell Bell, Tricorne, "Draining"): the user heals
-  `drain`% of the damage actually dealt (min 1), if it's hurt.
+- **Drain** (gear `drain`: Shell Bell, Tricorne, "Draining"; moves:
+  Absorb, Mega Drain heal 1/2): the user heals that share of the damage
+  actually dealt (min 1), if it's hurt. Gear and move drain add up.
 - **Status from gear** (`status:<status>`, e.g. Witch Hat, "of the Muk"):
   each status the user's gear has is rolled at its % chance, and the first
   that succeeds is inflicted. Only if no gear status went through does the
@@ -214,24 +215,57 @@ In the order the battle checks them:
   get what.
 - **Recoil** (Take Down, Double-Edge): the user loses 1/4 of the damage
   it dealt (min 1).
+- **Stat changes by chance** (Acid 33% Defense, Bubble 33% Speed, Aurora
+  Beam 10% Attack, ...): lowered on the target.
+- **Confusion by chance** (Confusion, Psybeam 10%): see *Confusion*.
+- **Flinch** (Headbutt 30%, Hyper Fang 10%): the target loses its turn
+  this round, if it hasn't moved yet.
+- **Bind** (Wrap, Clamp): the target loses 1/16 of its max HP at the end of
+  each round for 2–5 rounds (Gen 2+ style; Gen 1 locked the target). A
+  bound Pokémon isn't bound again until it's free.
+
+**Several hits** (Fury Attack, Pin Missile, Double Slap: 2–5 hits; 2 or 3
+each 3/8 of the time, 4 or 5 each 1/8; Twineedle: 2): each hit is worked
+out on its own (its own crit), the total shows as one number, and each
+hit rolls the added effects' chances.
+
+**Super Fang** takes half the target's current HP (min 1), whatever the
+stats; only type immunity stops it (Ghost).
 - **Berries:** the target (and the user, after recoil) may eat its berry
   right after the move (see *Berries*).
 
 ### Moves that aren't attacks
 
-- **Status moves** (Poison Powder, Sleep Powder) always work, unless the
-  target already has a status or its type is immune.
-- **Stat stages** (Growl, Growth, ...): see *Stat stages*.
-- **Leech Seed:** the target is seeded (Grass types can't be); see *End of
-  round*.
+- **Status moves** that inflict a status or confusion work with their
+  Gen 1 chance (Poison Powder, Sleep Powder, Stun Spore, Lovely Kiss 75%;
+  Sing, Supersonic 55%; Thunder Wave, Confuse Ray 100%), unless the
+  target already has a status or its type is immune. Every other status
+  move always works.
+- **Immune types:** Leech Seed doesn't affect Grass types, Thunder Wave
+  doesn't affect Ground types.
+- **Stat stages** (Growl, Growth, Sand-Attack, ...): see *Stat stages*.
+- **Leech Seed:** the target is seeded; see *End of round*.
 - **Leaf Shield:** the target takes half damage for its rounds.
+- **Focus Energy:** the user's crit chance ×4 for the rest of the battle
+  (Gen 1's intended effect; its real one was a bug).
+- **Rest:** the user's status is cured, it heals fully, and it falls
+  asleep for exactly 2 turns.
 - Moves that **hit every target** (Growl R2, Spreading Seeds, ...) need no
   target choice and work on each Pokémon on that side.
 
+### Confusion
+
+Not a status (it can come on top of one), and only for the battle.
+Confusion (the move) and Psybeam have a 10% chance, Supersonic 55%,
+Confuse Ray always; Thrash and Petal Dance confuse their user. It lasts
+2–5 of the Pokémon's turns. Each turn it's confused, it has a 50% chance
+to hurt itself instead of acting (a typeless 40-power hit on itself);
+on the last turn it snaps out of it and acts.
+
 ### Stat stages
 
-Attack, Defense and Speed each have a stage from **−6 to +6** for the rest
-of the battle (Gen 1's multipliers):
+Attack, Defense, Speed and accuracy each have a stage from **−6 to +6**
+for the rest of the battle (Gen 1's multipliers):
 
 | Stage | −6 | −5 | −4 | −3 | −2 | −1 | 0 | +1 | +2 | +3 | +4 | +5 | +6 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -240,6 +274,10 @@ of the battle (Gen 1's multipliers):
 Growl lowers Attack, Growth raises Attack (and Defense at R3), Poison
 Powder R2/R3 lowers Speed, a Liechi Berry raises Attack.
 
+**Accuracy** is only ever lowered (Sand-Attack, Smokescreen): a Pokémon
+with lowered accuracy hits with a chance of its multiplier (−1: 2/3, −6:
+1/4), whatever move it uses. Swift and Aerial Ace ignore it.
+
 ### Turn order
 
 `game/scenes/battle.py` (`_run_round`)
@@ -247,11 +285,13 @@ Powder R2/R3 lowers Speed, a Liechi Berry raises Attack.
 Each round, everyone picks first, then all actions play out in this order:
 
 1. **Items** (medicine) before any move.
-2. Then Pokémon whose **"act first"** gear roll succeeded (`first`: Quick
+2. Then moves with **priority** (Quick Attack, and moves given it by a
+   modifier) before the rest.
+3. Then Pokémon whose **"act first"** gear roll succeeded (`first`: Quick
    Claw, Officer's Cap, "Hasty"; rolled every round).
-3. Then **fastest first** by Speed (with gear, × its Speed stage
+4. Then **fastest first** by Speed (with gear, × its Speed stage
    multiplier; **halved if paralyzed**).
-4. Ties are settled at random.
+5. Ties are settled at random.
 
 **Solar Beam** spends one round charging and hits the next (unless Quick
 Bloom). After **Hyper Beam** the user must rest the next round.
@@ -264,10 +304,11 @@ After all actions, in this order:
 2. **Leech Seed:** each seeded Pokémon loses its seed's share of its max
    HP (1/16; 1/12 or 1/8 at higher ranks; min 1), and whoever seeded it
    gets that much back (if it's still standing).
-3. **Regen** (gear `regen`: Leftovers, Nightcap, "of the Chansey"): heals
+3. **Bind:** bound Pokémon lose their bind's share of max HP (min 1).
+4. **Regen** (gear `regen`: Leftovers, Nightcap, "of the Chansey"): heals
    `regen`% of max HP (min 1).
-4. **Leaf Shield** counts down: it lasts the round it's used and the next
-   (and more at higher ranks).
+5. **Leaf Shield** counts down: it lasts the round it's used and the next
+   (and more at higher ranks). Flinching wears off.
 
 ---
 
@@ -331,19 +372,40 @@ eaten when it does something:
 `game/mechanics/items.py`
 
 Each Pokémon has four slots: **Head** (hats, drawn on the Pokémon),
-**Held**, **Worn** and **Berry**. A piece of gear is an item plus its
-rolls.
+**Held**, **Worn** and **Berry**. A piece of gear is an item at a rarity and
+an **item level**, plus its rolls.
+
+**Starting gear:** the starter holds a Common Oran Berry (heals 20–25% of
+max HP at half HP, once per battle); the bag starts without gear.
+
+### Item level
+
+- A piece's **item level** is the level needed to **equip** it: the
+  Pokémon's level must be at least the item level. (The party screen lists
+  gear it can't use yet greyed out, with the level in red.)
+- Dropped gear gets the **defeated Pokémon's level**; chest gear a level in
+  the area's range (its Pokémon's lowest to highest level; a boss chest:
+  the boss group's highest level).
+- Item level makes **stat, power and damage bonuses** bigger: × `1 + 0.04 ×
+  (item level − 1)` (Lv1 ×1, Lv11 ×1.4, Lv26 ×2, Lv51 ×3). These are `hp`,
+  `attack`, `defense`, `speed`, `power`, `power:<type>`, `added:<type>`
+  and `super`. **Chances** (crit, act first, endure, status), regen, drain
+  and berry effects only grow with rarity.
+- So newer gear of a lower rarity can beat older gear of a higher one.
+  Muscle Band (Attack +8…12%) at its highest roll: Common Lv5 +14%, Rare
+  Lv10 +24%, Common Lv25 +24%, Uncommon Lv35 +35%, Epic Lv10 +33%.
 
 ### Rolling a piece (`Gear.roll`)
 
 1. **The item's own effect** is rolled from its range (e.g. Red Bandana:
    Attack +8…12%).
-2. **Affixes:** Head, Held and Worn items get a random number of affixes
-   for their rarity. Berries get none. Affixes are picked by weight without
+2. **Affixes:** Head, Held and Worn items get the number of affixes their
+   rarity gives (Common none). Berries get none. Affixes are picked by weight without
    repeats (normal affixes weight 3; Hasty, Draining and of the Chansey 2;
    type and status affixes 1).
 3. **Each value** is rolled as a whole number in its range, then:
-   - a **bonus** (positive) is × the rarity factor, rounded, min 1
+   - a **bonus** (positive) is × the rarity factor (and × the item-level
+     factor if it's a stat, power or damage bonus), rounded, min 1
      (Python rounds .5 to the even number: 7.5 → 8, but 2.5 → 2);
    - a **penalty** (negative, e.g. Power Bracer's Speed −10%) stays as it is.
 4. **Name:** the first prefix + item + the first suffix ("Fierce Red Bandana
@@ -352,14 +414,15 @@ rolls.
 Affixes can stack on the same stat as the item (a Fierce Red Bandana has
 two Attack rolls), and all rolls simply add up.
 
-| Rarity | Factor | Affixes |
-| --- | --- | --- |
-| Common | ×1.0 | 1–2 |
-| Rare | ×1.5 | 2–3 |
-| Epic | ×2.0 | 3–4 |
-| Legendary | ×2.5 | 4–5 |
+| Rarity | Factor | Affixes | Where it drops (for now) |
+| --- | --- | --- | --- |
+| Common (white) | ×1.0 | 0 | everywhere |
+| Uncommon (green) | ×1.25 | 1 | boss groups (from the second area on) |
+| Rare (blue) | ×1.5 | 2–3 | not yet (mid game) |
+| Epic (purple) | ×2.0 | 3–4 | not yet (late game) |
+| Legendary (orange) | ×2.5 | 4–5 | not yet (end game) |
 
-Example: Muscle Band (Attack +8…12%) at Legendary rolls 8…12 × 2.5 =
+Example: Muscle Band (Attack +8…12%) at Legendary Lv1 rolls 8…12 × 2.5 =
 Attack +20…30%.
 
 ### What gear can do (mods)
@@ -408,11 +471,15 @@ Item stats are listed in `ITEMS` and `HATS` in `items.py`.
 
 A loot table rolls one or more times. Each roll picks one entry by
 weight: nothing, some medicine, or a piece of gear (a random item, at a
-rarity picked by weight).
+rarity picked by weight, at an item level: see *Item level*).
 
-- **Won battle:** `WILD_LOOT` is rolled **once per defeated enemy**.
-- **Chest** on a map (Up): `CHEST_LOOT` once (2–3 rolls).
-- **Boss chest** (dungeons with a boss): `BOSS_LOOT` once (3–4 rolls).
+- **Won battle:** the wild table is rolled **once per defeated enemy**, at
+  that enemy's level.
+- **Chest** on a map (Up): the chest table once (2–3 rolls).
+- **Boss chest** (areas with a boss): the boss table once (3–4 rolls).
+
+Which **rarities** can drop is set per area (`Route.loot` for wild
+Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 
 | Table | Rolls | Nothing | Medicine | Gear |
 | --- | --- | --- | --- | --- |
@@ -420,13 +487,11 @@ rarity picked by weight).
 | Chest | 2–3 | – | 67% (Potions 1–3, Revive, cures, ...) | 33% |
 | Boss | 3–4 | – | 45% (Super/Hyper Potion, Revive, Full Heal/Restore) | 55% |
 
-Gear rarity weights:
-
-| | Common | Rare | Epic | Legendary |
-| --- | --- | --- | --- | --- |
-| Wild | 70% | 24% | 5% | 1% |
-| Chest | 50% | 35% | 12% | 3% |
-| Boss | 25% | 45% | 24% | 6% |
+| Area | Wild and chests | Boss |
+| --- | --- | --- |
+| Route 1 | Common | (no boss) |
+| Viridian Forest | Common | Common 60%, Uncommon 40% |
+| Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
 
@@ -436,8 +501,10 @@ Gear rarity weights:
 
 Each map theme has a weighted pool of species with level ranges. A wild
 group has 1, 2 or 3 Pokémon (weights 60 / 30 / 10), each picked from the
-pool, each at a random level in its entry's range. A boss group (dungeons
-only) has 4–5 Pokémon from the same pool at the same levels.
+pool, each at a random level in its entry's range. A **boss** (areas with
+one) guards the last map's exit: the group the area names (`Route.boss_group`),
+or else 4–5 Pokémon from the pool at the same levels; its leader (the
+first) can be drawn bigger (`Route.boss_scale`).
 
 Route 1 (Meadow pool):
 
@@ -451,6 +518,22 @@ Route 1 (Meadow pool):
 | Bellsprout | 8 | 3–5 |
 | Pikachu | 3 | 3–5 |
 | Bulbasaur | 1 | 4–5 |
+
+Viridian Forest (3 maps, Viridian City → Pewter City; Red's and Blue's
+forest Pokémon together):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Caterpie | 25 | 3–5 |
+| Metapod | 20 | 4–6 |
+| Weedle | 25 | 3–5 |
+| Kakuna | 20 | 4–6 |
+| Pikachu | 5 | 3–5 |
+
+**Boss:** a Lv10 Caterpie drawn at double size, escorted by a Lv8 Metapod
+and a Lv8 Kakuna (only the leader, the first of a boss group, is drawn
+bigger). Beating them opens the way to Pewter City and leaves a chest
+(item level 10).
 
 Wild Pokémon have no gear. Their skills are filled in for their level
 (see `skill_trees.md`), and each turn they pick at random between their

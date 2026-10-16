@@ -2,7 +2,8 @@
 their edges lead onto routes. Arriving in a town heals the party (a
 stand-in for Mom and Poké Centers).
 
-Buildings are scenery for now: shops, Poké Centers and gyms come later.
+Buildings are Pixellab sprites (see tileset.building), scenery for now:
+going inside shops, Poké Centers and gyms comes later.
 """
 
 import zlib
@@ -14,21 +15,18 @@ from .themes import MEADOW, Theme
 GROUND = 4  # tiles of ground
 
 
+HOUSES, FUNCTIONAL = "houses.png", "functional_buildings.png"  # Pixellab sheets, 2×2 cells of 128×128
+
+
 @dataclass(frozen=True)
 class Building:
-    name: str   # shown when standing in front of it ("" = an unnamed house)
-    kind: str   # how it's drawn: "house", "lab", "center", "mart" or "gym" (see tileset.draw_building)
-    col: int    # left edge, in tiles
-    width: int  # in tiles
-    roof: tuple[int, int, int] | None = None  # a house's roof colour (None: the kind's own)
+    name: str                 # shown when standing in front of it ("" = an unnamed house)
+    sprite: tuple[str, int]   # (sheet, cell): see tileset.building
+    col: int                  # left edge, in tiles
 
     @property
     def x(self) -> int:
         return self.col * TILE
-
-    @property
-    def w(self) -> int:
-        return self.width * TILE
 
 
 @dataclass(frozen=True)
@@ -54,15 +52,22 @@ class Town:
 
 TOWNS = {t.key: t for t in [
     Town("pallet", "Pallet Town", 50, (
-        Building("Your House", "house", 7, 7),
-        Building("Rival's House", "house", 18, 7, roof=(72, 104, 176)),
-        Building("Professor Oak's Lab", "lab", 29, 11),
+        Building("Your House", (HOUSES, 0), 7),
+        Building("Rival's House", (HOUSES, 1), 18),
+        Building("Professor Oak's Lab", (FUNCTIONAL, 3), 29),
     ), exits=(("right", "route_1"),), home_col=10),
     Town("viridian", "Viridian City", 72, (
-        Building("", "house", 8, 6, roof=(120, 152, 88)),
-        Building("Pokémon Center", "center", 17, 9),
-        Building("Poké Mart", "mart", 30, 8),
-        Building("", "house", 42, 6),
-        Building("Viridian Gym", "gym", 53, 12),
-    ), exits=(("left", "route_1"),), home_col=21),
+        Building("", (HOUSES, 2), 8),
+        Building("Pokémon Center", (FUNCTIONAL, 0), 17),
+        Building("Poké Mart", (FUNCTIONAL, 2), 30),
+        Building("", (HOUSES, 3), 42),
+        Building("Viridian Gym", (FUNCTIONAL, 1), 53),
+    ), exits=(("left", "route_1"), ("right", "viridian_forest")), home_col=21),
+    Town("pewter", "Pewter City", 72, (
+        Building("", (HOUSES, 3), 7),
+        Building("Pokémon Center", (FUNCTIONAL, 0), 19),
+        Building("Poké Mart", (FUNCTIONAL, 2), 32),
+        Building("Pewter Gym", (FUNCTIONAL, 1), 45),
+        Building("", (HOUSES, 2), 58),
+    ), exits=(("left", "viridian_forest"),), home_col=23),
 ]}

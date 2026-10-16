@@ -48,7 +48,8 @@ class TownScene(MapScene):
         return next((d for d in self.doors.values() if self.player.body_rect.colliderect(d[0].rect)), None)
 
     def _building_at_player(self) -> Building | None:
-        return next((b for b in self.town.buildings if b.name and b.x <= self.player.x < b.x + b.w), None)
+        return next((b for b in self.town.buildings
+                     if b.name and b.x <= self.player.x < b.x + tileset.building(b.sprite)[0].get_width()), None)
 
     def interact(self) -> None:
         door = self._door_at_player()
@@ -66,7 +67,7 @@ class TownScene(MapScene):
     def draw_things(self, layer: pygame.Surface) -> None:
         ground = round(self.level.ground_y(0))
         for b in self.town.buildings:
-            tileset.draw_building(layer, b.kind, b.x, ground, b.w, b.roof)
+            tileset.draw_building(layer, b.sprite, b.x, ground)
         for side in ("left", "right"):
             if side in self.doors:
                 self.doors[side][0].draw(layer)
@@ -78,9 +79,9 @@ class TownScene(MapScene):
         super().draw_overlay(window)
         building = self._building_at_player()
         if building and not self.panel:  # its name, over the roof
-            wall_h, roof_h, *_ = tileset.BUILDINGS[building.kind]
-            top = self.level.ground_y(0) - wall_h - roof_h - 30
-            ui.text(window, building.name, (building.x + building.w / 2 - self.camera, top), ui.WHITE, size=26,
+            image, base = tileset.building(building.sprite)
+            top = self.level.ground_y(0) - base - 16
+            ui.text(window, building.name, (building.x + image.get_width() / 2 - self.camera, top), ui.WHITE, size=26,
                     align="center")
         if self.t < BANNER_TIME:
             center = settings.LOGICAL_SIZE[0] / 2

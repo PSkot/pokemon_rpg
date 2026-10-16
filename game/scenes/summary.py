@@ -87,9 +87,10 @@ class SummaryScene(Scene):
 
     def _options(self) -> list[Gear | None]:
         """What can go in the current slot: None (= remove what's there, if
-        anything), then the bag's gear for it, best rarity first."""
+        anything), then the bag's gear for it: what it can equip first,
+        highest item level first, then best rarity."""
         fits = [g for g in self.bag.gear if g.slot == self.slot_name]
-        fits.sort(key=lambda g: (-_rarity_rank(g), g.name))
+        fits.sort(key=lambda g: (not g.usable_by(self.monster), -g.level, -_rarity_rank(g), g.name))
         return ([None] if self.slot_name in self.monster.gear else []) + fits
 
     def _preview(self) -> Monster | None:
@@ -126,6 +127,8 @@ class SummaryScene(Scene):
                 self.top = min(self.choice, max(self.top, self.choice - LIST_ROWS + 1))
             elif key in CONFIRM_KEYS:
                 option = options[self.choice]
+                if option and not option.usable_by(self.monster):
+                    return  # too high a level (the info panel says so)
                 if option:
                     self.bag.equip(self.monster, option)
                 else:
@@ -258,8 +261,8 @@ class SummaryScene(Scene):
             gear = self.monster.gear.get(slot)
             if gear:
                 ui.text(window, gear.name, (GEAR_WINDOW.x + 100, y), gear.rarity.color)
-                ui.text(window, gear.rarity.name, (GEAR_WINDOW.right - 12, y), gear.rarity.color,
-                        align="right")
+                ui.text(window, f"Lv{gear.level} {gear.rarity.name}", (GEAR_WINDOW.right - 12, y),
+                        gear.rarity.color, align="right")
             else:
                 ui.text(window, "(empty)", (GEAR_WINDOW.x + 100, y), ui.GREY)
 
@@ -268,9 +271,11 @@ class SummaryScene(Scene):
         for i, option in enumerate(options[self.top:self.top + LIST_ROWS]):
             y = GEAR_WINDOW.y + PAD + i * ROW_H
             if option:
-                ui.text(window, option.name, (GEAR_WINDOW.x + 22, y), option.rarity.color)
-                ui.text(window, option.rarity.name, (GEAR_WINDOW.right - 18, y), option.rarity.color,
-                        align="right")
+                usable = option.usable_by(self.monster)
+                color = option.rarity.color if usable else ui.GREY
+                ui.text(window, option.name, (GEAR_WINDOW.x + 22, y), color)
+                ui.text(window, f"Lv{option.level} {option.rarity.name}", (GEAR_WINDOW.right - 18, y),
+                        color if usable else RED, align="right")
             else:
                 ui.text(window, f"Remove {SLOT_NAMES[self.slot_name].lower()} gear", (GEAR_WINDOW.x + 22, y),
                         ui.GREY)
@@ -284,8 +289,10 @@ class SummaryScene(Scene):
                     size=24)
             return
         ui.text(window, gear.name, (x, y), gear.rarity.color)
-        ui.text(window, f"{gear.rarity.name} {SLOT_NAMES[gear.slot]} item", (INFO_WINDOW.right - 12, y),
-                ui.GREY, align="right")
+        usable = gear.usable_by(self.monster)
+        ui.text(window, f"Lv{gear.level} {gear.rarity.name} {SLOT_NAMES[gear.slot]} item"
+                        + ("" if usable else f"  (needs Lv{gear.level})"),
+                (INFO_WINDOW.right - 12, y), ui.GREY if usable else RED, align="right")
         ui.text(window, gear.item.description, (x, y + 15), size=24)
         mods = gear.mods
         if not mods and not gear.item.cures:  # (a cure berry's description says what it does)

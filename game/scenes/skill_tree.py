@@ -246,7 +246,9 @@ class SkillTreeScene(Scene):
             move = tree.effective_move(m.skills, skill.key)
             if move.type:
                 ui.badge_text(window, type_name(move.type), BADGE_POS)
-            if move.damaging:
+            if move.halve:
+                ui.text(window, "Takes half the target's HP", (x, y), size=22)
+            elif move.damaging:
                 now = round(move.power * (1 + RANK_DAMAGE * (max(rank, 1) - 1)))
                 text = f"Power {now}"
                 if rank and rank < skill.max_rank:

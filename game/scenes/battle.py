@@ -20,7 +20,7 @@ from ..engine.animation import Animation
 from ..engine.scene import Scene, Transition
 from ..mechanics.combat import MAX_STAGE, STAGE_STATS, Hit, damage, stage_factor
 from ..mechanics.items import MEDICINE, Bag, Medicine
-from ..mechanics.loot import WILD_LOOT, LootTable, merge
+from ..mechanics.loot import LootTable, merge, wild_loot
 from ..mechanics.moves import Move
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, animations
 from ..mechanics.status import FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES, THAW_CHANCE
@@ -44,9 +44,15 @@ INFO_WINDOW = MESSAGE_WINDOW.move(0, 16)  # item descriptions, below the key hin
 COMMANDS = ["Fight", "Skills", "Item", "Run"]
 TARGET_TEXT = {"enemy": "Enemy", "ally": "Ally", "self": "Self"}
 SPREAD_TEXT = {"enemy": "All", "ally": "Party"}
-STAT_NAMES = {"attack": "attack", "defense": "defense", "speed": "speed"}
-STAT_ABBREV = {"attack": "ATK", "defense": "DEF", "speed": "SPD"}
+STAT_NAMES = {"attack": "attack", "defense": "defense", "speed": "speed", "accuracy": "accuracy"}
+STAT_ABBREV = {"attack": "ATK", "defense": "DEF", "speed": "SPD", "accuracy": "ACC"}
 SEED_COLOR = (150, 220, 90)
+CONFUSED_COLOR = (230, 150, 230)
+CONFUSION_ROUNDS = (2, 5)   # turns a confusion lasts (counted on its own turns)
+CONFUSION_SELF_HIT = 0.5    # chance a confused Pokémon hurts itself instead of acting
+SELF_HIT = Move("its confusion", 40, "self")  # typeless, as in Gen 1
+BIND_ROUNDS = (2, 5)
+REST_ROUNDS = 2
 HEAL_COLOR = (120, 230, 120)
 XP_COLOR = (88, 168, 248)
 
@@ -101,7 +107,7 @@ class Combatant:
         self.label = label
         self.x, self.feet_y = pos
         self.enemy = enemy
-        self.anims = animations(monster.species)
+        self.anims = animations(monster.species, monster.scale)
         self.anim = self.anims["idle"]
         self.anim_time = 0.0
         self.step = 0.0        # how far it has stepped forward, towards the other side
@@ -117,6 +123,11 @@ class Combatant:
         self.seeded_by: Combatant | None = None  # Leech Seed: who gets the drained HP ...
         self.seed = 0.0                           # ... and what share of max HP each round
         self.toxic = 0         # badly poisoned: poison damage is toxic/16 of max HP, growing
+        self.confused = 0      # turns of confusion left
+        self.flinched = False  # loses its turn this round (hit by a flinching move first)
+        self.focused = False   # Focus Energy: crit chance ×4
+        self.bound = 0         # rounds left bound by Wrap/Clamp ...
+        self.bind_share = 0.0  # ... losing this share of max HP each round
         self.berry_used = False  # its berry can be eaten once per battle
         self.evolving: Animation | None = None  # the new form's idle pose, while evolving
         self.evolve_time = 0.0
@@ -160,6 +171,7 @@ class Combatant:
         self.stages = dict.fromkeys(STAGE_STATS, 0)
         self.shield, self.charging, self.recharging = 0, None, False
         self.seeded_by, self.seed, self.toxic = None, 0.0, 0
+        self.confused, self.flinched, self.focused, self.bound = 0, False, False, 0
 
     @property
     def flip(self) -> bool:
@@ -254,6 +266,17 @@ class Combatant:
         pygame.draw.ellipse(layer, (150, 240, 140, 50), layer.get_rect())
         pygame.draw.ellipse(layer, (200, 255, 190, 150), layer.get_rect(), 1)
         surface.blit(layer, bubble)
+
+
+def _hit_count(move: Move) -> int:
+    """How many times a move hits this use: 2-5 times as in Gen 1 (2 or 3
+    each 3/8 of the time, 4 or 5 each 1/8)."""
+    lo, hi = move.hits
+    if lo == hi:
+        return lo
+    weights = {2: 3, 3: 3, 4: 1, 5: 1}
+    counts = list(range(lo, hi + 1))
+    return random.choices(counts, weights=[weights.get(n, 1) for n in counts])[0]
 
 
 _silhouettes: dict[pygame.Surface, pygame.Surface] = {}
@@ -354,13 +377,14 @@ class BattleScene(Scene):
     """
 
     def __init__(self, return_to: Scene, party: list[Monster], enemies: list[Monster], bag: Bag,
-                 loot: LootTable = WILD_LOOT, backdrop: Backdrop = MEADOW_BACKDROP):
+                 loot: LootTable | None = None, backdrop: Backdrop = MEADOW_BACKDROP, boss: bool = False):
         self.return_to = return_to
         self.backdrop = backdrop
+        self.boss = boss  # the area's boss group (changes the intro)
         self.party = _side(party, enemy=False)
         self.enemies = _side(enemies, enemy=True)
         self.bag = bag
-        self.loot = loot      # rolled once per enemy when the party wins
+        self.loot = loot or wild_loot()  # rolled once per enemy when the party wins (at its level)
         self.rewards: ui.ListPanel | None = None
         self.command = 0        # cursor positions
         self.skill = 0
@@ -518,7 +542,12 @@ class BattleScene(Scene):
     # ---------------------------------------------------------------- scripts
 
     def _intro(self):
-        if len(self.enemies) == 1:
+        if self.boss:
+            first = self.enemies[0]
+            giant = "giant " if first.monster.scale > 1 else ""
+            self.message = (f"A {giant}{first.label} blocks the way!" if len(self.enemies) == 1
+                            else f"A {giant}{first.label} and its escort block the way!")
+        elif len(self.enemies) == 1:
             self.message = f"A wild {self.enemies[0].label} appeared!"
         else:
             self.message = "Wild Pokémon appeared!"
@@ -549,8 +578,9 @@ class BattleScene(Scene):
         # move first; then fastest first. Ties are settled at random.
         for a in actions:
             a.first = random.random() * 100 < a.user.monster.gear_bonus("first")
-        actions.sort(key=lambda a: (not isinstance(a.choice, Medicine), not a.first, -a.user.speed,
-                                    random.random()))
+        actions.sort(key=lambda a: (not isinstance(a.choice, Medicine),
+                                    -a.choice.priority if isinstance(a.choice, Move) else 0,
+                                    not a.first, -a.user.speed, random.random()))
         for a in actions:  # only worth a mention if it got ahead of someone faster
             a.first = a.first and any(not b.first and b.user.speed > a.user.speed for b in actions)
         self.menu = "busy"
@@ -582,10 +612,13 @@ class BattleScene(Scene):
         if not self._over():
             yield from self._leech()
         if not self._over():
+            yield from self._bind()
+        if not self._over():
             yield from self._regen()
         self.message = ""
         for c in self.everyone:
             c.shield = max(0, c.shield - 1)
+            c.flinched = False
         if self._over():
             self.won = any(c.alive for c in self.party)
             self.lost = not self.won
@@ -654,7 +687,7 @@ class BattleScene(Scene):
         yield EVOLVE_MESSAGE_TIME
 
     def _give_rewards(self) -> None:
-        rewards = merge([r for _ in self.enemies for r in self.loot.roll()])
+        rewards = merge([r for e in self.enemies for r in self.loot.roll(level=e.monster.level)])
         for r in rewards:
             r.give(self.bag)
         if rewards:
@@ -763,16 +796,65 @@ class BattleScene(Scene):
         elif status == "paralysis" and random.random() < FULLY_PARALYZED:
             self.message = f"{user.label} is fully paralyzed! It can't move!"
         else:
-            return True
+            return (yield from self._confusion(user))
         self._popup(user, STATUSES[status].abbrev, STATUSES[status].color)
         yield STATUS_MESSAGE_TIME
         return False
+
+    def _confusion(self, user: Combatant):
+        """A script: whether a confused `user` acts (it may hurt itself instead)."""
+        if not user.confused:
+            return True
+        user.confused -= 1
+        if not user.confused:
+            self.message = f"{user.label} snapped out of confusion!"
+            yield STATUS_MESSAGE_TIME
+            return True
+        self.message = f"{user.label} is confused!"
+        self._popup(user, "CONF", CONFUSED_COLOR)
+        yield STATUS_MESSAGE_TIME
+        if random.random() >= CONFUSION_SELF_HIT:
+            return True
+        hurt = 0 if DEV.god_mode and not user.enemy else min(user.monster.hp, damage(user, SELF_HIT, user).damage)
+        user.monster.hp -= hurt
+        user.hit_time = HIT_TIME
+        self._popup(user, str(hurt), ui.WHITE)
+        self.message = "It hurt itself in its confusion!"
+        yield STATUS_MESSAGE_TIME
+        if not user.alive:
+            yield from self._faint(user)
+        return False
+
+    def _bind(self):
+        """End of the round: bound Pokémon (Wrap, Clamp) lose HP."""
+        for c in self.everyone:
+            if not c.alive or not c.bound:
+                continue
+            c.bound -= 1
+            if DEV.god_mode and not c.enemy:
+                continue
+            amount = min(c.monster.hp, max(1, round(c.monster.max_hp * c.bind_share)))
+            c.monster.hp -= amount
+            c.hit_time = HIT_TIME
+            self._popup(c, str(amount), ui.WHITE)
+            self.message = f"{c.label} is hurt by the bind!" if c.bound else f"{c.label} was freed from the bind!"
+            yield STATUS_MESSAGE_TIME
+            yield from self._berry(c)
+            if not c.alive:
+                yield from self._faint(c)
+            if self._over():
+                return
 
     def _perform(self, action: Action):
         user, move = action.user, action.choice
         if user.recharging:
             user.recharging = False
             self.message = f"{user.label} must recharge!"
+            yield STATUS_MESSAGE_TIME
+            return
+        if user.flinched and move is not None:
+            user.flinched = False
+            self.message = f"{user.label} flinched!"
             yield STATUS_MESSAGE_TIME
             return
         if not (yield from self._can_act(user)) or move is None:
@@ -807,7 +889,10 @@ class BattleScene(Scene):
             user.charging = Action(user, move, targets[0])
         else:
             user.charging = None
-            self._apply(user, move, targets)
+            if self._misses(user, move):
+                self.message = f"{user.label}'s attack missed!"
+            else:
+                self._apply(user, move, targets)
         yield anim.duration - impact + IMPACT_HOLD  # finish, and hold the last frame
         if charging:
             user.play(anim.sub(len(anim.frames) - 1, len(anim.frames), loop=True))  # stay charged
@@ -820,10 +905,16 @@ class BattleScene(Scene):
             if not c.alive:
                 yield from self._faint(c)
 
+    @staticmethod
+    def _misses(user: Combatant, move: Move) -> bool:
+        """Moves only miss when the user's accuracy has been lowered (Sand-Attack)."""
+        accuracy = user.stages["accuracy"]
+        return accuracy < 0 and not move.sure_hit and random.random() >= stage_factor(accuracy)
+
     def _faint(self, c: Combatant):
         """A script: `c` has just fainted (which clears its status and seed)."""
         c.monster.cure()
-        c.seeded_by, c.toxic = None, 0
+        c.seeded_by, c.toxic, c.confused, c.bound = None, 0, 0, 0
         self.message = f"{c.label} fainted!"
         yield HIT_TIME + FADE_TIME + 0.4
 
@@ -867,12 +958,20 @@ class BattleScene(Scene):
             notes.append(f"{user.label} restored {amount} HP!")
         if move.recharge:
             user.recharging = True
+        if move.self_confuse and user.alive and not user.confused:
+            user.confused = random.randint(*CONFUSION_ROUNDS)
+            self._popup(user, "CONF", CONFUSED_COLOR, offset=(0, -14), delay=0.3)
+            notes.append(f"{user.label} became confused due to fatigue!")
         if notes:
             self.message = " ".join(dict.fromkeys(notes))  # (the same note once, for spread moves)
 
     def _hit(self, user: Combatant, move: Move, target: Combatant, share: float) -> list[str]:
-        """A damaging move hits `target`. Returns notes for the message."""
-        hit = damage(user, move, target, share)
+        """A damaging move hits `target` (once, or several times). Returns
+        notes for the message."""
+        hits = [damage(user, move, target, share) for _ in range(_hit_count(move))]
+        hit = Hit(sum(h.damage for h in hits), any(h.crit for h in hits), hits[0].effectiveness,
+                  [(t, sum(a for h in hits for u, a in h.added if u == t))
+                   for t in dict.fromkeys(u for h in hits for u, _ in h.added)])
         if DEV.god_mode:  # the party takes nothing; enemies go down in one hit
             hit = Hit(target.monster.hp if target.enemy else 0, hit.crit, hit.effectiveness, [])
         dealt = min(hit.total, target.monster.hp)
@@ -887,18 +986,21 @@ class BattleScene(Scene):
             self._popup(target, str(hit.damage), ui.YELLOW if hit.crit else ui.WHITE)
         for i, (t, amount) in enumerate(hit.added):  # beside the main number, just after it
             self._popup(target, f"+{amount}", COLORS[t], offset=(28 + 24 * i, 8), delay=0.12 * (i + 1))
-        notes = ["A critical hit!"] if hit.crit else []
+        notes = [f"Hit {len(hits)} times!"] if len(hits) > 1 and hit.effectiveness else []
+        if hit.crit:
+            notes.append("A critical hit!")
         if hit.effectiveness == 0:
             notes.append(f"It doesn't affect {target.label}...")
-        elif hit.effectiveness > 1:
+            return notes
+        if hit.effectiveness > 1:
             notes.append("It's super effective!")
         elif hit.effectiveness < 1:
             notes.append("It's not very effective...")
         if endured:
             notes.append(f"{target.label} endured the hit!")
-        drain = user.monster.gear_bonus("drain")
+        drain = user.monster.gear_bonus("drain") / 100 + move.drain
         if drain and dealt and user.alive and user.monster.hp < user.monster.max_hp:
-            amount = self._heal(user, max(1, round(dealt * drain / 100)))
+            amount = self._heal(user, max(1, round(dealt * drain)))
             notes.append(f"{user.label} drained {amount} HP!")
         if move.recoil and dealt and user.alive and not (DEV.god_mode and not user.enemy):
             recoil = min(user.monster.hp, max(1, round(dealt * move.recoil)))
@@ -906,24 +1008,43 @@ class BattleScene(Scene):
             user.hit_time = HIT_TIME
             self._popup(user, str(recoil), ui.WHITE)
             notes.append(f"{user.label} is hit with recoil!")
+        if not target.alive:
+            return notes
+        # Added effects, each hit rolling its own chance.
         status = self._roll_status(user)
-        if not status and move.status and random.random() * 100 < move.status_chance:
-            status = move.status
-        if status and target.alive:
+        for _ in hits:
+            if not status and move.status and random.random() * 100 < move.status_chance:
+                status = move.status
+        if status:
             notes.append(self._inflict(target, status, move))
+        if move.stages and random.random() * 100 < move.stage_chance:
+            notes += [self._change_stage(target, stat, change) for stat, change in move.stages]
+        if move.confuse and any(random.random() * 100 < move.confuse for _ in hits):
+            notes.append(self._confuse(target))
+        if move.flinch and any(random.random() * 100 < move.flinch for _ in hits):
+            target.flinched = True  # (only matters if it hasn't moved yet this round)
+        if move.bind and not target.bound:
+            target.bound, target.bind_share = random.randint(*BIND_ROUNDS), move.bind
+            notes.append(f"{target.label} was caught in a bind!")
         return [n for n in notes if n]
 
     def _effect(self, user: Combatant, move: Move, target: Combatant) -> list[str]:
         """A status move works on `target`. Returns notes for the message."""
+        if set(move.immune) & set(target.monster.species.types):
+            return [f"It doesn't affect {target.label}..."]
         notes = []
         if move.status:
-            notes.append(self._inflict(target, move.status, move) or f"It didn't affect {target.label}...")
+            if random.random() * 100 < move.status_chance:
+                notes.append(self._inflict(target, move.status, move) or f"It didn't affect {target.label}...")
+            else:
+                notes.append(f"{target.label} avoided it!")
+        if move.confuse:
+            notes.append(self._confuse(target) if random.random() * 100 < move.confuse
+                         else f"{target.label} avoided it!")
         for stat, change in move.stages:
             notes.append(self._change_stage(target, stat, change))
         if move.seed:
-            if "grass" in target.monster.species.types:
-                notes.append(f"It doesn't affect {target.label}...")
-            elif target.seeded_by:
+            if target.seeded_by:
                 notes.append(f"{target.label} is already seeded!")
             else:
                 target.seeded_by, target.seed = user, move.seed
@@ -933,7 +1054,27 @@ class BattleScene(Scene):
             target.shield = move.shield
             self._popup(target, "SHIELD", (150, 240, 140))
             notes.append(f"Leaves protect {target.label}!")
+        if move.focus:
+            target.focused = True
+            self._popup(target, "FOCUS", ui.YELLOW)
+            notes.append(f"{target.label} is getting pumped!")
+        if move.rest:
+            m = target.monster
+            m.cure()
+            m.hp = m.max_hp
+            m.status, m.sleep_rounds = "sleep", REST_ROUNDS
+            target.toxic = 0
+            target.heal_time = HEAL_TIME
+            self._popup(target, "SLP", STATUSES["sleep"].color)
+            notes.append(f"{target.label} slept and became healthy!")
         return notes
+
+    def _confuse(self, c: Combatant) -> str:
+        if c.confused:
+            return f"{c.label} is already confused!"
+        c.confused = random.randint(*CONFUSION_ROUNDS)
+        self._popup(c, "CONF", CONFUSED_COLOR, offset=(0, -14), delay=0.3)
+        return f"{c.label} became confused!"
 
     def _inflict(self, target: Combatant, status: str, move: Move) -> str:
         """Give `target` a status; returns the message ("" if it didn't take)."""
@@ -1117,7 +1258,7 @@ class BattleScene(Scene):
                 ui.text(window, move.name, (SKILL_WINDOW.x + 22, y))
                 if move.type:
                     ui.badge_text(window, type_name(move.type), self._badge_pos(i))
-                power = str(round(move.power * move.scale)) if move.damaging else "-"
+                power = "1/2" if move.halve else str(round(move.power * move.scale)) if move.damaging else "-"
                 ui.text(window, power, (SKILL_WINDOW.x + 210, y), align="right")
                 aim = SPREAD_TEXT.get(move.target) if move.spread else TARGET_TEXT[move.target]
                 ui.text(window, aim, (SKILL_WINDOW.x + 222, y), ui.GREY)

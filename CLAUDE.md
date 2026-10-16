@@ -50,8 +50,12 @@ non-commercial project.
 - Gear (`items.py`): each Pokémon has typed slots (head, held, worn, berry).
   Gear is rolled (`Gear.roll`): the item's own effect plus random affixes
   (prefixes/suffixes, e.g. "Fierce Red Bandana of the Aerodactyl"; suffixes
-  are named after Pokémon). Rarity (Common/Rare/Epic/Legendary) sets the affix
-  count (1–2 … 4–5) and multiplies rolled bonuses, not penalties. Mods:
+  are named after Pokémon). Rarity (Common/Uncommon/Rare/Epic/Legendary)
+  sets the affix count (0, 1, 2–3, 3–4, 4–5) and multiplies rolled
+  bonuses, not penalties. Item level (`Gear.level`) = the level needed to
+  equip it (`usable_by`); it also scales stat/power/damage bonuses
+  (`level_factor`, +4%/level), not chances. Drops get the defeated
+  Pokémon's level, chests the area's level range. Mods:
   stats in %, `crit` (% points, base 6.25%), `power` (added to move power),
   `power:<type>` (% on that type's moves), `added:<type>` (every hit deals
   that % extra as that type), `status:<status>` (% chance a hit inflicts
@@ -66,9 +70,13 @@ non-commercial project.
   per animation frame (`Animation.heads`) and per-hat tweaks. Edit it with
   `tools/hat_viewer.py`; species without head anchors don't show hats.
 - Loot (`loot.py`): `LootTable`s of weighted entries (nothing / medicine /
-  gear at weighted rarities), rolled 1+ times. A won battle rolls the
-  battle's table once per enemy (`WILD_LOOT` by default); a `Chest` on the
-  map (opened with Up) rolls `CHEST_LOOT` once. Both show a `ui.ListPanel`.
+  gear at weighted rarities), rolled 1+ times; built per set of rarity
+  weights (`wild_loot`, `chest_loot`, `boss_loot`). Each `Route` sets which
+  rarities drop (`loot`, `boss_loot`): early on Common only, Uncommon from
+  bosses; Rare and up are for later areas. A won battle rolls the
+  battle's table once per enemy; a `Chest` on the map (opened with Up)
+  rolls its table once. Both show a `ui.ListPanel`. The starter begins
+  with just a Common Oran Berry.
 - XP (`pokemon.py`): defeating a Pokémon is worth `base_exp × level / 7`
   (Gen 1; `Species.base_exp`), and reaching a level takes `level³` total XP.
   A won battle gives every party member still standing the XP of all the
@@ -81,12 +89,16 @@ non-commercial project.
   moves (4 equipped, `Monster.equipped`), modifiers (change one move). A
   rank/modifier is a dict of `Move` field changes;
   `SkillTree.effective_move` applies them (`Monster.move(key)`).
-  `Monster.create` auto-builds skills (wild Pokémon, starter). The skill
+  Every line in the game has a tree (`docs/skill_trees.md`'s tables are
+  generated: `python tools/skill_docs.py`); rank-1 texts come from
+  `moves.describe`. `Monster.create` auto-builds skills (wild Pokémon,
+  starter). The skill
   tree screen (`scenes/skill_tree.py`, party screen → S) spends points,
-  equips moves and resets points (towns only, `Scene.in_town`). Lines
-  without a tree use their species' `moves` as base attacks
-  (`stand_in_tree`). Battle: stat stages (`Combatant.stages`), Leech Seed,
-  spread moves, recoil, recharge, Toxic.
+  equips moves and resets points (towns only, `Scene.in_town`). A species
+  without a tree gets Tackle (`stand_in_tree`). Battle: stat stages
+  incl. accuracy (`Combatant.stages`; misses only come from lowered
+  accuracy), priority, multi-hit, flinch, confusion, bind, Leech Seed,
+  spread moves, recoil, recharge, drain, Rest, Focus Energy, Toxic.
 - Evolution (`pokemon.py`): `EVOLUTIONS` lists every Red/Blue level
   evolution (species key → `Evolution(into, level)`); trade/stone
   evolutions aren't in yet. An evolution is only active once its target
@@ -103,28 +115,37 @@ non-commercial project.
   one per Pokémon, stored on `Monster` and kept after battle; cleared on
   fainting. Asleep/frozen party members skip the menu. Cured by medicine.
 - Types (`type_chart.py`): the 15 Gen 1 types and chart (Ghost→Psychic fixed to
-  2×). Species have 1–2 types, moves one; Fight is typeless. STAB ×1.5.
+  2×). Species have 1–2 types, moves one (or none). STAB ×1.5.
 - Maps (`level.py`): a tile grid (16 px tiles; "#" solid, "=" one-way
   platform) generated from a seed and a theme (`themes.py`: tile palette,
   weighted encounter pool with level ranges, group sizes, battle backdrop,
   cave ceiling). Maps scroll sideways and end at a doorway (Up) to the next
   map. Wild groups are shown in full and stay gone once beaten.
 - World: the game follows the Kanto map. Towns (`towns.py` data,
-  `town.py` scene) are flat maps with placeholder buildings (scenery for
-  now) and doorways at their edges onto routes. A new game starts in
-  Pallet Town; arriving in a town heals the party and makes it the town a
-  fainted party wakes up in (`Game.town`). Progress lives in `progress.Game`
+  `town.py` scene) are flat maps with Pixellab buildings (scenery for now;
+  `Building.sprite` = (sheet, cell) of `houses.png` /
+  `functional_buildings.png`, 2×2 cells of 128×128, drawn by
+  `tileset.draw_building` standing on their base row) and doorways at
+  their edges onto routes. A new game starts in Pallet Town; arriving in
+  a town heals the party and makes it the town a fainted party wakes up
+  in (`Game.town`). Progress lives in `progress.Game`
   (party, bag, last town, routes cleared).
-- Instances (`instance.py`): a `Route` (e.g. Route 1: 2 meadow maps
-  between Pallet and Viridian) is walked as an `Instance` of generated maps
-  from one seed; every trip rolls a new seed, and the last map's doorway
-  leads into the town at the other end. Routes have no boss; an instance
-  with `boss=True` (future dungeons) ends in an arena where a boss group of
-  4–5 pool Pokémon (normal levels; stronger variants are kept for
-  gyms/legendaries) guards the sealed way out; beating it unseals the door
-  and drops a `BOSS_LOOT` chest. `tileset.py` draws placeholder tiles,
-  decorations, buildings and parallax backgrounds in code (to be replaced
-  by Pixellab tilesets). The player collides with a fixed hitbox.
+- Instances (`instance.py`): a `Route` (Route 1: 2 meadow maps, Pallet ↔
+  Viridian; Viridian Forest: 3 forest maps, Viridian ↔ Pewter, with a boss)
+  is walked as an `Instance` of generated maps from one seed; every trip
+  rolls a new seed, and the last map's doorway leads into the town at the
+  other end. A route with `boss=True` ends in an arena where a boss group
+  (`boss_group`, or else 4–5 pool Pokémon) guards the sealed way out,
+  drawn `boss_scale` times bigger (`Monster.scale`, `animations(species,
+  scale)`); beating it unseals the door and drops a boss chest.
+  Themes (`themes.py`) pick their map art with `Theme.art` ("woods":
+  Pixellab ground and background; "cave": drawn in code). `tileset.py` draws the meadow's ground
+  from `tileset_woods.png` (`_render_woods`); the ice cave's tiles and all
+  one-way platforms are still drawn in code. The
+  meadow's background (towns and routes) is Pixellab art: a sky gradient
+  with clouds, then three parallax strips (`MEADOW_STRIPS`: far mountains,
+  mid hills, near tree line; 20/35/50% of the camera). `backgrounds()`
+  returns (layer, parallax) pairs. The player collides with a fixed hitbox.
 - Saves (`saves.py`): JSON files in `saves/`: one `autosave.json` (written
   after every won battle, opened chest, party faint and leaving a map) and
   numbered manual saves (pause menu → Save game; not during battles). A
@@ -165,6 +186,22 @@ non-commercial project.
   yet: its skills use the basic attack animation).
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,
   row, fps, baseline, ...) and shared by the map player and battles.
+- Background art (`tileset.py`): `background.png` (64×64 cells) rows 3–4
+  are clouds (the white ones: `CLOUDS`). `background_far.png` (64×64,
+  rows 3–4), `background_mid.png` (64×32, rows 2–7) and
+  `background_near.png` (64×64) are strip pieces that join up side by
+  side; cells have a 1px transparent gutter on each side facing another
+  cell. Each layer (`StripArt`) is chained at random per map from pieces
+  whose edges fit (`max_step`, `max_colour`); the far mountains' flat
+  bands are also evened out at each join (`smooth`).
+- `tileset_woods.png` (32×32 cells, 1px gutter on both sides): grass tops
+  (rows 1–2, `GRASS_TOPS`) have the grass line at row 16 with plants above;
+  each flat stretch of ground gets a strip chained from them, using only
+  the 12 rows of grass and soil under the line (the cells end in a dark
+  band meant for thin ledges). Below: plain soil speckled like the sheet's
+  soil cell, with its pebbles. Step sides are drawn in the sheet's colours
+  (its cliff cells don't fit 1–2 tile steps). Row 3 sits 3px lower,
+  slopes/islands/roots aren't used yet.
 - `assets/sprites/pokemon_icons/` holds reference icons. Species without a
   Pixellab sheet use their icon as a still placeholder sprite
   (`Species.icon`; mirrored to face right) until they get one.

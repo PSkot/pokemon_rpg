@@ -1,9 +1,13 @@
-"""Placeholder art for maps, drawn in code from the theme's colours: tiles,
-decorations (grass tufts, flowers, ice crystals, icicles) and parallax
-backgrounds. To be replaced by Pixellab tilesets.
+"""Map art: tiles, decorations, buildings and parallax backgrounds.
+
+The meadow (towns and routes) uses Pixellab art: its ground from the woods
+tileset, buildings, and a parallax background. The ice cave and one-way
+platforms are still placeholders drawn in code from the theme's colours.
 """
 
 import random
+from dataclasses import dataclass
+from functools import cache
 
 import pygame
 
@@ -11,7 +15,38 @@ from .. import settings
 from .level import EMPTY, PLATFORM, ROWS, SOLID, TILE, Level
 from .themes import Palette, Theme
 
-PARALLAX = (0.2, 0.5)  # how fast the far and near background layers scroll
+FAR, NEAR = 0.2, 0.5  # how fast the farthest and nearest background layers scroll (× the camera)
+
+# Pixellab background art: sheets of cells in assets/sprites/pixellab/.
+ART = settings.ASSETS / "sprites" / "pixellab"
+MEADOW_SKY = ((120, 190, 240), (205, 234, 250))  # top and bottom of the sky gradient
+CLOUDS = ("background.png", (8, 9, 10, 11, 13))  # white clouds (64×64 cells)
+JOIN_BLEND = 6  # columns each side of a join over which flat bands' heights are evened out
+
+
+@dataclass(frozen=True)
+class StripArt:
+    """A background layer chained from strip pieces: cells of a sheet
+    whose edges join up side by side. Cells have a 1px transparent column
+    on each side facing another cell; it's cut off."""
+    sheet: str
+    cell: tuple[int, int]    # cell size in the sheet
+    pieces: tuple[int, ...]  # the cells used, row by row
+    top: int                 # y of the strip's top row on screen; its bottom colour fills below it
+    parallax: float          # how fast it scrolls (× the camera)
+    max_step: int            # how far the silhouette may jump at a join (px; summed over the bands if smooth)
+    max_colour: int = 255    # mean colour difference allowed down a join
+    smooth: bool = False     # flat colour bands (far hills): their heights are evened out at each join
+
+
+# The meadow, back to front: distant mountains, hills with trees, a tree line.
+MEADOW_STRIPS = (
+    StripArt("background_far.png", (64, 64), (9, 10, 13, 14), top=150, parallax=FAR, max_step=20, smooth=True),
+    StripArt("background_mid.png", (64, 32), tuple(range(8, 32)), top=196, parallax=0.35, max_step=1,
+             max_colour=30),
+    StripArt("background_near.png", (64, 64), tuple(range(16)), top=232, parallax=NEAR, max_step=1,
+             max_colour=45),
+)
 
 
 def _speckle(surface: pygame.Surface, rect: pygame.Rect, rng: random.Random, colors, count: int) -> None:
@@ -58,7 +93,7 @@ def _platform_tile(surface: pygame.Surface, rect: pygame.Rect, p: Palette, left_
     pygame.draw.rect(surface, p.platform, plank)
     pygame.draw.line(surface, p.platform_light, plank.topleft, (plank.right - 1, plank.top))
     pygame.draw.line(surface, p.platform_dark, (plank.left, plank.bottom - 1), (plank.right - 1, plank.bottom - 1))
-    if theme.key == "meadow":
+    if theme.art == "woods":
         for x in (rect.left + 3, rect.left + 11):  # nails / plank joints
             surface.set_at((x, rect.top + 3), p.platform_dark)
         pygame.draw.line(surface, p.platform_dark, (rect.right - 1, rect.top + 1), (rect.right - 1, rect.top + 4))
@@ -71,27 +106,6 @@ def _platform_tile(surface: pygame.Surface, rect: pygame.Rect, p: Palette, left_
 
 
 # ------------------------------------------------------------- decorations
-
-def _tuft(s, x, y, rng, p):
-    for dx, h in ((-2, 3), (0, 4), (2, 3)):
-        pygame.draw.line(s, p.top_dark if dx else p.top, (x + dx, y - 1), (x + dx + (dx > 0) - (dx < 0), y - h))
-
-
-def _flower(s, x, y, rng, p):
-    pygame.draw.line(s, p.top_dark, (x, y - 1), (x, y - 4))
-    petal = rng.choice(((240, 80, 80), (250, 220, 80), (250, 250, 250), (200, 120, 240)))
-    for dx, dy in ((-1, -5), (1, -5), (0, -6), (0, -4)):
-        s.set_at((x + dx, y + dy), petal)
-    s.set_at((x, y - 5), (250, 200, 60))
-
-
-def _bush(s, x, y, rng, p):
-    for cx, cy, r in ((x - 4, y - 4, 4), (x + 4, y - 4, 4), (x, y - 6, 5)):
-        pygame.draw.circle(s, p.top_dark, (cx, cy), r)
-    for cx, cy, r in ((x - 4, y - 5, 3), (x + 3, y - 5, 3), (x, y - 7, 3)):
-        pygame.draw.circle(s, p.top, (cx, cy), r)
-    s.set_at((x - 1, y - 9), p.top_light)
-
 
 def _rock(s, x, y, rng, p):
     pygame.draw.ellipse(s, p.fill_dark, (x - 4, y - 5, 9, 6))
@@ -116,17 +130,122 @@ def _icicle(s, x, y, rng, p):
     pygame.draw.line(s, (235, 250, 255), (x - 1, y), (x, y + h - 2))
 
 
-DECOR = {  # theme -> [(chance per ground tile, draw)]
-    "meadow": [(0.30, _tuft), (0.10, _flower), (0.05, _bush), (0.04, _rock)],
+DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the meadow's come from its tileset)
     "ice_cave": [(0.07, _crystal), (0.10, _snow_mound), (0.05, _rock)],
 }
 
 
 # --------------------------------------------------------------------- map
 
+# ------------------------------------------------------- Pixellab ground
+
+# tileset_woods.png: 32×32 cells (1px transparent gutter at both sides).
+# Grass-top cells have the grass line at row SURFACE_Y, plants above it, and
+# grass then soil below it; their last rows are a dark band (for thin
+# ledges), which deep ground leaves out.
+WOODS = "tileset_woods.png"
+WOODS_CELL = (32, 32)
+SURFACE_Y = 16
+GROUND_ROWS = 12  # rows of grass and soil used under the grass line (they end in plain soil)
+# Grass tops by cell (row × 8 + column), weighted: plain grass most often,
+# tall grass and bushes now and then.
+GRASS_TOPS = {12: 4, 13: 3, 14: 6, 15: 6, 16: 5, 17: 5, 18: 2, 19: 3, 8: 1, 9: 1, 20: 1, 21: 1}
+# The tileset's soil and outline colours (the exposed sides of steps are
+# drawn in them, as the tileset's own cliff pieces don't fit 1-tile steps).
+SOIL = (139, 76, 48)
+SOIL_SPECKS = ((131, 73, 53), (159, 114, 91), (106, 52, 45))  # as in its soil cell
+SOIL_SPECK_DENSITY = 0.05
+SOIL_SHADE = (106, 52, 45)
+SOIL_DARK = (81, 37, 39)
+OUTLINE_DARK = (38, 14, 20)
+GRASS_OUTLINE = (13, 89, 47)
+SOIL_DECALS = {51: 1}  # pebbles (on transparent)
+SOIL_DECAL_GAP = (60, 140)  # px between soil decals along the map
+
+
+@cache
+def _woods(index: int, trim: bool = True) -> pygame.Surface:
+    """A cell of the woods tileset, without its side gutters if `trim`."""
+    cell = _cells(WOODS, WOODS_CELL)[index]
+    return cell.subsurface((1, 0, 30, 32)) if trim else cell
+
+
+def _surface_px(level: Level, col: int) -> int:
+    return level.surface[col] * TILE
+
+
+def _render_woods(level: Level, surface: pygame.Surface) -> None:
+    """Meadow ground from the woods tileset: soil, then grass-top strips
+    along each flat stretch, then cliff edges where the ground steps."""
+    rng = random.Random(level.seed * 31 + 7)
+    h = surface.get_height()
+    # Soil everywhere under the grass, speckled like the tileset's soil.
+    for col in range(level.cols):
+        top = _surface_px(level, col) + GROUND_ROWS
+        surface.fill(SOIL, (col * TILE, top, TILE, h - top))
+        for _ in range(round(TILE * (h - top) * SOIL_SPECK_DENSITY)):
+            surface.set_at((col * TILE + rng.randrange(TILE), rng.randrange(top, h)), rng.choice(SOIL_SPECKS))
+    # Soil decals (pebbles, roots), only where the soil goes all the way across them.
+    decals = list(SOIL_DECALS)
+    x = rng.randint(0, 40)
+    while x < level.width:
+        decal = _woods(rng.choices(decals, weights=list(SOIL_DECALS.values()))[0])
+        box = decal.get_bounding_rect()
+        cols = range(max(0, x // TILE), min(level.cols, (x + box.w) // TILE + 1))
+        lowest_grass = max(_surface_px(level, c) for c in cols) + GROUND_ROWS
+        y = lowest_grass + rng.randint(4, 30)
+        if y + box.h < h:
+            surface.blit(decal, (x, y), box)
+        x += box.w + rng.randint(*SOIL_DECAL_GAP)
+    # Grass tops: one strip per flat stretch, chained from random cells and
+    # cut to the stretch's width.
+    tops, weights = list(GRASS_TOPS), list(GRASS_TOPS.values())
+    col = 0
+    while col < level.cols:
+        end = col
+        while end + 1 < level.cols and level.surface[end + 1] == level.surface[col]:
+            end += 1
+        width = (end - col + 1) * TILE
+        strip = pygame.Surface((width, SURFACE_Y + GROUND_ROWS), pygame.SRCALPHA)
+        x = -rng.randint(0, 29)
+        while x < width:
+            strip.blit(_woods(rng.choices(tops, weights=weights)[0]), (x, 0),
+                       pygame.Rect(0, 0, 30, SURFACE_Y + GROUND_ROWS))
+            x += 30
+        surface.blit(strip, (col * TILE, _surface_px(level, col) - SURFACE_Y))
+        col = end + 1
+    # The exposed sides where the ground steps down: an outline, a shaded
+    # band inside it, and the grass's end rounded off.
+    for col in range(level.cols):
+        top = _surface_px(level, col)
+        for side in (-1, 1):
+            n = col + side
+            if not 0 <= n < level.cols or level.surface[n] <= level.surface[col]:
+                continue
+            bottom = _surface_px(level, n)
+            x = col * TILE if side < 0 else col * TILE + TILE - 1
+            inward = -side
+            surface.fill(SOIL_SHADE, (min(x, x + inward * 2), top + 6, 3, bottom - top - 6))
+            surface.fill(SOIL_DARK, pygame.Rect(x, top + 6, 1, bottom - top - 6))
+            pygame.draw.line(surface, OUTLINE_DARK, (x, top + 6), (x, bottom - 1))
+            pygame.draw.line(surface, GRASS_OUTLINE, (x, top + 1), (x, top + 6))  # the grass's end
+            surface.set_at((x, top), (0, 0, 0, 0))  # a rounded corner
+            surface.set_at((x + inward, top), GRASS_OUTLINE)
+
+
 def render(level: Level) -> pygame.Surface:
     """The map's tiles and decorations, drawn once (transparent where empty)."""
     p, theme = level.theme.palette, level.theme
+    if theme.art == "woods":
+        surface = pygame.Surface((level.width, ROWS * TILE), pygame.SRCALPHA)
+        _render_woods(level, surface)
+        for row in range(ROWS):
+            for col in range(level.cols):
+                if level.grid[row][col] == PLATFORM:
+                    rect = pygame.Rect(col * TILE, row * TILE, TILE, TILE)
+                    _platform_tile(surface, rect, p, level.tile(col - 1, row) != PLATFORM,
+                                   level.tile(col + 1, row) != PLATFORM, theme)
+        return surface
     surface = pygame.Surface((level.width, ROWS * TILE), pygame.SRCALPHA)
     decor = []
     for row in range(ROWS):
@@ -166,41 +285,175 @@ def _layer_width(level: Level, factor: float) -> int:
     return round(settings.LOGICAL_SIZE[0] + (level.width - settings.LOGICAL_SIZE[0]) * factor) + 1
 
 
-def backgrounds(level: Level) -> list[pygame.Surface]:
-    """The far and near background layers, each just wide enough for its parallax."""
+@cache
+def _cells(sheet: str, size: tuple[int, int] = (64, 64)) -> list[pygame.Surface]:
+    """A sheet's cells, row by row."""
+    image = pygame.image.load(ART / sheet).convert_alpha()
+    w, h = size
+    return [image.subsurface((c * w, r * h, w, h))
+            for r in range(image.get_height() // h) for c in range(image.get_width() // w)]
+
+
+@cache
+def _piece(art: StripArt, index: int) -> pygame.Surface:
+    """A strip piece without its gutters (sides facing another cell)."""
+    cell = _cells(art.sheet, art.cell)[index]
+    across = _cells(art.sheet, art.cell)[0].get_parent().get_width() // art.cell[0]
+    column = index % across
+    left, right = int(column > 0), int(column < across - 1)
+    return cell.subsurface((left, 0, art.cell[0] - left - right, art.cell[1]))
+
+
+Runs = list[list]  # one column: [start row, colour] for each run of a colour, top down
+
+
+def _runs(surface: pygame.Surface, x: int) -> Runs:
+    runs, last = [], None
+    for y in range(surface.get_height()):
+        c = surface.get_at((x, y))
+        colour = tuple(c) if c.a else None
+        if colour != last:
+            runs.append([y, colour])
+            last = colour
+    return runs
+
+
+def _step(left: Runs, right: Runs) -> float:
+    """How far apart two neighbouring columns' bands are (inf: different bands)."""
+    if [c for _, c in left] != [c for _, c in right]:
+        return float("inf")
+    return sum(abs(a[0] - b[0]) for a, b in zip(left, right))
+
+
+def _join(art: StripArt, a: int, b: int) -> tuple[float, float]:
+    """(silhouette step, mean colour difference) where piece `b` follows `a`."""
+    left, right = _piece(art, a), _piece(art, b)
+    lx = left.get_width() - 1
+    if art.smooth:
+        return _step(_runs(left, lx), _runs(right, 0)), 0
+    h = left.get_height()
+    top = lambda s, x: next((y for y in range(h) if s.get_at((x, y)).a), h)  # noqa: E731
+    pairs = [(left.get_at((lx, y)), right.get_at((0, y))) for y in range(h)]
+    diffs = [sum(abs(p - q) for p, q in zip(c1[:3], c2[:3])) for c1, c2 in pairs if c1.a and c2.a]
+    return abs(top(left, lx) - top(right, 0)), sum(diffs) / max(1, len(diffs))
+
+
+@cache
+def _follows(art: StripArt) -> dict[int, list[int]]:
+    """Which pieces can follow each piece (the closest one if none fits)."""
+    follows = {}
+    for a in art.pieces:
+        costs = {b: _join(art, a, b) for b in art.pieces}
+        fits = [b for b, (step, colour) in costs.items() if step <= art.max_step and colour <= art.max_colour]
+        follows[a] = fits or [min(costs, key=lambda b: costs[b])]
+    return follows
+
+
+def _strip(art: StripArt, rng: random.Random, width: int) -> pygame.Surface:
+    """At least `width` px of the layer: pieces chained at random, each
+    followed only by one that fits (avoiding the last two used, if it can)."""
+    follows, chain, width_so_far = _follows(art), [], 0
+    piece = rng.choice(art.pieces)
+    while width_so_far < width:
+        chain.append(piece)
+        width_so_far += _piece(art, piece).get_width()
+        options = follows[piece]
+        piece = rng.choice([b for b in options if b not in chain[-2:]] or options)
+    if art.smooth:
+        return _smoothed(art, chain)
+    strip = pygame.Surface((width_so_far, art.cell[1]), pygame.SRCALPHA)
+    x = 0
+    for piece in chain:
+        strip.blit(_piece(art, piece), (x, 0))
+        x += _piece(art, piece).get_width()
+    return strip
+
+
+def _smoothed(art: StripArt, chain: list[int]) -> pygame.Surface:
+    """Pieces of flat colour bands side by side, with the bands' heights
+    evened out over a few columns at each join."""
+    columns: list[Runs] = []
+    for piece in chain:
+        surface = _piece(art, piece)
+        new = [_runs(surface, x) for x in range(surface.get_width())]
+        join = len(columns)
+        left = columns[-1] if columns else None
+        columns += new
+        if left is None or _step(left, new[0]) == float("inf"):
+            continue
+        deltas = [b[0] - a[0] for a, b in zip(left, new[0])]
+        for t in range(-JOIN_BLEND, JOIN_BLEND):
+            col = columns[join + t]
+            if _step(col, left) == float("inf"):
+                continue  # a different set of bands here: leave it
+            share = (t + JOIN_BLEND) / (2 * JOIN_BLEND) - (1 if t >= 0 else 0)
+            for run, delta in zip(col, deltas):
+                run[0] += round(delta * share)
+    h = art.cell[1]
+    strip = pygame.Surface((len(columns), h), pygame.SRCALPHA)
+    for x, col in enumerate(columns):
+        for i, (start, colour) in enumerate(col):
+            end = col[i + 1][0] if i + 1 < len(col) else h
+            if colour and end > start:
+                pygame.draw.line(strip, colour, (x, max(0, start)), (x, end - 1))
+    return strip
+
+
+def _layer_width(level: Level, factor: float) -> int:
+    return round(settings.LOGICAL_SIZE[0] + (level.width - settings.LOGICAL_SIZE[0]) * factor) + 1
+
+
+def _strip_layer(art: StripArt, level: Level, rng: random.Random, surface: pygame.Surface | None = None):
+    """The layer for `art` (drawn onto `surface` if given): its strip at its
+    height, and its bottom colour filled down to the bottom of the screen."""
+    w, h = _layer_width(level, art.parallax), settings.LOGICAL_SIZE[1]
+    layer = surface or pygame.Surface((w, h), pygame.SRCALPHA)
+    strip = _strip(art, rng, w)
+    layer.blit(strip, (0, art.top))
+    bottom = strip.get_height() - 1
+    layer.fill(strip.get_at((next(x for x in range(strip.get_width()) if strip.get_at((x, bottom)).a), bottom)),
+               (0, art.top + strip.get_height(), w, h))
+    return layer, art.parallax
+
+
+def _meadow(level: Level, rng: random.Random) -> list[tuple[pygame.Surface, float]]:
+    """Sky and clouds, then the meadow's strips (the first drawn on the sky)."""
+    far_art = MEADOW_STRIPS[0]
+    sky = pygame.Surface((_layer_width(level, far_art.parallax), settings.LOGICAL_SIZE[1]))
+    _gradient(sky, *MEADOW_SKY)
+    clouds = [cell.subsurface(cell.get_bounding_rect()) for cell in (_cells(CLOUDS[0])[i] for i in CLOUDS[1])]
+    x = rng.randint(0, 60)
+    while x < sky.get_width():
+        cloud = rng.choice(clouds)
+        sky.blit(cloud, (x, rng.randint(14, 100)))
+        x += cloud.get_width() + rng.randint(40, 140)
+    return [_strip_layer(far_art, level, rng, sky)] + [_strip_layer(art, level, rng) for art in MEADOW_STRIPS[1:]]
+
+
+def backgrounds(level: Level) -> list[tuple[pygame.Surface, float]]:
+    """The background layers, back to front, with how fast each scrolls;
+    each is just wide enough for its parallax."""
     rng = random.Random(level.seed)
+    if level.theme.art == "woods":
+        return _meadow(level, rng)
     h = settings.LOGICAL_SIZE[1]
-    far_w, near_w = (_layer_width(level, f) for f in PARALLAX)
+    far_w, near_w = _layer_width(level, FAR), _layer_width(level, NEAR)
     far = pygame.Surface((far_w, h))
     near = pygame.Surface((near_w, h), pygame.SRCALPHA)
-    if level.theme.key == "ice_cave":
-        _gradient(far, (16, 22, 42), (40, 56, 92))
-        for x in range(0, far_w, 24):  # the cave's back wall: hanging and standing rock
-            w = rng.randint(14, 30)
-            pygame.draw.polygon(far, (30, 42, 72), [(x, 0), (x + w, 0), (x + w // 2, rng.randint(30, 90))])
-            pygame.draw.polygon(far, (30, 42, 72), [(x, h), (x + w, h), (x + w // 2, h - rng.randint(60, 160))])
-        for _ in range(far_w // 40):  # faint glowing crystals
-            x, y = rng.randrange(far_w), rng.randint(100, 280)
-            pygame.draw.circle(far, (60, 100, 150), (x, y), 3)
-            far.set_at((x, y), (150, 220, 255))
-        for x in range(0, near_w, 40):
-            w = rng.randint(24, 44)
-            pygame.draw.polygon(near, (44, 60, 98), [(x, h), (x + w, h), (x + w // 2, h - rng.randint(90, 190))])
-            pygame.draw.polygon(near, (44, 60, 98), [(x, 0), (x + w, 0), (x + w // 2, rng.randint(40, 110))])
-    else:
-        _gradient(far, (120, 190, 240), (205, 234, 250))
-        for _ in range(far_w // 90):  # clouds
-            x, y = rng.randrange(far_w), rng.randint(20, 120)
-            for dx, dy, r in ((0, 0, 10), (12, -4, 13), (24, 0, 10)):
-                pygame.draw.circle(far, (245, 250, 255), (x + dx, y + dy), r)
-        for x in range(-60, far_w, 110):  # distant hills
-            r = rng.randint(80, 140)
-            pygame.draw.circle(far, (150, 200, 170), (x + r // 2, 250 + r // 3), r)
-        for x in range(-20, near_w, 18):  # a line of trees
-            top = rng.randint(200, 235)
-            pygame.draw.circle(near, (84, 150, 96), (x, top), rng.randint(14, 20))
-            pygame.draw.rect(near, (84, 150, 96), (x - 12, top, 24, h - top))
-    return [far, near]
+    _gradient(far, (16, 22, 42), (40, 56, 92))
+    for x in range(0, far_w, 24):  # the cave's back wall: hanging and standing rock
+        w = rng.randint(14, 30)
+        pygame.draw.polygon(far, (30, 42, 72), [(x, 0), (x + w, 0), (x + w // 2, rng.randint(30, 90))])
+        pygame.draw.polygon(far, (30, 42, 72), [(x, h), (x + w, h), (x + w // 2, h - rng.randint(60, 160))])
+    for _ in range(far_w // 40):  # faint glowing crystals
+        x, y = rng.randrange(far_w), rng.randint(100, 280)
+        pygame.draw.circle(far, (60, 100, 150), (x, y), 3)
+        far.set_at((x, y), (150, 220, 255))
+    for x in range(0, near_w, 40):
+        w = rng.randint(24, 44)
+        pygame.draw.polygon(near, (44, 60, 98), [(x, h), (x + w, h), (x + w // 2, h - rng.randint(90, 190))])
+        pygame.draw.polygon(near, (44, 60, 98), [(x, 0), (x + w, 0), (x + w // 2, rng.randint(40, 110))])
+    return [(far, FAR), (near, NEAR)]
 
 
 def _gradient(surface: pygame.Surface, top, bottom) -> None:
@@ -213,101 +466,28 @@ def _gradient(surface: pygame.Surface, top, bottom) -> None:
 
 # --------------------------------------------------------------- buildings
 
+BUILDING_CELL = (128, 128)  # cells of the building sheets (houses.png, functional_buildings.png)
 OUTLINE = (48, 28, 16)
-WALL = (236, 224, 196)
-WALL_DARK = (200, 186, 156)
-GLASS = (120, 176, 220)
-DOOR = (112, 72, 40)
-
-# kind -> (wall height, roof height, roof colour, wall colour)
-BUILDINGS = {
-    "house": (54, 30, (184, 72, 56), WALL),
-    "lab": (62, 16, (132, 140, 156), (226, 230, 236)),
-    "center": (60, 22, (216, 60, 60), WALL),
-    "mart": (58, 18, (60, 108, 208), WALL),
-    "gym": (80, 20, (150, 116, 76), (214, 196, 150)),
-}
+BUILDING_SINK = 1  # px a building's base sits into the ground (over the grass edge)
 
 
-def _darker(color, by: int = 40):
-    """`color` darkened by `by` (lightened if negative)."""
-    return tuple(max(0, min(255, c - by)) for c in color)
+@cache
+def building(sprite: tuple[str, int]) -> tuple[pygame.Surface, int]:
+    """A building sprite (sheet, cell) cut to its outline, and the row its
+    base stands on (the lowest row at least half its width wide: below it
+    only small things like steps or plants hang)."""
+    cell = _cells(sprite[0], BUILDING_CELL)[sprite[1]]
+    box = cell.get_bounding_rect()
+    image = cell.subsurface(box)
+    wide = [y for y in range(box.h) if sum(image.get_at((x, y)).a > 0 for x in range(box.w)) > box.w / 2]
+    return image, max(wide)
 
 
-def _window(s: pygame.Surface, x: int, y: int, w: int = 12, h: int = 10) -> None:
-    pygame.draw.rect(s, GLASS, (x, y, w, h))
-    pygame.draw.line(s, (200, 230, 250), (x + 1, y + 1), (x + w // 2, y + 1))
-    pygame.draw.line(s, OUTLINE, (x + w // 2, y), (x + w // 2, y + h - 1))
-    pygame.draw.rect(s, OUTLINE, (x, y, w, h), 1)
-
-
-def draw_building(s: pygame.Surface, kind: str, x: int, ground: int, w: int, roof=None) -> pygame.Rect:
-    """A placeholder building standing on `ground`, `w` px wide at `x`.
-    Returns its outline (walls and roof)."""
-    wall_h, roof_h, roof_color, wall = BUILDINGS[kind]
-    roof_color = roof or roof_color
-    walls = pygame.Rect(x, ground - wall_h, w, wall_h)
-    pygame.draw.rect(s, wall, walls)
-    pygame.draw.line(s, _darker(wall, 30), (walls.x, walls.bottom - 4), (walls.right - 1, walls.bottom - 4))
-    pygame.draw.rect(s, OUTLINE, walls, 1)
-
-    # The roof: sloped for houses, a flat slab with a lip for the rest.
-    top = walls.y - roof_h
-    if kind == "house":
-        roof_shape = [(x - 6, walls.y + 2), (x + 10, top), (x + w - 10, top), (x + w + 6, walls.y + 2)]
-        pygame.draw.polygon(s, roof_color, roof_shape)
-        for y in range(top + 6, walls.y, 6):  # shingle rows, inside the slopes
-            inset = 16 * (walls.y + 2 - y) / (walls.y + 2 - top) - 5
-            pygame.draw.line(s, _darker(roof_color, 25), (x + inset, y), (x + w - inset - 1, y))
-        pygame.draw.polygon(s, OUTLINE, roof_shape, 1)
-    else:
-        slab = pygame.Rect(x - 4, top, w + 8, roof_h)
-        pygame.draw.rect(s, roof_color, slab)
-        pygame.draw.line(s, _darker(roof_color, -40), slab.topleft, (slab.right - 1, slab.top))
-        pygame.draw.rect(s, _darker(roof_color), (slab.x, slab.bottom - 4, slab.w, 4))
-        pygame.draw.rect(s, OUTLINE, slab, 1)
-
-    # The door, in the middle, and windows either side.
-    door_w = 22 if kind in ("center", "mart", "gym") else 14
-    door = pygame.Rect(walls.centerx - door_w // 2, ground - 24, door_w, 24)
-    if kind in ("center", "mart"):  # glass sliding doors
-        pygame.draw.rect(s, GLASS, door)
-        pygame.draw.line(s, OUTLINE, (door.centerx, door.y), (door.centerx, door.bottom - 1))
-    else:
-        pygame.draw.rect(s, DOOR, door)
-        s.set_at((door.right - 4, door.centery), (232, 192, 72))
-    pygame.draw.rect(s, OUTLINE, door, 1)
-    pygame.draw.rect(s, _darker(wall, 60), (door.x - 2, ground - 2, door.w + 4, 2))  # doorstep
-    window_y = walls.y + (38 if kind == "gym" else 12)
-    for wx in range(walls.x + 8, door.x - 14, 20):
-        _window(s, wx, window_y)
-    for wx in range(door.right + 8, walls.right - 18, 20):
-        _window(s, wx, window_y)
-    if kind == "gym":  # a second floor of windows
-        for wx in range(walls.x + 8, walls.right - 18, 20):
-            _window(s, wx, walls.y + 12)
-
-    # Signs.
-    if kind == "center":  # a Poké Ball emblem over the door
-        cx, cy = door.centerx, door.y - 12
-        pygame.draw.circle(s, (250, 250, 250), (cx, cy), 7)
-        pygame.draw.circle(s, (216, 60, 60), (cx, cy), 7, draw_top_right=True, draw_top_left=True)
-        pygame.draw.line(s, OUTLINE, (cx - 7, cy), (cx + 6, cy))
-        pygame.draw.circle(s, OUTLINE, (cx, cy), 7, 1)
-        pygame.draw.circle(s, (250, 250, 250), (cx, cy), 2)
-    elif kind == "mart":  # a blue sign with a white stripe
-        sign = pygame.Rect(door.centerx - 14, door.y - 14, 28, 9)
-        pygame.draw.rect(s, (60, 108, 208), sign)
-        pygame.draw.line(s, (240, 240, 250), (sign.x + 3, sign.centery), (sign.right - 4, sign.centery))
-        pygame.draw.rect(s, OUTLINE, sign, 1)
-    elif kind == "gym":  # a badge-like emblem
-        cx, cy = door.centerx, door.y - 14
-        pygame.draw.polygon(s, (232, 192, 72), [(cx, cy - 7), (cx + 7, cy), (cx, cy + 7), (cx - 7, cy)])
-        pygame.draw.polygon(s, OUTLINE, [(cx, cy - 7), (cx + 7, cy), (cx, cy + 7), (cx - 7, cy)], 1)
-    elif kind == "lab":  # a small antenna on the roof
-        pygame.draw.line(s, OUTLINE, (x + w - 20, top), (x + w - 20, top - 10))
-        pygame.draw.circle(s, (216, 60, 60), (x + w - 20, top - 11), 2)
-    return pygame.Rect(x - 6, top, w + 12, ground - top)
+def draw_building(s: pygame.Surface, sprite: tuple[str, int], x: int, ground: int) -> pygame.Rect:
+    """Draw a building with its left edge at `x`, standing on `ground`;
+    returns where it was drawn."""
+    image, base = building(sprite)
+    return s.blit(image, (x, ground - base - 1 + BUILDING_SINK))
 
 
 def fence(s: pygame.Surface, x: int, ground: int, w: int) -> None:

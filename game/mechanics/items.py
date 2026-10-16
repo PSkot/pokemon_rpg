@@ -5,8 +5,11 @@ Each Pokémon has one slot of each kind in `SLOTS`. A piece of gear is
 rolled when it drops: its item's own effect plus a number of random
 affixes (prefixes and suffixes, which also name it: "Fierce Red Bandana of
 the Aerodactyl"). Its rarity decides how many affixes it gets and multiplies
-every rolled bonus (penalties stay as they are). Hats (the head slot) are
-drawn on the Pokémon wearing them (see hats.py).
+every rolled bonus (penalties stay as they are). Its item level is the
+level needed to equip it, and makes stat, power and damage bonuses bigger
+(`level_factor`), so newer gear of a lower rarity can beat older gear of a
+higher one. Hats (the head slot) are drawn on the Pokémon wearing them
+(see hats.py).
 """
 
 import math
@@ -67,11 +70,27 @@ class Rarity:
     color: tuple[int, int, int]
 
 
-COMMON = Rarity("Common", 1.0, (1, 2), (240, 240, 248))
+COMMON = Rarity("Common", 1.0, (0, 0), (240, 240, 248))
+UNCOMMON = Rarity("Uncommon", 1.25, (1, 1), (120, 230, 120))
 RARE = Rarity("Rare", 1.5, (2, 3), (110, 210, 255))
 EPIC = Rarity("Epic", 2.0, (3, 4), (220, 150, 255))
 LEGENDARY = Rarity("Legendary", 2.5, (4, 5), (255, 176, 64))
-RARITIES = {r.name: r for r in (COMMON, RARE, EPIC, LEGENDARY)}
+RARITIES = {r.name: r for r in (COMMON, UNCOMMON, RARE, EPIC, LEGENDARY)}
+
+# Item level: bonuses to stats, move power and damage grow by this much
+# per level above 1 (`level_factor`). Chances (act first, endure, status,
+# crit), regen, drain and berry effects only grow with rarity.
+LEVEL_GROWTH = 0.04
+LEVEL_SCALED = {"hp", "attack", "defense", "speed", "power", "super"}  # and power:<type>, added:<type>
+
+
+def level_factor(level: int) -> float:
+    """How much an item level multiplies the bonuses it scales: Lv1 ×1, Lv26 ×2, Lv51 ×3."""
+    return 1 + LEVEL_GROWTH * (max(1, level) - 1)
+
+
+def _level_scaled(mod: str) -> bool:
+    return mod in LEVEL_SCALED or mod.startswith(("power:", "added:"))
 
 
 @dataclass(frozen=True)
@@ -237,13 +256,18 @@ def _pick_affixes(count: int, rng: random.Random) -> list[Affix]:
     return picked
 
 
-def _roll(mods: dict[str, Range], rarity: Rarity, rng: random.Random, values: str = "random") -> dict[str, int]:
+def _roll(mods: dict[str, Range], rarity: Rarity, level: int, rng: random.Random,
+          values: str = "random") -> dict[str, int]:
     """Roll each mod's value in its range ("min"/"max" values: the lowest or
-    highest instead), then apply the rarity."""
+    highest instead), then apply the rarity and (to the mods it scales) the
+    item level. Penalties stay as they are."""
     rolled = {}
     for mod, (low, high) in mods.items():
         value = low if values == "min" else high if values == "max" else rng.randint(low, high)
-        rolled[mod] = max(1, round(value * rarity.factor)) if value > 0 else value
+        if value > 0:
+            factor = rarity.factor * (level_factor(level) if _level_scaled(mod) else 1)
+            value = max(1, round(value * factor))
+        rolled[mod] = value
     return rolled
 
 
@@ -257,20 +281,23 @@ class Roll:
 
 @dataclass(eq=False)  # two copies of the same gear are still different pieces
 class Gear:
-    """One piece of gear the player owns: an item at a rarity, with its rolls."""
+    """One piece of gear the player owns: an item at a rarity and an item
+    level (the level needed to equip it), with its rolls."""
     item: Item
     rarity: Rarity
     rolls: list[Roll]
+    level: int = 1
 
     @classmethod
     def roll(cls, item: str, rarity: str = "Common", rng: random.Random | None = None,
-             affixes: list[str] | None = None, values: str = "random") -> "Gear":
-        """Roll a new piece. `affixes` picks its affixes by name instead of
-        at random; `values` "min" or "max" gives every roll its lowest or
-        highest value (both are for testing, see dev.py)."""
+             affixes: list[str] | None = None, values: str = "random", level: int = 1) -> "Gear":
+        """Roll a new piece at item level `level`. `affixes` picks its
+        affixes by name instead of at random; `values` "min" or "max" gives
+        every roll its lowest or highest value (both are for testing, see
+        dev.py)."""
         rng = rng or random.Random()
         item_, rarity_ = ITEMS[item], RARITIES[rarity]
-        rolls = [Roll(None, _roll(item_.mods, rarity_, rng, values))] if item_.mods else []
+        rolls = [Roll(None, _roll(item_.mods, rarity_, level, rng, values))] if item_.mods else []
         if affixes is not None:
             picked = [AFFIX_BY_NAME[name] for name in affixes]
         elif item_.slot in AFFIX_SLOTS:
@@ -278,8 +305,8 @@ class Gear:
         else:
             picked = []
         for affix in picked:
-            rolls.append(Roll(affix, _roll(affix.mods, rarity_, rng, values)))
-        return cls(item_, rarity_, rolls)
+            rolls.append(Roll(affix, _roll(affix.mods, rarity_, level, rng, values)))
+        return cls(item_, rarity_, rolls, level)
 
     @property
     def name(self) -> str:
@@ -291,6 +318,10 @@ class Gear:
     @property
     def slot(self) -> str:
         return self.item.slot
+
+    def usable_by(self, monster: "Monster") -> bool:
+        """Whether `monster` is a high enough level to equip it."""
+        return monster.level >= self.level
 
     @property
     def mods(self) -> dict[str, int]:
@@ -370,12 +401,16 @@ class Bag:
     def add(self, gear: Gear) -> None:
         self.gear.append(gear)
 
-    def equip(self, monster: "Monster", gear: Gear) -> None:
-        """Move `gear` from the bag onto `monster`; what it wore there comes back."""
+    def equip(self, monster: "Monster", gear: Gear) -> bool:
+        """Move `gear` from the bag onto `monster` (if its level allows);
+        what it wore there comes back."""
+        if not gear.usable_by(monster):
+            return False
         self.gear.remove(gear)
         old = monster.equip(gear)
         if old:
             self.gear.append(old)
+        return True
 
     def unequip(self, monster: "Monster", slot: str) -> None:
         old = monster.unequip(slot)

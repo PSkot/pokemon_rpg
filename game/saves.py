@@ -52,13 +52,13 @@ class SaveInfo:
 # ------------------------------------------------------------ to and from JSON
 
 def _gear(g: Gear) -> dict:
-    return {"item": g.item.name, "rarity": g.rarity.name,
+    return {"item": g.item.name, "rarity": g.rarity.name, "level": g.level,
             "rolls": [{"affix": r.affix.name if r.affix else None, "mods": r.mods} for r in g.rolls]}
 
 
 def _load_gear(d: dict) -> Gear:
     rolls = [Roll(AFFIX_BY_NAME[r["affix"]] if r["affix"] else None, r["mods"]) for r in d["rolls"]]
-    return Gear(ITEMS[d["item"]], RARITIES[d["rarity"]], rolls)
+    return Gear(ITEMS[d["item"]], RARITIES[d["rarity"]], rolls, d.get("level", 1))
 
 
 def _monster(m: Monster) -> dict:

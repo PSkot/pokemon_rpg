@@ -19,6 +19,9 @@ def load_sheet(path: Path, frame_w: int, frame_h: int) -> list[list[pygame.Surfa
     return rows
 
 
+VISIBLE_ALPHA = 128  # pixels at least this opaque count as the sprite's body (baselines)
+
+
 class Animation:
     """A sequence of frames played at a fixed speed.
 
@@ -38,7 +41,8 @@ class Animation:
         self.flipped = [pygame.transform.flip(f, True, False) for f in frames]
         self.fps = fps
         self.loop = loop
-        bottoms = [f.get_bounding_rect().bottom for f in frames]
+        # (Ignore nearly transparent rows: smoothly scaled icons fade out at the edges.)
+        bottoms = [f.get_bounding_rect(min_alpha=VISIBLE_ALPHA).bottom for f in frames]
         if baseline is not None:
             self.baselines = [baseline] * len(frames)
         elif per_frame_baseline:
@@ -54,6 +58,13 @@ class Animation:
         part.baselines = self.baselines[start:stop]
         part.heads = self.heads[start:stop] if self.heads else None
         return part
+
+    def scaled(self, factor: int) -> "Animation":
+        """The same animation drawn `factor` times bigger (pixels stay sharp)."""
+        big = Animation([pygame.transform.scale_by(f, factor) for f in self.frames], self.fps, self.loop)
+        big.baselines = [b * factor for b in self.baselines]
+        big.heads = [(x * factor, y * factor) for x, y in self.heads] if self.heads else None
+        return big
 
     @property
     def duration(self) -> float:

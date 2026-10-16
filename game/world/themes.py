@@ -53,6 +53,12 @@ class Theme:
     backdrop: Backdrop                  # battle background
     group_sizes: tuple[tuple[int, int], ...] = ((1, 60), (2, 30), (3, 10))  # (size, weight)
     ceiling: bool = False               # caves have a rocky ceiling
+    art: str = "woods"                  # map art (tileset.py): "woods" (Pixellab) or "cave" (drawn in code)
+
+    @property
+    def levels(self) -> Range:
+        """The lowest and highest level its Pokémon come at (chests' item levels)."""
+        return min(e.levels[0] for e in self.pool), max(e.levels[1] for e in self.pool)
 
 
 MEADOW = Theme(
@@ -92,6 +98,25 @@ ICE_CAVE = Theme(
                       field_far=(176, 204, 228), field_near=(140, 176, 210), stripe=(160, 192, 222),
                       shadow=(96, 124, 160)),
     ceiling=True,
+    art="cave",
 )
 
-THEMES = {t.key: t for t in (MEADOW, ICE_CAVE)}
+# Viridian Forest: Red's and Blue's forest Pokémon together, at their Gen 1
+# levels. (Same map art as the meadow for now; a darker battle backdrop.)
+FOREST = Theme(
+    "forest", "Viridian Forest",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("caterpie", 25, (3, 5)),
+        PoolEntry("metapod", 20, (4, 6)),
+        PoolEntry("weedle", 25, (3, 5)),
+        PoolEntry("kakuna", 20, (4, 6)),
+        PoolEntry("pikachu", 5, (3, 5)),
+    ),
+    backdrop=Backdrop(sky_top=(70, 120, 90), sky_bottom=(140, 180, 130),
+                      hills=((52, 104, 64), (44, 92, 56)),
+                      field_far=(88, 150, 72), field_near=(62, 122, 56), stripe=(74, 136, 64),
+                      shadow=(40, 80, 40)),
+)
+
+THEMES = {t.key: t for t in (MEADOW, FOREST, ICE_CAVE)}
