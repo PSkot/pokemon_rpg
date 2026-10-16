@@ -375,8 +375,9 @@ Each Pokémon has four slots: **Head** (hats, drawn on the Pokémon),
 **Held**, **Worn** and **Berry**. A piece of gear is an item at a rarity and
 an **item level**, plus its rolls.
 
-**Starting gear:** the starter holds a Common Oran Berry (heals 20–25% of
-max HP at half HP, once per battle); the bag starts without gear.
+**Starting gear:** the starter (Bulbasaur, Charmander or Squirtle, chosen
+at the start, Lv5) holds a Common Oran Berry (heals 20–25% of max HP at
+half HP, once per battle); the bag starts without gear.
 
 ### Item level
 
@@ -491,6 +492,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | --- | --- | --- |
 | Route 1 | Common | (no boss) |
 | Viridian Forest | Common | Common 60%, Uncommon 40% |
+| Route 22 | Common | Common 60%, Uncommon 40% (the rival: a reward roll with the battle, no chest) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -535,9 +537,34 @@ and a Lv8 Kakuna (only the leader, the first of a boss group, is drawn
 bigger). Beating them opens the way to Pewter City and leaves a chest
 (item level 10).
 
+Route 22 (2 maps, from Viridian City and back):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Rattata | 40 | 2–5 |
+| Nidoran M | 25 | 2–4 |
+| Nidoran F | 20 | 2–4 |
+| Spearow | 15 | 3–5 |
+
+**Boss:** the rival (a trainer battle, see below): Pidgey Lv9 and his
+starter Lv8, Gen 1's first rival team. His starter beats the player's
+(Bulbasaur → Charmander, Charmander → Squirtle, Squirtle → Bulbasaur).
+Instead of a chest, winning rolls the boss loot table once (at Lv9) on top
+of the usual drops.
+
 Wild Pokémon have no gear. Their skills are filled in for their level
 (see `skill_trees.md`), and each turn they pick at random between their
 basic attack and their equipped moves, at a random target.
+
+### Trainer battles
+
+`game/scenes/battle.py` (`BattleScene.trainer`)
+
+A route's boss group can be a trainer's team (`Route.trainer`):
+- the battle opens with "<trainer> wants to battle!" and **can't be run
+  from**;
+- its Pokémon give **×1.5 XP** (as in Gen 1);
+- the trainer's name shows above the team on the map.
 
 ---
 

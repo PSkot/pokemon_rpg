@@ -6,10 +6,8 @@ from .. import saves, settings
 from ..engine import ui
 from ..engine.scene import Scene, Transition
 from ..saves import LoadError
-from ..world.progress import START_TOWN, Game
-from ..world.towns import TOWNS
 from .save_menu import SaveList
-from .town import TownScene
+from .starter import StarterScene
 
 PAD = 9
 ROW_H = 19
@@ -62,8 +60,7 @@ class TitleScene(Scene):
             elif option == "Load game":
                 self.saves = SaveList("load", confirm_load=False)
             else:
-                town = TownScene(Game.new(), TOWNS[START_TOWN])
-                self.next_scene = Transition(self, town, flashes=0)
+                self.next_scene = Transition(self, StarterScene(self), flashes=0)
 
     def draw(self, canvas: pygame.Surface) -> None:
         canvas.fill((24, 32, 72))

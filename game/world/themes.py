@@ -119,4 +119,17 @@ FOREST = Theme(
                       shadow=(40, 80, 40)),
 )
 
-THEMES = {t.key: t for t in (MEADOW, FOREST, ICE_CAVE)}
+# Route 22, west of Viridian: its Red/Blue Pokémon (same look as the meadow).
+ROUTE_22 = Theme(
+    "route_22", "Route 22",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("rattata", 40, (2, 5)),
+        PoolEntry("spearow", 15, (3, 5)),
+        PoolEntry("nidoran_f", 20, (2, 4)),
+        PoolEntry("nidoran_m", 25, (2, 4)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+)
+
+THEMES = {t.key: t for t in (MEADOW, ROUTE_22, FOREST, ICE_CAVE)}

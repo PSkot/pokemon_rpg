@@ -167,6 +167,130 @@ Stages: Bulbasaur → Ivysaur (Lv16) → Venusaur (Lv32, not in the game yet).
 
 ---
 
+## The Charmander line
+
+Stages: Charmander → Charmeleon (Lv16, not in the game yet) → Charizard (Lv36, not in the game yet).
+
+| Skill | Kind | Lv | Parent | Stage | Effect | Ranks |
+| --- | --- | --- | --- | --- | --- | --- |
+| Scratch | Basic attack | – | – | Charmander | Normal, 40 power. | 1–5 |
+| Growl | Base attack | – | – | Charmander | Lowers an enemy's Attack 1 stage. R2: Lowers every enemy's Attack. | 1–2 |
+| Ember | Move | 9 | Scratch | Charmander | Fire, 40 power. 10% chance to burn. | 1–5 |
+| Leer | Move | 15 | Growl | Charmander | Lowers an enemy's Defense 1 stage. R2: Lowers every enemy's Defense. | 1–2 |
+| Swords Dance | Move | 25 | Leer | Charmeleon | Raises its Attack 2 stages. | 1 |
+| Slash | Move | 30 | Scratch | Charmander | Normal, 70 power. High critical-hit ratio. | 1–5 |
+| Flamethrower | Move | 38 | Ember | Charmander | Fire, 95 power. 10% chance to burn. | 1–5 |
+| Fire Spin | Move | 46 | Flamethrower | Charmander | Fire, 15 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | 1–5 |
+| Fire Blast | Move | 50 | Flamethrower | Charizard | Fire, 120 power. 30% chance to burn. | 1–5 |
+| Earthquake | Move | 55 | Slash | Charizard | Ground, 100 power. | 1–5 |
+
+| Modifier | Changes | Lv | Stage | Per rank |
+| --- | --- | --- | --- | --- |
+| Kindling | Ember | 12 | Charmander | Ember: 20% chance to burn. / 30% chance. / 40% chance. |
+| Razor Claws | Slash | 33 | Charmander | Slash: 10% chance to make it flinch. / 20% chance. / 30% chance. |
+| Wildfire | Flamethrower | 42 | Charmeleon | Flamethrower hits every enemy, at 75% damage. |
+| Inferno | Fire Spin | 48 | Charmander | Fire Spin: 1/12 of its max HP each round. / 1/8. |
+| Scorch | Fire Blast | 55 | Charizard | Fire Blast: 40% chance to burn. / 50% chance. |
+
+---
+
+## The Squirtle line
+
+Stages: Squirtle → Wartortle (Lv16, not in the game yet) → Blastoise (Lv36, not in the game yet).
+
+| Skill | Kind | Lv | Parent | Stage | Effect | Ranks |
+| --- | --- | --- | --- | --- | --- | --- |
+| Tackle | Basic attack | – | – | Squirtle | Normal, 35 power. | 1–5 |
+| Tail Whip | Base attack | – | – | Squirtle | Lowers an enemy's Defense 1 stage. R2: Lowers every enemy's Defense. | 1–2 |
+| Bubble | Move | 8 | Tackle | Squirtle | Water, 20 power. 33% chance to lower its Speed. | 1–5 |
+| Water Gun | Move | 15 | Bubble | Squirtle | Water, 40 power. | 1–5 |
+| Bite | Move | 22 | Tackle | Squirtle | Normal, 60 power. 10% chance to make it flinch. | 1–5 |
+| Withdraw | Move | 28 | Tail Whip | Squirtle | Raises its Defense 1 stage. R2: Raises its Defense 2 stages. | 1–2 |
+| Ice Beam | Move | 30 | Water Gun | Wartortle | Ice, 95 power. 10% chance to freeze. | 1–5 |
+| Skull Bash | Move | 35 | Bite | Wartortle | Normal, 100 power. Charges for a round first. | 1–5 |
+| Hydro Pump | Move | 42 | Water Gun | Squirtle | Water, 120 power. | 1–5 |
+| Blizzard | Move | 55 | Ice Beam | Blastoise | Ice, 120 power. 10% chance to freeze. | 1–5 |
+
+| Modifier | Changes | Lv | Stage | Per rank |
+| --- | --- | --- | --- | --- |
+| Swift Current | Bubble | 10 | Squirtle | Bubble always goes first. |
+| Strong Jaw | Bite | 24 | Squirtle | Bite: 20% chance to make it flinch. / 30% chance. / 40% chance. |
+| Shell Armor | Withdraw | 30 | Squirtle | Withdraw also heals the user 1/8 of its max HP. |
+| Hard Shell | Skull Bash | 38 | Wartortle | Skull Bash hits without lowering its head first. |
+| Tidal Wave | Hydro Pump | 46 | Blastoise | Hydro Pump hits every enemy, at 75% damage. |
+
+---
+
+## The Spearow line
+
+Stages: Spearow → Fearow (Lv20, not in the game yet).
+
+| Skill | Kind | Lv | Parent | Stage | Effect | Ranks |
+| --- | --- | --- | --- | --- | --- | --- |
+| Peck | Basic attack | – | – | Spearow | Flying, 35 power. | 1–5 |
+| Growl | Base attack | – | – | Spearow | Lowers an enemy's Attack 1 stage. R2: Lowers every enemy's Attack. | 1–2 |
+| Leer | Move | 9 | Growl | Spearow | Lowers an enemy's Defense 1 stage. R2: Lowers every enemy's Defense. | 1–2 |
+| Fury Attack | Move | 15 | Peck | Spearow | Normal, 15 power, hits 2-5 times. | 1–5 |
+| Swift | Move | 20 | Peck | Spearow | Normal, 60 power. Ignores accuracy drops. | 1–5 |
+| Whirlwind | Move | 22 | Leer | Spearow | Lowers every enemy's Speed 1 stage. | 1 |
+| Drill Peck | Move | 29 | Fury Attack | Spearow | Flying, 80 power. | 1–5 |
+| Agility | Move | 36 | Leer | Spearow | Raises its Speed 2 stages. | 1 |
+| Hyper Beam | Move | 45 | Drill Peck | Fearow | Normal, 150 power. The user must rest the next round. | 1–5 |
+
+| Modifier | Changes | Lv | Stage | Per rank |
+| --- | --- | --- | --- | --- |
+| Keen Beak | Peck | 10 | Spearow | Peck has a high critical-hit ratio. |
+| Frenzied Pecks | Fury Attack | 18 | Spearow | Fury Attack hits 3-5 times. |
+| Drill Run | Drill Peck | 33 | Spearow | Drill Peck: 10% chance to make it flinch. / 20% chance. / 30% chance. |
+
+---
+
+## The Nidoran F line
+
+Stages: Nidoran F → Nidorina (Lv16, not in the game yet).
+
+| Skill | Kind | Lv | Parent | Stage | Effect | Ranks |
+| --- | --- | --- | --- | --- | --- | --- |
+| Tackle | Basic attack | – | – | Nidoran F | Normal, 35 power. | 1–5 |
+| Growl | Base attack | – | – | Nidoran F | Lowers an enemy's Attack 1 stage. R2: Lowers every enemy's Attack. | 1–2 |
+| Scratch | Move | 8 | Tackle | Nidoran F | Normal, 40 power. | 1–5 |
+| Poison Sting | Move | 14 | Tackle | Nidoran F | Poison, 15 power. 30% chance to poison. | 1–5 |
+| Tail Whip | Move | 21 | Growl | Nidoran F | Lowers an enemy's Defense 1 stage. R2: Lowers every enemy's Defense. | 1–2 |
+| Body Slam | Move | 25 | Tackle | Nidorina | Normal, 85 power. 30% chance to paralyze. | 1–5 |
+| Bite | Move | 29 | Scratch | Nidoran F | Normal, 60 power. 10% chance to make it flinch. | 1–5 |
+| Fury Swipes | Move | 36 | Scratch | Nidoran F | Normal, 18 power, hits 2-5 times. | 1–5 |
+| Double Kick | Move | 43 | Bite | Nidoran F | Fighting, 30 power, hits twice. | 1–5 |
+
+| Modifier | Changes | Lv | Stage | Per rank |
+| --- | --- | --- | --- | --- |
+| Poison Point | Poison Sting | 16 | Nidoran F | Poison Sting: 40% chance to poison. / 50% chance. / 60% chance. |
+| Strong Jaw | Bite | 32 | Nidoran F | Bite: 20% chance to make it flinch. / 30% chance. / 40% chance. |
+
+---
+
+## The Nidoran M line
+
+Stages: Nidoran M → Nidorino (Lv16, not in the game yet).
+
+| Skill | Kind | Lv | Parent | Stage | Effect | Ranks |
+| --- | --- | --- | --- | --- | --- | --- |
+| Tackle | Basic attack | – | – | Nidoran M | Normal, 35 power. | 1–5 |
+| Leer | Base attack | – | – | Nidoran M | Lowers an enemy's Defense 1 stage. R2: Lowers every enemy's Defense. | 1–2 |
+| Horn Attack | Move | 8 | Tackle | Nidoran M | Normal, 65 power. | 1–5 |
+| Poison Sting | Move | 14 | Tackle | Nidoran M | Poison, 15 power. 30% chance to poison. | 1–5 |
+| Focus Energy | Move | 21 | Leer | Nidoran M | The user's critical-hit chance ×4 for the battle. | 1 |
+| Body Slam | Move | 25 | Tackle | Nidorino | Normal, 85 power. 30% chance to paralyze. | 1–5 |
+| Fury Attack | Move | 29 | Horn Attack | Nidoran M | Normal, 15 power, hits 2-5 times. | 1–5 |
+| Double Kick | Move | 43 | Horn Attack | Nidoran M | Fighting, 30 power, hits twice. | 1–5 |
+
+| Modifier | Changes | Lv | Stage | Per rank |
+| --- | --- | --- | --- | --- |
+| Poison Point | Poison Sting | 16 | Nidoran M | Poison Sting: 40% chance to poison. / 50% chance. / 60% chance. |
+| Sharp Horn | Horn Attack | 20 | Nidoran M | Horn Attack has a high critical-hit ratio. |
+| Rampage | Fury Attack | 32 | Nidoran M | Fury Attack hits 3-5 times. |
+
+---
+
 ## The Pidgey line
 
 Stages: Pidgey → Pidgeotto (Lv18, not in the game yet) → Pidgeot (Lv36, not in the game yet).

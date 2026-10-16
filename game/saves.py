@@ -89,6 +89,7 @@ def snapshot(scene) -> dict:
         "bag": {"gear": [_gear(g) for g in game.bag.gear], "medicine": dict(game.bag.medicine)},
         "town": game.town,
         "cleared": dict(game.cleared),
+        "starter": game.starter,
         "location": scene.location(),
     }
 
@@ -161,7 +162,7 @@ def load(info: SaveInfo):
             raise LoadError(f"{info.name} is from an older version of the game.")
         party = [_load_monster(m) for m in data["party"]]
         bag = Bag([_load_gear(g) for g in data["bag"]["gear"]], Counter(data["bag"]["medicine"]))
-        game = Game(party, bag, data["town"], Counter(data["cleared"]))
+        game = Game(party, bag, data["town"], Counter(data["cleared"]), data.get("starter", "bulbasaur"))
         where = data["location"]
         if where["kind"] == "town":
             scene = TownScene(game, TOWNS[where["town"]])

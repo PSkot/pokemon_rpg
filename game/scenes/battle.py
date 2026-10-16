@@ -72,6 +72,7 @@ QUICK_MESSAGE_TIME = 0.7   # "is quick to act!"
 REGEN_MESSAGE_TIME = 0.8   # "restored 2 HP."
 ACTION_PAUSE = 0.6       # quiet gap (no message) before the next action
 VICTORY_PAUSE = 1.0      # "You won!", before the XP is handed out
+TRAINER_XP = 1.5         # XP × this from a trainer's Pokémon (Gen 1)
 XP_FILL_TIME = 1.2       # seconds for an XP bar to fill completely
 XP_MESSAGE_TIME = 0.8    # after a party member's XP bar has filled
 LEVEL_UP_TIME = 1.2      # "grew to Lv6!"
@@ -377,10 +378,13 @@ class BattleScene(Scene):
     """
 
     def __init__(self, return_to: Scene, party: list[Monster], enemies: list[Monster], bag: Bag,
-                 loot: LootTable | None = None, backdrop: Backdrop = MEADOW_BACKDROP, boss: bool = False):
+                 loot: LootTable | None = None, backdrop: Backdrop = MEADOW_BACKDROP, boss: bool = False,
+                 trainer: str = "", bonus: LootTable | None = None):
         self.return_to = return_to
         self.backdrop = backdrop
         self.boss = boss  # the area's boss group (changes the intro)
+        self.trainer = trainer  # a trainer's team ("" = wild): no running, more XP
+        self.bonus = bonus  # rolled once (at the highest enemy level) when the party wins
         self.party = _side(party, enemy=False)
         self.enemies = _side(enemies, enemy=True)
         self.bag = bag
@@ -487,6 +491,7 @@ class BattleScene(Scene):
         up = key in (pygame.K_UP, pygame.K_LEFT)
         down = key in (pygame.K_DOWN, pygame.K_RIGHT)
         if self.menu == "command":
+            self.message = ""  # (e.g. "no running" from the last key)
             if key in (pygame.K_UP, pygame.K_DOWN):
                 self.command = (self.command + (1 if key == pygame.K_DOWN else -1)) % len(COMMANDS)
             elif key in CONFIRM_KEYS:
@@ -497,6 +502,8 @@ class BattleScene(Scene):
                     self.menu = "skills"
                 elif command == "Item" and self._medicine():
                     self.menu = "items"
+                elif command == "Run" and self.trainer:
+                    self.message = "There's no running from a trainer battle!"
                 elif command == "Run":
                     self.next_scene = Transition(self, self.return_to, flashes=0)
             elif key in CANCEL_KEYS:
@@ -542,7 +549,9 @@ class BattleScene(Scene):
     # ---------------------------------------------------------------- scripts
 
     def _intro(self):
-        if self.boss:
+        if self.trainer:
+            self.message = f"{self.trainer} wants to battle!"
+        elif self.boss:
             first = self.enemies[0]
             giant = "giant " if first.monster.scale > 1 else ""
             self.message = (f"A {giant}{first.label} blocks the way!" if len(self.enemies) == 1
@@ -622,23 +631,27 @@ class BattleScene(Scene):
         if self._over():
             self.won = any(c.alive for c in self.party)
             self.lost = not self.won
-            self.message = "You won!" if self.won else "Your party has fainted..."
+            self.message = self._won_text() if self.won else "Your party has fainted..."
             if self.won:
                 yield VICTORY_PAUSE
                 leveled = yield from self._give_xp()
                 for c in leveled:  # as in Red/Blue: after the battle, on reaching the level
                     if c.monster.can_evolve:
                         yield from self._evolve(c)
-                self.message = "You won!"
+                self.message = self._won_text()
                 self._give_rewards()
             self.menu = "end"
         else:
             self._start_round()
 
+    def _won_text(self) -> str:
+        return f"You defeated {self.trainer}!" if self.trainer else "You won!"
+
     def _give_xp(self):
         """Every party member still standing gets the XP of all the enemies.
         Returns the members who leveled up."""
-        xp = sum(c.monster.xp_yield for c in self.enemies) * DEV.xp_multiplier
+        xp = round(sum(c.monster.xp_yield for c in self.enemies) * (TRAINER_XP if self.trainer else 1))
+        xp *= DEV.xp_multiplier
         boost = f" (×{DEV.xp_multiplier})" if DEV.xp_multiplier > 1 else ""
         leveled = []
         for c in self.party:
@@ -687,7 +700,10 @@ class BattleScene(Scene):
         yield EVOLVE_MESSAGE_TIME
 
     def _give_rewards(self) -> None:
-        rewards = merge([r for e in self.enemies for r in self.loot.roll(level=e.monster.level)])
+        rewards = [r for e in self.enemies for r in self.loot.roll(level=e.monster.level)]
+        if self.bonus:
+            rewards += self.bonus.roll(level=max(e.monster.level for e in self.enemies))
+        rewards = merge(rewards)
         for r in rewards:
             r.give(self.bag)
         if rewards:
@@ -1229,7 +1245,7 @@ class BattleScene(Scene):
             self.rewards.draw(canvas)
 
     def draw_overlay(self, window: pygame.Surface) -> None:
-        if self.choosing:
+        if self.choosing and not self.message:
             ui.text(window, self._hint(), (8, 6), color=ui.SHADOW, size=22, shadow=False)
         if self.message:
             ui.text(window, self.message, (MESSAGE_WINDOW.x + 12, MESSAGE_WINDOW.y + PAD))
@@ -1274,7 +1290,7 @@ class BattleScene(Scene):
                     ui.text(window, f"Lv{c.monster.level}", (ENEMY_WINDOW.right - 12, y), ui.GREY, size=size,
                             align="right")
             for i, name in enumerate(COMMANDS):
-                unavailable = ((name == "Item" and not self._medicine())
+                unavailable = ((name == "Item" and not self._medicine()) or (name == "Run" and self.trainer)
                                or (name == "Skills" and self.choosing and not self.actor.monster.moves))
                 color = ui.GREY if unavailable else ui.WHITE
                 ui.text(window, name, (COMMAND_WINDOW.x + 22, COMMAND_WINDOW.y + PAD + i * ROW_H), color)

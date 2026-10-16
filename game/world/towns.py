@@ -35,13 +35,13 @@ class Town:
     name: str
     width: int                      # in tiles
     buildings: tuple[Building, ...]
-    exits: tuple[tuple[str, str], ...]  # (side "left"/"right", route key)
+    exits: tuple[tuple[str | int, str], ...]  # (where: "left"/"right" edge or a column, route key)
     home_col: int                   # where a new game starts and a fainted party wakes up
     theme: Theme = MEADOW           # tiles and background
 
-    def exit_to(self, route: str) -> str:
-        """The side the exit onto `route` is on."""
-        return next(side for side, r in self.exits if r == route)
+    def exit_to(self, route: str) -> str | int:
+        """Where the exit onto `route` is ("left", "right" or a column)."""
+        return next(where for where, r in self.exits if r == route)
 
     def level(self) -> Level:
         """The town's map: flat ground."""
@@ -62,7 +62,7 @@ TOWNS = {t.key: t for t in [
         Building("Poké Mart", (FUNCTIONAL, 2), 30),
         Building("", (HOUSES, 3), 42),
         Building("Viridian Gym", (FUNCTIONAL, 1), 53),
-    ), exits=(("left", "route_1"), ("right", "viridian_forest")), home_col=21),
+    ), exits=(("left", "route_1"), ("right", "viridian_forest"), (39, "route_22")), home_col=21),
     Town("pewter", "Pewter City", 72, (
         Building("", (HOUSES, 3), 7),
         Building("Pokémon Center", (FUNCTIONAL, 0), 19),

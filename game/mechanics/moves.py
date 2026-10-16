@@ -66,11 +66,15 @@ MOVES = {m.name: m for m in [
     Move("Pound", 40, "enemy", type="normal"),
     Move("Quick Attack", 40, "enemy", type="normal", priority=1),
     Move("Headbutt", 70, "enemy", type="normal", flinch=30),
+    Move("Bite", 60, "enemy", type="normal", flinch=10),
+    Move("Horn Attack", 65, "enemy", type="normal"),
+    Move("Slash", 70, "enemy", type="normal", crit_ratio=8),
     Move("Hyper Fang", 80, "enemy", type="normal", flinch=10),
     Move("Super Fang", 0, "enemy", type="normal", halve=True),
     Move("Slam", 80, "enemy", type="normal"),
     Move("Body Slam", 85, "enemy", type="normal", **_status("paralysis", 30)),
     Move("Take Down", 90, "enemy", type="normal", recoil=0.25),
+    Move("Skull Bash", 100, "enemy", type="normal", charge="{user} lowered its head!"),
     Move("Double-Edge", 100, "enemy", type="normal", recoil=0.25),
     Move("Thrash", 90, "enemy", type="normal", self_confuse=True),
     Move("Hyper Beam", 150, "enemy", type="normal", recharge=True),
@@ -98,6 +102,8 @@ MOVES = {m.name: m for m in [
     Move("Sing", 0, "enemy", type="normal", **_status("sleep", 55)),
     # Flying
     Move("Gust", 40, "enemy", "gust", type="flying"),  # Normal in Gen 1, Flying since Gen 2
+    Move("Peck", 35, "enemy", type="flying"),
+    Move("Drill Peck", 80, "enemy", type="flying"),
     Move("Wing Attack", 35, "enemy", type="flying"),
     Move("Sky Attack", 140, "enemy", type="flying", charge="{user} is glowing!", crit_ratio=8),
     # Grass
@@ -118,6 +124,14 @@ MOVES = {m.name: m for m in [
     # Bug
     Move("Twineedle", 25, "enemy", type="bug", hits=(2, 2), **_status("poison", 20)),
     Move("Pin Missile", 14, "enemy", type="bug", hits=(2, 5)),
+    # Fire
+    Move("Ember", 40, "enemy", type="fire", **_status("burn", 10)),
+    Move("Flamethrower", 95, "enemy", type="fire", **_status("burn", 10)),
+    Move("Fire Spin", 15, "enemy", type="fire", bind=1 / 16),
+    Move("Fire Blast", 120, "enemy", type="fire", **_status("burn", 30)),
+    # Fighting and Ground
+    Move("Double Kick", 30, "enemy", type="fighting", hits=(2, 2)),
+    Move("Earthquake", 100, "enemy", type="ground"),
     # Electric
     Move("Thunder Shock", 40, "enemy", type="electric", **_status("paralysis", 10)),
     Move("Thunderbolt", 95, "enemy", type="electric", **_status("paralysis", 10)),

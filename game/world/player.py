@@ -74,17 +74,19 @@ class Player:
 
     @property
     def anim(self) -> Animation:
-        return self.anims[self.anim_name]
+        # (Placeholder icons only have idle/walk/attack: they use those.)
+        return self.anims.get(self.anim_name) or self.anims["walk" if self.state == "run" else "idle"]
 
     @property
     def frame_index(self) -> int:
         """Jump frames follow the jump's phase; everything else plays on a timer."""
+        last = len(self.anim.frames) - 1  # (placeholders have a single frame)
         if self.state == "squat":
-            return JUMP_CROUCH
+            return min(JUMP_CROUCH, last)
         if self.state == "air":
-            return JUMP_RISE if self.vy < 0 else JUMP_FALL
+            return min(JUMP_RISE if self.vy < 0 else JUMP_FALL, last)
         if self.state == "land":
-            return JUMP_LAND
+            return min(JUMP_LAND, last)
         return self.anim.index_at(self.state_time)
 
     @property

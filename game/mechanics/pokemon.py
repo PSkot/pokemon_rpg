@@ -131,6 +131,12 @@ def _placeholder(icon: str, name: str, stats: tuple[int, int, int, int], types: 
 # Attack, Defense, Speed), types and base experience yield. (Their moves come
 # from their line's skill tree, skills.TREES.)
 SPECIES.update({
+    "charmander": _placeholder("004_charmander", "Charmander", (39, 52, 43, 65), ("fire",), exp=65),
+    "squirtle": _placeholder("007_squirtle", "Squirtle", (44, 48, 65, 43), ("water",), exp=66),
+    "spearow": _placeholder("021_spearow", "Spearow", (40, 60, 30, 70), ("normal", "flying"), exp=58),
+    # (The game's font has no ♀/♂ symbols.)
+    "nidoran_f": _placeholder("029_nidoran-f", "Nidoran F", (55, 47, 52, 41), ("poison",), exp=59),
+    "nidoran_m": _placeholder("032_nidoran-m", "Nidoran M", (46, 57, 40, 50), ("poison",), exp=60),
     "rattata": _placeholder("019_rattata", "Rattata", (30, 56, 35, 72), ("normal",), exp=57),
     "caterpie": _placeholder("010_caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), exp=53),
     "metapod": _placeholder("011_metapod", "Metapod", (50, 20, 55, 30), ("bug",), exp=72),

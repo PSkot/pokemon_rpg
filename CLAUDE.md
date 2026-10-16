@@ -125,19 +125,25 @@ non-commercial project.
   `town.py` scene) are flat maps with Pixellab buildings (scenery for now;
   `Building.sprite` = (sheet, cell) of `houses.png` /
   `functional_buildings.png`, 2×2 cells of 128×128, drawn by
-  `tileset.draw_building` standing on their base row) and doorways at
-  their edges onto routes. A new game starts in Pallet Town; arriving in
+  `tileset.draw_building` standing on their base row) and doorways onto
+  routes (`Town.exits`: at an edge, or at a column inside the town, e.g.
+  Viridian's Route 22 door). A new game starts in Pallet Town; arriving in
   a town heals the party and makes it the town a fainted party wakes up
   in (`Game.town`). Progress lives in `progress.Game`
   (party, bag, last town, routes cleared).
 - Instances (`instance.py`): a `Route` (Route 1: 2 meadow maps, Pallet ↔
-  Viridian; Viridian Forest: 3 forest maps, Viridian ↔ Pewter, with a boss)
+  Viridian; Viridian Forest: 3 forest maps, Viridian ↔ Pewter, with a boss;
+  Route 22: 2 maps from Viridian and back, with the rival at the end)
   is walked as an `Instance` of generated maps from one seed; every trip
   rolls a new seed, and the last map's doorway leads into the town at the
   other end. A route with `boss=True` ends in an arena where a boss group
   (`boss_group`, or else 4–5 pool Pokémon) guards the sealed way out,
   drawn `boss_scale` times bigger (`Monster.scale`, `animations(species,
-  scale)`); beating it unseals the door and drops a boss chest.
+  scale)`); beating it unseals the door and drops a boss chest (or, with
+  `boss_chest=False`, the boss loot comes with the battle). A route with
+  `trainer` makes the boss fight a trainer battle (no running, ×1.5 XP).
+  `RIVAL_STARTER` in a boss group becomes the rival's starter, which beats
+  the player's (`Game.starter`, `Game.rival_starter`).
   Themes (`themes.py`) pick their map art with `Theme.art` ("woods":
   Pixellab ground and background; "cave": drawn in code). `tileset.py` draws the meadow's ground
   from `tileset_woods.png` (`_render_woods`); the ice cave's tiles and all
@@ -155,7 +161,11 @@ non-commercial project.
   regenerated from the seed. Scenes say what can be saved via
   `Scene.save_point()`. The game starts at
   the title screen (`title.py`: Continue / Load game / New game); the save
-  and load lists are `save_menu.SaveList`.
+  and load lists are `save_menu.SaveList`. New game opens the starter
+  choice (`scenes/starter.py`: Bulbasaur, Charmander or Squirtle,
+  `progress.STARTERS`; `Game.new(starter)`, saved as `Game.starter`).
+  Charmander and Squirtle are still icon placeholders: on the map the
+  player falls back to their still frame (`Player.anim`).
 - Tab on the map opens the party screen (`summary.py`): stats and gear;
   Enter on a slot lists the bag's gear for it (or Remove), previewing the
   stat changes, and equips it. S opens the skill tree screen.

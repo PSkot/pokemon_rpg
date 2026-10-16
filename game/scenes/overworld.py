@@ -21,7 +21,7 @@ from ..mechanics.items import Range
 from ..mechanics.loot import LootTable, boss_loot, chest_loot, wild_loot
 from ..mechanics.pokemon import SPECIES, Monster, animations
 from ..world import tileset
-from ..world.instance import Instance
+from ..world.instance import RIVAL_STARTER, Instance
 from ..world.level import Level, Spawn
 from ..world.player import Controls, Player
 from ..world.progress import Game
@@ -302,6 +302,9 @@ class OverworldScene(MapScene):
         self.instance = instance
         level, palette = self.level, self.level.theme.palette
         self.wild = [WildPokemon(s) for s in level.spawns]
+        if level.boss:  # the rival's starter depends on the player's
+            level.boss.encounter = [(game.rival_starter if species == RIVAL_STARTER else species, lv)
+                                    for species, lv in level.boss.encounter]
         self.boss = WildPokemon(level.boss, boss=True, scale=instance.route.boss_scale) if level.boss else None
         if self.boss:
             self.wild.append(self.boss)
@@ -356,7 +359,7 @@ class OverworldScene(MapScene):
         if inst.final:
             self.game.cleared[inst.route.key] += 1
             town = TOWNS[inst.destination]
-            next_map = town_scene(self.game, town, arrive=town.exit_to(inst.route.key))
+            next_map = town_scene(self.game, town, arrive=inst.route.key)
         else:
             inst.index += 1
             next_map = OverworldScene(inst, self.game)
@@ -376,8 +379,11 @@ class OverworldScene(MapScene):
             self.after_panel = self._fainted
 
     def _boss_beaten(self) -> None:
-        """The way out opens, and the boss leaves a reward."""
+        """The way out opens, and the boss leaves a reward chest (unless the
+        route's boss loot comes with the battle)."""
         self.exit.sealed = False
+        if not self.instance.route.boss_chest:
+            return
         x = self.level.boss_chest_x
         top = max(lv for _, lv in self.level.boss.encounter)  # the boss group's highest level
         self.chests.append(Chest(x, self.level.ground_y(x), boss_loot(self.instance.route.boss_loot), (top, top),
@@ -403,10 +409,12 @@ class OverworldScene(MapScene):
                 enemies = [Monster.create(species, level) for species, level in wild.encounter]
                 for enemy, scale in zip(enemies, wild.scales):
                     enemy.scale = scale
-                route = self.instance.route
-                loot = wild_loot(route.boss_loot if wild is self.boss else route.loot)
+                route, boss = self.instance.route, wild is self.boss
+                loot = wild_loot(route.boss_loot if boss else route.loot)
                 battle = BattleScene(self, self.party, enemies, self.bag, loot=loot,
-                                     backdrop=self.level.theme.backdrop, boss=wild is self.boss)
+                                     backdrop=self.level.theme.backdrop, boss=boss,
+                                     trainer=route.trainer if boss else "",
+                                     bonus=boss_loot(route.boss_loot) if boss and not route.boss_chest else None)
                 self.fighting = (wild, battle)
                 self.next_scene = Transition(self, battle)
             wild.armed = not touching
@@ -418,6 +426,13 @@ class OverworldScene(MapScene):
             chest.draw(layer)
         for wild in self.wild:
             wild.draw(layer, self.debug)
+
+    def draw_overlay(self, window: pygame.Surface) -> None:
+        super().draw_overlay(window)
+        if self.instance.route.trainer and self.boss in self.wild and not self.panel:  # who the boss is
+            box = self.boss.body_rect
+            ui.text(window, self.instance.route.trainer, (box.centerx - self.camera, box.top - 14), ui.YELLOW, size=24,
+                    align="center")
 
     # ----------------------------------------------------------------- saves
 

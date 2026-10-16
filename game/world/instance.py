@@ -11,7 +11,11 @@ from dataclasses import dataclass, field
 
 from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, Rarities
 from .level import Level, generate
-from .themes import FOREST, MEADOW, Theme
+from .themes import FOREST, MEADOW, ROUTE_22, Theme
+
+# Stands in a boss group for the rival's starter, which depends on the
+# player's (`progress.Game.rival_starter`).
+RIVAL_STARTER = "rival_starter"
 
 
 @dataclass(frozen=True)
@@ -28,6 +32,8 @@ class Route:
     # Pokémon from the pool.
     boss_group: tuple[tuple[str, int], ...] = ()
     boss_scale: int = 1                 # the leader is drawn this many times bigger
+    trainer: str = ""                   # the boss group is this trainer's team (a trainer battle)
+    boss_chest: bool = True             # beating the boss leaves a chest (else its loot comes with the battle)
 
     def other_end(self, town: str) -> str:
         return self.towns[1] if town == self.towns[0] else self.towns[0]
@@ -37,6 +43,9 @@ ROUTES = {r.key: r for r in [
     Route("route_1", "Route 1", MEADOW, maps=2, towns=("pallet", "viridian")),
     Route("viridian_forest", "Viridian Forest", FOREST, maps=3, towns=("viridian", "pewter"), boss=True,
           boss_group=(("caterpie", 10), ("metapod", 8), ("kakuna", 8)), boss_scale=2),
+    # A side trip from Viridian and back (Gen 1's first rival battle at its end).
+    Route("route_22", "Route 22", ROUTE_22, maps=2, towns=("viridian", "viridian"), boss=True,
+          boss_group=(("pidgey", 9), (RIVAL_STARTER, 8)), trainer="Rival", boss_chest=False),
 ]}
 
 

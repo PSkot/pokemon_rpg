@@ -206,6 +206,97 @@ TREES = {t.species[0]: t for t in [
         _mod("Quick Bloom", "solar_beam", 60, ({"charge": ""},), ("Solar Beam fires without charging.",), stage=2),
     ),
     _tree(
+        ("charmander", "charmeleon", "charizard"),
+        _base("Scratch"),
+        _base("Growl", 2, ({}, SPREAD), ("Lowers every enemy's Attack.",)),
+        _move("Ember", 9, "scratch"),
+        _move("Leer", 15, "growl", 2, ranks=({}, SPREAD), more=("Lowers every enemy's Defense.",)),
+        _move("Swords Dance", 25, "leer", 1, stage=1),  # TM03
+        _move("Slash", 30, "scratch"),
+        _move("Flamethrower", 38, "ember"),
+        _move("Fire Spin", 46, "flamethrower"),
+        _move("Fire Blast", 50, "flamethrower", stage=2),  # TM38
+        _move("Earthquake", 55, "slash", stage=2),  # TM26
+        _mod("Kindling", "ember", 12, _chance("burn", 20, 30, 40),
+             _percent("Ember: {}% chance to burn.", 20, 30, 40)),
+        _mod("Razor Claws", "slash", 33, _each("flinch", 10, 20, 30),
+             _percent("Slash: {}% chance to make it flinch.", 10, 20, 30)),
+        _mod("Wildfire", "flamethrower", 42, (SPREAD_75,), ("Flamethrower hits every enemy, at 75% damage.",),
+             stage=1),
+        _mod("Inferno", "fire_spin", 48, _each("bind", 1 / 12, 1 / 8),
+             ("Fire Spin: 1/12 of its max HP each round.", "1/8.")),
+        _mod("Scorch", "fire_blast", 55, _chance("burn", 40, 50),
+             _percent("Fire Blast: {}% chance to burn.", 40, 50), stage=2),
+    ),
+    _tree(
+        ("squirtle", "wartortle", "blastoise"),
+        _base("Tackle"),
+        _base("Tail Whip", 2, ({}, SPREAD), ("Lowers every enemy's Defense.",)),
+        _move("Bubble", 8, "tackle"),
+        _move("Water Gun", 15, "bubble"),
+        _move("Bite", 22, "tackle"),
+        _move("Withdraw", 28, "tail_whip", 2, ranks=({}, {"stages": (("defense", 2),)}),
+              more=("Raises its Defense 2 stages.",)),
+        _move("Ice Beam", 30, "water_gun", stage=1),  # TM13
+        _move("Skull Bash", 35, "bite", stage=1),
+        _move("Hydro Pump", 42, "water_gun"),
+        _move("Blizzard", 55, "ice_beam", stage=2),  # TM14
+        _mod("Swift Current", "bubble", 10, ({"priority": 1},), ("Bubble always goes first.",)),
+        _mod("Strong Jaw", "bite", 24, _each("flinch", 20, 30, 40),
+             _percent("Bite: {}% chance to make it flinch.", 20, 30, 40)),
+        _mod("Shell Armor", "withdraw", 30, ({"heal": 1 / 8},), ("Withdraw also heals the user 1/8 of its max HP.",)),
+        _mod("Hard Shell", "skull_bash", 38, ({"charge": ""},), ("Skull Bash hits without lowering its head first.",),
+             stage=1),
+        _mod("Tidal Wave", "hydro_pump", 46, (SPREAD_75,), ("Hydro Pump hits every enemy, at 75% damage.",), stage=2),
+    ),
+    _tree(
+        ("spearow", "fearow"),
+        _base("Peck"),
+        _base("Growl", 2, ({}, SPREAD), ("Lowers every enemy's Attack.",)),
+        _move("Leer", 9, "growl", 2, ranks=({}, SPREAD), more=("Lowers every enemy's Defense.",)),
+        _move("Fury Attack", 15, "peck"),
+        _move("Swift", 20, "peck"),  # TM39
+        _move("Whirlwind", 22, "leer", 1),  # TM04
+        _move("Drill Peck", 29, "fury_attack"),
+        _move("Agility", 36, "leer", 1),
+        _move("Hyper Beam", 45, "drill_peck", stage=1),  # TM15
+        _mod("Keen Beak", "peck", 10, ({"crit_ratio": 8},), ("Peck has a high critical-hit ratio.",)),
+        _mod("Frenzied Pecks", "fury_attack", 18, ({"hits": (3, 5)},), ("Fury Attack hits 3-5 times.",)),
+        _mod("Drill Run", "drill_peck", 33, _each("flinch", 10, 20, 30),
+             _percent("Drill Peck: {}% chance to make it flinch.", 10, 20, 30)),
+    ),
+    _tree(
+        ("nidoran_f", "nidorina"),  # Nidoqueen evolves by stone (not in yet)
+        _base("Tackle"),
+        _base("Growl", 2, ({}, SPREAD), ("Lowers every enemy's Attack.",)),
+        _move("Scratch", 8, "tackle"),
+        _move("Poison Sting", 14, "tackle"),
+        _move("Tail Whip", 21, "growl", 2, ranks=({}, SPREAD), more=("Lowers every enemy's Defense.",)),
+        _move("Body Slam", 25, "tackle", stage=1),  # TM08
+        _move("Bite", 29, "scratch"),
+        _move("Fury Swipes", 36, "scratch"),
+        _move("Double Kick", 43, "bite"),
+        _mod("Poison Point", "poison_sting", 16, _chance("poison", 40, 50, 60),
+             _percent("Poison Sting: {}% chance to poison.", 40, 50, 60)),
+        _mod("Strong Jaw", "bite", 32, _each("flinch", 20, 30, 40),
+             _percent("Bite: {}% chance to make it flinch.", 20, 30, 40)),
+    ),
+    _tree(
+        ("nidoran_m", "nidorino"),  # Nidoking evolves by stone (not in yet)
+        _base("Tackle"),
+        _base("Leer", 2, ({}, SPREAD), ("Lowers every enemy's Defense.",)),
+        _move("Horn Attack", 8, "tackle"),
+        _move("Poison Sting", 14, "tackle"),
+        _move("Focus Energy", 21, "leer", 1),
+        _move("Body Slam", 25, "tackle", stage=1),  # TM08
+        _move("Fury Attack", 29, "horn_attack"),
+        _move("Double Kick", 43, "horn_attack"),
+        _mod("Poison Point", "poison_sting", 16, _chance("poison", 40, 50, 60),
+             _percent("Poison Sting: {}% chance to poison.", 40, 50, 60)),
+        _mod("Sharp Horn", "horn_attack", 20, ({"crit_ratio": 8},), ("Horn Attack has a high critical-hit ratio.",)),
+        _mod("Rampage", "fury_attack", 32, ({"hits": (3, 5)},), ("Fury Attack hits 3-5 times.",)),
+    ),
+    _tree(
         ("pidgey", "pidgeotto", "pidgeot"),
         _base("Gust"),
         _base("Sand-Attack", 2, ({}, SPREAD), ("Lowers every enemy's accuracy.",)),
