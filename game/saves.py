@@ -86,10 +86,12 @@ def snapshot(scene) -> dict:
         "saved_at": datetime.now().isoformat(timespec="seconds"),
         "summary": {"where": scene.where(), "party": [[m.name, m.level] for m in game.party]},
         "party": [_monster(m) for m in game.party],
-        "bag": {"gear": [_gear(g) for g in game.bag.gear], "medicine": dict(game.bag.medicine)},
+        "bag": {"gear": [_gear(g) for g in game.bag.gear], "medicine": dict(game.bag.medicine),
+                "key_items": game.bag.key_items},
         "town": game.town,
         "cleared": dict(game.cleared),
         "starter": game.starter,
+        "quests": game.quests,
         "location": scene.location(),
     }
 
@@ -161,8 +163,10 @@ def load(info: SaveInfo):
         if data["version"] != VERSION:
             raise LoadError(f"{info.name} is from an older version of the game.")
         party = [_load_monster(m) for m in data["party"]]
-        bag = Bag([_load_gear(g) for g in data["bag"]["gear"]], Counter(data["bag"]["medicine"]))
-        game = Game(party, bag, data["town"], Counter(data["cleared"]), data.get("starter", "bulbasaur"))
+        bag = Bag([_load_gear(g) for g in data["bag"]["gear"]], Counter(data["bag"]["medicine"]),
+                  list(data["bag"].get("key_items", [])))
+        game = Game(party, bag, data["town"], Counter(data["cleared"]), data.get("starter", "bulbasaur"),
+                    dict(data.get("quests", {})))
         where = data["location"]
         if where["kind"] == "town":
             scene = TownScene(game, TOWNS[where["town"]])

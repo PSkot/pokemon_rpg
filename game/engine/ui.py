@@ -130,3 +130,16 @@ def blit_scaled(window: pygame.Surface, surface: pygame.Surface, pos: tuple[int,
     everything) on the scaled window, at logical `pos`."""
     s = settings.SCALE
     window.blit(pygame.transform.scale_by(surface, s), (pos[0] * s, pos[1] * s))
+
+
+def wrap(s: str, size: int, width: float) -> list[str]:
+    """`s` split into lines that fit `width` logical px at font `size`."""
+    f, lines, line = font(size), [], ""
+    for word in s.split():
+        attempt = f"{line} {word}" if line else word
+        if line and f.size(attempt)[0] / settings.SCALE > width:
+            lines.append(line)
+            line = word
+        else:
+            line = attempt
+    return lines + [line] if line else lines

@@ -546,8 +546,13 @@ Route 22 (2 maps, from Viridian City and back):
 | Nidoran F | 20 | 2–4 |
 | Spearow | 15 | 3–5 |
 
+Route 22 opens once the quest "Rival on Route 22" starts, and Viridian
+Forest once "Oak's Parcel" is done (see `quests.md`).
+
 **Boss:** the rival (a trainer battle, see below): Pidgey Lv9 and his
-starter Lv8, Gen 1's first rival team. His starter beats the player's
+starter Lv8, Gen 1's first rival team. Once he's beaten (the quest is
+done), the boss is a wild Pidgey Lv9 and Spearow Lv9 instead (no trainer;
+the reward roll stays). His starter beats the player's
 (Bulbasaur → Charmander, Charmander → Squirtle, Squirtle → Bulbasaur).
 Instead of a chest, winning rolls the boss loot table once (at Lv9) on top
 of the usual drops.
@@ -577,6 +582,8 @@ A route's boss group can be a trainer's team (`Route.trainer`):
 - **God mode:** hits on the party deal 0 damage and burn/poison don't hurt
   it (statuses still land); every hit on an enemy deals exactly its
   remaining HP, and Endure can't save it.
+- **Teleport** (Left/Right: town, Enter: go) takes the party to any town,
+  arriving as after fainting (healed; it becomes the town you wake up in).
 - **Add item** rolls gear with `Gear.roll(..., affixes=[...], values=...)`:
   the chosen affixes (any number, 0–5, regardless of rarity), and every
   value random, lowest or highest of its range (then × rarity as usual).

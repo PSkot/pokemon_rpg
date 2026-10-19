@@ -469,6 +469,7 @@ def _gradient(surface: pygame.Surface, top, bottom) -> None:
 BUILDING_CELL = (128, 128)  # cells of the building sheets (houses.png, functional_buildings.png)
 OUTLINE = (48, 28, 16)
 BUILDING_SINK = 1  # px a building's base sits into the ground (over the grass edge)
+WOOD_POST, WOOD_BOARD = (120, 78, 42), (164, 112, 64)  # the quest board
 
 
 @cache
@@ -497,3 +498,27 @@ def fence(s: pygame.Surface, x: int, ground: int, w: int) -> None:
         pygame.draw.rect(s, OUTLINE, (px, ground - 14, 4, 14), 1)
     for y in (ground - 11, ground - 5):
         pygame.draw.line(s, (220, 214, 200), (x, y), (x + w - 4, y), 2)
+
+
+def quest_board(s: pygame.Surface, x: int, ground: int, notes: int) -> pygame.Rect:
+    """A wooden quest board (placeholder art) centred on `x`, with up to 5
+    paper notes pinned to it; returns its outline."""
+    board = pygame.Rect(x - 24, ground - 50, 48, 30)
+    for px in (board.left + 5, board.right - 9):  # posts
+        post = pygame.Rect(px, board.bottom - 2, 4, ground - board.bottom + 2)
+        pygame.draw.rect(s, WOOD_POST, post)
+        pygame.draw.rect(s, OUTLINE, post, 1)
+    pygame.draw.rect(s, WOOD_BOARD, board)
+    for y in range(board.top + 7, board.bottom - 2, 7):  # planks
+        pygame.draw.line(s, WOOD_POST, (board.left + 1, y), (board.right - 2, y))
+    pygame.draw.rect(s, OUTLINE, board, 1)
+    roof = pygame.Rect(board.left - 4, board.top - 5, board.w + 8, 5)  # a little roof plank
+    pygame.draw.rect(s, WOOD_POST, roof)
+    pygame.draw.rect(s, OUTLINE, roof, 1)
+    for i in range(min(notes, 5)):
+        note = pygame.Rect(board.left + 4 + i * 8, board.top + 4 + (i % 2) * 5, 7, 10)
+        pygame.draw.rect(s, (244, 238, 222), note)
+        for ly in (note.top + 3, note.top + 6):
+            pygame.draw.line(s, (180, 170, 150), (note.left + 1, ly), (note.right - 2, ly))
+        s.set_at((note.centerx, note.top + 1), (210, 60, 60))  # a pin
+    return roof.union(board).union(pygame.Rect(board.left, board.bottom, board.w, ground - board.bottom))

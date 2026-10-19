@@ -166,6 +166,16 @@ non-commercial project.
   `progress.STARTERS`; `Game.new(starter)`, saved as `Game.starter`).
   Charmander and Squirtle are still icon placeholders: on the map the
   player falls back to their still frame (`Player.anim`).
+- Quests (`world/quests.py`, `docs/quests.md`): `QUESTS` with steps (visit
+  a building in a town, defeat a route's boss, reach a town), taken from a
+  town's quest board (`Town.board_col`) or started automatically once their
+  prerequisites are done. State in `Game.quests`, key items in
+  `Bag.key_items`. Quest events return an `Event` the map scene shows
+  (`MapScene.show_event`: dialogue, "New quest", "Quest complete" with
+  rewards); map panels queue (`MapScene.show`). Routes can be gated
+  (`Route.needs`/`blocked`) and change boss after a quest (`boss_after`).
+  Screens in `scenes/quest_ui.py` (dialogue box, quest board, quest log in
+  the pause menu); the map shows the current step and "!" markers.
 - Tab on the map opens the party screen (`summary.py`): stats and gear;
   Enter on a slot lists the bag's gear for it (or Remove), previewing the
   stat changes, and equips it. S opens the skill tree screen.
@@ -174,7 +184,9 @@ non-commercial project.
   (`DEV.god_mode`: the party takes no damage, every hit knocks an enemy
   out) and an item maker (`scenes/dev_menu.ItemMaker`: any gear with
   chosen rarity/affixes and random/min/max values, or medicine, into
-  `Scene.bag`). Active settings show in the window title and on the map.
+  `Scene.bag`) and Teleport (Left/Right picks a town; Enter goes there,
+  as a fresh arrival: healed, it becomes the respawn town; from map scenes
+  only). Active settings show in the window title and on the map.
 - Controls: arrows move, Up opens chests, Shift runs, Space jumps, number keys 1–9 are
   reserved for attacks (1 = basic attack, 2–5 = equipped moves).
 - `tools/` holds standalone helper scripts. `tools/anim_viewer.py` uses only

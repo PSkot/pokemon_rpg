@@ -24,9 +24,11 @@ from ..world import tileset
 from ..world.instance import RIVAL_STARTER, Instance
 from ..world.level import Level, Spawn
 from ..world.player import Controls, Player
+from ..world import quests
 from ..world.progress import Game
 from ..world.themes import Palette
 from ..world.towns import TOWNS
+from . import quest_ui
 from .battle import BattleScene
 from .summary import SummaryScene
 
@@ -171,7 +173,9 @@ class Doorway:
 
 class MapScene(Scene):
     """A map the player walks around: the tiles, the player and the camera,
-    the party screen (Tab), and panels (loot, notices) that pause the map.
+    the party screen (Tab), and panels (loot, notices, dialogue, a quest
+    board) that pause the map, shown one after another. The active quest's
+    current step shows under the location, and a "!" over what it needs.
     Subclasses put things on it."""
 
     def __init__(self, game: Game, level: Level):
@@ -182,8 +186,11 @@ class MapScene(Scene):
         self.backgrounds = tileset.backgrounds(level)
         self.layer = pygame.Surface((level.width, settings.LOGICAL_SIZE[1]), pygame.SRCALPHA)
         self.player = Player(level.start_x, level.ground_y(level.start_x), self.party[0].species)
-        self.panel: ui.ListPanel | None = None  # loot or a notice; the map waits
+        # The panel showing (a ui.ListPanel, or a quest_ui screen with
+        # handle_key); the map waits. Then the queued ones, in turn.
+        self.panel = None
         self.after_panel = None  # what closing the panel does next
+        self.queue: list[tuple[object, object]] = []  # (panel, after)
         self.camera = 0
         self.t = 0.0
         self.debug = False
@@ -215,6 +222,36 @@ class MapScene(Scene):
     def draw_things(self, layer: pygame.Surface) -> None:
         """What's on the map, behind the player (in map coordinates)."""
 
+    def markers(self) -> list[tuple[float, float]]:
+        """(x, top) in map coordinates of things the active quests need here."""
+        return []
+
+    # ---------------------------------------------------------------- panels
+
+    def show(self, panel, after=None) -> None:
+        """Show `panel` now, or after the ones before it; `after` runs when it closes."""
+        if self.panel is None:
+            self.panel, self.after_panel = panel, after
+        else:
+            self.queue.append((panel, after))
+
+    def show_event(self, event: quests.Event) -> None:
+        """What a quest event brings: its dialogue, then quests finished and started."""
+        if event.dialogue:
+            self.show(quest_ui.Dialogue(event.dialogue))
+        for i, key in enumerate(event.finished):
+            self.show(quest_ui.finished(key, event.rewards if i == 0 else []))
+        for key in event.started:
+            self.show(quest_ui.started(key))
+
+    def _close_panel(self) -> None:
+        after = self.after_panel
+        self.panel, self.after_panel = None, None
+        if after:
+            after()
+        if self.panel is None and self.queue:
+            self.panel, self.after_panel = self.queue.pop(0)
+
     def save_point(self):
         # Not while the party is about to head off (e.g. after fainting).
         return None if self.after_panel else self
@@ -223,11 +260,10 @@ class MapScene(Scene):
         if event.type != pygame.KEYDOWN:
             return
         if self.panel:
-            if event.key in CONFIRM_KEYS:
-                self.panel = None
-                after, self.after_panel = self.after_panel, None
-                if after:
-                    after()
+            closed = (self.panel.handle_key(event.key) if hasattr(self.panel, "handle_key")
+                      else event.key in CONFIRM_KEYS)
+            if closed:
+                self._close_panel()
             return
         if event.key == pygame.K_UP:
             self.interact()
@@ -286,10 +322,17 @@ class MapScene(Scene):
         if DEV.enabled:  # what dev mode has on, after the location
             ui.text(window, DEV.summary(), (6 + ui.font(20).size(self.where())[0] / settings.SCALE + 16, 15),
                     ui.YELLOW, size=20)
+        tracked = quests.active(self.game)
+        if tracked:  # the first active quest's next step
+            ui.text(window, f"Quest: {quests.current(self.game, tracked[0].key).text}", (6, 26), ui.YELLOW, size=20)
         if self.debug:
             p, level = self.player, self.level
             ui.text(window, f"seed: {level.seed}   state: {p.state}   x: {p.x:.0f}  feet: {p.feet_y:.0f}"
-                            f"   fps: {self.fps:.0f}", (6, 26), ui.YELLOW, size=20)
+                            f"   fps: {self.fps:.0f}", (6, 37), ui.YELLOW, size=20)
+        if not self.panel:
+            lift = abs((self.t * 2) % 2 - 1) * 4
+            for x, top in self.markers():
+                ui.text(window, "!", (x - self.camera, top - 14 - lift), ui.YELLOW, size=32, align="center")
         if self.panel:
             self.panel.draw_overlay(window)
 
@@ -302,6 +345,10 @@ class OverworldScene(MapScene):
         self.instance = instance
         level, palette = self.level, self.level.theme.palette
         self.wild = [WildPokemon(s) for s in level.spawns]
+        route = instance.route
+        self.trainer = route.trainer  # whose team the boss group is ("" = wild)
+        if level.boss and route.boss_after and quests.is_done(game, route.boss_after[0]):
+            level.boss.encounter, self.trainer = list(route.boss_after[1]), ""  # the quest's boss is beaten
         if level.boss:  # the rival's starter depends on the player's
             level.boss.encounter = [(game.rival_starter if species == RIVAL_STARTER else species, lv)
                                     for species, lv in level.boss.encounter]
@@ -349,7 +396,7 @@ class OverworldScene(MapScene):
         rewards = chest.loot.roll(level=random.randint(*chest.levels))
         for r in rewards:
             r.give(self.bag)
-        self.panel = ui.ListPanel("The chest contained:", [r.row() for r in rewards], (320, 140))
+        self.show(ui.ListPanel("The chest contained:", [r.row() for r in rewards], (320, 140)))
         saves.autosave(self)
 
     def _go_on(self) -> None:
@@ -371,12 +418,12 @@ class OverworldScene(MapScene):
             self.wild.remove(wild)
             if wild is self.boss:
                 self._boss_beaten()
+                self.show_event(quests.defeat(self.game, self.instance.route.key))
             saves.autosave(self)
         elif battle.lost:
             town = TOWNS[self.game.town]
-            self.panel = ui.ListPanel("Your party fainted...", [(f"You hurry back to {town.name}.", ui.WHITE, "")],
-                                      (320, 140))
-            self.after_panel = self._fainted
+            self.show(ui.ListPanel("Your party fainted...", [(f"You hurry back to {town.name}.", ui.WHITE, "")],
+                                   (320, 140)), after=self._fainted)
 
     def _boss_beaten(self) -> None:
         """The way out opens, and the boss leaves a reward chest (unless the
@@ -413,7 +460,7 @@ class OverworldScene(MapScene):
                 loot = wild_loot(route.boss_loot if boss else route.loot)
                 battle = BattleScene(self, self.party, enemies, self.bag, loot=loot,
                                      backdrop=self.level.theme.backdrop, boss=boss,
-                                     trainer=route.trainer if boss else "",
+                                     trainer=self.trainer if boss else "",
                                      bonus=boss_loot(route.boss_loot) if boss and not route.boss_chest else None)
                 self.fighting = (wild, battle)
                 self.next_scene = Transition(self, battle)
@@ -429,9 +476,9 @@ class OverworldScene(MapScene):
 
     def draw_overlay(self, window: pygame.Surface) -> None:
         super().draw_overlay(window)
-        if self.instance.route.trainer and self.boss in self.wild and not self.panel:  # who the boss is
+        if self.trainer and self.boss in self.wild and not self.panel:  # who the boss is
             box = self.boss.body_rect
-            ui.text(window, self.instance.route.trainer, (box.centerx - self.camera, box.top - 14), ui.YELLOW, size=24,
+            ui.text(window, self.trainer, (box.centerx - self.camera, box.top - 14), ui.YELLOW, size=24,
                     align="center")
 
     # ----------------------------------------------------------------- saves

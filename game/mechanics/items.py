@@ -389,6 +389,7 @@ class Bag:
     """Everything the player carries that isn't equipped."""
     gear: list[Gear] = field(default_factory=list)
     medicine: Counter = field(default_factory=Counter)  # name -> how many
+    key_items: list[str] = field(default_factory=list)  # story items (Oak's Parcel): never used up or sold
 
     def add_medicine(self, name: str, count: int = 1) -> None:
         self.medicine[MEDICINE[name].name] += count

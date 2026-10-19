@@ -1,7 +1,10 @@
 # Quests
 
-**Status: design proposal, not built yet.** Once agreed, this becomes the
-reference for how quests work, kept in step with the code.
+How quests work, and every quest in the game. Keep this file in step with
+the code (`game/world/quests.py`, screens in `game/scenes/quest_ui.py`).
+
+**Built:** everything below except the Boulder Badge quest (comes with the
+gym battles), and the "catch" / "bring an item" steps.
 
 Quests carry the story (following Red/Blue) and gate progress: some
 routes only open once a quest has started or is done, and some areas
@@ -17,7 +20,7 @@ change once a quest is finished.
 | --- | --- |
 | **Name and summary** | Shown in the quest log. |
 | **Prerequisites** | Quests that must be done first. Until then it's *locked* (not shown). |
-| **Start** | *Automatic* (as soon as its prerequisites are done, with a notice) or at a *giver*: a building or door you press Up at in a town. |
+| **Start** | Taken from a town's **quest board** (`Quest.board`), or *automatic* (as soon as its prerequisites are done, with a notice). Other givers (people, buildings) can come later. |
 | **Steps** | Objectives done in order; the quest shows the current one. |
 | **Rewards** | Given when the last step is done: medicine, gear (at a rarity and item level), key items. |
 | **Unlocks** | What changes once it's started or done: a doorway opens, a route's boss changes, the next quest becomes available. |
@@ -49,13 +52,19 @@ they can't be sold, used or dropped.
 
 ### On screen
 
+- **Quest board:** a wooden notice board next to a house in Pallet Town,
+  Viridian City and Pewter City (`Town.board_col`), with a paper note for
+  each quest that can be taken. Up opens it: the town's quests (New /
+  Active / Done) with the chosen one's summary and steps; Enter takes a
+  new one. An empty board says "Nothing posted right now."
 - **Dialogue box:** text at the bottom of the screen during quest moments
   (a speaker's name, pages advanced with Enter). No character sprites for
   now: people "speak" from their buildings.
 - **Tracker:** the active quest's current step under the location line on
   the map, e.g. "Deliver Oak's Parcel to Professor Oak (Pallet Town)".
-- **Markers:** a bouncing "!" over the building or doorway the current
-  step needs (when it's in the town you're in).
+- **Markers:** a bouncing "!" over a quest board with something new, and
+  over the building the current step needs (when it's in the town you're
+  in).
 - **Quest log:** pause menu → Quests: active quests with their steps
   (done ones ticked), and finished ones.
 - **Notices:** "New quest: …" and "Quest complete: …" banners, plus the
@@ -67,7 +76,7 @@ they can't be sold, used or dropped.
 
 ### 1. Oak's Parcel
 
-- **Starts:** automatically on first arriving in Viridian City.
+- **Starts:** taken from the Viridian City quest board.
 - **Steps:**
   1. Visit the **Viridian Poké Mart**: the clerk hands you **Oak's
      Parcel** (key item).
@@ -92,6 +101,14 @@ they can't be sold, used or dropped.
   **Pidgey Lv9 and Spearow Lv9** (no trainer, still the reward roll, no
   chest), so the route stays worth repeating.
 
+### Bugs in the Forest (side quest)
+
+- **Starts:** taken from the Viridian City quest board, once Oak's Parcel
+  is done.
+- **Steps:** defeat the giant Caterpie (and its escort) in Viridian
+  Forest.
+- **Rewards:** 2 Super Potions and a Common gear piece (item level 10).
+
 ### 3. The Boulder Badge (next)
 
 - **Starts:** automatically on first arriving in Pewter City.
@@ -99,14 +116,20 @@ they can't be sold, used or dropped.
 
 ---
 
-## Code sketch
+## Code
 
-- `game/world/quests.py`: `Quest` and `Step` data and `QUESTS` (the
-  chain above); helpers for a game's quest state (`state`, `step`,
-  `advance`, `start_ready`), called when you arrive in a town, press Up at
-  a building or doorway, or win a boss battle.
-- `Game.quests`, `Bag.key_items`; saved like the rest of `Game`.
-- `Route.requires` (a quest condition for its doorway) and boss groups
-  per quest state.
-- `scenes/dialogue.py` (the dialogue box), a quest log in the pause menu,
-  the tracker and markers on the map.
+- `game/world/quests.py`: `Quest` and `Step` data and `QUESTS`; a game's
+  quest state (`step`, `is_active`, `is_done`, `current`, `board`,
+  `can_take`) and the events that move it on (`accept`, `visit`, `defeat`,
+  `reach`), each returning an `Event` (dialogue, quests started and
+  finished, rewards given) for the map scene to show (`MapScene.show_event`).
+  Quests with no board start by themselves once their prerequisites are
+  done.
+- `Game.quests` (quest key → step reached; the number of steps = done),
+  `Bag.key_items`; both saved.
+- `Route.needs` / `Route.blocked` (a quest condition for its doorways, and
+  what's said when it isn't met), `Route.boss_after` (the boss group once a
+  quest is done).
+- `scenes/quest_ui.py`: `Dialogue`, `QuestBoard`, `QuestLog`, and the
+  "New quest" / "Quest complete" panels. Map scenes show panels one after
+  another (`MapScene.show`).

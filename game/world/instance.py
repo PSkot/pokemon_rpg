@@ -34,6 +34,11 @@ class Route:
     boss_scale: int = 1                 # the leader is drawn this many times bigger
     trainer: str = ""                   # the boss group is this trainer's team (a trainer battle)
     boss_chest: bool = True             # beating the boss leaves a chest (else its loot comes with the battle)
+    # Its doorways need (quest key, "started" or "done"); `blocked` says why not.
+    needs: tuple[str, str] | None = None
+    blocked: str = ""
+    # Once this quest is done, the boss is this group instead (no trainer).
+    boss_after: tuple[str, tuple[tuple[str, int], ...]] | None = None
 
     def other_end(self, town: str) -> str:
         return self.towns[1] if town == self.towns[0] else self.towns[0]
@@ -42,10 +47,14 @@ class Route:
 ROUTES = {r.key: r for r in [
     Route("route_1", "Route 1", MEADOW, maps=2, towns=("pallet", "viridian")),
     Route("viridian_forest", "Viridian Forest", FOREST, maps=3, towns=("viridian", "pewter"), boss=True,
-          boss_group=(("caterpie", 10), ("metapod", 8), ("kakuna", 8)), boss_scale=2),
+          boss_group=(("caterpie", 10), ("metapod", 8), ("kakuna", 8)), boss_scale=2,
+          needs=("oaks_parcel", "done"),
+          blocked="An old man is lying in the road. He hasn't had his coffee yet, and won't let anyone pass."),
     # A side trip from Viridian and back (Gen 1's first rival battle at its end).
     Route("route_22", "Route 22", ROUTE_22, maps=2, towns=("viridian", "viridian"), boss=True,
-          boss_group=(("pidgey", 9), (RIVAL_STARTER, 8)), trainer="Rival", boss_chest=False),
+          boss_group=(("pidgey", 9), (RIVAL_STARTER, 8)), trainer="Rival", boss_chest=False,
+          needs=("rival_22", "started"), blocked="A guard says there's nothing to see on Route 22 for now.",
+          boss_after=("rival_22", (("pidgey", 9), ("spearow", 9)))),
 ]}
 
 

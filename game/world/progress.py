@@ -20,6 +20,7 @@ class Game:
     town: str = START_TOWN  # the last town visited: where a fainted party wakes up
     cleared: Counter = field(default_factory=Counter)  # route key -> times walked all the way
     starter: str = "bulbasaur"  # the player's first Pokémon (species key)
+    quests: dict[str, int] = field(default_factory=dict)  # quest key -> the step it's at (see quests.py)
 
     @property
     def rival_starter(self) -> str:

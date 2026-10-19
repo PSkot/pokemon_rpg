@@ -1,7 +1,10 @@
-"""A town's map: buildings to walk past and doorways onto routes (Up).
+"""A town's map: buildings to walk past, a quest board, and doorways onto
+routes (Up).
 
 Arriving heals the party, and the town becomes where a fainted party wakes
-up. The town's name shows for a moment on arrival.
+up. The town's name shows for a moment on arrival. Up at the quest board
+opens it; Up at a building a quest step needs does that step; a route's
+doorway can stay shut until a quest is started or done.
 """
 
 import pygame
@@ -10,10 +13,12 @@ from .. import saves, settings
 from ..engine import ui
 from ..engine.scene import Transition
 from ..world import tileset
+from ..world import quests
 from ..world.instance import ROUTES, Instance
 from ..world.level import TILE
 from ..world.progress import Game
 from ..world.towns import Building, Town
+from . import quest_ui
 from .overworld import Doorway, MapScene, OverworldScene
 
 BANNER_TIME = 2.5   # seconds the town's name shows on arrival
@@ -43,6 +48,7 @@ class TownScene(MapScene):
                 self.place_player(level.exit_x - ARRIVE_GAP, -1)
             else:  # a doorway in the town: right in front of it
                 self.place_player(self._door_x(where), 1)
+        self.show_event(quests.reach(game, town.key))
 
     def _door_x(self, where: str | int) -> float:
         if where == "left":
@@ -58,12 +64,33 @@ class TownScene(MapScene):
         """(doorway, route key, where) of the doorway the player stands in."""
         return next((d for d in self.doors if self.player.body_rect.colliderect(d[0].rect)), None)
 
+    @property
+    def board_x(self) -> float | None:
+        return None if self.town.board_col is None else self.town.board_col * TILE + TILE / 2
+
+    def _at_board(self) -> bool:
+        return self.board_x is not None and abs(self.player.x - self.board_x) < 24
+
     def _building_at_player(self) -> Building | None:
         return next((b for b in self.town.buildings
                      if b.name and b.x <= self.player.x < b.x + tileset.building(b.sprite)[0].get_width()), None)
 
     def interact(self) -> None:
+        if self._at_board():
+            board = quest_ui.QuestBoard(self.game, self.town.name, self.town.key)
+            self.show(board, after=lambda: board.taken and self.show_event(quests.accept(self.game, board.taken)))
+            return
         door = self._door_at_player()
+        if door and not quests.open_for(self.game, ROUTES[door[1]].needs):
+            self.show(quest_ui.Dialogue([("", ROUTES[door[1]].blocked)]))
+            return
+        building = None if door else self._building_at_player()
+        if building:
+            event = quests.visit(self.game, self.town.key, building.name)
+            if event:
+                self.show_event(event)
+                saves.autosave(self)
+            return
         if door:
             route = ROUTES[door[1]]
             instance = Instance(route, route.other_end(self.town.key))
@@ -72,13 +99,30 @@ class TownScene(MapScene):
             self.next_scene = Transition(self, first_map, flashes=0)
 
     def prompt(self) -> tuple[float, float] | None:
+        if self._at_board():
+            return self.board_x, self.level.ground_y(0) - 74
         door = self._door_at_player()
         return (door[0].x, door[0].feet_y - 66) if door else None
+
+    def markers(self) -> list[tuple[float, float]]:
+        ground, marks = self.level.ground_y(0), []
+        if self.board_x is not None and quests.can_take(self.game, self.town.key):
+            marks.append((self.board_x, ground - 60))
+        for quest in quests.active(self.game):
+            step = quests.current(self.game, quest.key)
+            if step.kind == "visit" and step.town == self.town.key:
+                for b in self.town.buildings:
+                    if b.name == step.target:
+                        image, base = tileset.building(b.sprite)
+                        marks.append((b.x + image.get_width() / 2, ground - base - 20))
+        return marks
 
     def draw_things(self, layer: pygame.Surface) -> None:
         ground = round(self.level.ground_y(0))
         for b in self.town.buildings:
             tileset.draw_building(layer, b.sprite, b.x, ground)
+        if self.board_x is not None:
+            tileset.quest_board(layer, round(self.board_x), ground, len(quests.can_take(self.game, self.town.key)))
         for door, _, _ in self.doors:
             door.draw(layer)
         for side in ("left", "right"):

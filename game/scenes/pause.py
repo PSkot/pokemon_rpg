@@ -7,14 +7,17 @@ from ..dev import DEV, XP_BOOSTS
 from ..engine import ui
 from ..saves import LoadError
 from .dev_menu import ItemMaker
+from ..world.towns import TOWNS
+from .quest_ui import QuestLog
+from .town import TownScene
 from .save_menu import NEW_SAVE, SaveList
 
 PAD = 9
 ROW_H = 19
-OPTIONS = ["Resume", "Save game", "Load game", "Dev mode", "Quit game"]
-DEV_OPTIONS = ["XP boost", "God mode", "Add item"]  # shown under "Dev mode" while it's on
+OPTIONS = ["Resume", "Quests", "Save game", "Load game", "Dev mode", "Quit game"]
+DEV_OPTIONS = ["XP boost", "God mode", "Add item", "Teleport"]  # shown under "Dev mode" while it's on
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
-WIDTH = 190
+WIDTH = 216
 
 
 class PauseMenu:
@@ -37,6 +40,8 @@ class PauseMenu:
         self.loaded = None  # the scene of a loaded save, to switch to
         self.saves: SaveList | None = None  # the save or load list, when open
         self.items: ItemMaker | None = None  # dev mode's item maker, when open
+        self.log: QuestLog | None = None     # the quest log, when open
+        self.teleport_to = list(TOWNS)[0]    # dev mode: the town Teleport goes to
         self.message = ""
 
     @property
@@ -53,7 +58,8 @@ class PauseMenu:
         return rect
 
     def _available(self, option: str) -> bool:
-        return {"Save game": self.save_point is not None, "Add item": self.bag is not None}.get(option, True)
+        return {"Save game": self.save_point is not None, "Quests": self.save_point is not None,
+                "Teleport": self.save_point is not None, "Add item": self.bag is not None}.get(option, True)
 
     def _label(self, option: str) -> str:
         if option == "Dev mode":
@@ -64,6 +70,8 @@ class PauseMenu:
             return f"God mode: {'On' if DEV.god else 'Off'}"
         if option == "Add item":
             return "Add item..."
+        if option == "Teleport":
+            return f"Teleport: < {TOWNS[self.teleport_to].name} >"
         return option
 
     def handle_event(self, event: pygame.event.Event) -> None:
@@ -74,6 +82,10 @@ class PauseMenu:
             self.items.handle_event(event)
             if self.items.closed:
                 self.items = None
+            return
+        if self.log:
+            if event.type == pygame.KEYDOWN and self.log.handle_key(event.key):
+                self.log = None
             return
         if event.type != pygame.KEYDOWN:
             return
@@ -93,11 +105,22 @@ class PauseMenu:
                     self.message = "Can't save right now."
             elif option == "Load game":
                 self.saves = SaveList("load")
+            elif option == "Quests":
+                if self.save_point:
+                    self.log = QuestLog(self.save_point.game)
+                else:
+                    self.message = "Not during a battle."
             elif option == "Add item":
                 if self.bag is not None:
                     self.items = ItemMaker(self.bag)
                 else:
                     self.message = "No bag to add to here."
+            elif option == "Teleport":
+                if self.save_point:  # into that town, as after fainting (it becomes the respawn town)
+                    self.loaded = TownScene(self.save_point.game, TOWNS[self.teleport_to])
+                    self.done = True
+                else:
+                    self.message = "Not during a battle."
             elif option in ("Dev mode", "XP boost", "God mode"):
                 self._toggle(option, 1)
             else:
@@ -111,6 +134,10 @@ class PauseMenu:
             DEV.xp_boost = XP_BOOSTS[(XP_BOOSTS.index(DEV.xp_boost) + step) % len(XP_BOOSTS)]
         elif option == "God mode":
             DEV.god = not DEV.god
+        elif option == "Teleport":
+            keys = list(TOWNS)
+            self.teleport_to = keys[(keys.index(self.teleport_to) + step) % len(keys)]
+            return
         pygame.display.set_caption(" ".join(p for p in (settings.TITLE, DEV.summary() and f"[{DEV.summary()}]") if p))
 
     def _handle_saves(self, event: pygame.event.Event) -> None:
@@ -144,6 +171,9 @@ class PauseMenu:
             return
         if self.items:
             self.items.draw_overlay(window)
+            return
+        if self.log:
+            self.log.draw_overlay(window)
             return
         rect = self.rect
         box = pygame.Surface(rect.size, pygame.SRCALPHA)

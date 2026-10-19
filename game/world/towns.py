@@ -37,6 +37,7 @@ class Town:
     buildings: tuple[Building, ...]
     exits: tuple[tuple[str | int, str], ...]  # (where: "left"/"right" edge or a column, route key)
     home_col: int                   # where a new game starts and a fainted party wakes up
+    board_col: int | None = None    # where its quest board stands (see quests.py)
     theme: Theme = MEADOW           # tiles and background
 
     def exit_to(self, route: str) -> str | int:
@@ -55,19 +56,19 @@ TOWNS = {t.key: t for t in [
         Building("Your House", (HOUSES, 0), 7),
         Building("Rival's House", (HOUSES, 1), 18),
         Building("Professor Oak's Lab", (FUNCTIONAL, 3), 29),
-    ), exits=(("right", "route_1"),), home_col=10),
+    ), exits=(("right", "route_1"),), home_col=10, board_col=15),
     Town("viridian", "Viridian City", 72, (
         Building("", (HOUSES, 2), 8),
         Building("Pokémon Center", (FUNCTIONAL, 0), 17),
         Building("Poké Mart", (FUNCTIONAL, 2), 30),
         Building("", (HOUSES, 3), 42),
         Building("Viridian Gym", (FUNCTIONAL, 1), 53),
-    ), exits=(("left", "route_1"), ("right", "viridian_forest"), (39, "route_22")), home_col=21),
+    ), exits=(("left", "route_1"), ("right", "viridian_forest"), (39, "route_22")), home_col=21, board_col=50),
     Town("pewter", "Pewter City", 72, (
         Building("", (HOUSES, 3), 7),
         Building("Pokémon Center", (FUNCTIONAL, 0), 19),
         Building("Poké Mart", (FUNCTIONAL, 2), 32),
         Building("Pewter Gym", (FUNCTIONAL, 1), 45),
         Building("", (HOUSES, 2), 58),
-    ), exits=(("left", "viridian_forest"),), home_col=23),
+    ), exits=(("left", "viridian_forest"),), home_col=23, board_col=15),
 ]}
