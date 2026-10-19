@@ -23,7 +23,7 @@ class AnimSpec:
     fps: float = 8
     loop: bool = False
     frames: int | None = None  # use only the first N frames
-    baseline: int | None = None
+    baseline: int | tuple[int | None, ...] | None = None  # see Animation
     per_frame_baseline: bool = False
     face_left: tuple[int, ...] = ()  # frames drawn facing left; mirrored on load
 
@@ -107,6 +107,32 @@ SPECIES = {
         },
         foot_sink=3,
         base_exp=141),
+    "charmander": Species(
+        "Charmander", 39, 52, 43, 65, ("fire",),
+        fight_anim="attack",
+        anims={
+            "idle": AnimSpec("charmander.png", 0, fps=1, loop=True, frames=1),
+            "walk": AnimSpec("charmander.png", 0, loop=True),
+            "run": AnimSpec("charmander.png", 1, fps=12, loop=True),
+            # The rising frame's tail flame hangs below its feet.
+            "jump": AnimSpec("charmander.png", 2, fps=1, per_frame_baseline=True,
+                             baseline=(None, 57, None, None)),
+            "attack": AnimSpec("charmander.png", 3),
+        },
+        foot_sink=2,
+        base_exp=65),
+    "squirtle": Species(
+        "Squirtle", 44, 48, 65, 43, ("water",),
+        fight_anim="attack",
+        anims={
+            "idle": AnimSpec("squirtle.png", 0, fps=1, loop=True, frames=1),
+            "walk": AnimSpec("squirtle.png", 0, loop=True),
+            "run": AnimSpec("squirtle.png", 1, fps=12, loop=True),
+            "jump": AnimSpec("squirtle.png", 2, fps=1, per_frame_baseline=True),
+            "attack": AnimSpec("squirtle.png", 3),
+        },
+        foot_sink=2,
+        base_exp=66),
     "pidgey": Species(
         "Pidgey", 40, 45, 40, 56, ("normal", "flying"),
         fight_anim="tackle",
@@ -131,8 +157,6 @@ def _placeholder(icon: str, name: str, stats: tuple[int, int, int, int], types: 
 # Attack, Defense, Speed), types and base experience yield. (Their moves come
 # from their line's skill tree, skills.TREES.)
 SPECIES.update({
-    "charmander": _placeholder("004_charmander", "Charmander", (39, 52, 43, 65), ("fire",), exp=65),
-    "squirtle": _placeholder("007_squirtle", "Squirtle", (44, 48, 65, 43), ("water",), exp=66),
     "spearow": _placeholder("021_spearow", "Spearow", (40, 60, 30, 70), ("normal", "flying"), exp=58),
     # (The game's font has no ♀/♂ symbols.)
     "nidoran_f": _placeholder("029_nidoran-f", "Nidoran F", (55, 47, 52, 41), ("poison",), exp=59),

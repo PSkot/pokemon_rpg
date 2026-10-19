@@ -32,23 +32,27 @@ class Animation:
     `per_frame_baseline`, every frame is aligned by its own lowest pixel
     instead; use that when the code moves the character itself (e.g. jumps).
     Pass `baseline` to set the row explicitly, for sheets whose effects (auras,
-    shields) reach below the feet.
+    shields) reach below the feet: one row for every frame, or a row per
+    frame (None = that frame's own lowest pixel, or the shared one).
     """
 
     def __init__(self, frames: list[pygame.Surface], fps: float, loop: bool = True,
-                 per_frame_baseline: bool = False, baseline: int | None = None):
+                 per_frame_baseline: bool = False,
+                 baseline: int | tuple[int | None, ...] | None = None):
         self.frames = frames
         self.flipped = [pygame.transform.flip(f, True, False) for f in frames]
         self.fps = fps
         self.loop = loop
         # (Ignore nearly transparent rows: smoothly scaled icons fade out at the edges.)
         bottoms = [f.get_bounding_rect(min_alpha=VISIBLE_ALPHA).bottom for f in frames]
-        if baseline is not None:
+        if isinstance(baseline, int):
             self.baselines = [baseline] * len(frames)
         elif per_frame_baseline:
             self.baselines = bottoms
         else:
             self.baselines = [max(bottoms)] * len(frames)
+        if isinstance(baseline, tuple):
+            self.baselines = [b if b is not None else own for b, own in zip(baseline, self.baselines)]
         # Each frame's head anchor (where a hat goes), if known; see hats.py.
         self.heads: list[tuple[int, int]] | None = None
 

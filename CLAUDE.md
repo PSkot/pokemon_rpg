@@ -46,7 +46,8 @@ non-commercial project.
   that yield seconds to wait (`BattleScene._round` / `_perform`).
 - Each `Animation` aligns its own baseline (lowest opaque row) to the feet
   position, because rows in a sheet sit at different heights. Rows whose
-  effects reach below the feet pass an explicit `baseline=` instead.
+  effects reach below the feet pass an explicit `baseline=` instead (one
+  row, or a tuple per frame with None = the frame's own).
 - Gear (`items.py`): each Pokémon has typed slots (head, held, worn, berry).
   Gear is rolled (`Gear.roll`): the item's own effect plus random affixes
   (prefixes/suffixes, e.g. "Fierce Red Bandana of the Aerodactyl"; suffixes
@@ -164,8 +165,6 @@ non-commercial project.
   and load lists are `save_menu.SaveList`. New game opens the starter
   choice (`scenes/starter.py`: Bulbasaur, Charmander or Squirtle,
   `progress.STARTERS`; `Game.new(starter)`, saved as `Game.starter`).
-  Charmander and Squirtle are still icon placeholders: on the map the
-  player falls back to their still frame (`Player.anim`).
 - Quests (`world/quests.py`, `docs/quests.md`): `QUESTS` with steps (visit
   a building in a town, defeat a route's boss, reach a town), taken from a
   town's quest board (`Town.board_col`) or started automatically once their
@@ -204,8 +203,9 @@ non-commercial project.
   the species' `fight_anim`).
 - `pidgey.png` rows: walk, fly, gust, tackle. Its frames don't all face
   right; the left-facing ones are listed in `face_left` and mirrored on load.
-- `ivysaur.png` has the same rows as `bulbasaur.png` (no extra-attack sheet
-  yet: its skills use the basic attack animation).
+- `ivysaur.png`, `charmander.png` and `squirtle.png` have the same rows
+  as `bulbasaur.png` (no extra-attack sheets yet: their skills use the
+  basic attack animation).
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,
   row, fps, baseline, ...) and shared by the map player and battles.
 - Background art (`tileset.py`): `background.png` (64×64 cells) rows 3–4
