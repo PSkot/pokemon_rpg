@@ -6,17 +6,21 @@
 pygbag packs a whole folder (with a main.py at its top) into the page, so
 this copies just the game and its assets into build/web-app/ first. The
 result in build/web-app/build/web/ is a static site: upload it anywhere
-(GitHub Pages, itch.io).
+(GitHub Pages, itch.io). The page asks for the game's package with a
+per-build version (web-app.apk?v=...), so a reload never gets an old copy
+from the browser's cache.
 """
 
 import argparse
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "build" / "web-app"
+PAGE = APP / "build" / "web" / "index.html"
 
 # pygbag picks the packages to load from this file's imports, so pygame is
 # imported here too, not just inside the game package.
@@ -52,6 +56,13 @@ def main() -> None:
     if not args.serve:
         command.append("--build")
     subprocess.run(command + [str(APP)], check=True)
+    if not args.serve:
+        version = int(time.time())
+        page = PAGE.read_text()
+        for package in ('"web-app.apk"', '"web-app.tar.gz"'):
+            assert package in page, f"{package} not in {PAGE}"
+            page = page.replace(package, f'{package[:-1]}?v={version}"')
+        PAGE.write_text(page)
 
 
 if __name__ == "__main__":
