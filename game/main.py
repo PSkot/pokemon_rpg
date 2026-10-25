@@ -25,6 +25,21 @@ from .scenes.pause import PauseMenu
 from .scenes.title import TitleScene
 
 
+def fit_canvas() -> None:
+    """In the browser: make the page's canvas as big as fits, in the game's
+    shape. (pygbag sizes it once, before the window exists, so it comes out
+    square; this also follows the page's size, e.g. when a phone turns.)"""
+    import platform  # pygbag's: gives access to the page (`window`)
+    window = platform.window
+    w, h = settings.WINDOW_SIZE
+    scale = min(window.innerWidth / w, window.innerHeight / h)
+    width, height = f"{int(w * scale)}px", f"{int(h * scale)}px"
+    style = window.canvas.style
+    if style.width != width or style.height != height:
+        style.width, style.height = width, height
+        style.imageRendering = "pixelated"
+
+
 async def main() -> None:
     pygame.init()
     window = pygame.display.set_mode(settings.WINDOW_SIZE)
@@ -65,6 +80,8 @@ async def main() -> None:
         if pause:
             pause.draw_overlay(window)
         pygame.display.flip()
+        if saves.WEB:
+            fit_canvas()
 
         if scene.next_scene:
             previous, scene = scene, scene.next_scene

@@ -17,10 +17,13 @@ non-commercial project.
   scales ×2.
 - Browser build (for phones): `tools/web_build.py` packs the game with
   pygbag into `build/web-app/build/web/` (`--serve`: test on
-  localhost:8000). Hence the async main loop (`await asyncio.sleep(0)`
+  localhost:8000; use pygbag's server, as a page on localhost loads
+  pygame through it). Hence the async main loop (`await asyncio.sleep(0)`
   per frame). In the browser (`saves.WEB`) save files are mirrored into
-  localStorage and restored on start. pygbag fetches its template and
-  runtime from pygame-web.github.io.
+  localStorage and restored on start, and `main.fit_canvas` sizes the
+  page's canvas each frame. pygbag fetches its template and runtime
+  (and pygame, via the generated main.py's imports) from
+  pygame-web.github.io.
 - Code layout (`game/`; module names below are within these folders):
   - `main.py` (game loop), `settings.py`, `saves.py`
   - `engine/`: scenes and transitions (`scene.py`), menu windows and text

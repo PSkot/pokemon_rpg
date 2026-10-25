@@ -18,7 +18,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "build" / "web-app"
 
+# pygbag picks the packages to load from this file's imports, so pygame is
+# imported here too, not just inside the game package.
 MAIN = '''import asyncio
+
+import pygame
 
 from game.main import main
 
