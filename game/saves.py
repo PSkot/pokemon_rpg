@@ -1,5 +1,6 @@
 """Saving and loading: one autosave (overwritten each time) and any number
-of manual saves, as JSON files in saves/.
+of manual saves, as JSON files in saves/, next to the player's settings
+(settings.json: not a save).
 
 A save holds the player's progress (`world.Game`) and where the player is:
 in a town, or on a map of a route or dungeon run (`MapScene.location`).
@@ -25,6 +26,7 @@ from .world.progress import Game
 
 SAVE_DIR = settings.ROOT / "saves"
 AUTOSAVE = SAVE_DIR / "autosave.json"
+PREFS = SAVE_DIR / "settings.json"  # the player's settings (e.g. touch controls), not a save
 VERSION = 2
 NOTICE_TIME = 2.0  # seconds "Autosaved" stays on screen
 
@@ -152,6 +154,19 @@ def delete(info: SaveInfo) -> None:
     info.path.unlink(missing_ok=True)
     if WEB:
         _web_storage().removeItem(WEB_PREFIX + info.path.name)
+
+
+def load_prefs() -> dict:
+    """The player's settings ({} if none are saved or the file is damaged)."""
+    try:
+        prefs = json.loads(PREFS.read_text())
+        return prefs if isinstance(prefs, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def save_prefs(prefs: dict) -> None:
+    _write(PREFS, prefs)
 
 
 def list_saves() -> list[SaveInfo]:

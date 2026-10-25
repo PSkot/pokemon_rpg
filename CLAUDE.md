@@ -213,6 +213,14 @@ non-commercial project.
   (`Scene.touch_keys`: party screen S, skill tree E/R; pills under
   Party). On for touch screens in the browser (decided before the window
   is made), or with `POKEMON_TOUCH=1` (mouse = finger) on desktop.
+  The player sets the layout (`touch.Layout`: button size, panel width
+  down to 0 = buttons over the game, see-through; each side's buttons
+  moved across/up) in pause menu → Controls (`scenes/controls_menu.py`,
+  only with touch on; every button shows meanwhile). Positions come from
+  `touch.SPOTS` (the default layout) placed by the layout (`_placed`).
+  Changing the panel width remakes the window (main loop). Saved in the
+  player's settings (`saves.load_prefs`/`save_prefs`: `saves/settings.json`,
+  mirrored to localStorage like saves; key "touch").
 - `tools/` holds standalone helper scripts. `tools/anim_viewer.py` uses only
   the standard library (it renders an HTML page and opens it in the browser).
 - Firefox on this machine is a snap and cannot open files under `/tmp`;

@@ -45,6 +45,7 @@ def fit_canvas(size: tuple[int, int]) -> None:
 async def main() -> None:
     pygame.init()
     touch.init()
+    touch.configure(saves.load_prefs().get("touch", {}))
     # With touch controls, the window has side panels for them; the game is
     # drawn in the middle (`window`).
     screen = pygame.display.set_mode(touch.window_size())
@@ -60,8 +61,12 @@ async def main() -> None:
     running = True
     while running:
         dt = clock.tick(settings.FPS) / 1000
+        # The map's touch buttons show on maps, and all of them while their
+        # layout is being set (pause menu -> Controls).
+        on_map = pause.editing_controls if pause else scene.touch_map
+        extra = () if pause else scene.touch_keys
         for event in pygame.event.get():
-            if touch.handle(event, scene.touch_map and not pause, () if pause else scene.touch_keys):
+            if touch.handle(event, on_map, extra):
                 continue  # (touch buttons post key events)
             if event.type == pygame.QUIT:
                 running = False
@@ -87,7 +92,8 @@ async def main() -> None:
                     size=20, align="right")
         if pause:
             pause.draw_overlay(window)
-        touch.draw(screen, scene.touch_map and not pause, () if pause else scene.touch_keys)
+        on_map = pause.editing_controls if pause else scene.touch_map
+        touch.draw(screen, on_map, () if pause else scene.touch_keys)
         pygame.display.flip()
         if saves.WEB:
             fit_canvas(screen.get_size())
@@ -95,6 +101,10 @@ async def main() -> None:
         if scene.next_scene:
             previous, scene = scene, scene.next_scene
             previous.next_scene = None
+
+        if screen.get_size() != touch.window_size():  # the touch panels' width changed
+            screen = pygame.display.set_mode(touch.window_size())
+            window = screen.subsurface(touch.view_rect())
 
         await asyncio.sleep(0)
 

@@ -4,8 +4,9 @@ import pygame
 
 from .. import saves, settings
 from ..dev import DEV, XP_BOOSTS
-from ..engine import ui
+from ..engine import touch, ui
 from ..saves import LoadError
+from .controls_menu import ControlsMenu
 from .dev_menu import ItemMaker
 from ..world.towns import TOWNS
 from .quest_ui import QuestLog
@@ -41,15 +42,25 @@ class PauseMenu:
         self.saves: SaveList | None = None  # the save or load list, when open
         self.items: ItemMaker | None = None  # dev mode's item maker, when open
         self.log: QuestLog | None = None     # the quest log, when open
+        self.controls: ControlsMenu | None = None  # the touch controls' layout, when open
         self.teleport_to = list(TOWNS)[0]    # dev mode: the town Teleport goes to
         self.message = ""
 
     @property
     def options(self) -> list[str]:
+        options = OPTIONS
+        if touch.enabled:  # (only with touch controls)
+            i = options.index("Dev mode")
+            options = options[:i] + ["Controls"] + options[i:]
         if not DEV.enabled:
-            return OPTIONS
-        i = OPTIONS.index("Dev mode") + 1
-        return OPTIONS[:i] + DEV_OPTIONS + OPTIONS[i:]
+            return options
+        i = options.index("Dev mode") + 1
+        return options[:i] + DEV_OPTIONS + options[i:]
+
+    @property
+    def editing_controls(self) -> bool:
+        """The touch controls' layout is open (they show every button)."""
+        return self.controls is not None
 
     @property
     def rect(self) -> pygame.Rect:
@@ -68,8 +79,8 @@ class PauseMenu:
             return f"XP boost: ×{DEV.xp_boost}"
         if option == "God mode":
             return f"God mode: {'On' if DEV.god else 'Off'}"
-        if option == "Add item":
-            return "Add item..."
+        if option in ("Add item", "Controls"):
+            return f"{option}..."
         if option == "Teleport":
             return f"Teleport: < {TOWNS[self.teleport_to].name} >"
         return option
@@ -86,6 +97,11 @@ class PauseMenu:
         if self.log:
             if event.type == pygame.KEYDOWN and self.log.handle_key(event.key):
                 self.log = None
+            return
+        if self.controls:
+            self.controls.handle_event(event)
+            if self.controls.closed:
+                self.controls = None
             return
         if event.type != pygame.KEYDOWN:
             return
@@ -105,6 +121,8 @@ class PauseMenu:
                     self.message = "Can't save right now."
             elif option == "Load game":
                 self.saves = SaveList("load")
+            elif option == "Controls":
+                self.controls = ControlsMenu()
             elif option == "Quests":
                 if self.save_point:
                     self.log = QuestLog(self.save_point.game)
@@ -174,6 +192,9 @@ class PauseMenu:
             return
         if self.log:
             self.log.draw_overlay(window)
+            return
+        if self.controls:
+            self.controls.draw_overlay(window)
             return
         rect = self.rect
         box = pygame.Surface(rect.size, pygame.SRCALPHA)

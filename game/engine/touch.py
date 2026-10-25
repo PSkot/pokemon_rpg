@@ -10,6 +10,10 @@ toggle (tap it on or off) rather than a key to hold. Scenes can add buttons
 for their own keys (`Scene.touch_keys`, e.g. the party screen's S: skills).
 A finger can slide from one button to another (e.g. across the D-pad).
 
+The player can resize the buttons, narrow the panels (down to none, with
+the buttons over the game, see-through) and move each side's buttons
+(`Layout`, set in the pause menu's Controls screen).
+
 The controls are on for touch screens in the browser, or with
 POKEMON_TOUCH=1 (the mouse then works as a finger) for testing. Positions
 here are in window pixels.
@@ -18,7 +22,7 @@ here are in window pixels.
 import os
 import sys
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, fields
 from functools import cache
 
 import pygame
@@ -26,12 +30,13 @@ import pygame
 from .. import settings
 from . import ui
 
-SIDE = 300         # width of each side panel
+SIDE = 300         # width of each side panel, at its widest
 MOUSE_FINGER = -1  # finger id of the mouse, with POKEMON_TOUCH=1
 REACH = 1.2        # a touch counts this many radii from a button's centre
 PANEL_COLOR = (12, 12, 32)
 FACE_COLOR = (36, 40, 84)
 EDGE_COLOR = (150, 150, 165)
+SEE_THROUGH = 140  # opacity of a button over the game
 
 
 @dataclass(frozen=True)
@@ -45,29 +50,58 @@ class Button:
     pill: bool = False      # a rounded rectangle (menu buttons), twice as wide as tall
 
 
-LEFT_X = SIDE // 2                                  # middle of the left panel
-RIGHT_X = SIDE + settings.WINDOW_SIZE[0] + SIDE // 2  # ... and of the right one
-DPAD, DPAD_STEP = (LEFT_X, 460), 88                 # centre of the D-pad, centre to button
-PILL_Y, PILL_STEP = 56, 68                          # first pill's centre, pill to pill
-BUTTONS = [
+@dataclass(frozen=True)
+class Spot:
+    """Where a button goes in the default layout (panels at their widest)."""
+    key: int
+    label: str
+    right: bool         # in the right panel (else the left)
+    edge: int           # centre's distance from the window's edge
+    y: int              # centre's height
+    radius: int
+    top: bool = False   # kept at the top (menu pills) instead of moving with the buttons
+    map_only: bool = False
+    toggle: bool = False
+    pill: bool = False
+
+
+@dataclass(frozen=True)
+class Layout:
+    """The player's adjustments to the default layout."""
+    size: int = 100   # % of the default button size
+    panel: int = 100  # % of the side panels' full width (SIDE)
+    left_x: int = 0   # left buttons moved inwards (px; negative = outwards)
+    left_y: int = 0   # ... and up (negative = down)
+    right_x: int = 0
+    right_y: int = 0
+
+
+# Ranges of the Layout settings: (lowest, highest, step).
+RANGES = {"size": (60, 160, 10), "panel": (0, 100, 25), "left_x": (-60, 400, 20), "left_y": (-100, 400, 20),
+          "right_x": (-60, 400, 20), "right_y": (-100, 400, 20)}
+
+PILL_Y, PILL_STEP = 56, 68  # first pill's centre, pill to pill
+DPAD_STEP = 88              # D-pad centre to button (at size 100)
+SPOTS = [
     # Left: menu, D-pad, Run.
-    Button(pygame.K_ESCAPE, "Menu", (LEFT_X, PILL_Y), 26, pill=True),
-    Button(pygame.K_LEFT, "", (DPAD[0] - DPAD_STEP, DPAD[1]), 46),
-    Button(pygame.K_RIGHT, "", (DPAD[0] + DPAD_STEP, DPAD[1]), 46),
-    Button(pygame.K_UP, "", (DPAD[0], DPAD[1] - DPAD_STEP), 46),
-    Button(pygame.K_DOWN, "", (DPAD[0], DPAD[1] + DPAD_STEP), 46),
-    Button(pygame.K_LSHIFT, "Run", (LEFT_X, 656), 34, map_only=True, toggle=True),
+    Spot(pygame.K_ESCAPE, "Menu", False, 150, PILL_Y, 26, top=True, pill=True),
+    Spot(pygame.K_LEFT, "", False, 150 - DPAD_STEP, 460, 46),
+    Spot(pygame.K_RIGHT, "", False, 150 + DPAD_STEP, 460, 46),
+    Spot(pygame.K_UP, "", False, 150, 460 - DPAD_STEP, 46),
+    Spot(pygame.K_DOWN, "", False, 150, 460 + DPAD_STEP, 46),
+    Spot(pygame.K_LSHIFT, "Run", False, 150, 656, 34, map_only=True, toggle=True),
     # Right: party, (the scene's own pills,) attacks, A and B.
-    Button(pygame.K_TAB, "Party", (RIGHT_X, PILL_Y), 26, pill=True),
-    Button(pygame.K_1, "1", (RIGHT_X - 90, 290), 36, map_only=True),
-    Button(pygame.K_2, "2", (RIGHT_X, 290), 32, map_only=True),
-    Button(pygame.K_3, "3", (RIGHT_X + 90, 290), 32, map_only=True),
-    Button(pygame.K_4, "4", (RIGHT_X - 45, 375), 32, map_only=True),
-    Button(pygame.K_5, "5", (RIGHT_X + 45, 375), 32, map_only=True),
-    Button(pygame.K_SPACE, "A", (RIGHT_X + 40, 560), 58),
-    Button(pygame.K_x, "B", (RIGHT_X - 105, 640), 40),
+    Spot(pygame.K_TAB, "Party", True, 150, PILL_Y, 26, top=True, pill=True),
+    Spot(pygame.K_1, "1", True, 240, 290, 36, map_only=True),
+    Spot(pygame.K_2, "2", True, 150, 290, 32, map_only=True),
+    Spot(pygame.K_3, "3", True, 60, 290, 32, map_only=True),
+    Spot(pygame.K_4, "4", True, 195, 375, 32, map_only=True),
+    Spot(pygame.K_5, "5", True, 105, 375, 32, map_only=True),
+    Spot(pygame.K_SPACE, "A", True, 110, 560, 58),
+    Spot(pygame.K_x, "B", True, 255, 640, 40),
 ]
 
+layout = Layout()
 enabled = os.environ.get("POKEMON_TOUCH") == "1"
 _mouse = enabled  # the mouse acts as a finger (desktop testing)
 _fingers: dict[int, Button | None] = {}  # finger id -> the button it's on
@@ -85,23 +119,59 @@ def init() -> None:
             enabled = True
 
 
+def configure(prefs: dict) -> None:
+    """Use the saved layout settings (`Layout`'s fields; others ignored)."""
+    global layout
+    names = {f.name for f in fields(Layout)}
+    layout = Layout(**{k: int(v) for k, v in prefs.items() if k in names})
+
+
+def prefs() -> dict:
+    """The layout settings, to save."""
+    return asdict(layout)
+
+
+def side() -> int:
+    """The width of each side panel."""
+    return SIDE * layout.panel // 100 if enabled else 0
+
+
 def window_size() -> tuple[int, int]:
-    """The whole window: the game, plus the side panels if the controls are on."""
+    """The whole window: the game, plus the side panels if the controls are on.
+    (It changes with the panels' width: the main loop remakes the window.)"""
     w, h = settings.WINDOW_SIZE
-    return (w + 2 * SIDE, h) if enabled else (w, h)
+    return w + 2 * side(), h
 
 
 def view_rect() -> pygame.Rect:
     """Where in the window the game is drawn."""
-    return pygame.Rect((SIDE if enabled else 0, 0), settings.WINDOW_SIZE)
+    return pygame.Rect((side(), 0), settings.WINDOW_SIZE)
 
 
-def _buttons(on_map: bool, extra: tuple[tuple[int, str], ...]) -> list[Button]:
+@cache
+def _placed(lay: Layout, extra: tuple[tuple[int, str], ...]) -> list[Button]:
+    """Every button, placed by `lay`: sizes and distances from the edges
+    scale with `lay.size` (towards the bottom corners; the pills towards the
+    top ones), and the buttons, not the pills, move by the offsets."""
+    scale = lay.size / 100
+    width, height = settings.WINDOW_SIZE[0] + 2 * SIDE * lay.panel // 100, settings.WINDOW_SIZE[1]
+    spots = SPOTS + [Spot(key, label, True, 150, PILL_Y + PILL_STEP * (i + 1), 26, top=True, pill=True)
+                     for i, (key, label) in enumerate(extra)]
+    buttons = []
+    for spot in spots:
+        dx, dy = (lay.right_x, lay.right_y) if spot.right else (lay.left_x, lay.left_y)
+        edge = spot.edge * scale + (0 if spot.top else dx)
+        y = spot.y * scale if spot.top else height - (height - spot.y) * scale - dy
+        x = width - edge if spot.right else edge
+        buttons.append(Button(spot.key, spot.label, (round(x), round(y)), round(spot.radius * scale),
+                              spot.map_only, spot.toggle, spot.pill))
+    return buttons
+
+
+def _buttons(on_map: bool, extra: tuple[tuple[int, str], ...] = ()) -> list[Button]:
     """The buttons shown: `extra` = the scene's own (key, label)s, as pills
     under Party."""
-    scene_buttons = [Button(key, label, (RIGHT_X, PILL_Y + PILL_STEP * (i + 1)), 26, pill=True)
-                     for i, (key, label) in enumerate(extra)]
-    return [b for b in BUTTONS if on_map or not b.map_only] + scene_buttons
+    return [b for b in _placed(layout, extra) if on_map or not b.map_only]
 
 
 def _hit(b: Button, pos: tuple[float, float]) -> bool:
@@ -199,14 +269,16 @@ def pressed() -> _Pressed:
 # ------------------------------------------------------------------ drawing
 
 @cache
-def _face(radius: int, pill: bool, lit: bool) -> pygame.Surface:
-    """A button's background."""
+def _face(radius: int, pill: bool, lit: bool, see_through: bool) -> pygame.Surface:
+    """A button's background (`see_through`: over the game)."""
     r = radius
     surface = pygame.Surface((r * 4, r * 2) if pill else (r * 2, r * 2), pygame.SRCALPHA)
     rect = surface.get_rect()
     fill = ui.TOP_COLOR if lit else FACE_COLOR
     pygame.draw.rect(surface, fill, rect, border_radius=r)
     pygame.draw.rect(surface, EDGE_COLOR, rect, 2, border_radius=r)
+    if see_through:
+        surface.set_alpha(SEE_THROUGH)
     return surface
 
 
@@ -215,17 +287,20 @@ def draw(window: pygame.Surface, on_map: bool, extra: tuple[tuple[int, str], ...
     if not enabled:
         return
     w, h = window_size()
-    window.fill(PANEL_COLOR, (0, 0, SIDE, h))
-    window.fill(PANEL_COLOR, (w - SIDE, 0, SIDE, h))
+    view = view_rect()
+    window.fill(PANEL_COLOR, (0, 0, view.left, h))
+    window.fill(PANEL_COLOR, (view.right, 0, w - view.right, h))
+    scale = layout.size / 100
     for b in _buttons(on_map, extra):
         lit = _held[b.key] > 0 or b.key in _toggled
-        face = _face(b.radius, b.pill, lit)
+        face = _face(b.radius, b.pill, lit, view.left < b.pos[0] < view.right)
         window.blit(face, face.get_rect(center=b.pos))
         color = ui.YELLOW if lit else ui.WHITE
         if b.label:
-            _label(window, b.label, b.pos, color, 40 if b.radius >= 50 else 30 if len(b.label) == 1 else 26)
+            size = 40 if b.label in "AB" else 30 if len(b.label) == 1 else 26
+            _label(window, b.label, b.pos, color, round(size * scale))
         else:
-            _arrow(window, b, color)
+            _arrow(window, b, color, scale)
 
 
 def _label(window: pygame.Surface, s: str, center: tuple[int, int], color, size: int) -> None:
@@ -235,11 +310,11 @@ def _label(window: pygame.Surface, s: str, center: tuple[int, int], color, size:
     window.blit(font.render(s, True, color), rect)
 
 
-def _arrow(window: pygame.Surface, b: Button, color) -> None:
+def _arrow(window: pygame.Surface, b: Button, color, scale: float) -> None:
     """A D-pad button's arrow, pointing away from the D-pad's centre."""
-    dx, dy = (b.pos[0] - DPAD[0]) / DPAD_STEP, (b.pos[1] - DPAD[1]) / DPAD_STEP
+    dx, dy = {pygame.K_LEFT: (-1, 0), pygame.K_RIGHT: (1, 0), pygame.K_UP: (0, -1), pygame.K_DOWN: (0, 1)}[b.key]
     cx, cy = b.pos
-    tip, back, half = 17, 12, 16
+    tip, back, half = 17 * scale, 12 * scale, 16 * scale
     points = [(cx + dx * tip, cy + dy * tip),
               (cx - dx * back - dy * half, cy - dy * back + dx * half),
               (cx - dx * back + dy * half, cy - dy * back - dx * half)]
