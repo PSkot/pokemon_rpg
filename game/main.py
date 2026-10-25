@@ -9,7 +9,12 @@ hold Shift to run, Space jumps (hold for a higher jump), Up opens chests
 and goes through doorways, Tab opens the party screen, F1 toggles debug
 boxes. Walk into wild Pokémon to battle them. Esc pauses (resume, save,
 load or quit). Battles, chests, fainting and leaving a map autosave.
+
+The loop is async so the game can also run in a browser (pygbag, see
+web/README.md): it hands control back to the page once per frame.
 """
+
+import asyncio
 
 import pygame
 
@@ -20,7 +25,7 @@ from .scenes.pause import PauseMenu
 from .scenes.title import TitleScene
 
 
-def main() -> None:
+async def main() -> None:
     pygame.init()
     window = pygame.display.set_mode(settings.WINDOW_SIZE)
     pygame.display.set_caption(settings.TITLE)
@@ -65,8 +70,10 @@ def main() -> None:
             previous, scene = scene, scene.next_scene
             previous.next_scene = None
 
+        await asyncio.sleep(0)
+
     pygame.quit()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

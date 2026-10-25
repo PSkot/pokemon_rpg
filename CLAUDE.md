@@ -15,6 +15,12 @@ non-commercial project.
   installed into `.venv/`.
 - Run with `.venv/bin/python -m game`. The game renders at 640×360 and
   scales ×2.
+- Browser build (for phones): `tools/web_build.py` packs the game with
+  pygbag into `build/web-app/build/web/` (`--serve`: test on
+  localhost:8000). Hence the async main loop (`await asyncio.sleep(0)`
+  per frame). In the browser (`saves.WEB`) save files are mirrored into
+  localStorage and restored on start. pygbag fetches its template and
+  runtime from pygame-web.github.io.
 - Code layout (`game/`; module names below are within these folders):
   - `main.py` (game loop), `settings.py`, `saves.py`
   - `engine/`: scenes and transitions (`scene.py`), menu windows and text

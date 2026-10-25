@@ -4,10 +4,14 @@ of manual saves, as JSON files in saves/.
 A save holds the player's progress (`world.Game`) and where the player is:
 in a town, or on a map of a route or dungeon run (`MapScene.location`).
 Maps aren't stored: the run's seed generates the same maps again.
+
+In the browser (pygbag) files don't outlast the page, so each save file is
+also kept in the browser's localStorage and written back on start.
 """
 
 import json
 import os
+import sys
 import time
 from collections import Counter
 from dataclasses import dataclass
@@ -25,6 +29,9 @@ VERSION = 2
 NOTICE_TIME = 2.0  # seconds "Autosaved" stays on screen
 
 _autosaved_at = -NOTICE_TIME  # time.monotonic() of the last autosave
+
+WEB = sys.platform == "emscripten"
+WEB_PREFIX = "pokemon_rpg/saves/"  # localStorage key = prefix + file name
 
 
 @dataclass
@@ -98,12 +105,30 @@ def snapshot(scene) -> dict:
 
 # ------------------------------------------------------------------- files
 
+def _web_storage():
+    import platform  # pygbag's: gives access to the page (`window`)
+    return platform.window.localStorage
+
+
+def _restore_web_saves() -> None:
+    """Write the saves kept in localStorage back into SAVE_DIR."""
+    SAVE_DIR.mkdir(exist_ok=True)
+    storage = _web_storage()
+    for i in range(storage.length):
+        key = storage.key(i)
+        if key.startswith(WEB_PREFIX):
+            (SAVE_DIR / key[len(WEB_PREFIX):]).write_text(storage.getItem(key))
+
+
 def _write(path: Path, data: dict) -> None:
     """Write via a temporary file, so a crash mid-save can't ruin the old save."""
     SAVE_DIR.mkdir(exist_ok=True)
+    text = json.dumps(data, indent=1)
     tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(data, indent=1))
+    tmp.write_text(text)
     os.replace(tmp, path)
+    if WEB:
+        _web_storage().setItem(WEB_PREFIX + path.name, text)
 
 
 def autosave(scene) -> None:
@@ -125,6 +150,8 @@ def save(scene, over: SaveInfo | None = None) -> str:
 
 def delete(info: SaveInfo) -> None:
     info.path.unlink(missing_ok=True)
+    if WEB:
+        _web_storage().removeItem(WEB_PREFIX + info.path.name)
 
 
 def list_saves() -> list[SaveInfo]:
@@ -181,3 +208,7 @@ def load(info: SaveInfo):
 
 class LoadError(Exception):
     pass
+
+
+if WEB:
+    _restore_web_saves()

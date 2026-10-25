@@ -1,5 +1,7 @@
 """Start the game: `python -m game` (from the project root)."""
 
+import asyncio
+
 if __package__:
     from .main import main
 else:
@@ -11,4 +13,4 @@ else:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
     from game.main import main
 
-main()
+asyncio.run(main())
