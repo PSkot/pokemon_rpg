@@ -24,6 +24,9 @@ non-commercial project.
   page's canvas each frame. pygbag fetches its template and runtime
   (and pygame, via the generated main.py's imports) from
   pygame-web.github.io.
+  `.github/workflows/pages.yml` builds it on every push (main and the
+  dev branch) and publishes it on GitHub Pages:
+  https://pskot.github.io/pokemon_rpg/
 - Code layout (`game/`; module names below are within these folders):
   - `main.py` (game loop), `settings.py`, `saves.py`
   - `engine/`: scenes and transitions (`scene.py`), menu windows and text
