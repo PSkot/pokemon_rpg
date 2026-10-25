@@ -58,6 +58,8 @@ def _outline(skills: dict[str, Skill]) -> list[tuple[Skill, int, tuple[bool, ...
 
 
 class SkillTreeScene(Scene):
+    touch_keys = ((pygame.K_e, "Equip"), (pygame.K_r, "Reset"))
+
     def __init__(self, return_to: Scene, party: list[Monster], member: int, can_reset: bool):
         self.return_to = return_to
         self.party = party

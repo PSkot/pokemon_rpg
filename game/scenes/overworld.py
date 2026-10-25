@@ -15,7 +15,7 @@ import pygame
 
 from .. import saves, settings
 from ..dev import DEV
-from ..engine import ui
+from ..engine import touch, ui
 from ..engine.scene import Scene, Transition
 from ..mechanics.items import Range
 from ..mechanics.loot import LootTable, boss_loot, chest_loot, wild_loot
@@ -178,6 +178,8 @@ class MapScene(Scene):
     current step shows under the location, and a "!" over what it needs.
     Subclasses put things on it."""
 
+    touch_map = True
+
     def __init__(self, game: Game, level: Level):
         self.game = game
         self.party, self.bag = game.party, game.bag
@@ -283,7 +285,7 @@ class MapScene(Scene):
             return
         lead = self.party[0]  # (it may have evolved or learned moves since)
         self.player.become(lead.species, [lead.anim_for(m) for m in [lead.basic_attack, *lead.moves]])
-        keys = pygame.key.get_pressed()
+        keys = touch.pressed()  # (keyboard and touch buttons)
         self.player.update(dt, Controls(
             left=keys[pygame.K_LEFT],
             right=keys[pygame.K_RIGHT],

@@ -63,6 +63,7 @@ def _rarity_rank(gear: Gear) -> int:
 
 
 class SummaryScene(Scene):
+    touch_keys = ((pygame.K_s, "Skills"),)
 
     def __init__(self, return_to: Scene, party: list[Monster], bag: Bag):
         self.return_to = return_to

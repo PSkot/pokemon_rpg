@@ -19,7 +19,7 @@ import asyncio
 import pygame
 
 from . import saves, settings
-from .engine import ui
+from .engine import touch, ui
 from .engine.scene import Scene, Transition
 from .scenes.pause import PauseMenu
 from .scenes.title import TitleScene
@@ -47,6 +47,7 @@ async def main() -> None:
     canvas = pygame.Surface(settings.LOGICAL_SIZE)
     clock = pygame.time.Clock()
 
+    touch.init()
     scene: Scene = TitleScene()
 
     pause: PauseMenu | None = None
@@ -55,6 +56,8 @@ async def main() -> None:
     while running:
         dt = clock.tick(settings.FPS) / 1000
         for event in pygame.event.get():
+            if touch.handle(event, scene.touch_map and not pause, () if pause else scene.touch_keys):
+                continue  # (touch buttons post key events)
             if event.type == pygame.QUIT:
                 running = False
             elif pause:
@@ -79,6 +82,7 @@ async def main() -> None:
                     size=20, align="right")
         if pause:
             pause.draw_overlay(window)
+        touch.draw(window, scene.touch_map and not pause, () if pause else scene.touch_keys)
         pygame.display.flip()
         if saves.WEB:
             fit_canvas()

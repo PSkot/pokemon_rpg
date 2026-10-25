@@ -30,7 +30,8 @@ non-commercial project.
 - Code layout (`game/`; module names below are within these folders):
   - `main.py` (game loop), `settings.py`, `saves.py`
   - `engine/`: scenes and transitions (`scene.py`), menu windows and text
-    (`ui.py`), sprite animation (`animation.py`), hats on sprites (`hats.py`)
+    (`ui.py`), sprite animation (`animation.py`), hats on sprites (`hats.py`),
+    touch controls (`touch.py`)
   - `mechanics/`: game rules and data: species and stats (`pokemon.py`),
     moves (`moves.py`), skill trees (`skills.py`), damage (`combat.py`),
     types, status conditions, items and gear (`items.py`), loot
@@ -200,6 +201,15 @@ non-commercial project.
   only). Active settings show in the window title and on the map.
 - Controls: arrows move, Up opens chests, Shift runs, Space jumps, number keys 1–9 are
   reserved for attacks (1 = basic attack, 2–5 = equipped moves).
+- Touch controls (`engine/touch.py`, for phones): a virtual gamepad drawn
+  over the window. Buttons post the same KEYDOWN/KEYUP events as the
+  keyboard; held keys are read with `touch.pressed()` (instead of
+  `pygame.key.get_pressed()`). D-pad (arrows), A = Space (jump/confirm),
+  B = X (back), Menu = Esc, Party = Tab; on maps (`Scene.touch_map`) also
+  Run (a toggle) and attacks 1–5; scenes add their own keys as pills
+  (`Scene.touch_keys`: party screen S, skill tree E/R). Shown on touch
+  screens in the browser, after any touch, or with `POKEMON_TOUCH=1`
+  (mouse = finger) on desktop.
 - `tools/` holds standalone helper scripts. `tools/anim_viewer.py` uses only
   the standard library (it renders an HTML page and opens it in the browser).
 - Firefox on this machine is a snap and cannot open files under `/tmp`;
