@@ -14,7 +14,7 @@ class Scene:
     pausable = True  # Esc opens the pause menu (else the scene gets the key)
     bag = None       # the player's bag, if the scene has one (dev mode adds items to it)
     in_town = False  # skill points can be reset here
-    touch_map = False  # show the map's touch buttons (attacks, Run; see touch.py)
+    touch_map = False  # show the map's touch buttons (Run; see touch.py)
     touch_keys: tuple[tuple[int, str], ...] = ()  # extra touch buttons: (key, label)s
 
     def handle_event(self, event: pygame.event.Event) -> None:

@@ -42,7 +42,7 @@ with Gen 1's learn levels as the pacing.
 
 | Kind | What it is | Ranks |
 | --- | --- | --- |
-| **Base attack** | Known from the start, rank 1 for free. The first one is the Pokémon's **basic attack** (the Fight command, key 1 on the map). | 1–5 |
+| **Base attack** | Known from the start, rank 1 for free. The first one is the Pokémon's **basic attack** (the Fight command). | 1–5 |
 | **Move** | A move to use in battle (damage, or a status/support effect). | 1–5 (damaging), 1–3 (status) |
 | **Modifier** | A passive skill that changes one move: an added effect, a stronger effect, more targets. Hangs off the move it changes. | 1–3 |
 

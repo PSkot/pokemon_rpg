@@ -40,7 +40,6 @@ class Controls:
     run: bool = False
     jump: bool = False       # True only on the frame the button is pressed
     jump_held: bool = False
-    attack: int = 0          # attack key (1-9) pressed this frame, 0 = none
 
 
 class Player:
@@ -51,30 +50,23 @@ class Player:
         self.feet_y = float(feet_y)
         self.vy = 0.0                 # vertical speed, positive = down
         self.facing = 1               # 1 = right, -1 = left
-        self.state = "idle"           # idle, walk, run, attack, squat, air, land
+        self.state = "idle"           # idle, walk, run, squat, air, land
         self.state_time = 0.0
-        self.attacks = ["attack"]     # animation per attack key (1 = basic attack, 2-5 = equipped moves)
-        self.attack = "attack"        # animation of the current/last attack
 
-    def become(self, species: Species, attacks: list[str] | None = None) -> None:
-        """Look like `species` (the lead Pokémon, e.g. after it evolves),
-        with `attacks` as the animations for keys 1, 2, ..."""
+    def become(self, species: Species) -> None:
+        """Look like `species` (the lead Pokémon, e.g. after it evolves)."""
         if species != self.species:
             self.species, self.anims = species, animations(species)
-        if attacks:
-            self.attacks = attacks
 
     # ------------------------------------------------------------------ state
 
     @property
     def anim_name(self) -> str:
-        if self.state == "attack":  # its basic attack if it doesn't have this one
-            return self.attack if self.attack in self.anims else "attack"
         return "jump" if self.state in ("squat", "air", "land") else self.state
 
     @property
     def anim(self) -> Animation:
-        # (Placeholder icons only have idle/walk/attack: they use those.)
+        # (Placeholder icons only have idle/walk: they use those.)
         return self.anims.get(self.anim_name) or self.anims["walk" if self.state == "run" else "idle"]
 
     @property
@@ -103,18 +95,8 @@ class Player:
     def update(self, dt: float, c: Controls, level: Level) -> None:
         self.state_time += dt
 
-        if self.state == "attack":
-            if not self.anim.finished(self.state_time):
-                return  # rooted in place until the attack ends
-            self.set_state("idle")
-
-        if self.on_ground and self.state != "squat":
-            if 1 <= c.attack <= len(self.attacks):
-                self.attack = self.attacks[c.attack - 1]
-                self.set_state("attack")
-                return
-            if c.jump:
-                self.set_state("squat")
+        if self.on_ground and self.state != "squat" and c.jump:
+            self.set_state("squat")
 
         self._move_horizontally(dt, c, level)
 

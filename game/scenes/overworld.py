@@ -32,7 +32,7 @@ from . import quest_ui
 from .battle import BattleScene
 from .summary import SummaryScene
 
-HELP = ("Left/Right: walk   Shift: run   Space: jump (hold = higher)   1-5: attack   Up: open / go through"
+HELP = ("Left/Right: walk   Shift: run   Space: jump (hold = higher)   Up: open / go through"
         "   Tab: party   F1: debug   Esc: menu")
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z, pygame.K_UP)
 
@@ -197,7 +197,6 @@ class MapScene(Scene):
         self.t = 0.0
         self.debug = False
         self.jump = False
-        self.attack = 0
         self.fps = 0.0
 
     def place_player(self, x: float, facing: int = 1) -> None:
@@ -271,8 +270,6 @@ class MapScene(Scene):
             self.interact()
         elif event.key == pygame.K_SPACE:
             self.jump = True
-        elif pygame.K_1 <= event.key <= pygame.K_9:
-            self.attack = event.key - pygame.K_0
         elif event.key == pygame.K_TAB:
             self.next_scene = SummaryScene(self, self.party, self.bag)
         elif event.key == pygame.K_F1:
@@ -284,7 +281,7 @@ class MapScene(Scene):
         if self.panel:
             return
         lead = self.party[0]  # (it may have evolved or learned moves since)
-        self.player.become(lead.species, [lead.anim_for(m) for m in [lead.basic_attack, *lead.moves]])
+        self.player.become(lead.species)
         keys = touch.pressed()  # (keyboard and touch buttons)
         self.player.update(dt, Controls(
             left=keys[pygame.K_LEFT],
@@ -292,9 +289,8 @@ class MapScene(Scene):
             run=keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT],
             jump=self.jump,
             jump_held=keys[pygame.K_SPACE],
-            attack=self.attack,
         ), self.level)
-        self.jump, self.attack = False, 0
+        self.jump = False
         self._follow()
 
     def _follow(self) -> None:

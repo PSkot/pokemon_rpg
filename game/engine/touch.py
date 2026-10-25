@@ -45,7 +45,7 @@ class Button:
     label: str            # "" on the D-pad: an arrow away from its centre
     pos: tuple[int, int]  # centre
     radius: int
-    map_only: bool = False  # only on maps (attacks, Run)
+    map_only: bool = False  # only on maps (Run)
     toggle: bool = False    # tap on / tap off instead of hold
     pill: bool = False      # a rounded rectangle (menu buttons), twice as wide as tall
 
@@ -90,13 +90,8 @@ SPOTS = [
     Spot(pygame.K_UP, "", False, 150, 460 - DPAD_STEP, 46),
     Spot(pygame.K_DOWN, "", False, 150, 460 + DPAD_STEP, 46),
     Spot(pygame.K_LSHIFT, "Run", False, 150, 656, 34, map_only=True, toggle=True),
-    # Right: party, (the scene's own pills,) attacks, A and B.
+    # Right: party, (the scene's own pills,) A and B.
     Spot(pygame.K_TAB, "Party", True, 150, PILL_Y, 26, top=True, pill=True),
-    Spot(pygame.K_1, "1", True, 240, 290, 36, map_only=True),
-    Spot(pygame.K_2, "2", True, 150, 290, 32, map_only=True),
-    Spot(pygame.K_3, "3", True, 60, 290, 32, map_only=True),
-    Spot(pygame.K_4, "4", True, 195, 375, 32, map_only=True),
-    Spot(pygame.K_5, "5", True, 105, 375, 32, map_only=True),
     Spot(pygame.K_SPACE, "A", True, 110, 560, 58),
     Spot(pygame.K_x, "B", True, 255, 640, 40),
 ]

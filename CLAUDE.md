@@ -119,8 +119,7 @@ non-commercial project.
   is in `SPECIES` (`Species.evolution`). After a won battle, members that
   leveled up and reached the level evolve (`BattleScene._evolve`: white
   flashing; X stops it, retried at the next level-up). The map player
-  takes the lead Pokémon's species and attack animations (`Player.become`:
-  key 1 = basic attack, 2–5 = equipped moves).
+  takes the lead Pokémon's species (`Player.become`).
 - Medicine (`items.MEDICINE`: potions, Revive, status cures) is counted in
   `Bag.medicine` and used from the battle's Item menu. Using one takes the
   user's turn; items act before moves. An item is only used up when it
@@ -199,8 +198,8 @@ non-commercial project.
   `Scene.bag`) and Teleport (Left/Right picks a town; Enter goes there,
   as a fresh arrival: healed, it becomes the respawn town; from map scenes
   only). Active settings show in the window title and on the map.
-- Controls: arrows move, Up opens chests, Shift runs, Space jumps, number keys 1–9 are
-  reserved for attacks (1 = basic attack, 2–5 = equipped moves).
+- Controls: arrows move, Up opens chests, Shift runs, Space jumps. (There are
+  no attacks on the map: fights happen in battles.)
 - Touch controls (`engine/touch.py`, for phones): a virtual gamepad in
   side panels: with them on, the window is wider (`touch.window_size()`,
   `SIDE` px each side) and the game is drawn in the middle
@@ -209,7 +208,7 @@ non-commercial project.
   keyboard; held keys are read with `touch.pressed()` (instead of
   `pygame.key.get_pressed()`). D-pad (arrows), A = Space (jump/confirm),
   B = X (back), Menu = Esc, Party = Tab; on maps (`Scene.touch_map`) also
-  Run (a toggle) and attacks 1–5; scenes add their own keys as pills
+  Run (a toggle); scenes add their own keys as pills
   (`Scene.touch_keys`: party screen S, skill tree E/R; pills under
   Party). On for touch screens in the browser (decided before the window
   is made), or with `POKEMON_TOUCH=1` (mouse = finger) on desktop.
