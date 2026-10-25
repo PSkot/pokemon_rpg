@@ -25,29 +25,34 @@ from .scenes.pause import PauseMenu
 from .scenes.title import TitleScene
 
 
-def fit_canvas() -> None:
-    """In the browser: make the page's canvas as big as fits, in the game's
-    shape. (pygbag sizes it once, before the window exists, so it comes out
-    square; this also follows the page's size, e.g. when a phone turns.)"""
+def fit_canvas(size: tuple[int, int]) -> None:
+    """In the browser: make the page's canvas as big as fits, in the
+    window's shape (`size`). (pygbag sizes it once, before the window
+    exists, so it comes out square; this also follows the page's size, e.g.
+    when a phone turns.)"""
     import platform  # pygbag's: gives access to the page (`window`)
     window = platform.window
-    w, h = settings.WINDOW_SIZE
+    w, h = size
     scale = min(window.innerWidth / w, window.innerHeight / h)
     width, height = f"{int(w * scale)}px", f"{int(h * scale)}px"
     style = window.canvas.style
     if style.width != width or style.height != height:
         style.width, style.height = width, height
         style.imageRendering = "pixelated"
+        platform.document.body.style.background = "#0c0c20"  # (touch.PANEL_COLOR)
 
 
 async def main() -> None:
     pygame.init()
-    window = pygame.display.set_mode(settings.WINDOW_SIZE)
+    touch.init()
+    # With touch controls, the window has side panels for them; the game is
+    # drawn in the middle (`window`).
+    screen = pygame.display.set_mode(touch.window_size())
+    window = screen.subsurface(touch.view_rect())
     pygame.display.set_caption(settings.TITLE)
     canvas = pygame.Surface(settings.LOGICAL_SIZE)
     clock = pygame.time.Clock()
 
-    touch.init()
     scene: Scene = TitleScene()
 
     pause: PauseMenu | None = None
@@ -82,10 +87,10 @@ async def main() -> None:
                     size=20, align="right")
         if pause:
             pause.draw_overlay(window)
-        touch.draw(window, scene.touch_map and not pause, () if pause else scene.touch_keys)
+        touch.draw(screen, scene.touch_map and not pause, () if pause else scene.touch_keys)
         pygame.display.flip()
         if saves.WEB:
-            fit_canvas()
+            fit_canvas(screen.get_size())
 
         if scene.next_scene:
             previous, scene = scene, scene.next_scene
