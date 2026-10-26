@@ -26,6 +26,7 @@ class AnimSpec:
     baseline: int | tuple[int | None, ...] | None = None  # see Animation
     per_frame_baseline: bool = False
     face_left: tuple[int, ...] = ()  # frames drawn facing left; mirrored on load
+    cell: int = 64             # the sheet's frame size (square)
 
 
 @dataclass(frozen=True)
@@ -43,6 +44,7 @@ class Species:
     # as a still sprite until the species gets a Pixellab sheet.
     icon: str = ""
     base_exp: int = 64  # Gen 1 base experience yield: XP for defeating one
+    size: float = 1.0   # drawn this many times bigger than its sheet (e.g. Pidgeot)
 
     @property
     def key(self) -> str:
@@ -145,6 +147,33 @@ SPECIES = {
         },
         foot_sink=1,
         base_exp=55),
+    # Pidgeotto's and Pidgeot's sheets have 88 px cells (room for the wings)
+    # and 5 frames a row: the still pose, then 4 generated frames.
+    "pidgeotto": Species(
+        "Pidgeotto", 63, 60, 55, 71, ("normal", "flying"),
+        fight_anim="tackle",
+        anims={
+            "idle": AnimSpec("pidgeotto.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "walk": AnimSpec("pidgeotto.png", 0, loop=True, cell=88),
+            "fly": AnimSpec("pidgeotto.png", 1, loop=True, cell=88),
+            "gust": AnimSpec("pidgeotto.png", 2, cell=88),
+            "tackle": AnimSpec("pidgeotto.png", 3, cell=88),
+        },
+        foot_sink=1,
+        base_exp=113),
+    "pidgeot": Species(
+        "Pidgeot", 83, 80, 75, 91, ("normal", "flying"),
+        fight_anim="tackle",
+        anims={
+            "idle": AnimSpec("pidgeot.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "walk": AnimSpec("pidgeot.png", 0, loop=True, cell=88),
+            "fly": AnimSpec("pidgeot.png", 1, loop=True, cell=88),
+            "gust": AnimSpec("pidgeot.png", 2, cell=88),
+            "tackle": AnimSpec("pidgeot.png", 3, cell=88),
+        },
+        foot_sink=1,
+        base_exp=172,
+        size=1.2),  # (its sprite is drawn about as big as Pidgeotto's)
 }
 
 
@@ -244,8 +273,8 @@ ICON_SCALE = 0.75  # icons share one scale, so species keep their relative sizes
 
 
 @cache
-def _sheet(name: str) -> list[list[pygame.Surface]]:
-    return load_sheet(settings.ASSETS / "sprites" / "pixellab" / name, 64, 64)
+def _sheet(name: str, cell: int = 64) -> list[list[pygame.Surface]]:
+    return load_sheet(settings.ASSETS / "sprites" / "pixellab" / name, cell, cell)
 
 
 @cache
@@ -270,12 +299,14 @@ def animations(species: Species, scale: int = 1) -> dict[str, Animation]:
         return {"idle": still, "walk": still, "attack": Animation([frame] * 4, fps=8, loop=False)}
     anims = {}
     for name, spec in species.anims.items():
-        frames = _sheet(spec.sheet)[spec.row][:spec.frames]
+        frames = _sheet(spec.sheet, spec.cell)[spec.row][:spec.frames]
         frames = [pygame.transform.flip(f, True, False) if i in spec.face_left else f
                   for i, f in enumerate(frames)]
         anims[name] = Animation(frames, spec.fps, spec.loop,
                                 per_frame_baseline=spec.per_frame_baseline, baseline=spec.baseline)
         anims[name].heads = hats.head_anchors(spec.sheet, spec.row, len(frames))
+        if species.size != 1:
+            anims[name] = anims[name].scaled(species.size)
     return anims
 
 

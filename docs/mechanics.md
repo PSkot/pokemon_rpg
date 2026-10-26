@@ -90,8 +90,8 @@ evolutions aren't in yet.
   recalculated, and the HP gained is added to current HP (damage taken
   stays the same).
 - **Only into species that are in the game:** an evolution is skipped
-  while its species isn't defined yet (e.g. Pidgey won't evolve until
-  Pidgeotto is added). The full table is already registered.
+  while its species isn't defined yet (e.g. Spearow won't evolve until
+  Fearow is added). The full table is already registered.
 
 The lead Pokémon is also the player character on the map, so evolving it
 changes how the player looks.

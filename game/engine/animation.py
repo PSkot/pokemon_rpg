@@ -63,11 +63,12 @@ class Animation:
         part.heads = self.heads[start:stop] if self.heads else None
         return part
 
-    def scaled(self, factor: int) -> "Animation":
-        """The same animation drawn `factor` times bigger (pixels stay sharp)."""
+    def scaled(self, factor: float) -> "Animation":
+        """The same animation drawn `factor` times bigger (nearest-neighbour:
+        pixels stay sharp, though a fractional factor makes some 1 px wider)."""
         big = Animation([pygame.transform.scale_by(f, factor) for f in self.frames], self.fps, self.loop)
-        big.baselines = [b * factor for b in self.baselines]
-        big.heads = [(x * factor, y * factor) for x, y in self.heads] if self.heads else None
+        big.baselines = [round(b * factor) for b in self.baselines]
+        big.heads = [(round(x * factor), round(y * factor)) for x, y in self.heads] if self.heads else None
         return big
 
     @property

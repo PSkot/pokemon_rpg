@@ -235,6 +235,11 @@ non-commercial project.
   the species' `fight_anim`).
 - `pidgey.png` rows: walk, fly, gust, tackle. Its frames don't all face
   right; the left-facing ones are listed in `face_left` and mirrored on load.
+- `pidgeotto.png` and `pidgeot.png` (generated through the PixelLab MCP
+  connector): the same rows as `pidgey.png`, but 88×88 cells (`AnimSpec.cell`,
+  room for spread wings) and 5 frames a row (the still pose, then 4
+  generated frames). Pidgeot is drawn 1.2× (`Species.size`, nearest-neighbour
+  `Animation.scaled`) so the line grows in size.
 - `ivysaur.png`, `charmander.png` and `squirtle.png` have the same rows
   as `bulbasaur.png` (no extra-attack sheets yet: their skills use the
   basic attack animation).
