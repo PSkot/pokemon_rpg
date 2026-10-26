@@ -243,6 +243,11 @@ non-commercial project.
 - `ivysaur.png`, `charmander.png` and `squirtle.png` have the same rows
   as `bulbasaur.png` (no extra-attack sheets yet: their skills use the
   basic attack animation).
+- `venusaur.png`, `charmeleon.png`, `charizard.png`, `wartortle.png` and
+  `blastoise.png` (generated with PixelLab, styled after the line's
+  earlier sheets): the same rows as `bulbasaur.png` in 88×88 cells, 5
+  frames a row (still pose + 4), the jump row's 4 frames being crouch,
+  rise, fall, land. The final stages are drawn 1.2× (`Species.size`).
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,
   row, fps, baseline, ...) and shared by the map player and battles.
 - Background art (`tileset.py`): `background.png` (64×64 cells) rows 3–4

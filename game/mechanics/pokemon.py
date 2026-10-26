@@ -109,6 +109,21 @@ SPECIES = {
         },
         foot_sink=3,
         base_exp=141),
+    # The starters' evolutions (generated with PixelLab, like Pidgeotto): 88 px
+    # cells, rows walk, run, jump (crouch, rise, fall, land) and attack.
+    "venusaur": Species(
+        "Venusaur", 80, 82, 83, 80, ("grass", "poison"),
+        fight_anim="attack",
+        anims={
+            "idle": AnimSpec("venusaur.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "walk": AnimSpec("venusaur.png", 0, loop=True, cell=88),
+            "run": AnimSpec("venusaur.png", 1, fps=12, loop=True, cell=88),
+            "jump": AnimSpec("venusaur.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
+            "attack": AnimSpec("venusaur.png", 3, cell=88),
+        },
+        foot_sink=3,
+        base_exp=208,
+        size=1.2),
     "charmander": Species(
         "Charmander", 39, 52, 43, 65, ("fire",),
         fight_anim="attack",
@@ -123,6 +138,31 @@ SPECIES = {
         },
         foot_sink=2,
         base_exp=65),
+    "charmeleon": Species(
+        "Charmeleon", 58, 64, 58, 80, ("fire",),
+        fight_anim="attack",
+        anims={
+            "idle": AnimSpec("charmeleon.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "walk": AnimSpec("charmeleon.png", 0, loop=True, cell=88),
+            "run": AnimSpec("charmeleon.png", 1, fps=12, loop=True, cell=88),
+            "jump": AnimSpec("charmeleon.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
+            "attack": AnimSpec("charmeleon.png", 3, cell=88),
+        },
+        foot_sink=2,
+        base_exp=142),
+    "charizard": Species(
+        "Charizard", 78, 84, 78, 100, ("fire", "flying"),
+        fight_anim="attack",
+        anims={
+            "idle": AnimSpec("charizard.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "walk": AnimSpec("charizard.png", 0, loop=True, cell=88),
+            "run": AnimSpec("charizard.png", 1, fps=12, loop=True, cell=88),
+            "jump": AnimSpec("charizard.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
+            "attack": AnimSpec("charizard.png", 3, cell=88),
+        },
+        foot_sink=2,
+        base_exp=209,
+        size=1.2),
     "squirtle": Species(
         "Squirtle", 44, 48, 65, 43, ("water",),
         fight_anim="attack",
@@ -135,6 +175,31 @@ SPECIES = {
         },
         foot_sink=2,
         base_exp=66),
+    "wartortle": Species(
+        "Wartortle", 59, 63, 80, 58, ("water",),
+        fight_anim="attack",
+        anims={
+            "idle": AnimSpec("wartortle.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "walk": AnimSpec("wartortle.png", 0, loop=True, cell=88),
+            "run": AnimSpec("wartortle.png", 1, fps=12, loop=True, cell=88),
+            "jump": AnimSpec("wartortle.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
+            "attack": AnimSpec("wartortle.png", 3, cell=88),
+        },
+        foot_sink=2,
+        base_exp=143),
+    "blastoise": Species(
+        "Blastoise", 79, 83, 100, 78, ("water",),
+        fight_anim="attack",
+        anims={
+            "idle": AnimSpec("blastoise.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "walk": AnimSpec("blastoise.png", 0, loop=True, cell=88),
+            "run": AnimSpec("blastoise.png", 1, fps=12, loop=True, cell=88),
+            "jump": AnimSpec("blastoise.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
+            "attack": AnimSpec("blastoise.png", 3, cell=88),
+        },
+        foot_sink=2,
+        base_exp=210,
+        size=1.2),
     "pidgey": Species(
         "Pidgey", 40, 45, 40, 56, ("normal", "flying"),
         fight_anim="tackle",
