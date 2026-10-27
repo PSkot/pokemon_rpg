@@ -1,8 +1,8 @@
 """Moves: what a Pokémon does in battle.
 
-A move here is its Gen 1 base form. Skill ranks and modifiers (skills.py)
-make a changed copy of it for a particular Pokémon (`dataclasses.replace`
-with the rank's and modifiers' changes), so every effect is a field.
+A move here is its Gen 1 base form. The buff and link skills learned in
+its skill tree (skills.py) make a changed copy of it for a particular
+Pokémon (`skills.apply_changes`), so every effect is a field.
 `describe` puts a move into words for the skill tree screen.
 """
 
@@ -48,7 +48,12 @@ class Move:
     immune: tuple[str, ...] = ()  # types it doesn't affect (Leech Seed: Grass)
     toxic: bool = False  # its poison gets worse every round (Toxic)
     sleep_bonus: int = 0  # extra rounds asleep
-    scale: float = 1.0   # power × this (from the skill's rank)
+    scale: float = 1.0   # power × this (from buffs)
+    bleed: float = 0.0   # wounds the target: it loses this share of its max HP each round, for 3 rounds
+    self_stages: tuple[tuple[str, int], ...] = ()  # stat stage changes on the user, after the move
+    # Other moves of the user's this one sets off when it lands: (skill key,
+    # move name, % chance); a set-off move doesn't set off more.
+    triggers: tuple[tuple[str, str, int], ...] = ()
 
     @property
     def damaging(self) -> bool:
@@ -189,8 +194,10 @@ def describe(m: Move) -> str:
         parts.append("Always goes first.")
     if m.charge:
         parts.append("Charges for a round first.")
-    if m.crit_ratio > 1:
+    if m.crit_ratio == 8:
         parts.append("High critical-hit ratio.")
+    elif m.crit_ratio > 1:
+        parts.append(f"Critical hits ×{m.crit_ratio:g} as likely.")
     if m.sure_hit:
         parts.append("Ignores accuracy drops.")
     if m.status:
@@ -240,4 +247,12 @@ def describe(m: Move) -> str:
         parts.append("Its poison gets worse every round.")
     if m.sleep_bonus:
         parts.append(f"Sleeps {m.sleep_bonus} round{'s' if m.sleep_bonus > 1 else ''} longer.")
+    if m.bleed:
+        parts.append(f"Wounds it: {_fraction(m.bleed)} of its max HP each round for 3 rounds.")
+    for stat, change in m.self_stages:
+        n = abs(change)
+        parts.append(f"{'Raises' if change > 0 else 'Lowers'} the user's {STAT_WORDS[stat]} {n} "
+                     f"stage{'s' if n > 1 else ''}.")
+    for _, name, chance in m.triggers:
+        parts.append(f"{chance}% chance to set off {name}." if chance < 100 else f"Sets off {name}.")
     return " ".join(parts)

@@ -462,7 +462,7 @@ class Monster:
         self.equipped = [s.key for s in tree.base[1:]][:MAX_EQUIPPED]
 
     def move(self, key: str) -> Move:
-        """Skill `key`'s move, with its rank and modifiers."""
+        """Skill `key`'s move, with its learned buffs and links."""
         return self.tree.effective_move(self.skills, key)
 
     @property

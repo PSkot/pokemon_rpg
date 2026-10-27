@@ -8,7 +8,7 @@ out one at a time, fastest first, with animations.
 import math
 import random
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import cache
 
 import pygame
@@ -48,10 +48,13 @@ STAT_NAMES = {"attack": "attack", "defense": "defense", "speed": "speed", "accur
 STAT_ABBREV = {"attack": "ATK", "defense": "DEF", "speed": "SPD", "accuracy": "ACC"}
 SEED_COLOR = (150, 220, 90)
 CONFUSED_COLOR = (230, 150, 230)
+WOUND_COLOR = (230, 90, 90)
+TRIGGER_COLOR = (255, 200, 120)  # a move set off by another (Move.triggers)
 CONFUSION_ROUNDS = (2, 5)   # turns a confusion lasts (counted on its own turns)
 CONFUSION_SELF_HIT = 0.5    # chance a confused Pokémon hurts itself instead of acting
 SELF_HIT = Move("its confusion", 40, "self")  # typeless, as in Gen 1
 BIND_ROUNDS = (2, 5)
+BLEED_ROUNDS = 3  # rounds a wound hurts (buffs that wound, Move.bleed)
 REST_ROUNDS = 2
 HEAL_COLOR = (120, 230, 120)
 XP_COLOR = (88, 168, 248)
@@ -131,6 +134,8 @@ class Combatant:
         self.focused = False   # Focus Energy: crit chance ×4
         self.bound = 0         # rounds left bound by Wrap/Clamp ...
         self.bind_share = 0.0  # ... losing this share of max HP each round
+        self.bleed = 0         # rounds left wounded ...
+        self.bleed_share = 0.0  # ... losing this share of max HP each round
         self.berry_used = False  # its berry can be eaten once per battle
         self.evolving: Animation | None = None  # the new form's idle pose, while evolving
         self.evolve_time = 0.0
@@ -628,6 +633,8 @@ class BattleScene(Scene):
         if not self._over():
             yield from self._bind()
         if not self._over():
+            yield from self._bleed()
+        if not self._over():
             yield from self._regen()
         self.message = ""
         for c in self.everyone:
@@ -868,6 +875,26 @@ class BattleScene(Scene):
             if self._over():
                 return
 
+    def _bleed(self):
+        """End of the round: wounded Pokémon (Move.bleed) lose HP."""
+        for c in self.everyone:
+            if not c.alive or not c.bleed:
+                continue
+            c.bleed -= 1
+            if DEV.god_mode and not c.enemy:
+                continue
+            amount = min(c.monster.hp, max(1, round(c.monster.max_hp * c.bleed_share)))
+            c.monster.hp -= amount
+            c.hit_time = HIT_TIME
+            self._popup(c, str(amount), WOUND_COLOR)
+            self.message = f"{c.label} is hurt by its wounds!"
+            yield STATUS_MESSAGE_TIME
+            yield from self._berry(c)
+            if not c.alive:
+                yield from self._faint(c)
+            if self._over():
+                return
+
     def _perform(self, action: Action):
         user, move = action.user, action.choice
         if user.recharging:
@@ -937,7 +964,7 @@ class BattleScene(Scene):
     def _faint(self, c: Combatant):
         """A script: `c` has just fainted (which clears its status and seed)."""
         c.monster.cure()
-        c.seeded_by, c.toxic, c.confused, c.bound = None, 0, 0, 0
+        c.seeded_by, c.toxic, c.confused, c.bound, c.bleed = None, 0, 0, 0, 0
         self.message = f"{c.label} fainted!"
         yield HIT_TIME + FADE_TIME + 0.4
 
@@ -971,11 +998,33 @@ class BattleScene(Scene):
         yield STEP_BACK_TIME
 
     def _apply(self, user: Combatant, move: Move, targets: list[Combatant]) -> None:
-        """The move lands on each of `targets`; what happened goes in the message."""
+        """The move lands on each of `targets`, then may set off others of
+        the user's moves (Move.triggers); what happened goes in the message."""
+        notes = self._land(user, move, targets)
+        for key, name, chance in move.triggers:
+            if not user.alive or random.random() * 100 >= chance or key not in user.monster.skills:
+                continue
+            # A set-off move fires at once and sets off nothing more.
+            extra = replace(user.monster.move(key), charge="", recharge=False, triggers=())
+            if extra.target == "enemy":
+                foes = [t for t in self._candidates(user, extra) if t.alive]
+                aim = foes if extra.spread else [t for t in targets if t.alive and t.enemy != user.enemy][:1]
+            else:
+                aim = self._candidates(user, extra) if extra.spread else [user]
+            if aim:
+                self._popup(user, name.upper(), TRIGGER_COLOR, offset=(0, -24), delay=0.2)
+                notes += [f"{move.name} set off {name}!"] + self._land(user, extra, aim)
+        if notes:
+            self.message = " ".join(dict.fromkeys(notes))  # (the same note once, for spread moves)
+
+    def _land(self, user: Combatant, move: Move, targets: list[Combatant]) -> list[str]:
+        """The move lands on each of `targets`. Returns notes for the message."""
         share = move.spread_share if len(targets) > 1 else 1.0
         notes: list[str] = []
         for target in targets:
             notes += self._hit(user, move, target, share) if move.damaging else self._effect(user, move, target)
+        if move.self_stages and user.alive:
+            notes += [self._change_stage(user, stat, change) for stat, change in move.self_stages]
         if move.heal and user.alive and user.monster.hp < user.monster.max_hp:
             amount = self._heal(user, max(1, round(user.monster.max_hp * move.heal)))
             notes.append(f"{user.label} restored {amount} HP!")
@@ -985,8 +1034,7 @@ class BattleScene(Scene):
             user.confused = random.randint(*CONFUSION_ROUNDS)
             self._popup(user, "CONF", CONFUSED_COLOR, offset=(0, -14), delay=0.3)
             notes.append(f"{user.label} became confused due to fatigue!")
-        if notes:
-            self.message = " ".join(dict.fromkeys(notes))  # (the same note once, for spread moves)
+        return notes
 
     def _hit(self, user: Combatant, move: Move, target: Combatant, share: float) -> list[str]:
         """A damaging move hits `target` (once, or several times). Returns
@@ -1049,7 +1097,14 @@ class BattleScene(Scene):
         if move.bind and not target.bound:
             target.bound, target.bind_share = random.randint(*BIND_ROUNDS), move.bind
             notes.append(f"{target.label} was caught in a bind!")
+        if move.bleed:
+            notes.append(self._wound(target, move.bleed))
         return [n for n in notes if n]
+
+    def _wound(self, target: Combatant, share: float) -> str:
+        target.bleed, target.bleed_share = BLEED_ROUNDS, max(share, target.bleed_share if target.bleed else 0)
+        self._popup(target, "WOUND", WOUND_COLOR, offset=(0, -14), delay=0.3)
+        return f"{target.label} was wounded!"
 
     def _effect(self, user: Combatant, move: Move, target: Combatant) -> list[str]:
         """A status move works on `target`. Returns notes for the message."""
@@ -1073,6 +1128,8 @@ class BattleScene(Scene):
                 target.seeded_by, target.seed = user, move.seed
                 self._popup(target, "SEED", SEED_COLOR)
                 notes.append(f"{target.label} was seeded!")
+        if move.bleed and target.enemy != user.enemy:
+            notes.append(self._wound(target, move.bleed))
         if move.shield:
             target.shield = move.shield
             self._popup(target, "SHIELD", (150, 240, 140))

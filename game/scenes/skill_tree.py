@@ -1,17 +1,20 @@
 """The skill tree screen (party screen → S): spend skill points, choose the
 equipped moves, and reset points (in towns).
 
-Left: the Pokémon's tree as an outline (each skill under its parent), with
-rank pips and the equipped moves' slots. Right: the chosen skill's ranks,
-requirements and what can be done with it.
+Left: the Pokémon's tree as an outline: moves along their paths (each
+under the move that opens it), and under the move the cursor is on, its
+buffs and links (the other moves show how much of their branch is
+learned). Right: the chosen skill: what it does, its ranks, requirements
+and what can be done with it.
 """
 
 import pygame
 
 from ..engine import ui
 from ..engine.scene import Scene
+from ..mechanics.moves import describe
 from ..mechanics.pokemon import Monster
-from ..mechanics.skills import MAX_EQUIPPED, RANK_DAMAGE, Skill
+from ..mechanics.skills import MAX_EQUIPPED, Skill, SkillTree
 from ..mechanics.type_chart import COLORS
 from ..mechanics.type_chart import name as type_name
 
@@ -24,30 +27,32 @@ INFO_WINDOW = pygame.Rect(TREE_WINDOW.right + 6, TREE_WINDOW.y, 634 - TREE_WINDO
 VISIBLE = (TREE_WINDOW.h - PAD * 2 - 14 - 12) // ROW_H  # rows that fit above the key hints; it scrolls
 PIP = 5
 BADGE_POS = (INFO_WINDOW.right - 12 - ui.BADGE_SIZE[0], INFO_WINDOW.y + PAD + 19)  # the move's type
+WRAP = 56  # characters per line in the info window
 
 GREEN = (120, 230, 120)
 RED = (240, 110, 100)
 DIM = (96, 104, 140)
-MODIFIER_COLOR = (200, 170, 255)
+BUFF_COLOR = (200, 170, 255)
+LINK_COLOR = (255, 200, 120)
 
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE, pygame.K_s, pygame.K_TAB)
-KIND_NAMES = {"base": "Base attack", "move": "Move", "modifier": "Modifier"}
 
 
-def _outline(skills: dict[str, Skill]) -> list[tuple[Skill, int, tuple[bool, ...]]]:
+def outline(tree: SkillTree, expanded: str) -> list[tuple[Skill, int, tuple[bool, ...]]]:
     """The tree in outline order: (skill, depth, whether each level of its
-    ancestry, itself last, is the last child there). Modifiers come before
-    a move's follow-up moves."""
+    ancestry, itself last, is the last child there). Every skill hangs
+    under its first parent; only the `expanded` move shows its buffs and
+    links (before the moves it opens)."""
     children: dict[str, list[Skill]] = {}
-    for s in skills.values():
-        children.setdefault(s.parent, []).append(s)
+    for s in tree.skills.values():
+        children.setdefault(s.parents[0] if s.parents else "", []).append(s)
     for kids in children.values():
-        kids.sort(key=lambda s: s.kind != "modifier")
+        kids.sort(key=lambda s: s.kind == "move")
     rows = []
 
     def walk(key: str, depth: int, lasts: tuple[bool, ...]) -> None:
-        kids = children.get(key, [])
+        kids = [s for s in children.get(key, []) if s.kind == "move" or tree.owner(s.key) == expanded]
         for i, s in enumerate(kids):
             here = lasts + (i == len(kids) - 1,)
             rows.append((s, depth, here))
@@ -65,7 +70,7 @@ class SkillTreeScene(Scene):
         self.party = party
         self.member = member
         self.can_reset = can_reset
-        self.row = 0
+        self.cursor = self.monster.tree.basic.key  # the chosen skill's key
         self.top = 0
         self.asking = False  # "reset all points?"
         self.message = ""
@@ -76,11 +81,16 @@ class SkillTreeScene(Scene):
 
     @property
     def rows(self):
-        return _outline(self.monster.tree.skills)
+        tree = self.monster.tree
+        return outline(tree, tree.owner(self.cursor))
+
+    @property
+    def row(self) -> int:
+        return next(i for i, (s, _, _) in enumerate(self.rows) if s.key == self.cursor)
 
     @property
     def skill(self) -> Skill:
-        return self.rows[self.row][0]
+        return self.monster.tree.skills[self.cursor]
 
     def save_point(self):
         return self.return_to.save_point()
@@ -98,12 +108,14 @@ class SkillTreeScene(Scene):
             self.asking = False
             return
         if key in (pygame.K_UP, pygame.K_DOWN):
-            self.row = (self.row + (1 if key == pygame.K_DOWN else -1)) % len(self.rows)
-            self.top = min(self.row, max(self.top, self.row - VISIBLE + 1))
+            rows = self.rows
+            self.cursor = rows[(self.row + (1 if key == pygame.K_DOWN else -1)) % len(rows)][0].key
+            row = self.row  # (opening another move's branch moves the rows)
+            self.top = max(0, min(row, max(self.top, row - VISIBLE + 1), len(self.rows) - VISIBLE))
             self.message = ""
         elif key in (pygame.K_LEFT, pygame.K_RIGHT):
             self.member = (self.member + (1 if key == pygame.K_RIGHT else -1)) % len(self.party)
-            self.row = self.top = 0
+            self.cursor, self.top = self.monster.tree.basic.key, 0
             self.message = ""
         elif key in CONFIRM_KEYS:
             skill = self.skill
@@ -127,8 +139,8 @@ class SkillTreeScene(Scene):
 
     def _toggle_equip(self) -> str:
         m, skill = self.monster, self.skill
-        if skill.kind == "modifier":
-            return "Modifiers work on their move by themselves."
+        if skill.kind != "move":
+            return f"{skill.name} works on its move by itself."
         if skill.key == m.tree.basic.key:
             return f"{skill.name} is the basic attack (Fight)."
         if not m.skills.get(skill.key):
@@ -147,16 +159,18 @@ class SkillTreeScene(Scene):
         return TREE_WINDOW.y + PAD + 14 + (i - self.top) * ROW_H
 
     def _state(self, skill: Skill) -> str:
-        """"learned", "open" (can be learned now) or "locked"."""
-        if self.monster.skills.get(skill.key):
+        """"learned", "open" (can be learned or ranked up now) or "locked"."""
+        m = self.monster
+        rank = m.skills.get(skill.key, 0)
+        if rank and (rank >= skill.max_rank or m.why_not(skill.key)):
             return "learned"
-        return "locked" if self.monster.why_not(skill.key) else "open"
+        return "locked" if m.why_not(skill.key) else "open"
 
-    def _marker_color(self, skill: Skill):
-        if skill.kind == "modifier":
-            return MODIFIER_COLOR
-        move = self.monster.tree.effective_move(self.monster.skills, skill.key)
-        return COLORS.get(move.type, (168, 168, 120))
+    def _branch(self, move_key: str) -> tuple[int, int]:
+        """(points spent, points it can take) in a move's buffs and links."""
+        m, tree = self.monster, self.monster.tree
+        nodes = [s for s in tree.skills.values() if s.kind != "move" and s.move == move_key]
+        return sum(m.skills.get(s.key, 0) for s in nodes), sum(s.max_rank for s in nodes)
 
     def draw(self, canvas: pygame.Surface) -> None:
         canvas.fill(ui.SHADOW)
@@ -177,19 +191,23 @@ class SkillTreeScene(Scene):
                 lx = x - INDENT + 3
                 pygame.draw.line(canvas, DIM, (lx, y - 8), (lx, y if lasts[-1] else y + 7))
                 pygame.draw.line(canvas, DIM, (lx, y), (x - 1, y))
-            state, color = self._state(skill), self._marker_color(skill)
+            learned = bool(m.skills.get(skill.key))
             marker = pygame.Rect(x, y - 3, 7, 7)
-            if skill.kind == "modifier":
+            if skill.kind == "move":
+                move = m.tree.effective_move(m.skills, skill.key)
+                color = COLORS.get(move.type, (168, 168, 120)) if learned else DIM
+                pygame.draw.rect(canvas, color, marker, 0 if learned else 1)
+            elif skill.kind == "buff":
                 points = [(marker.centerx, marker.top), (marker.right, marker.centery),
                           (marker.centerx, marker.bottom), (marker.left, marker.centery)]
-                pygame.draw.polygon(canvas, color if state == "learned" else DIM, points, 0 if state == "learned" else 1)
+                pygame.draw.polygon(canvas, BUFF_COLOR if learned else DIM, points, 0 if learned else 1)
             else:
-                pygame.draw.rect(canvas, color if state == "learned" else DIM, marker, 0 if state == "learned" else 1)
-            # Rank pips at the right.
-            rank = m.skills.get(skill.key, 0)
-            for p in range(skill.max_rank):
-                pip = pygame.Rect(TREE_WINDOW.right - 12 - (skill.max_rank - p) * (PIP + 2), y - 2, PIP, PIP)
-                pygame.draw.rect(canvas, ui.YELLOW if p < rank else DIM, pip, 0 if p < rank else 1)
+                pygame.draw.circle(canvas, LINK_COLOR if learned else DIM, marker.center, 3, 0 if learned else 1)
+            if skill.kind != "move":  # rank pips at the right
+                rank = m.skills.get(skill.key, 0)
+                for p in range(skill.max_rank):
+                    pip = pygame.Rect(TREE_WINDOW.right - 12 - (skill.max_rank - p) * (PIP + 2), y - 2, PIP, PIP)
+                    pygame.draw.rect(canvas, ui.YELLOW if p < rank else DIM, pip, 0 if p < rank else 1)
         ui.cursor(canvas, TREE_WINDOW.x + 16, self._row_y(self.row) + 6)
         x = TREE_WINDOW.right - 10  # scroll arrows
         if self.top > 0:
@@ -198,8 +216,8 @@ class SkillTreeScene(Scene):
         if self.top + VISIBLE < len(rows):
             y = TREE_WINDOW.bottom - 9
             pygame.draw.polygon(canvas, ui.WHITE, [(x - 3, y), (x + 3, y), (x, y + 4)])
-        move = m.tree.effective_move(m.skills, self.skill.key) if self.skill.kind != "modifier" else None
-        if move and move.type:
+        move = m.tree.effective_move(m.skills, m.tree.owner(self.cursor))
+        if move.type:
             ui.badge(canvas, BADGE_POS, COLORS[move.type])
 
     def draw_overlay(self, window: pygame.Surface) -> None:
@@ -207,28 +225,35 @@ class SkillTreeScene(Scene):
         # Header: who, points, equipped moves.
         ui.text(window, f"{m.name}   Lv{m.level}", (HEADER.x + 12, HEADER.y + 6), ui.YELLOW)
         points = m.skill_points
-        ui.text(window, f"Skill points: {points}", (HEADER.right - 12, HEADER.y + 6), GREEN if points else ui.GREY,
-                align="right")
+        spent = tree.spent(m.skills)
+        ui.text(window, f"Skill points: {points}   (tree: {spent}/{tree.cost})", (HEADER.right - 12, HEADER.y + 6),
+                GREEN if points else ui.GREY, align="right", size=24)
         slots = [f"{i + 2} {m.tree.skills[k].name}" for i, k in enumerate(m.equipped)]
         slots += [f"{i + 2} -" for i in range(len(m.equipped), MAX_EQUIPPED)]
         ui.text(window, "   ".join([f"Fight: {tree.basic.name}"] + slots), (HEADER.x + 12, HEADER.y + 24),
                 ui.GREY, size=20)
         # The outline.
         ui.text(window, "Skill tree", (TREE_WINDOW.x + 12, TREE_WINDOW.y + 6), ui.GREY, size=20)
-        for i, (skill, depth, _) in enumerate(self.rows):
+        rows = self.rows
+        for i, (skill, depth, _) in enumerate(rows):
             if not self.top <= i < self.top + VISIBLE:
                 continue
             state = self._state(skill)
-            color = (ui.YELLOW if i == self.row else ui.WHITE if state == "learned"
+            color = (ui.YELLOW if skill.key == self.cursor else ui.WHITE if state == "learned"
                      else GREEN if state == "open" else ui.GREY)
             x = TREE_WINDOW.x + 22 + depth * INDENT + 11
-            ui.text(window, skill.name, (x, self._row_y(i)), color, size=22)
-            slot = (m.equipped.index(skill.key) + 2 if skill.key in m.equipped
-                    else "F" if skill.key == tree.basic.key else None)
-            if slot is not None:
-                pips = skill.max_rank * (PIP + 2)
-                ui.text(window, str(slot), (TREE_WINDOW.right - 18 - pips, self._row_y(i) + 1), ui.YELLOW, size=18,
-                        align="right")
+            ui.text(window, skill.label, (x, self._row_y(i)), color, size=22)
+            right = TREE_WINDOW.right - 12
+            if skill.kind == "move":
+                spent, room = self._branch(skill.key)
+                if room:  # how much of its branch is learned
+                    ui.text(window, f"{spent}/{room}", (right, self._row_y(i) + 1), GREEN if spent else DIM,
+                            size=18, align="right")
+                    right -= 26
+                slot = (m.equipped.index(skill.key) + 2 if skill.key in m.equipped
+                        else "F" if skill.key == tree.basic.key else None)
+                if slot is not None:
+                    ui.text(window, str(slot), (right, self._row_y(i) + 1), ui.YELLOW, size=18, align="right")
         self._draw_info(window)
         hints = ("Up/Down: skill   Left/Right: Pokémon   Enter: learn / rank up   E: equip   "
                  f"R: reset{'' if self.can_reset else ' (towns)'}   S: back")
@@ -239,55 +264,56 @@ class SkillTreeScene(Scene):
         x, right = INFO_WINDOW.x + 12, INFO_WINDOW.right - 12
         y = INFO_WINDOW.y + PAD
         rank = m.skills.get(skill.key, 0)
+        owner = tree.skills[tree.owner(skill.key)]
+        move = tree.effective_move(m.skills, owner.key)
         ui.text(window, skill.name, (x, y), ui.YELLOW)
-        ui.text(window, KIND_NAMES[skill.kind], (right, y + 2), ui.GREY, size=22, align="right")
+        kind = ("Basic attack" if skill.key == tree.basic.key else "Move" if skill.kind == "move"
+                else "Buff" if skill.kind == "buff" else "Link")
+        ui.text(window, kind, (right, y + 2), ui.GREY, size=22, align="right")
+        if move.type:
+            ui.badge_text(window, type_name(move.type), BADGE_POS)
         y += 20
-        if skill.kind == "modifier":
-            ui.text(window, f"Changes {tree.skills[skill.move].name}", (x, y), MODIFIER_COLOR, size=22)
+        if skill.kind == "move":
+            ui.text(window, "Learned" if rank else "1 point", (x, y), GREEN if rank else ui.GREY, size=22)
+            y += 18
         else:
-            move = tree.effective_move(m.skills, skill.key)
-            if move.type:
-                ui.badge_text(window, type_name(move.type), BADGE_POS)
-            if move.halve:
-                ui.text(window, "Takes half the target's HP", (x, y), size=22)
-            elif move.damaging:
-                now = round(move.power * (1 + RANK_DAMAGE * (max(rank, 1) - 1)))
-                text = f"Power {now}"
-                if rank and rank < skill.max_rank:
-                    text += f"  ->  {round(move.power * (1 + RANK_DAMAGE * rank))} at rank {rank + 1}"
-                ui.text(window, text, (x, y), size=22)
-            else:
-                ui.text(window, "Status move", (x, y), size=22)
-        y += 18
-        ui.text(window, f"Rank {rank}/{skill.max_rank}", (x, y), ui.WHITE if rank else ui.GREY, size=22)
-        y += 18
-        for r in range(1, skill.max_rank + 1):  # what each rank does
-            if r - 1 < len(skill.text):
-                line = skill.text[r - 1]
-            elif tree.skills[skill.key].kind != "modifier":
-                line = f"+{round(RANK_DAMAGE * 100 * (r - 1))}% damage."
-            else:
-                continue
-            color = GREEN if r <= rank else ui.WHITE if r == rank + 1 else ui.GREY
-            ui.text(window, f"R{r}", (x, y), color, size=20)
-            parts = _wrap(line, 54)
-            for i, part in enumerate(parts):
-                ui.text(window, part, (x + 22, y + i * 12), color, size=20)
-            y += 12 * len(parts) + 2
-        y += 4
+            what = (f"Changes {owner.name}" if skill.kind == "buff"
+                    else f"{owner.name} sets off {tree.skills[skill.parents[1]].name}")
+            ui.text(window, what, (x, y), BUFF_COLOR if skill.kind == "buff" else LINK_COLOR, size=22)
+            y += 18
+            ui.text(window, f"Rank {rank}/{skill.max_rank}", (x, y), ui.WHITE if rank else ui.GREY, size=22)
+            y += 17
+            for r in range(1, skill.max_rank + 1):  # what each rank does
+                color = GREEN if r <= rank else ui.WHITE if r == rank + 1 else ui.GREY
+                ui.text(window, f"R{r}", (x, y), color, size=20)
+                parts = _wrap(skill.text[r - 1], WRAP - 4)
+                for i, part in enumerate(parts):
+                    ui.text(window, part, (x + 22, y + i * 12), color, size=20)
+                y += 12 * len(parts) + 1
+            y += 5
+        # The move as it is now, with what's learned.
+        ui.text(window, f"{owner.name} now:" if skill.kind != "move" else "What it does:", (x, y), ui.GREY, size=20)
+        y += 13
+        for part in _wrap(describe(move), WRAP)[:7]:
+            ui.text(window, part, (x, y), ui.WHITE, size=20)
+            y += 12
+        y += 5
         # Requirements.
-        stage_name = tree.species[skill.stage].capitalize()
-        checks = [(f"Level {skill.level}", m.level >= skill.level) if skill.level else None,
-                  (f"After {tree.skills[skill.parent].name}", bool(m.skills.get(skill.parent))) if skill.parent else None,
-                  (f"{stage_name} or later", m.species.stage >= skill.stage) if skill.stage else None]
-        checks = [c for c in checks if c]
+        checks = []
+        if skill.level:
+            checks.append((f"Lv{skill.level}", m.level >= skill.level))
+        checks += [(tree.skills[p].name, bool(m.skills.get(p))) for p in skill.parents]
+        if skill.stage:
+            checks.append((f"{tree.species[skill.stage].capitalize()}", m.species.stage >= skill.stage))
         if checks:
             ui.text(window, "Needs:", (x, y), ui.GREY, size=20)
             cx = x + 40
             for label, ok in checks:
+                width = ui.font(20).size(label)[0] / 2
+                if cx + width > right:
+                    cx, y = x + 40, y + 12
                 ui.text(window, label, (cx, y), GREEN if ok else RED, size=20)
-                cx += ui.font(20).size(label)[0] / 2 + 14
-            y += 16
+                cx += width + 12
         # What can be done.
         if self.asking:
             line, color = "Reset all skill points?   Enter: yes   X: no", ui.YELLOW
@@ -300,7 +326,7 @@ class SkillTreeScene(Scene):
             else:
                 line, color = reason, ui.GREY
         ui.text(window, line, (x, INFO_WINDOW.bottom - PAD - 30), color, size=22)
-        if skill.kind == "modifier":
+        if skill.kind != "move":
             equip = "Works on its move by itself."
         elif skill.key == tree.basic.key:
             equip = "The basic attack: used by Fight."

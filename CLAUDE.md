@@ -100,21 +100,26 @@ non-commercial project.
   XP source.
 - Skills (`skills.py`, `docs/skill_trees.md`): moves come from skill trees
   (one per evolution line, `TREES`), not learn levels. Skill points =
-  level − 5; skills open by level + parent skill + evolution stage, ranks
-  1–5. Kinds: base attacks (free; the first is the basic attack = Fight),
-  moves (4 equipped, `Monster.equipped`), modifiers (change one move). A
-  rank/modifier is a dict of `Move` field changes;
-  `SkillTree.effective_move` applies them (`Monster.move(key)`).
-  Every line in the game has a tree (`docs/skill_trees.md`'s tables are
-  generated: `python tools/skill_docs.py`); rank-1 texts come from
-  `moves.describe`. `Monster.create` auto-builds skills (wild Pokémon,
+  level − 5; a skill opens by level + all its parents + evolution stage.
+  Kinds: moves (each Gen 1 move one 1-point skill, linked by paths; the
+  free ones are base attacks, the first = Fight; 4 equipped,
+  `Monster.equipped`), buffs (1–5 ranks, branches off one move, generated
+  per kind of move by `skills._buffs`: Potent, riders, Wounding, Sweeping,
+  capstones, ...) and links (`Link`: two moves; the first sets off the
+  second, `Move.triggers`). A rank is a dict of `Move` field changes,
+  added up by `apply_changes`; `SkillTree.effective_move` applies them
+  (`Monster.move(key)`). Trees cost 115–207 points (95 at Lv100): builds
+  choose. Every line in the game has a tree (`docs/skill_trees.md`'s
+  tables are generated: `python tools/skill_docs.py`). `Monster.create` auto-builds skills (wild Pokémon,
   starter). The skill
   tree screen (`scenes/skill_tree.py`, party screen → S) spends points,
   equips moves and resets points (towns only, `Scene.in_town`). A species
   without a tree gets Tackle (`stand_in_tree`). Battle: stat stages
   incl. accuracy (`Combatant.stages`; misses only come from lowered
   accuracy), priority, multi-hit, flinch, confusion, bind, Leech Seed,
-  spread moves, recoil, recharge, drain, Rest, Focus Energy, Toxic.
+  spread moves, recoil, recharge, drain, Rest, Focus Energy, Toxic,
+  wounds (`Move.bleed`), stages on the user (`self_stages`), set-off
+  moves (`BattleScene._apply`).
 - Evolution (`pokemon.py`): `EVOLUTIONS` lists every Red/Blue level
   evolution (species key → `Evolution(into, level)`); trade/stone
   evolutions aren't in yet. An evolution is only active once its target

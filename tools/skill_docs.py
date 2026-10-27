@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from game.mechanics.moves import MOVES  # noqa: E402
+from game.mechanics.moves import MOVES, describe  # noqa: E402
 from game.mechanics.pokemon import EVOLUTIONS, SPECIES  # noqa: E402
 from game.mechanics.skills import TREES, SkillTree  # noqa: E402
 
@@ -40,31 +40,29 @@ def _stages(tree: SkillTree) -> str:
 
 
 def _section(tree: SkillTree) -> str:
-    lines = [f"## The {_name(tree.species[0])} line", "", f"Stages: {_stages(tree)}.", ""]
+    lines = [f"## The {_name(tree.species[0])} line", "",
+             f"Stages: {_stages(tree)}. Whole tree: {tree.cost} points.", ""]
     stage_name = lambda s: _name(tree.species[s])  # noqa: E731
-    lines += ["| Skill | Kind | Lv | Parent | Stage | Effect | Ranks |", "| --- | --- | --- | --- | --- | --- | --- |"]
-    for s in tree.skills.values():
-        if s.kind == "modifier":
-            continue
-        effect = s.text[0]
-        later = [f"R{r}: {t}" for r, t in enumerate(s.text[1:], start=2)]
-        if later:
-            effect += " " + " ".join(later)
-        kind = "Basic attack" if s is tree.basic else "Base attack" if s.kind == "base" else "Move"
-        parent = tree.skills[s.parent].name if s.parent else "–"
-        ranks = "1" if s.max_rank == 1 else f"1–{s.max_rank}"
-        lines.append(f"| {s.name} | {kind} | {s.level or '–'} | {parent} | {stage_name(s.stage)} | {effect} | {ranks} |")
-    mods = [s for s in tree.skills.values() if s.kind == "modifier"]
-    if mods:
-        lines += ["", "| Modifier | Changes | Lv | Stage | Per rank |", "| --- | --- | --- | --- | --- |"]
-        for s in mods:
-            per_rank = " / ".join(s.text) if s.max_rank > 1 else s.text[0]
-            lines.append(f"| {s.name} | {tree.skills[s.move].name} | {s.level} | {stage_name(s.stage)} | {per_rank} |")
+    lines += ["| Move | Lv | Opened by | Stage | Effect | Buffs (points) |", "| --- | --- | --- | --- | --- | --- |"]
+    for s in tree.moves:
+        buffs = [b for b in tree.skills.values() if b.kind == "buff" and b.move == s.key]
+        names = ", ".join(b.label for b in buffs)
+        level = "free" if s.free else s.level
+        parent = tree.skills[s.parents[0]].name if s.parents else "–"
+        lines.append(f"| {s.name} | {level} | {parent} | {stage_name(s.stage)} | {describe(MOVES[s.move])} | "
+                     f"{names} ({sum(b.max_rank for b in buffs)}) |")
+    links = [s for s in tree.skills.values() if s.kind == "link"]
+    if links:
+        lines += ["", "| Link | Sets off | Lv | Stage | Chance per rank |", "| --- | --- | --- | --- | --- |"]
+        for s in links:
+            chances = " / ".join(f"{r['triggers'][0][2]}%" for r in s.ranks)
+            lines.append(f"| {s.name} | {tree.skills[s.parents[0]].name} → {tree.skills[s.parents[1]].name} | "
+                         f"{s.level} | {stage_name(s.stage)} | {chances} |")
     return "\n".join(lines)
 
 
 def main() -> None:
-    assert all(s.move in MOVES for t in TREES.values() for s in t.skills.values() if s.kind != "modifier")
+    assert all(s.move in MOVES for t in TREES.values() for s in t.moves)
     text = DOC.read_text(encoding="utf-8")
     before, rest = text.split(START, 1)
     _, after = rest.split(END, 1)

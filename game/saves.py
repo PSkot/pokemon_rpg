@@ -79,9 +79,11 @@ def _monster(m: Monster) -> dict:
 def _load_monster(d: dict) -> Monster:
     gear = {slot: _load_gear(g) for slot, g in d["gear"].items()}
     species = SPECIES[d["species"]]
-    # Skills its tree no longer has are dropped; saves from before skill
-    # trees have none, so the Pokémon starts with its base attacks.
-    skills = {key: rank for key, rank in d.get("skills", {}).items() if key in species.tree.skills}
+    # Skills its tree no longer has are dropped (and ranks above a skill's
+    # max cut down); saves from before skill trees have none, so the
+    # Pokémon starts with its base attacks.
+    tree = species.tree.skills
+    skills = {key: min(rank, tree[key].max_rank) for key, rank in d.get("skills", {}).items() if key in tree}
     equipped = [key for key in d.get("equipped", []) if key in skills]
     return Monster(species, d["level"], hp=d["hp"], gear=gear, status=d["status"],
                    sleep_rounds=d["sleep_rounds"], xp=d["xp"], skills=skills, equipped=equipped)

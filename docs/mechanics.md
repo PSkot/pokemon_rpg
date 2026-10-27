@@ -148,9 +148,9 @@ stages*). A hit is worked out in these steps:
 
 1. **Attack:** the user's Attack (with gear) × its **Attack stage**
    multiplier (see *Stat stages*). Halved if the user is **burned**.
-2. **Power:** the move's power × its **skill rank** (+15% per rank after
-   the first: R5 = ×1.6), + the user's gear `power` bonus. Fight uses the
-   Pokémon's basic attack (see `skill_trees.md`).
+2. **Power:** the move's power × its **buffs** (Potent: +8% per rank, up
+   to +40%; Twin: −30% for its two hits), + the user's gear `power` bonus.
+   Fight uses the Pokémon's basic attack (see `skill_trees.md`).
 3. **Base damage** (the Gen 1 formula):
 
    ```
@@ -294,15 +294,15 @@ Each round, everyone picks first, then all actions play out in this order:
 
 1. **Items** (medicine) before any move.
 2. Then moves with **priority** (Quick Attack, and moves given it by a
-   modifier) before the rest.
+   buff: Quick, Swift) before the rest.
 3. Then Pokémon whose **"act first"** gear roll succeeded (`first`: Quick
    Claw, Officer's Cap, "Hasty"; rolled every round).
 4. Then **fastest first** by Speed (with gear, × its Speed stage
    multiplier; **halved if paralyzed**).
 5. Ties are settled at random.
 
-**Solar Beam** spends one round charging and hits the next (unless Quick
-Bloom). After **Hyper Beam** the user must rest the next round.
+**Solar Beam** spends one round charging and hits the next (unless its
+Instant buff is learned). After **Hyper Beam** the user must rest the next round.
 
 ### End of round
 
@@ -310,13 +310,15 @@ After all actions, in this order:
 
 1. **Burn and poison damage** (see below), then berries may be eaten.
 2. **Leech Seed:** each seeded Pokémon loses its seed's share of its max
-   HP (1/16; 1/12 or 1/8 at higher ranks; min 1), and whoever seeded it
+   HP (1/16; more with Deep-Rooted; min 1), and whoever seeded it
    gets that much back (if it's still standing).
 3. **Bind:** bound Pokémon lose their bind's share of max HP (min 1).
-4. **Regen** (gear `regen`: Leftovers, Nightcap, "of the Chansey"): heals
+4. **Wounds** (buffs: Wounding, Lingering): wounded Pokémon lose their
+   wound's share of max HP (min 1), for 3 rounds.
+5. **Regen** (gear `regen`: Leftovers, Nightcap, "of the Chansey"): heals
    `regen`% of max HP (min 1).
-5. **Leaf Shield** counts down: it lasts the round it's used and the next
-   (and more at higher ranks). Flinching wears off.
+6. **Leaf Shield** counts down: it lasts the round it's used and the next
+   (and more with Thick). Flinching wears off.
 
 ---
 
