@@ -17,18 +17,22 @@ at Lv100), so every build chooses.
 
 ### The skill tree screen
 
-Party screen → **S** (`game/scenes/skill_tree.py`). Left: the tree as an
-outline: moves along their paths (squares, in their type's colour, each
-under the move that opens it); under the move the cursor is on, its buffs
-(diamonds) and links (circles), with rank pips. Other moves show how many
-of their branch's points are spent ("5/19"), and the equipped moves' keys
-(F = the basic attack). White = learned, green = can be learned or ranked
-up now, grey = locked. The header shows the points left and how much of
-the whole tree is learned. Right: the chosen skill: each rank's effect,
-the move as it is now with everything learned, its requirements (green =
-met) and what can be done. Keys: **Enter** spends a point, **E** equips or
-unequips a move (4 at most), **R** resets all points (in towns only, after
-asking), Left/Right switch Pokémon.
+Party screen → **S** (`game/scenes/skill_tree.py`). Left: the tree as a
+**map of nodes**, laid out left to right (`skill_tree.layout`: a tidy
+tree, each skill right of its first parent, leaves a row each, parents
+centred on their children). Moves are circles in their type's colour,
+buffs diamonds, links small orange nodes with a dashed line to their
+second move; each shows its name (buffs and links with their rank, e.g.
+"Potent 3/5"; equipped moves their key, F = the basic attack). Filled =
+learned, green outline = can be learned or ranked up now, grey = locked;
+learned paths light up. The view pans smoothly to follow the cursor
+(keeping the chosen skill's move in view). The header shows the points
+left and how much of the whole tree is learned. Right: the chosen skill:
+each rank's effect, the move as it is now with everything learned, its
+requirements (green = met) and what can be done. Keys: **arrows** go to
+the nearest node that way, **Enter** spends a point, **E** equips or
+unequips a move (4 at most), **R** resets all points (in towns only,
+after asking), **Q/W** switch Pokémon (touch: the Next pill).
 
 ---
 

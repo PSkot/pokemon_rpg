@@ -112,7 +112,9 @@ non-commercial project.
   choose. Every line in the game has a tree (`docs/skill_trees.md`'s
   tables are generated: `python tools/skill_docs.py`). `Monster.create` auto-builds skills (wild Pokémon,
   starter). The skill
-  tree screen (`scenes/skill_tree.py`, party screen → S) spends points,
+  tree screen (`scenes/skill_tree.py`, party screen → S: a panning node
+  map, `layout`; arrows go to the nearest node that way, Q/W switch
+  Pokémon) spends points,
   equips moves and resets points (towns only, `Scene.in_town`). A species
   without a tree gets Tackle (`stand_in_tree`). Battle: stat stages
   incl. accuracy (`Combatant.stages`; misses only come from lowered
