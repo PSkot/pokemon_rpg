@@ -57,6 +57,9 @@ full HP when its max HP goes up or down.
   the species' Gen 1 base experience yield (`Species.base_exp`; e.g.
   Pidgey 55, Bulbasaur 64, Lapras 219). This is Gen 1's formula for wild
   Pokémon.
+- **Wild battles give half** (`WILD_XP` = 0.5) and trainer battles ×1.5
+  (`TRAINER_XP`): quests are the main source of XP (see `quests.md` for
+  the budget).
 - **Sharing:** after a won battle, the XP of **all** enemies is added up,
   and **every party member still standing gets the full amount** (no
   splitting). Fainted members get nothing. *Gen 1 split XP between the
@@ -65,8 +68,8 @@ full HP when its max HP goes up or down.
   HP gained is added to current HP (damage taken stays the same).
   Several level-ups from one battle are possible.
 
-Example: beating Lv6 Pidgey (47), Lv7 Rattata (57) and Lv5 Pidgey (39)
-gives 143 XP to each party member still standing.
+Example: beating wild Lv6 Pidgey (47), Lv7 Rattata (57) and Lv5 Pidgey
+(39) gives 143 × 0.5 = 72 XP to each party member still standing.
 
 - **Quest XP:** a finished quest gives its XP (`Quest.xp`) to **every**
   party member, fainted ones too (`quests._give_xp`), with the same level
@@ -612,7 +615,7 @@ basic attack and their equipped moves, at a random target.
 A route's boss group can be a trainer's team (`Route.trainer`):
 - the battle opens with "<trainer> wants to battle!" and **can't be run
   from**;
-- its Pokémon give **×1.5 XP** (as in Gen 1);
+- its Pokémon give **×1.5 XP** (as in Gen 1; wild ones ×0.5);
 - the trainer's name shows above the team on the map.
 
 ---

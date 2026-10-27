@@ -84,6 +84,10 @@ class TownScene(MapScene):
 
     def interact(self) -> None:
         if self._at_board():
+            event = quests.hand_in(self.game)  # (any board takes any finished quest)
+            if event:
+                self.show_event(event)
+                saves.autosave(self)
             board = quest_ui.QuestBoard(self.game, self.town.name, self.town.key)
             self.show(board, after=lambda: board.taken and self.show_event(quests.accept(self.game, board.taken)))
             return
@@ -121,7 +125,8 @@ class TownScene(MapScene):
 
     def markers(self) -> list[tuple[float, float]]:
         ground, marks = self.level.ground_y(0), []
-        if self.board_x is not None and quests.can_take(self.game, self.town.key):
+        if self.board_x is not None and (quests.can_take(self.game, self.town.key)
+                                         or quests.ready_to_hand_in(self.game)):
             marks.append((self.board_x, ground - 60))
         for quest in quests.active(self.game):
             step = quests.current(self.game, quest.key)

@@ -1,10 +1,13 @@
 """Quests: the story (following Red/Blue) and side jobs (docs/quests.md).
 
 A quest has steps done in order: visit a building in a town (press Up at
-it), defeat a route's boss, or reach a town. Quests are taken from a
-town's quest board, or start by themselves once the quests they need are
-done. Their state lives in `Game.quests` (quest key → the step it's at;
-`len(steps)` = done).
+it), defeat a route's boss, reach a town, defeat a number of one species
+("hunt"), collect a number of quest items that drop in battles on a route
+("collect"), or hand it in at any quest board ("hand_in"). Quests are
+taken from a town's quest board, or start by themselves once the quests
+they need are done. Their state lives in `Game.quests` (quest key → the
+step it's at; `len(steps)` = done) and `Game.quest_counts` (how far a
+counted step has got).
 
 Everything that happens (accepting, visiting, winning, arriving) goes
 through `Event`s: the dialogue to show, quests started or finished, and
@@ -21,20 +24,45 @@ from dataclasses import dataclass, field
 from ..dev import DEV
 from ..mechanics.items import ITEMS, Gear, money_text
 from ..mechanics.loot import Reward
-from ..mechanics.pokemon import MAX_LEVEL
+from ..mechanics.pokemon import MAX_LEVEL, SPECIES
 
 Line = tuple[str, str]  # (speaker, text) of a dialogue page
 
 
 @dataclass(frozen=True)
 class Step:
-    kind: str     # "visit" (a building in a town), "defeat" (a route's boss) or "reach" (a town)
-    target: str   # visit: the building's name; defeat: the route key; reach: the town key
+    # "visit" (a building in a town), "defeat" (a route's boss), "reach" (a
+    # town), "hunt" (defeat `count` of a species), "collect" (`count` quest
+    # items) or "hand_in" (at any quest board)
+    kind: str
+    # visit: the building's name; defeat: the route key; reach: the town
+    # key; hunt: the species key; collect: the item's name
+    target: str
     text: str     # the objective, as shown on the map and in the quest log
     town: str = ""  # visit: the town the building is in
     dialogue: tuple[Line, ...] = ()  # shown when the step is done
     gives: tuple[str, ...] = ()      # key items received ...
     takes: tuple[str, ...] = ()      # ... and handed over
+    count: int = 1                   # hunt / collect: how many
+    # collect: each defeated Pokémon of `species` in a won battle on
+    # `route` drops one with `chance` %.
+    route: str = ""
+    species: tuple[str, ...] = ()
+    chance: int = 0
+
+
+def hunt(species: str, count: int, where: str) -> Step:
+    """Defeat `count` of `species` (anywhere; `where` says where they live)."""
+    return Step("hunt", species, f"Defeat {count} {SPECIES[species].name} ({where})", count=count)
+
+
+def collect(item: str, count: int, route: str, species: tuple[str, ...], chance: int, where: str) -> Step:
+    """Collect `count` of `item`, dropped by `species` on `route`."""
+    return Step("collect", item, f"Collect {count} {item}s ({where})", count=count, route=route,
+                species=species, chance=chance)
+
+
+HAND_IN = Step("hand_in", "", "Hand it in at any quest board")
 
 
 @dataclass(frozen=True)
@@ -72,7 +100,7 @@ QUESTS = {q.key: q for q in [
                                    "He said he wants to battle you!")),
                  takes=("Oak's Parcel",), gives=("Pokédex",)),
         ),
-        money=300, xp=200,
+        money=300, xp=150,
         rewards=(("medicine", "Potion", 5),),
     ),
     Quest(
@@ -89,24 +117,85 @@ QUESTS = {q.key: q for q in [
         "A giant Caterpie is blocking the path through Viridian Forest. Clear the way to Pewter City.",
         board="viridian", requires=("oaks_parcel",),
         steps=(Step("defeat", "viridian_forest", "Defeat the giant Caterpie in Viridian Forest"),),
-        money=500, xp=400,
+        money=500, xp=350,
         rewards=(("medicine", "Super Potion", 2), ("gear", None, "Common", 10)),
     ),
+
+    # Board jobs: defeat a number of one species, or collect quest items
+    # that drop on the route out of town; handed in at any board.
+    Quest(
+        "pest_control", "Pest Control",
+        "Rattata keep chewing through the fences of Pallet Town. Thin them out on Route 1.",
+        board="pallet",
+        steps=(hunt("rattata", 6, "Route 1"), HAND_IN),
+        money=300, xp=150,
+    ),
+    Quest(
+        "soft_feathers", "Soft Feathers",
+        "Mom wants Pidgey feathers to stuff a new pillow. Pidgey on Route 1 sometimes drop one.",
+        board="pallet",
+        steps=(collect("Pidgey Feather", 5, "route_1", ("pidgey",), 50, "Pidgey on Route 1"), HAND_IN),
+        money=400, xp=150,
+    ),
+    Quest(
+        "spearow_trouble", "Spearow Trouble",
+        "A flock of Spearow on Route 22 pecks at anyone passing by. Show them who's boss.",
+        board="viridian", requires=("oaks_parcel",),
+        steps=(hunt("spearow", 4, "Route 22"), HAND_IN),
+        money=450, xp=200,
+    ),
+    Quest(
+        "nidoran_horns", "Shed Horns",
+        "A Viridian collector pays well for the little horns Nidoran shed on Route 22.",
+        board="viridian", requires=("oaks_parcel",),
+        steps=(collect("Nidoran Horn", 6, "route_22", ("nidoran_f", "nidoran_m"), 40, "Nidoran on Route 22"),
+               HAND_IN),
+        money=500, xp=250,
+    ),
+    Quest(
+        "bug_silk", "Bug Silk",
+        "The Poké Mart weaves its bandanas from the silk of Caterpie and Metapod in Viridian Forest.",
+        board="viridian", requires=("oaks_parcel",),
+        steps=(collect("Silk Thread", 5, "viridian_forest", ("caterpie", "metapod"), 40,
+                       "Caterpie and Metapod in Viridian Forest"), HAND_IN),
+        money=600, xp=250,
+    ),
+    Quest(
+        "poison_barbs", "Poison Barbs",
+        "Pewter's Pokémon Center makes Antidotes from Weedle and Kakuna barbs. Bring some from Viridian Forest.",
+        board="pewter",
+        steps=(collect("Poison Barb", 6, "viridian_forest", ("weedle", "kakuna"), 35,
+                       "Weedle and Kakuna in Viridian Forest"), HAND_IN),
+        money=700, xp=500,
+    ),
+    Quest(
+        "forest_sparks", "Sparks in the Forest",
+        "Someone saw sparks between the trees of Viridian Forest. Track down the Pikachu behind them.",
+        board="pewter",
+        steps=(hunt("pikachu", 3, "Viridian Forest"), HAND_IN),
+        money=800, xp=600,
+    ),
 ]}
+
+
+@dataclass
+class Finished:
+    """A quest that was just done, and what it gave."""
+    key: str
+    rewards: list[Reward]
+    xp: int  # XP each party member got
+    level_ups: list[str] = field(default_factory=list)  # e.g. "Bulbasaur grew to Lv8!"
 
 
 @dataclass
 class Event:
     """Something to show after a quest event, in order."""
     dialogue: list[Line] = field(default_factory=list)
-    started: list[str] = field(default_factory=list)   # quest keys
-    finished: list[str] = field(default_factory=list)  # quest keys
-    rewards: list[Reward] = field(default_factory=list)
-    xp: int = 0  # XP each party member got
-    level_ups: list[str] = field(default_factory=list)  # e.g. "Bulbasaur grew to Lv8!"
+    started: list[str] = field(default_factory=list)  # quest keys
+    finished: list[Finished] = field(default_factory=list)
 
     def __bool__(self) -> bool:
-        return bool(self.dialogue or self.started or self.finished or self.rewards)
+        return bool(self.dialogue or self.started or self.finished)
 
 
 # --- a game's quest state (`game` is a progress.Game) --------------------
@@ -171,6 +260,49 @@ def reach(game, town: str) -> Event:
     return event
 
 
+def won_battle(game, route: str, defeated: list[str]) -> list[tuple[str, str]]:
+    """A battle on `route` was won against `defeated` (species keys): count
+    them for hunts, and roll collect drops. Returns what happened, as
+    (text, detail) rows for the battle's rewards; finished counts move
+    their quest on (to handing it in)."""
+    rows = []
+    for quest in active(game):
+        s = current(game, quest.key)
+        if s.kind == "hunt":
+            got = defeated.count(s.target)
+            label = f"{SPECIES[s.target].name} defeated"
+        elif s.kind == "collect" and s.route == route:
+            got = sum(random.random() * 100 < s.chance for species in defeated if species in s.species)
+            label = s.target
+        else:
+            continue
+        if not got:
+            continue
+        have = min(s.count, game.quest_counts.get(quest.key, 0) + got)
+        game.quest_counts[quest.key] = have
+        rows.append((label, f"{quest.name} {have}/{s.count}"))
+        if have >= s.count:
+            _advance(game, quest, Event())  # (no dialogue for counted steps)
+    return rows
+
+
+def ready_to_hand_in(game) -> list[Quest]:
+    return [q for q in active(game) if current(game, q.key).kind == "hand_in"]
+
+
+def hand_in(game) -> Event:
+    """At a quest board: finish every quest that's waiting to be handed in."""
+    return _advance_where(game, lambda s: s.kind == "hand_in")
+
+
+def step_text(game, quest: Quest, i: int) -> str:
+    """Step `i`'s objective, with the count so far if it's the current counted one."""
+    s = quest.steps[i]
+    if s.kind in ("hunt", "collect") and step(game, quest.key) == i:
+        return f"{s.text}: {game.quest_counts.get(quest.key, 0)}/{s.count}"
+    return s.text
+
+
 def open_for(game, needs: tuple[str, str] | None) -> bool:
     """Whether a (quest, "started"/"done") condition holds (None: always)."""
     if not needs:
@@ -203,21 +335,22 @@ def _advance(game, quest: Quest, event: Event) -> None:
             game.bag.key_items.remove(item)
     game.bag.key_items += [i for i in s.gives if i not in game.bag.key_items]
     game.quests[quest.key] += 1
+    game.quest_counts.pop(quest.key, None)
     if is_done(game, quest.key):
         event.dialogue += quest.done_dialogue
-        event.finished.append(quest.key)
-        rewards = [Reward(money=quest.money)] + [_reward(r) for r in quest.rewards]
-        for r in rewards:
+        done = Finished(quest.key, [Reward(money=quest.money)] + [_reward(r) for r in quest.rewards],
+                        quest.xp * DEV.xp_multiplier)
+        for r in done.rewards:
             r.give(game.bag)
-        event.rewards += rewards
-        _give_xp(game, quest.xp * DEV.xp_multiplier, event)
+        _give_xp(game, done)
+        event.finished.append(done)
         _start_automatic(game, event)
 
 
-def _give_xp(game, xp: int, event: Event) -> None:
-    """Every party member gets `xp`, leveling up as in battle (evolving
-    waits for its next level up in a battle)."""
-    event.xp += xp
+def _give_xp(game, done: Finished) -> None:
+    """Every party member gets the quest's XP, leveling up as in battle
+    (evolving waits for its next level up in a battle)."""
+    xp = done.xp
     for m in game.party:
         if m.level >= MAX_LEVEL:
             continue
@@ -226,7 +359,7 @@ def _give_xp(game, xp: int, event: Event) -> None:
         while m.can_level_up:
             m.level_up()
         if m.level > start:
-            event.level_ups.append(f"{m.name} grew to Lv{m.level}!")
+            done.level_ups.append(f"{m.name} grew to Lv{m.level}!")
 
 
 def reward_text(quest: Quest) -> str:

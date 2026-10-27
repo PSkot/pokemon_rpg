@@ -8,7 +8,15 @@ gym battles), and the "catch" / "bring an item" steps.
 
 Quests carry the story (following Red/Blue) and gate progress: some
 routes only open once a quest has started or is done, and some areas
-change once a quest is finished.
+change once a quest is finished. Board jobs ("defeat 6 Rattata", "collect
+5 Pidgey Feathers") fill the gaps between story beats.
+
+**Quests are the main source of XP.** Wild battles give half their Gen 1
+XP (`WILD_XP`, see `mechanics.md`); trainer battles give ×1.5, so they
+stay worth fighting. Budget up to Pewter City: the quests before it pay
+1,800 XP in all, a full run of each route there about 1,500 in battle XP,
+so a player who does both arrives around Lv14–15 (Brock's Onix is Lv14
+in Gen 1).
 
 ---
 
@@ -32,12 +40,17 @@ change once a quest is finished.
 | **Visit** | You press Up at a building or doorway in a town (e.g. Professor Oak's Lab), or, for a Poké Mart, at the counter inside (Meowth). Shows a short dialogue. |
 | **Defeat** | You beat a route's boss (a boss group or a trainer). |
 | **Reach** | You arrive in a town (or on a route's last map). |
+| **Hunt** (`hunt(species, count, where)`) | You've beaten `count` of a species in won battles, anywhere (wild or a trainer's). Shown as "Defeat 6 Rattata (Route 1): 3/6". |
+| **Collect** (`collect(item, count, route, species, chance, where)`) | You've collected `count` quest items. In every won battle on `route` (wild or trainer), each defeated Pokémon of `species` drops one with `chance` %. Only while the quest is active; they're not bag items, just the count. |
+| **Hand in** (`HAND_IN`) | You press Up at **any** town's quest board (for now): every quest waiting there is handed in, then the board opens. Board jobs end with it. |
 | *Later:* **Catch**, **Bring an item** | Once catching and key items are used more. |
 
 ### States, saved in the game
 
 Each quest is *locked*, *available*, *active* (at step *n*) or *done*;
-stored in `Game.quests` (quest key → step number, or done). Key items
+stored in `Game.quests` (quest key → step number, or done). A hunt or
+collect step's count so far is in `Game.quest_counts` (cleared when the
+step is done). Key items
 (Oak's Parcel, the Pokédex) go in a separate key-item list in the bag:
 they can't be sold, used or dropped.
 
@@ -60,15 +73,20 @@ they can't be sold, used or dropped.
 - **Dialogue box:** text at the bottom of the screen during quest moments
   (a speaker's name, pages advanced with Enter). No character sprites for
   now: people "speak" from their buildings.
-- **Tracker:** the active quest's current step under the location line on
-  the map, e.g. "Deliver Oak's Parcel to Professor Oak (Pallet Town)".
-- **Markers:** a bouncing "!" over a quest board with something new, and
-  over the building the current step needs (when it's in the town you're
-  in).
+- **Tracker:** up to 3 active quests' current steps under the location
+  line on the map, e.g. "Pest Control: Defeat 6 Rattata (Route 1): 3/6".
+- **Markers:** a bouncing "!" over a quest board with something new or a
+  quest to hand in, and over the building the current step needs (when
+  it's in the town you're in).
 - **Quest log:** pause menu → Quests: active quests with their steps
-  (done ones ticked), and finished ones.
+  (done ones ticked), and finished ones; Up/Down scrolls.
+- **Battle rewards:** a won battle's rewards panel also lists quest
+  progress in light blue: "Rattata defeated — Pest Control 4/6",
+  "Pidgey Feather — Soft Feathers 2/5".
+- **Board states:** New / Active / Hand in / Done.
 - **Notices:** "New quest: …" and "Quest complete: …" banners, plus the
-  rewards in a panel (like loot): money, items, the XP and who leveled up.
+  rewards in a panel (like loot): money, items, the XP and who leveled up
+  (one panel per quest).
 - The quest board lists each quest's rewards ("Rewards: ₽300, 200 XP,
   5 Potions").
 
@@ -84,7 +102,7 @@ they can't be sold, used or dropped.
      Parcel** (key item).
   2. Visit **Professor Oak's Lab** in Pallet Town: Oak takes the parcel
      and gives you the **Pokédex** (key item).
-- **Rewards:** ₽300, 200 XP, 5 Potions (Gen 1 gives Poké Balls here;
+- **Rewards:** ₽300, 150 XP, 5 Potions (Gen 1 gives Poké Balls here;
   those can come once catching exists).
 - **Unlocks:** quest 2; **Viridian Forest** (until then its doorway is
   blocked: "An old man is lying in the road. He hasn't had his coffee
@@ -110,8 +128,27 @@ they can't be sold, used or dropped.
   is done.
 - **Steps:** defeat the giant Caterpie (and its escort) in Viridian
   Forest.
-- **Rewards:** ₽500, 400 XP, 2 Super Potions and a Common gear piece
+- **Rewards:** ₽500, 350 XP, 2 Super Potions and a Common gear piece
   (item level 10).
+
+### Board jobs
+
+Each town's board posts a few hunt and collect jobs for the route out of
+town (Pewter's for Viridian Forest, until Route 3 exists). All end with
+handing them in at any board.
+
+| Board | Quest | Needs | Steps | Drop chance | Rewards |
+| --- | --- | --- | --- | --- | --- |
+| Pallet | Pest Control | – | Defeat 6 Rattata (Route 1) | – | ₽300, 150 XP |
+| Pallet | Soft Feathers | – | Collect 5 Pidgey Feathers (Pidgey, Route 1) | 50% | ₽400, 150 XP |
+| Viridian | Spearow Trouble | Oak's Parcel | Defeat 4 Spearow (Route 22) | – | ₽450, 200 XP |
+| Viridian | Shed Horns | Oak's Parcel | Collect 6 Nidoran Horns (Nidoran ♀/♂, Route 22) | 40% | ₽500, 250 XP |
+| Viridian | Bug Silk | Oak's Parcel | Collect 5 Silk Threads (Caterpie, Metapod; Viridian Forest) | 40% | ₽600, 250 XP |
+| Pewter | Poison Barbs | – | Collect 6 Poison Barbs (Weedle, Kakuna; Viridian Forest) | 35% | ₽700, 500 XP |
+| Pewter | Sparks in the Forest | – | Defeat 3 Pikachu (Viridian Forest) | – | ₽800, 600 XP |
+
+Each takes about one or two runs of its route. They can't be repeated
+yet.
 
 ### 3. The Boulder Badge (next)
 
@@ -125,16 +162,19 @@ they can't be sold, used or dropped.
 
 - `game/world/quests.py`: `Quest` and `Step` data and `QUESTS`; a game's
   quest state (`step`, `is_active`, `is_done`, `current`, `board`,
-  `can_take`) and the events that move it on (`accept`, `visit`, `defeat`,
-  `reach`), each returning an `Event` (dialogue, quests started and
-  finished, rewards given) for the map scene to show (`MapScene.show_event`).
+  `can_take`, `ready_to_hand_in`, `step_text`) and the events that move it
+  on (`accept`, `visit`, `defeat`, `reach`, `hand_in`), each returning an `Event` (dialogue, quests started and
+  finished with what each gave, `Finished`) for the map scene to show
+  (`MapScene.show_event`). `won_battle` (called through
+  `BattleScene.on_win`) counts hunts and rolls collect drops, returning
+  rows for the battle's rewards.
   Quests with no board start by themselves once their prerequisites are
   done.
 - `Quest.money` and `Quest.xp` are required (every quest pays both);
   `Quest.rewards` lists the items. `quests.reward_text` is the board's
   rewards line.
 - `Game.quests` (quest key → step reached; the number of steps = done),
-  `Bag.key_items`, `Bag.money`; all saved.
+  `Game.quest_counts`, `Bag.key_items`, `Bag.money`; all saved.
 - `Route.needs` / `Route.blocked` (a quest condition for its doorways, and
   what's said when it isn't met), `Route.boss_after` (the boss group once a
   quest is done).

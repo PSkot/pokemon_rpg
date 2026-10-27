@@ -40,6 +40,7 @@ WOOD = (150, 96, 48)
 WOOD_DARK = (96, 58, 28)
 OUTLINE = (48, 28, 16)
 GOLD = (232, 192, 72)
+TRACKED = 3  # active quests shown under the location
 GROUP_SPACING = 30  # px between the members of a wild group, standing in a row
 
 
@@ -174,8 +175,9 @@ class Doorway:
 class MapScene(Scene):
     """A map the player walks around: the tiles, the player and the camera,
     the party screen (Tab), and panels (loot, notices, dialogue, a quest
-    board) that pause the map, shown one after another. The active quest's
-    current step shows under the location, and a "!" over what it needs.
+    board) that pause the map, shown one after another. The active quests'
+    current steps show under the location (up to TRACKED), and a "!" over
+    what they need.
     Subclasses put things on it."""
 
     touch_map = True
@@ -240,8 +242,8 @@ class MapScene(Scene):
         """What a quest event brings: its dialogue, then quests finished and started."""
         if event.dialogue:
             self.show(quest_ui.Dialogue(event.dialogue))
-        for i, key in enumerate(event.finished):
-            self.show(quest_ui.finished(key, event if i == 0 else None))
+        for done in event.finished:
+            self.show(quest_ui.finished(done))
         for key in event.started:
             self.show(quest_ui.started(key))
 
@@ -320,13 +322,15 @@ class MapScene(Scene):
         if DEV.enabled:  # what dev mode has on, after the location
             ui.text(window, DEV.summary(), (6 + ui.font(20).size(self.where())[0] / settings.SCALE + 16, 15),
                     ui.YELLOW, size=20)
-        tracked = quests.active(self.game)
-        if tracked:  # the first active quest's next step
-            ui.text(window, f"Quest: {quests.current(self.game, tracked[0].key).text}", (6, 26), ui.YELLOW, size=20)
+        y = 26
+        for quest in quests.active(self.game)[:TRACKED]:  # the active quests' next steps
+            text = quests.step_text(self.game, quest, quests.step(self.game, quest.key))
+            ui.text(window, f"{quest.name}: {text}", (6, y), ui.YELLOW, size=20)
+            y += 11
         if self.debug:
             p, level = self.player, self.level
             ui.text(window, f"seed: {level.seed}   state: {p.state}   x: {p.x:.0f}  feet: {p.feet_y:.0f}"
-                            f"   fps: {self.fps:.0f}", (6, 37), ui.YELLOW, size=20)
+                            f"   fps: {self.fps:.0f}", (6, y), ui.YELLOW, size=20)
         if not self.panel:
             lift = abs((self.t * 2) % 2 - 1) * 4
             for x, top in self.markers():
@@ -459,7 +463,9 @@ class OverworldScene(MapScene):
                 battle = BattleScene(self, self.party, enemies, self.bag, loot=loot,
                                      backdrop=self.level.theme.backdrop, boss=boss,
                                      trainer=self.trainer if boss else "",
-                                     bonus=boss_loot(route.boss_loot) if boss and not route.boss_chest else None)
+                                     bonus=boss_loot(route.boss_loot) if boss and not route.boss_chest else None,
+                                     on_win=lambda key=route.key, defeated=[s for s, _ in wild.encounter]:
+                                         quests.won_battle(self.game, key, defeated))
                 self.fighting = (wild, battle)
                 self.next_scene = Transition(self, battle)
             wild.armed = not touching

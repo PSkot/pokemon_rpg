@@ -95,8 +95,9 @@ non-commercial project.
 - XP (`pokemon.py`): defeating a Pokémon is worth `base_exp × level / 7`
   (Gen 1; `Species.base_exp`), and reaching a level takes `level³` total XP.
   A won battle gives every party member still standing the XP of all the
-  enemies (`BattleScene._give_xp`), filling the XP bar and leveling up
-  (keeping the damage taken).
+  enemies (`BattleScene._give_xp`; ×0.5 wild, ×1.5 trainer), filling the
+  XP bar and leveling up (keeping the damage taken). Quests are the main
+  XP source.
 - Skills (`skills.py`, `docs/skill_trees.md`): moves come from skill trees
   (one per evolution line, `TREES`), not learn levels. Skill points =
   level − 5; skills open by level + parent skill + evolution stage, ranks
@@ -190,7 +191,11 @@ non-commercial project.
 - Quests (`world/quests.py`, `docs/quests.md`): `QUESTS` with steps (visit
   a building in a town, defeat a route's boss, reach a town), taken from a
   town's quest board (`Town.board_col`) or started automatically once their
-  prerequisites are done. Every quest pays Poké Dollars and XP
+  prerequisites are done. Board jobs: hunt (defeat N of a species) and
+  collect (N quest items dropped by species on a route,
+  `quests.won_battle` via `BattleScene.on_win`), handed in at any board
+  (`HAND_IN`); counts in `Game.quest_counts`. Quests are the main XP
+  source (wild battles ×0.5, `WILD_XP`; trainers ×1.5). Every quest pays Poké Dollars and XP
   (`Quest.money`, `Quest.xp`: XP to each party member); major quests
   (rival, gyms) also give items (`Quest.rewards`). State in
   `Game.quests`, key items in `Bag.key_items`, money in `Bag.money`

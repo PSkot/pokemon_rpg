@@ -21,6 +21,7 @@ class Game:
     cleared: Counter = field(default_factory=Counter)  # route key -> times walked all the way
     starter: str = "bulbasaur"  # the player's first Pokémon (species key)
     quests: dict[str, int] = field(default_factory=dict)  # quest key -> the step it's at (see quests.py)
+    quest_counts: dict[str, int] = field(default_factory=dict)  # quest key -> its counted step's count so far
 
     @property
     def rival_starter(self) -> str:

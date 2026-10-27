@@ -55,6 +55,7 @@ BIND_ROUNDS = (2, 5)
 REST_ROUNDS = 2
 HEAL_COLOR = (120, 230, 120)
 XP_COLOR = (88, 168, 248)
+QUEST_COLOR = (120, 200, 255)  # quest progress in the rewards
 
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 CANCEL_KEYS = (pygame.K_x, pygame.K_BACKSPACE)
@@ -73,6 +74,7 @@ REGEN_MESSAGE_TIME = 0.8   # "restored 2 HP."
 ACTION_PAUSE = 0.6       # quiet gap (no message) before the next action
 VICTORY_PAUSE = 1.0      # "You won!", before the XP is handed out
 TRAINER_XP = 1.5         # XP × this from a trainer's Pokémon (Gen 1)
+WILD_XP = 0.5            # ... and from wild ones (quests are the main source of XP)
 XP_FILL_TIME = 1.2       # seconds for an XP bar to fill completely
 XP_MESSAGE_TIME = 0.8    # after a party member's XP bar has filled
 LEVEL_UP_TIME = 1.2      # "grew to Lv6!"
@@ -379,12 +381,15 @@ class BattleScene(Scene):
 
     def __init__(self, return_to: Scene, party: list[Monster], enemies: list[Monster], bag: Bag,
                  loot: LootTable | None = None, backdrop: Backdrop = MEADOW_BACKDROP, boss: bool = False,
-                 trainer: str = "", bonus: LootTable | None = None):
+                 trainer: str = "", bonus: LootTable | None = None, on_win=None):
         self.return_to = return_to
         self.backdrop = backdrop
         self.boss = boss  # the area's boss group (changes the intro)
         self.trainer = trainer  # a trainer's team ("" = wild): no running, more XP
         self.bonus = bonus  # rolled once (at the highest enemy level) when the party wins
+        # Called when the party wins; returns (text, detail) rows for the
+        # rewards (quest progress: Pokémon counted, quest items dropped).
+        self.on_win = on_win
         self.party = _side(party, enemy=False)
         self.enemies = _side(enemies, enemy=True)
         self.bag = bag
@@ -650,7 +655,7 @@ class BattleScene(Scene):
     def _give_xp(self):
         """Every party member still standing gets the XP of all the enemies.
         Returns the members who leveled up."""
-        xp = round(sum(c.monster.xp_yield for c in self.enemies) * (TRAINER_XP if self.trainer else 1))
+        xp = round(sum(c.monster.xp_yield for c in self.enemies) * (TRAINER_XP if self.trainer else WILD_XP))
         xp *= DEV.xp_multiplier
         boost = f" (×{DEV.xp_multiplier})" if DEV.xp_multiplier > 1 else ""
         leveled = []
@@ -706,8 +711,10 @@ class BattleScene(Scene):
         rewards = merge(rewards)
         for r in rewards:
             r.give(self.bag)
-        if rewards:
-            self.rewards = ui.ListPanel("Rewards", [r.row() for r in rewards], (320, 120), footer="")
+        rows = [r.row() for r in rewards]
+        rows += [(text, QUEST_COLOR, detail) for text, detail in (self.on_win() if self.on_win else [])]
+        if rows:
+            self.rewards = ui.ListPanel("Rewards", rows, (320, 120), footer="")
 
     def _regen(self):
         """End of the round: gear that restores HP every round."""
