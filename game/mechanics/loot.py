@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from functools import cache
 
 from ..engine import ui
-from .items import ITEMS, SLOT_NAMES, Bag, Gear, Range
+from .items import ITEMS, SLOT_NAMES, Bag, Gear, Range, money_text
 
 
 @dataclass(frozen=True)
@@ -58,14 +58,17 @@ class LootTable:
 
 @dataclass
 class Reward:
-    """One line of loot: a piece of gear, or some of one medicine."""
+    """One line of loot: a piece of gear, some of one medicine, or money."""
     gear: Gear | None = None
     medicine: str = ""
     count: int = 0
+    money: int = 0  # Poké Dollars
 
     def give(self, bag: Bag) -> None:
         if self.gear:
             bag.add(self.gear)
+        elif self.money:
+            bag.money += self.money
         else:
             bag.add_medicine(self.medicine, self.count)
 
@@ -74,6 +77,8 @@ class Reward:
         if self.gear:
             g = self.gear
             return g.name, g.rarity.color, f"Lv{g.level} {g.rarity.name} {SLOT_NAMES[g.slot]}"
+        if self.money:
+            return money_text(self.money), ui.YELLOW, "Poké Dollars"
         return self.medicine, ui.WHITE, f"x{self.count}"
 
 

@@ -13,7 +13,7 @@ import pygame
 from ..engine import hats, ui
 from ..engine.scene import Scene
 from ..mechanics.combat import CRIT_CHANCE
-from ..mechanics.items import RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text
+from ..mechanics.items import RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text, money_text
 from ..mechanics.pokemon import Monster, animations
 from ..mechanics.status import STATUSES
 from ..mechanics.type_chart import COLORS
@@ -196,6 +196,8 @@ class SummaryScene(Scene):
                 ui.text(window, status.abbrev, (PARTY_WINDOW.right - 10, y + ROW_H - 3), status.color,
                         size=22, align="right")
         hints = HINTS[self.mode]
+        money_y = PARTY_WINDOW.bottom - PAD - 11 - len(hints) * 13 - 8
+        ui.text(window, money_text(self.bag.money), (PARTY_WINDOW.x + 12, money_y), ui.YELLOW, size=24)
         for i, hint in enumerate(hints):
             y = PARTY_WINDOW.bottom - PAD - 11 - (len(hints) - 1 - i) * 13
             ui.text(window, hint, (PARTY_WINDOW.x + 12, y), ui.GREY, size=20)

@@ -5,6 +5,7 @@ import pygame
 from .. import saves, settings
 from ..dev import DEV, XP_BOOSTS
 from ..engine import touch, ui
+from ..mechanics.items import money_text
 from ..saves import LoadError
 from .controls_menu import ControlsMenu
 from .dev_menu import ItemMaker
@@ -202,6 +203,9 @@ class PauseMenu:
         ui.cursor(box, 16, self._row_y(self.choice) - rect.y + 5)
         ui.blit_scaled(window, box, rect.topleft)
         ui.text(window, "Paused", (rect.centerx, rect.y + PAD), ui.YELLOW, align="center")
+        if self.bag is not None:
+            ui.text(window, money_text(self.bag.money), (rect.right - 12, rect.y + PAD + 3), ui.YELLOW, size=22,
+                    align="right")
         for i, option in enumerate(self.options):
             dev = option in DEV_OPTIONS  # indented under "Dev mode"
             color = ui.GREY if not self._available(option) else ui.YELLOW if dev else ui.WHITE

@@ -9,13 +9,19 @@ done. Their state lives in `Game.quests` (quest key → the step it's at;
 Everything that happens (accepting, visiting, winning, arriving) goes
 through `Event`s: the dialogue to show, quests started or finished, and
 rewards given; the map scene shows them in turn.
+
+Every quest pays Poké Dollars and XP (each party member gets the XP, as
+from a battle); major quests (rival and gym battles, story milestones)
+also give items.
 """
 
 import random
 from dataclasses import dataclass, field
 
-from ..mechanics.items import ITEMS, Gear
+from ..dev import DEV
+from ..mechanics.items import ITEMS, Gear, money_text
 from ..mechanics.loot import Reward
+from ..mechanics.pokemon import MAX_LEVEL
 
 Line = tuple[str, str]  # (speaker, text) of a dialogue page
 
@@ -37,9 +43,11 @@ class Quest:
     name: str
     summary: str
     steps: tuple[Step, ...]
+    money: int  # Poké Dollars, given when it's done ...
+    xp: int     # ... and XP for each party member
     board: str = ""                  # the town whose quest board posts it ("" = starts by itself)
     requires: tuple[str, ...] = ()   # quests that must be done first
-    # Rewards: ("medicine", name, count) or ("gear", item, rarity, level).
+    # Items given too: ("medicine", name, count) or ("gear", item, rarity, level).
     rewards: tuple[tuple, ...] = ()
     done_dialogue: tuple[Line, ...] = ()  # shown when it's done (after the last step's)
 
@@ -64,6 +72,7 @@ QUESTS = {q.key: q for q in [
                                    "He said he wants to battle you!")),
                  takes=("Oak's Parcel",), gives=("Pokédex",)),
         ),
+        money=300, xp=200,
         rewards=(("medicine", "Potion", 5),),
     ),
     Quest(
@@ -71,6 +80,8 @@ QUESTS = {q.key: q for q in [
         "Your rival is waiting for you on Route 22, west of Viridian City.",
         requires=("oaks_parcel",),
         steps=(Step("defeat", "route_22", "Defeat your rival on Route 22 (west of Viridian City)"),),
+        money=600, xp=300,
+        rewards=(("medicine", "Super Potion", 2), ("gear", None, "Uncommon", 9)),
         done_dialogue=(("Rival", "What? I can't believe I lost! I'm off to Pewter City. Smell ya later!"),),
     ),
     Quest(
@@ -78,6 +89,7 @@ QUESTS = {q.key: q for q in [
         "A giant Caterpie is blocking the path through Viridian Forest. Clear the way to Pewter City.",
         board="viridian", requires=("oaks_parcel",),
         steps=(Step("defeat", "viridian_forest", "Defeat the giant Caterpie in Viridian Forest"),),
+        money=500, xp=400,
         rewards=(("medicine", "Super Potion", 2), ("gear", None, "Common", 10)),
     ),
 ]}
@@ -90,6 +102,8 @@ class Event:
     started: list[str] = field(default_factory=list)   # quest keys
     finished: list[str] = field(default_factory=list)  # quest keys
     rewards: list[Reward] = field(default_factory=list)
+    xp: int = 0  # XP each party member got
+    level_ups: list[str] = field(default_factory=list)  # e.g. "Bulbasaur grew to Lv8!"
 
     def __bool__(self) -> bool:
         return bool(self.dialogue or self.started or self.finished or self.rewards)
@@ -192,11 +206,38 @@ def _advance(game, quest: Quest, event: Event) -> None:
     if is_done(game, quest.key):
         event.dialogue += quest.done_dialogue
         event.finished.append(quest.key)
-        rewards = [_reward(r) for r in quest.rewards]
+        rewards = [Reward(money=quest.money)] + [_reward(r) for r in quest.rewards]
         for r in rewards:
             r.give(game.bag)
         event.rewards += rewards
+        _give_xp(game, quest.xp * DEV.xp_multiplier, event)
         _start_automatic(game, event)
+
+
+def _give_xp(game, xp: int, event: Event) -> None:
+    """Every party member gets `xp`, leveling up as in battle (evolving
+    waits for its next level up in a battle)."""
+    event.xp += xp
+    for m in game.party:
+        if m.level >= MAX_LEVEL:
+            continue
+        start = m.level
+        m.xp += xp
+        while m.can_level_up:
+            m.level_up()
+        if m.level > start:
+            event.level_ups.append(f"{m.name} grew to Lv{m.level}!")
+
+
+def reward_text(quest: Quest) -> str:
+    """What it pays, e.g. "₽300, 200 XP, 5 Potions, Uncommon gear (Lv9)"."""
+    parts = [money_text(quest.money), f"{quest.xp} XP"]
+    for spec in quest.rewards:
+        if spec[0] == "medicine":
+            parts.append(f"{spec[2]} {spec[1]}{'s' if spec[2] > 1 else ''}")
+        else:
+            parts.append(f"{spec[2]} {spec[1] or 'gear'} (Lv{spec[3]})")
+    return ", ".join(parts)
 
 
 def _reward(spec: tuple) -> Reward:

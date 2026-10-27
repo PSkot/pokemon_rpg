@@ -180,8 +180,11 @@ non-commercial project.
 - Quests (`world/quests.py`, `docs/quests.md`): `QUESTS` with steps (visit
   a building in a town, defeat a route's boss, reach a town), taken from a
   town's quest board (`Town.board_col`) or started automatically once their
-  prerequisites are done. State in `Game.quests`, key items in
-  `Bag.key_items`. Quest events return an `Event` the map scene shows
+  prerequisites are done. Every quest pays Poké Dollars and XP
+  (`Quest.money`, `Quest.xp`: XP to each party member); major quests
+  (rival, gyms) also give items (`Quest.rewards`). State in
+  `Game.quests`, key items in `Bag.key_items`, money in `Bag.money`
+  (₽, `items.money_text`; `ui.text` draws the ₽ sign itself). Quest events return an `Event` the map scene shows
   (`MapScene.show_event`: dialogue, "New quest", "Quest complete" with
   rewards); map panels queue (`MapScene.show`). Routes can be gated
   (`Route.needs`/`blocked`) and change boss after a quest (`boss_after`).

@@ -241,7 +241,7 @@ class MapScene(Scene):
         if event.dialogue:
             self.show(quest_ui.Dialogue(event.dialogue))
         for i, key in enumerate(event.finished):
-            self.show(quest_ui.finished(key, event.rewards if i == 0 else []))
+            self.show(quest_ui.finished(key, event if i == 0 else None))
         for key in event.started:
             self.show(quest_ui.started(key))
 

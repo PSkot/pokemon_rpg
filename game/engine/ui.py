@@ -35,8 +35,24 @@ def text(window: pygame.Surface, s: str, pos: tuple[float, float], color=WHITE,
     elif align == "center":
         x -= f.size(s)[0] // 2
     if shadow:
-        window.blit(f.render(s, True, SHADOW), (x + 2, y + 2))
-    window.blit(f.render(s, True, color), (x, y))
+        window.blit(_render(f, s, SHADOW), (x + 2, y + 2))
+    window.blit(_render(f, s, color), (x, y))
+
+
+def _render(f: pygame.font.Font, s: str, color) -> pygame.Surface:
+    """`s` rendered; the font has no Poké Dollar sign (₽), so it's drawn
+    as a P with a bar across its stem."""
+    if "₽" not in s:
+        return f.render(s, True, color)
+    surface = f.render(s.replace("₽", "P"), True, color)
+    min_x, max_x, _, cap, _ = f.metrics("P")[0]
+    bar_y = f.get_ascent() - round(cap * 0.28)
+    thick = max(1, round(f.get_height() / 14))
+    for i, ch in enumerate(s):
+        if ch == "₽":
+            left = f.size(s[:i].replace("₽", "P"))[0] + min_x
+            surface.fill(color, (left - thick, bar_y, round((max_x - min_x) * 0.75) + thick, thick))
+    return surface
 
 
 @cache

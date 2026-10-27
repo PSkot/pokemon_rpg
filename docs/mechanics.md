@@ -1,7 +1,7 @@
 # Game mechanics
 
 How the numbers work: stats, levels and XP, damage, status conditions,
-gear rolls, items and loot. Keep this file in step with the code: when a
+gear rolls, items, loot and money. Keep this file in step with the code: when a
 rule or a number changes, update the section here too.
 
 Most rules follow Gen 1 (Red/Blue), simplified, with gear on top. Where
@@ -67,6 +67,11 @@ full HP when its max HP goes up or down.
 
 Example: beating Lv6 Pidgey (47), Lv7 Rattata (57) and Lv5 Pidgey (39)
 gives 143 XP to each party member still standing.
+
+- **Quest XP:** a finished quest gives its XP (`Quest.xp`) to **every**
+  party member, fainted ones too (`quests._give_xp`), with the same level
+  ups. A Pokémon that reaches its evolution level this way evolves at its
+  next level up in a battle.
 
 ---
 
@@ -497,6 +502,18 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 
 ---
 
+## Money
+
+`game/mechanics/items.py` (`Bag.money`, `money_text`)
+
+- **Poké Dollars (₽)** are kept in the bag (`Bag.money`, saved) and shown
+  in the pause menu and on the party screen. A new game starts with ₽0.
+- **Earned from quests** for now: every quest pays its `Quest.money` (see
+  `quests.md`). Nothing costs money yet (shops come later).
+- The font has no ₽ sign, so `ui.text` draws it as a P with a bar.
+
+---
+
 ## Wild Pokémon
 
 `game/world/themes.py`, `game/world/level.py`
@@ -578,7 +595,7 @@ A route's boss group can be a trainer's team (`Route.trainer`):
 `game/dev.py` (switched on in the pause menu, for testing; not saved)
 
 - **XP boost** ×3/×5/×10/×20 multiplies the total XP of a won battle
-  before it's shared out.
+  before it's shared out, and a quest's XP.
 - **God mode:** hits on the party deal 0 damage and burn/poison don't hurt
   it (statuses still land); every hit on an enemy deals exactly its
   remaining HP, and Endure can't save it.

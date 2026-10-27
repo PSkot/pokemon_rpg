@@ -10,6 +10,7 @@ from .. import settings
 from ..engine import ui
 from ..world import quests
 from ..world.quests import QUESTS, Line, Quest
+from .battle import XP_COLOR
 
 PAD = 9
 ROW_H = 19
@@ -65,9 +66,15 @@ def started(key: str) -> ui.ListPanel:
     return notice(f"New quest: {quest.name}", [quest.summary, f"Next: {quest.steps[0].text}."])
 
 
-def finished(key: str, rewards: list) -> ui.ListPanel:
-    rows = [r.row() for r in rewards] or [("No reward", ui.GREY, "")]
-    return notice(f"Quest complete: {QUESTS[key].name}", [], rows)
+def finished(key: str, event: quests.Event | None = None) -> ui.ListPanel:
+    """The quest's rewards: `event`'s (None: shown with another quest's)."""
+    rows = []
+    if event:
+        rows = [r.row() for r in event.rewards]
+        if event.xp:
+            rows.append((f"{event.xp} XP", XP_COLOR, "each party member"))
+        rows += [(line, ui.YELLOW, "") for line in event.level_ups]
+    return notice(f"Quest complete: {QUESTS[key].name}", [], rows or [("No reward", ui.GREY, "")])
 
 
 def _steps(game, quest: Quest) -> list[tuple[str, tuple]]:
@@ -139,10 +146,14 @@ class QuestBoard:
             y += 4
             if quests.step(self.game, quest.key) is None:
                 ui.text(window, f"First: {quest.steps[0].text}.", (r.x + 14, y), ui.GREY, size=22)
+                y += 13
             else:
                 for text, color in _steps(self.game, quest):
                     ui.text(window, f"- {text}", (r.x + 14, y), color, size=22)
                     y += 13
+            for line in ui.wrap(f"Rewards: {quests.reward_text(quest)}", 22, r.w - 34):
+                ui.text(window, line, (r.x + 14, y + 4), ui.YELLOW, size=22)
+                y += 13
         hint = "Enter: take quest   X: close" if listed and quests.ready(self.game, listed[self.choice]) \
             else "X: close"
         ui.text(window, hint, (right, r.bottom - PAD - 9), ui.GREY, size=20, align="right")

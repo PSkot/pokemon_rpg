@@ -22,7 +22,7 @@ change once a quest is finished.
 | **Prerequisites** | Quests that must be done first. Until then it's *locked* (not shown). |
 | **Start** | Taken from a town's **quest board** (`Quest.board`), or *automatic* (as soon as its prerequisites are done, with a notice). Other givers (people, buildings) can come later. |
 | **Steps** | Objectives done in order; the quest shows the current one. |
-| **Rewards** | Given when the last step is done: medicine, gear (at a rarity and item level), key items. |
+| **Rewards** | Given when the last step is done. **Every** quest pays Poké Dollars (`Quest.money`) and XP (`Quest.xp`, to each party member, as in battle). **Major** quests (rival and gym battles, story milestones) also give items: medicine, gear (at a rarity and item level). Key items come from steps. |
 | **Unlocks** | What changes once it's started or done: a doorway opens, a route's boss changes, the next quest becomes available. |
 
 ### Kinds of steps
@@ -68,7 +68,9 @@ they can't be sold, used or dropped.
 - **Quest log:** pause menu → Quests: active quests with their steps
   (done ones ticked), and finished ones.
 - **Notices:** "New quest: …" and "Quest complete: …" banners, plus the
-  rewards in a panel (like loot).
+  rewards in a panel (like loot): money, items, the XP and who leveled up.
+- The quest board lists each quest's rewards ("Rewards: ₽300, 200 XP,
+  5 Potions").
 
 ---
 
@@ -82,8 +84,8 @@ they can't be sold, used or dropped.
      Parcel** (key item).
   2. Visit **Professor Oak's Lab** in Pallet Town: Oak takes the parcel
      and gives you the **Pokédex** (key item).
-- **Rewards:** 5 Potions (Gen 1 gives Poké Balls here; those can come
-  once catching exists).
+- **Rewards:** ₽300, 200 XP, 5 Potions (Gen 1 gives Poké Balls here;
+  those can come once catching exists).
 - **Unlocks:** quest 2; **Viridian Forest** (until then its doorway is
   blocked: "An old man is lying in the road. He hasn't had his coffee
   yet.", as Route 2 is in Red/Blue).
@@ -95,7 +97,8 @@ they can't be sold, used or dropped.
 - **Steps:**
   1. Defeat your **rival** at the end of Route 22 (Pidgey Lv9 and his
      starter Lv8, as now).
-- **Rewards:** the trainer battle's reward roll (as now).
+- **Rewards:** ₽600, 300 XP, 2 Super Potions and an Uncommon gear piece
+  (item level 9), on top of the trainer battle's reward roll.
 - **Unlocks:** **Route 22** opens when the quest *starts* (its doorway is
   closed before that). Once it's *done*, Route 22's boss becomes a wild
   **Pidgey Lv9 and Spearow Lv9** (no trainer, still the reward roll, no
@@ -107,12 +110,14 @@ they can't be sold, used or dropped.
   is done.
 - **Steps:** defeat the giant Caterpie (and its escort) in Viridian
   Forest.
-- **Rewards:** 2 Super Potions and a Common gear piece (item level 10).
+- **Rewards:** ₽500, 400 XP, 2 Super Potions and a Common gear piece
+  (item level 10).
 
 ### 3. The Boulder Badge (next)
 
 - **Starts:** automatically on first arriving in Pewter City.
 - **Steps:** beat Brock at the Pewter Gym (the gym battles come next).
+- **Rewards:** a major quest: money, XP and items.
 
 ---
 
@@ -125,8 +130,11 @@ they can't be sold, used or dropped.
   finished, rewards given) for the map scene to show (`MapScene.show_event`).
   Quests with no board start by themselves once their prerequisites are
   done.
+- `Quest.money` and `Quest.xp` are required (every quest pays both);
+  `Quest.rewards` lists the items. `quests.reward_text` is the board's
+  rewards line.
 - `Game.quests` (quest key → step reached; the number of steps = done),
-  `Bag.key_items`; both saved.
+  `Bag.key_items`, `Bag.money`; all saved.
 - `Route.needs` / `Route.blocked` (a quest condition for its doorways, and
   what's said when it isn't met), `Route.boss_after` (the boss group once a
   quest is done).
