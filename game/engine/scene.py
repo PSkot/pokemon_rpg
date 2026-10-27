@@ -20,6 +20,10 @@ class Scene:
     def handle_event(self, event: pygame.event.Event) -> None:
         pass
 
+    def tap(self, pos: tuple[float, float], drag: bool) -> None:
+        """A click or touch on the game, in logical px (`drag`: moving while
+        held, after a tap); see touch.taps."""
+
     def update(self, dt: float) -> None:
         pass
 

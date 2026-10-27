@@ -29,7 +29,9 @@ learned paths light up. The view pans smoothly to follow the cursor
 (keeping the chosen skill's move in view). A **mini-map** in the view's
 top-right corner shows the whole tree: the paths between moves, a dot per
 skill (learned in its colour, open green, locked dim), the cursor
-(flashing) and a frame for the part in view; **M** hides or shows it. The
+(flashing) and a frame for the part in view; **M** hides or shows it.
+**Tapping or clicking** on the mini-map jumps to the skill nearest that
+spot (dragging scrubs along); tapping a node in the tree picks it. The
 header shows the points
 left and how much of the whole tree is learned. Right: the chosen skill:
 each rank's effect, the move as it is now with everything learned, its

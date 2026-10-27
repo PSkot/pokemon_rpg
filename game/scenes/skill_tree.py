@@ -5,8 +5,9 @@ Left: the Pokémon's tree as a map of nodes, laid out left to right: each
 skill sits right of its first parent (moves as circles in their type's
 colour, buffs as diamonds, links as small orange nodes, with a line to
 their second move too). Learned paths light up. The view pans to follow
-the cursor; the arrow keys go to the nearest node that way. A mini-map in
-the corner shows the whole tree and where the view is (M hides it).
+the cursor; the arrow keys go to the nearest node that way, and a tap or
+click picks a node. A mini-map in the corner shows the whole tree and
+where the view is (M hides it); tapping or dragging on it jumps there.
 Right: the chosen skill: what it does, its ranks, requirements and what
 can be done.
 """
@@ -39,6 +40,7 @@ MOVE_R, LINK_R, BUFF_R = 7, 4, 5  # node sizes
 PAN_SPEED = 10.0  # how fast the view catches up with the cursor (per second)
 MINI_MAX = (84, 118)  # the mini-map's largest size (it keeps the tree's shape)
 MINI_MARGIN = 4
+TAP_REACH = 12  # px from a node a tap on the tree still picks it
 
 GREEN = (120, 230, 120)
 RED = (240, 110, 100)
@@ -168,6 +170,21 @@ class SkillTreeScene(Scene):
             if score < best_score:
                 best, best_score = key, score
         return best
+
+    def tap(self, pos: tuple[float, float], drag: bool) -> None:
+        """On the mini-map: go to the skill nearest that spot (dragging
+        scrubs along). On the tree: pick the node tapped."""
+        if self.asking:
+            return
+        rect, scale, bounds = self._minimap()
+        if self.show_map and rect.collidepoint(pos):
+            spot = (bounds.x + (pos[0] - rect.x - 2) / scale, bounds.y + (pos[1] - rect.y - 2) / scale)
+            self.cursor = min(self.spots, key=lambda k: math.dist(self.spots[k], spot))
+            self.message = ""
+        elif not drag and VIEW.collidepoint(pos):
+            key = min(self.spots, key=lambda k: math.dist(self._screen(k), pos))
+            if math.dist(self._screen(key), pos) <= TAP_REACH:
+                self.cursor, self.message = key, ""
 
     def _toggle_equip(self) -> str:
         m, skill = self.monster, self.skill
@@ -321,13 +338,21 @@ class SkillTreeScene(Scene):
         xs, ys = [p[0] for p in self.spots.values()], [p[1] for p in self.spots.values()]
         return pygame.Rect(min(xs) - 10, min(ys) - 10, max(xs) - min(xs) + 80, max(ys) - min(ys) + 20)
 
+    def _minimap(self) -> tuple[pygame.Rect, float, pygame.Rect]:
+        """Where the mini-map is (logical px), its scale, and the map area
+        it shows (map px)."""
+        bounds = self._bounds()
+        scale = min(MINI_MAX[0] / bounds.w, MINI_MAX[1] / bounds.h)
+        size = (max(1, round(bounds.w * scale)) + 4, max(1, round(bounds.h * scale)) + 4)
+        return pygame.Rect((VIEW.right - size[0] - MINI_MARGIN, VIEW.top + MINI_MARGIN), size), scale, bounds
+
     def _draw_minimap(self, window: pygame.Surface) -> None:
         """The whole tree, small, in the view's top-right corner: the paths
         between moves, a dot per skill (learned in its colour, open green,
         locked dim), the cursor, and a frame for the part in view."""
-        m, bounds = self.monster, self._bounds()
-        scale = min(MINI_MAX[0] / bounds.w, MINI_MAX[1] / bounds.h)
-        size = (max(1, round(bounds.w * scale)) + 4, max(1, round(bounds.h * scale)) + 4)
+        m = self.monster
+        rect, scale, bounds = self._minimap()
+        size = rect.size
         mini = pygame.Surface(size, pygame.SRCALPHA)
         mini.fill((*ui.SHADOW, 235))
         pygame.draw.rect(mini, DIM, mini.get_rect(), 1)
@@ -349,7 +374,7 @@ class SkillTreeScene(Scene):
         pygame.draw.rect(mini, ui.WHITE, view.clip(mini.get_rect()), 1)
         x, y = spot(*self.spots[self.cursor])  # the cursor, flashing
         pygame.draw.rect(mini, ui.YELLOW if math.sin(self.t * 6) > 0 else ui.WHITE, (x - 1, y - 1, 3, 3))
-        ui.blit_scaled(window, mini, (VIEW.right - size[0] - MINI_MARGIN, VIEW.top + MINI_MARGIN))
+        ui.blit_scaled(window, mini, rect.topleft)
 
     def _draw_info(self, window: pygame.Surface) -> None:
         m, tree, skill = self.monster, self.monster.tree, self.skill

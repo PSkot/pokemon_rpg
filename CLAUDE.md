@@ -113,8 +113,8 @@ non-commercial project.
   tables are generated: `python tools/skill_docs.py`). `Monster.create` auto-builds skills (wild Pokémon,
   starter). The skill
   tree screen (`scenes/skill_tree.py`, party screen → S: a panning node
-  map, `layout`, with a mini-map (M); arrows go to the nearest node that
-  way, Q/W switch Pokémon) spends points,
+  map, `layout`, with a mini-map (M; tap/drag on it to jump); arrows go
+  to the nearest node that way, taps pick a node, Q/W switch Pokémon) spends points,
   equips moves and resets points (towns only, `Scene.in_town`). A species
   without a tree gets Tackle (`stand_in_tree`). Battle: stat stages
   incl. accuracy (`Combatant.stages`; misses only come from lowered
@@ -231,7 +231,10 @@ non-commercial project.
   (`touch.view_rect()`; `main.py` gives scenes that subsurface as
   `window`). Buttons post the same KEYDOWN/KEYUP events as the
   keyboard; held keys are read with `touch.pressed()` (instead of
-  `pygame.key.get_pressed()`). D-pad (arrows), A = Space (jump/confirm),
+  `pygame.key.get_pressed()`). Presses (fingers, or the mouse) on the game
+  that miss the buttons become taps for the scene (`touch.taps` →
+  `Scene.tap(pos, drag)`, logical px; the skill tree uses them).
+  D-pad (arrows), A = Space (jump/confirm),
   B = X (back), Menu = Esc, Party = Tab; on maps (`Scene.touch_map`) also
   Run (a toggle); scenes add their own keys as pills
   (`Scene.touch_keys`: party screen S, skill tree E/R; pills under

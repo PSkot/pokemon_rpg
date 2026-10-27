@@ -101,6 +101,10 @@ enabled = os.environ.get("POKEMON_TOUCH") == "1"
 _mouse = enabled  # the mouse acts as a finger (desktop testing)
 _fingers: dict[int, Button | None] = {}  # finger id -> the button it's on
 _held: Counter = Counter()               # key -> fingers holding it
+# Presses on the game that hit no button, for the scene (`Scene.tap`):
+# (position in logical px, whether it's a drag after the press).
+_taps: list[tuple[tuple[float, float], bool]] = []
+_mouse_down = False  # the left button is held (mouse without touch controls)
 _toggled: set[int] = set()               # toggle buttons that are on
 
 
@@ -220,31 +224,67 @@ def _move_finger(finger: int, pos: tuple[float, float] | None, on_map: bool, ext
 
 
 def handle(event: pygame.event.Event, on_map: bool, extra: tuple[tuple[int, str], ...] = ()) -> bool:
-    """Handle a touch (or, for testing, mouse) event. True if it was one:
-    the game itself doesn't use touches or the mouse. `on_map`: show the
-    map's buttons; `extra`: the scene's own buttons (see `_buttons`)."""
+    """Handle a touch or mouse event. True if it was one: the scenes don't
+    get them, only the taps (`taps`). `on_map`: show the map's buttons;
+    `extra`: the scene's own buttons (see `_buttons`)."""
+    global _mouse_down
     if event.type in (pygame.FINGERDOWN, pygame.FINGERMOTION, pygame.FINGERUP):
         if enabled:
             w, h = window_size()
             pos = (event.x * w, event.y * h)
             if event.type == pygame.FINGERDOWN:
                 _fingers.pop(event.finger_id, None)
-            _move_finger(event.finger_id, None if event.type == pygame.FINGERUP else pos, on_map, extra)
+            _finger(event.finger_id, None if event.type == pygame.FINGERUP else pos, on_map, extra,
+                    drag=event.type == pygame.FINGERMOTION)
         return True
     if event.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP):
         if getattr(event, "touch", False):
             return True  # the mouse events a touch also makes
-        if not _mouse:
-            return False
+        if not _mouse:  # a plain mouse: only taps on the game (left button)
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                _mouse_down = True
+                _tap(event.pos, drag=False)
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                _mouse_down = False
+            elif event.type == pygame.MOUSEMOTION and _mouse_down:
+                _tap(event.pos, drag=True)
+            return True
         if event.type == pygame.MOUSEBUTTONDOWN:
             _fingers.pop(MOUSE_FINGER, None)
-            _move_finger(MOUSE_FINGER, event.pos, on_map, extra)
+            _finger(MOUSE_FINGER, event.pos, on_map, extra, drag=False)
         elif event.type == pygame.MOUSEBUTTONUP:
-            _move_finger(MOUSE_FINGER, None, on_map, extra)
+            _finger(MOUSE_FINGER, None, on_map, extra, drag=False)
         elif MOUSE_FINGER in _fingers:
-            _move_finger(MOUSE_FINGER, event.pos, on_map, extra)
+            _finger(MOUSE_FINGER, event.pos, on_map, extra, drag=True)
         return True
     return False
+
+
+def _finger(finger: int, pos: tuple[float, float] | None, on_map: bool, extra, drag: bool) -> None:
+    """A finger moved: buttons first; a press (or a drag after one) that
+    started on no button is a tap on the game."""
+    started_free = finger in _fingers and _fingers[finger] is None
+    _move_finger(finger, pos, on_map, extra)
+    if pos is None:
+        _fingers.pop(finger, None)
+    elif finger not in _fingers:
+        _fingers[finger] = None  # down on no button: followed, for dragging
+    if pos and _fingers.get(finger) is None and (started_free or not drag):
+        _tap(pos, drag)
+
+
+def _tap(pos: tuple[float, float], drag: bool) -> None:
+    view = view_rect()
+    if view.collidepoint(pos):
+        _taps.append((((pos[0] - view.x) / settings.SCALE, (pos[1] - view.y) / settings.SCALE), drag))
+
+
+def taps() -> list[tuple[tuple[float, float], bool]]:
+    """The taps on the game since the last call: (position in logical px,
+    whether it's a drag)."""
+    got = _taps[:]
+    _taps.clear()
+    return got
 
 
 class _Pressed:

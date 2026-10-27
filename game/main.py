@@ -81,6 +81,9 @@ async def main() -> None:
                 pause = PauseMenu(scene.save_point(), scene.bag)
             else:
                 scene.handle_event(event)
+        for pos, drag in touch.taps():
+            if not pause:
+                scene.tap(pos, drag)
 
         if not pause:
             scene.update(dt)
