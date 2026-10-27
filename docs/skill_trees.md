@@ -26,13 +26,18 @@ second move; each shows its name (buffs and links with their rank, e.g.
 "Potent 3/5"; equipped moves their key, F = the basic attack). Filled =
 learned, green outline = can be learned or ranked up now, grey = locked;
 learned paths light up. The view pans smoothly to follow the cursor
-(keeping the chosen skill's move in view). The header shows the points
+(keeping the chosen skill's move in view). A **mini-map** in the view's
+top-right corner shows the whole tree: the paths between moves, a dot per
+skill (learned in its colour, open green, locked dim), the cursor
+(flashing) and a frame for the part in view; **M** hides or shows it. The
+header shows the points
 left and how much of the whole tree is learned. Right: the chosen skill:
 each rank's effect, the move as it is now with everything learned, its
 requirements (green = met) and what can be done. Keys: **arrows** go to
 the nearest node that way, **Enter** spends a point, **E** equips or
 unequips a move (4 at most), **R** resets all points (in towns only,
-after asking), **Q/W** switch Pokémon (touch: the Next pill).
+after asking), **Q/W** switch Pokémon (touch: the Next pill), **M** the
+mini-map.
 
 ---
 

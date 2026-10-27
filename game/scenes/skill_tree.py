@@ -5,8 +5,10 @@ Left: the Pokémon's tree as a map of nodes, laid out left to right: each
 skill sits right of its first parent (moves as circles in their type's
 colour, buffs as diamonds, links as small orange nodes, with a line to
 their second move too). Learned paths light up. The view pans to follow
-the cursor; the arrow keys go to the nearest node that way. Right: the
-chosen skill: what it does, its ranks, requirements and what can be done.
+the cursor; the arrow keys go to the nearest node that way. A mini-map in
+the corner shows the whole tree and where the view is (M hides it).
+Right: the chosen skill: what it does, its ranks, requirements and what
+can be done.
 """
 
 import math
@@ -35,6 +37,8 @@ ROW = 19       # px between rows of leaves
 ROOT_GAP = 10  # extra px between the trees of two free moves
 MOVE_R, LINK_R, BUFF_R = 7, 4, 5  # node sizes
 PAN_SPEED = 10.0  # how fast the view catches up with the cursor (per second)
+MINI_MAX = (84, 118)  # the mini-map's largest size (it keeps the tree's shape)
+MINI_MARGIN = 4
 
 GREEN = (120, 230, 120)
 RED = (240, 110, 100)
@@ -90,6 +94,7 @@ class SkillTreeScene(Scene):
         self.asking = False  # "reset all points?"
         self.message = ""
         self.t = 0.0
+        self.show_map = True  # the mini-map (M)
         self._pick_member(member)
 
     def _pick_member(self, member: int) -> None:
@@ -125,6 +130,8 @@ class SkillTreeScene(Scene):
         if key in DIRECTIONS:
             self.cursor = self._nearest(*DIRECTIONS[key]) or self.cursor
             self.message = ""
+        elif key == pygame.K_m:
+            self.show_map = not self.show_map
         elif key in (pygame.K_q, pygame.K_w):
             self._pick_member((self.member + (1 if key == pygame.K_w else -1)) % len(self.party))
         elif key in CONFIRM_KEYS:
@@ -302,10 +309,47 @@ class SkillTreeScene(Scene):
             r = MOVE_R if skill.kind == "move" else BUFF_R
             ui.text(window, label, (x + r + 2, y - (13 if skill.kind == "move" else 11)), color, size=size)
         window.set_clip(None)
+        if self.show_map:
+            self._draw_minimap(window)
         self._draw_info(window)
         ui.text(window, f"Arrows: move   Enter: learn   E: equip   R: reset{'' if self.can_reset else ' (towns)'}"
-                        f"   Q/W: Pokémon   S: back",
+                        f"   Q/W: Pokémon   M: map   S: back",
                 (TREE_WINDOW.x + 10, TREE_WINDOW.bottom - PAD - 6), ui.GREY, size=16)
+
+    def _bounds(self) -> pygame.Rect:
+        """The map's extent in map px (with room for the last labels)."""
+        xs, ys = [p[0] for p in self.spots.values()], [p[1] for p in self.spots.values()]
+        return pygame.Rect(min(xs) - 10, min(ys) - 10, max(xs) - min(xs) + 80, max(ys) - min(ys) + 20)
+
+    def _draw_minimap(self, window: pygame.Surface) -> None:
+        """The whole tree, small, in the view's top-right corner: the paths
+        between moves, a dot per skill (learned in its colour, open green,
+        locked dim), the cursor, and a frame for the part in view."""
+        m, bounds = self.monster, self._bounds()
+        scale = min(MINI_MAX[0] / bounds.w, MINI_MAX[1] / bounds.h)
+        size = (max(1, round(bounds.w * scale)) + 4, max(1, round(bounds.h * scale)) + 4)
+        mini = pygame.Surface(size, pygame.SRCALPHA)
+        mini.fill((*ui.SHADOW, 235))
+        pygame.draw.rect(mini, DIM, mini.get_rect(), 1)
+        spot = lambda x, y: (2 + round((x - bounds.x) * scale), 2 + round((y - bounds.y) * scale))  # noqa: E731
+        for skill in m.tree.moves:  # the paths between moves
+            if skill.parents:
+                (px, py), (x, y) = spot(*self.spots[skill.parents[0]]), spot(*self.spots[skill.key])
+                color = EDGE_LIT if m.skills.get(skill.key) else UNLEARNED
+                pygame.draw.lines(mini, color, False, [(px, py), (px + 1, py), (px + 1, y), (x, y)])
+        for skill in m.tree.skills.values():
+            state = self._state(skill)
+            color = (self._color(skill) if m.skills.get(skill.key) else GREEN if state == "open" else DIM)
+            x, y = spot(*self.spots[skill.key])
+            if skill.kind == "move":
+                pygame.draw.rect(mini, color, (x - 1, y - 1, 3, 3))
+            else:
+                mini.set_at((x, y), color)
+        view = pygame.Rect(spot(*self.camera), (round(VIEW.w * scale), round(VIEW.h * scale)))
+        pygame.draw.rect(mini, ui.WHITE, view.clip(mini.get_rect()), 1)
+        x, y = spot(*self.spots[self.cursor])  # the cursor, flashing
+        pygame.draw.rect(mini, ui.YELLOW if math.sin(self.t * 6) > 0 else ui.WHITE, (x - 1, y - 1, 3, 3))
+        ui.blit_scaled(window, mini, (VIEW.right - size[0] - MINI_MARGIN, VIEW.top + MINI_MARGIN))
 
     def _draw_info(self, window: pygame.Surface) -> None:
         m, tree, skill = self.monster, self.monster.tree, self.skill
