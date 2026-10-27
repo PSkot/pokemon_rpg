@@ -21,7 +21,7 @@ from ..mechanics.items import Range
 from ..mechanics.loot import LootTable, boss_loot, chest_loot, wild_loot
 from ..mechanics.pokemon import SPECIES, Monster, animations
 from ..world import tileset
-from ..world.instance import RIVAL_STARTER, Instance
+from ..world.instance import RIVAL_STARTER, Instance, Trainer
 from ..world.level import Level, Spawn
 from ..world.player import Controls, Player
 from ..world import quests
@@ -68,6 +68,7 @@ class WildPokemon:
         # Only trigger once per touch, so returning from a battle (after
         # running away) while still touching them doesn't start another one.
         self.armed = True
+        self.trainer: Trainer | None = None  # a route trainer's team, or None (wild)
 
     def _placed(self):
         """(species, idle animation, x, feet y) per member, the back ones first."""
@@ -346,8 +347,19 @@ class OverworldScene(MapScene):
         super().__init__(game, instance.level())
         self.instance = instance
         level, palette = self.level, self.level.theme.palette
-        self.wild = [WildPokemon(s) for s in level.spawns]
         route = instance.route
+        # Trainers stand in for some of the map's wild groups (each always at
+        # the same one, beaten or not); a gym has nothing else.
+        trainers = [t for t in route.trainers if t.map == instance.index]
+        placed = dict(zip(_spread(len(level.spawns), len(trainers)), trainers))
+        for i, trainer in placed.items():
+            level.spawns[i].encounter = list(trainer.team)
+        self.wild = []
+        for i, spawn in enumerate(level.spawns):
+            trainer = placed.get(i)
+            if (trainer and trainer.key not in game.trainers) or (not trainer and route.wild):
+                self.wild.append(WildPokemon(spawn))
+                self.wild[-1].trainer = trainer
         self.trainer = route.trainer  # whose team the boss group is ("" = wild)
         if level.boss and route.boss_after and quests.is_done(game, route.boss_after[0]):
             level.boss.encounter, self.trainer = list(route.boss_after[1]), ""  # the quest's boss is beaten
@@ -357,8 +369,8 @@ class OverworldScene(MapScene):
         self.boss = WildPokemon(level.boss, boss=True, scale=instance.route.boss_scale) if level.boss else None
         if self.boss:
             self.wild.append(self.boss)
-        route = instance.route
-        self.chests = [Chest(x, y, chest_loot(route.loot), level.theme.levels) for x, y in level.chests]
+        self.chests = [Chest(x, y, chest_loot(route.loot), level.theme.levels)
+                       for x, y in level.chests] if route.wild else []
         self.entry = Doorway(level.entry_x, level.ground_y(level.entry_x), palette)
         self.exit = Doorway(level.exit_x, level.ground_y(level.exit_x), palette, sealed=bool(self.boss))
         self.fighting: tuple[WildPokemon, BattleScene] | None = None
@@ -418,6 +430,8 @@ class OverworldScene(MapScene):
     def _after_battle(self, wild: WildPokemon, battle: BattleScene) -> None:
         if battle.won:
             self.wild.remove(wild)
+            if wild.trainer:  # beaten for good
+                self.game.trainers.add(wild.trainer.key)
             if wild is self.boss:
                 self._boss_beaten()
                 self.show_event(quests.defeat(self.game, self.instance.route.key))
@@ -460,9 +474,11 @@ class OverworldScene(MapScene):
                     enemy.scale = scale
                 route, boss = self.instance.route, wild is self.boss
                 loot = wild_loot(route.boss_loot if boss else route.loot)
+                trainer, prize = (self.trainer, route.prize) if boss else (
+                    (wild.trainer.name, wild.trainer.prize) if wild.trainer else ("", 0))
                 battle = BattleScene(self, self.party, enemies, self.bag, loot=loot,
-                                     backdrop=self.level.theme.backdrop, boss=boss,
-                                     trainer=self.trainer if boss else "",
+                                     backdrop=self.level.theme.backdrop, boss=boss, trainer=trainer,
+                                     prize=prize_money(prize, wild.encounter) if trainer else 0,
                                      bonus=boss_loot(route.boss_loot) if boss and not route.boss_chest else None,
                                      on_win=lambda key=route.key, defeated=[s for s, _ in wild.encounter]:
                                          quests.won_battle(self.game, key, defeated))
@@ -480,10 +496,14 @@ class OverworldScene(MapScene):
 
     def draw_overlay(self, window: pygame.Surface) -> None:
         super().draw_overlay(window)
-        if self.trainer and self.boss in self.wild and not self.panel:  # who the boss is
-            box = self.boss.body_rect
-            ui.text(window, self.trainer, (box.centerx - self.camera, box.top - 14), ui.YELLOW, size=24,
-                    align="center")
+        if self.panel:
+            return
+        for wild in self.wild:  # whose team it is, over trainers' groups
+            name = self.trainer if wild is self.boss else wild.trainer.name if wild.trainer else ""
+            if name:
+                box = wild.body_rect
+                ui.text(window, name, (box.centerx - self.camera, box.top - 14), ui.YELLOW, size=24,
+                        align="center")
 
     # ----------------------------------------------------------------- saves
 
@@ -518,6 +538,23 @@ class OverworldScene(MapScene):
         self._follow()
         for wild in self.wild:  # don't start a battle just by loading next to a group
             wild.armed = not p.body_rect.colliderect(wild.body_rect)
+
+
+def _spread(spawns: int, n: int) -> list[int]:
+    """`n` of a map's spawn indices, spread out evenly (for trainers)."""
+    spots = []
+    for k in range(n):
+        i = min(spawns - 1, max(0, round((k + 1) * spawns / (n + 1)) - 1))
+        while i in spots and i < spawns - 1:
+            i += 1
+        spots.append(i)
+    return spots
+
+
+def prize_money(base: int, team) -> int:
+    """A trainer's prize: its base × its last Pokémon's level (Gen 1's rule),
+    halved like the shop's prices."""
+    return base * team[-1][1] // 2
 
 
 def town_scene(game: Game, town, arrive: str) -> MapScene:

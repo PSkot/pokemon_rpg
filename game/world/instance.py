@@ -4,6 +4,10 @@ A route between two towns (Route 1, ...) is an instance: each trip along it
 has its own seed, so it's new every time, and its last doorway leads into
 the town at the other end. An instance with a boss ends in an arena where a
 boss group guards the way out.
+
+Routes can have trainers (`Route.trainers`): each stands in for one of a
+map's wild groups, fights once for good (`Game.trainers`) and pays prize
+money. A gym is a route walked from its building, with only trainers.
 """
 
 import random
@@ -11,11 +15,22 @@ from dataclasses import dataclass, field
 
 from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, Rarities
 from .level import Level, generate
-from .themes import FOREST, MEADOW, ROUTE_22, Theme
+from .themes import FOREST, MEADOW, PEWTER_GYM, ROUTE_3, ROUTE_22, Theme
 
 # Stands in a boss group for the rival's starter, which depends on the
 # player's (`progress.Game.rival_starter`).
 RIVAL_STARTER = "rival_starter"
+
+
+@dataclass(frozen=True)
+class Trainer:
+    """A trainer on one of a route's maps: beaten once for good. Prize
+    money is `prize` × the level of its last Pokémon (Gen 1's rule)."""
+    key: str     # unique in the game (saved in Game.trainers once beaten)
+    name: str    # shown over the team on the map: "Bug Catcher"
+    team: tuple[tuple[str, int], ...]  # (species, level), shown in a row on the map
+    map: int     # which of the route's maps it's on
+    prize: int   # Gen 1's base prize for its class (Youngster 15, Bug Catcher 10, ...)
 
 
 @dataclass(frozen=True)
@@ -39,6 +54,10 @@ class Route:
     blocked: str = ""
     # Once this quest is done, the boss is this group instead (no trainer).
     boss_after: tuple[str, tuple[tuple[str, int], ...]] | None = None
+    prize: int = 0                      # a boss trainer's base prize (as Trainer.prize)
+    trainers: tuple[Trainer, ...] = ()  # trainers on its maps
+    wild: bool = True                   # wild Pokémon and chests (a gym: only its trainers)
+    building: str = ""                  # walked from this building in its town (a gym), not a doorway
 
     def other_end(self, town: str) -> str:
         return self.towns[1] if town == self.towns[0] else self.towns[0]
@@ -54,7 +73,28 @@ ROUTES = {r.key: r for r in [
     Route("route_22", "Route 22", ROUTE_22, maps=2, towns=("viridian", "viridian"), boss=True,
           boss_group=(("pidgey", 9), (RIVAL_STARTER, 8)), trainer="Rival", boss_chest=False,
           needs=("rival_22", "started"), blocked="A guard says there's nothing to see on Route 22 for now.",
-          boss_after=("rival_22", (("pidgey", 9), ("spearow", 9)))),
+          boss_after=("rival_22", (("pidgey", 9), ("spearow", 9))), prize=35),
+    # The Pewter Gym, from its building: a Jr. Trainer, then Brock (Gen 1's teams).
+    Route("pewter_gym", "Pewter Gym", PEWTER_GYM, maps=1, towns=("pewter", "pewter"), boss=True,
+          boss_group=(("geodude", 12), ("onix", 14)), trainer="Brock", boss_chest=False, prize=99,
+          trainers=(Trainer("pewter_gym_jr", "Jr. Trainer", (("diglett", 11), ("sandshrew", 11)), 0, 20),),
+          wild=False, building="Pewter Gym",
+          needs=("boulder_badge", "not_done"),
+          blocked="Brock: You already have the Boulder Badge. The road east, Route 3, is open to you!"),
+    # Route 3, from Pewter to the foot of Mt. Moon: Gen 1's trainer road.
+    Route("route_3", "Route 3", ROUTE_3, maps=3, towns=("pewter", "mt_moon"),
+          needs=("boulder_badge", "done"),
+          blocked="A boy blocks the way: \"You're a trainer? Brock's looking for challengers! Beat him first!\"",
+          trainers=(
+              Trainer("route_3_youngster_1", "Youngster", (("rattata", 11), ("ekans", 11)), 0, 15),
+              Trainer("route_3_bug_catcher_1", "Bug Catcher", (("caterpie", 10), ("weedle", 10), ("caterpie", 10)),
+                      0, 10),
+              Trainer("route_3_lass_1", "Lass", (("pidgey", 9), ("pidgey", 9)), 1, 15),
+              Trainer("route_3_bug_catcher_2", "Bug Catcher", (("weedle", 9), ("kakuna", 9), ("caterpie", 9),
+                                                               ("metapod", 9)), 1, 10),
+              Trainer("route_3_youngster_2", "Youngster", (("spearow", 14),), 2, 15),
+              Trainer("route_3_lass_2", "Lass", (("jigglypuff", 14),), 2, 15),
+          )),
 ]}
 
 

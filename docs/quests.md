@@ -3,8 +3,7 @@
 How quests work, and every quest in the game. Keep this file in step with
 the code (`game/world/quests.py`, screens in `game/scenes/quest_ui.py`).
 
-**Built:** everything below except the Boulder Badge quest (comes with the
-gym battles), and the "catch" / "bring an item" steps.
+**Built:** everything below except the "catch" / "bring an item" steps.
 
 Quests carry the story (following Red/Blue) and gate progress: some
 routes only open once a quest has started or is done, and some areas
@@ -16,7 +15,10 @@ XP (`WILD_XP`, see `mechanics.md`); trainer battles give ×1.5, so they
 stay worth fighting. Budget up to Pewter City: the quests before it pay
 1,800 XP in all, a full run of each route there about 1,500 in battle XP,
 so a player who does both arrives around Lv14–15 (Brock's Onix is Lv14
-in Gen 1).
+in Gen 1). From Pewter to Mt. Moon: the quests pay 1,350 XP (Brock 400,
+Road to Mt. Moon 300, Route 3 jobs 650), Brock and his Jr. Trainer about
+950 in battle XP and Route 3's six trainers about 1,200, so a party
+arrives around Lv18–19.
 
 ---
 
@@ -134,7 +136,7 @@ they can't be sold, used or dropped.
 ### Board jobs
 
 Each town's board posts a few hunt and collect jobs for the route out of
-town (Pewter's for Viridian Forest, until Route 3 exists). All end with
+town (Pewter's for Viridian Forest, and for Route 3 once the badge is won). All end with
 handing them in at any board.
 
 | Board | Quest | Needs | Steps | Drop chance | Rewards |
@@ -146,15 +148,32 @@ handing them in at any board.
 | Viridian | Bug Silk | Oak's Parcel | Collect 5 Silk Threads (Caterpie, Metapod; Viridian Forest) | 40% | ₽600, 250 XP |
 | Pewter | Poison Barbs | – | Collect 6 Poison Barbs (Weedle, Kakuna; Viridian Forest) | 35% | ₽700, 500 XP |
 | Pewter | Sparks in the Forest | – | Defeat 3 Pikachu (Viridian Forest) | – | ₽800, 600 XP |
+| Pewter | Snake Charmer | Boulder Badge | Defeat 5 Ekans (Route 3) | – | ₽500, 300 XP |
+| Pewter | Soft as Fluff | Boulder Badge | Collect 5 Jigglypuff Fluff (Jigglypuff, Route 3) | 40% | ₽600, 350 XP |
 
 Each takes about one or two runs of its route. They can't be repeated
 yet.
 
-### 3. The Boulder Badge (next)
+### 3. The Boulder Badge
 
-- **Starts:** automatically on first arriving in Pewter City.
-- **Steps:** beat Brock at the Pewter Gym (the gym battles come next).
-- **Rewards:** a major quest: money, XP and items.
+- **Starts:** automatically on first arriving in Pewter City
+  (`Quest.starts_in`).
+- **Steps:** defeat **Brock** at the end of the Pewter Gym (Up at the gym
+  building; a Jr. Trainer stands midway). Brock: "I took you for granted.
+  As proof of your victory, here's the Boulder Badge!" (key item).
+- **Rewards:** ₽500, 400 XP, 3 Super Potions and a **Rare** gear piece
+  (item level 14), on top of Brock's prize money (₽693) and reward roll.
+- **Unlocks:** **Route 3** (its doorway on Pewter's east edge: "Beat
+  Brock first!"), quest 4 and Pewter's Route 3 jobs. The gym shuts once
+  the badge is won.
+
+### 4. Road to Mt. Moon
+
+- **Starts:** automatically when the Boulder Badge is won.
+- **Steps:** reach **Mt. Moon** (the Pokémon Center at its foot) by Route
+  3. Six trainers line the road (see `mechanics.md`, *Trainer battles*).
+- **Rewards:** ₽400, 300 XP.
+- **Unlocks:** nothing yet: Mt. Moon itself comes next.
 
 ---
 

@@ -620,4 +620,135 @@ Stages: Lapras. Whole tree: 116 points.
 | Lullaby | Water Gun → Sing | 18 | Lapras | 10% / 20% |
 | Haunting Song | Sing → Confuse Ray | 33 | Lapras | 25% / 50% |
 
+---
+
+## The Geodude line
+
+Stages: Geodude → Graveler (Lv25, not in the game yet) → Golem (by stone, not in the game yet). Whole tree: 127 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Tackle | free | – | Geodude | Normal, 35 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Defense Curl | free | – | Geodude | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
+| Rock Throw | 11 | Tackle | Geodude | Rock, 50 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Harden | 21 | Defense Curl | Geodude | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
+| Rock Slide | 24 | Rock Throw | Geodude | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Earthquake | 26 | Rock Throw | Geodude | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (16) |
+| Body Slam | 30 | Tackle | Graveler | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Dig | 34 | Earthquake | Graveler | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Sweeping, Instant, Swift (17) |
+
+| Link | Sets off | Lv | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Rolling Stone | Tackle → Rock Throw | 13 | Geodude | 15% / 30% |
+| Avalanche | Rock Slide → Earthquake | 28 | Graveler | 10% / 20% |
+
+---
+
+## The Onix line
+
+Stages: Onix. Whole tree: 127 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Tackle | free | – | Onix | Normal, 35 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Screech | free | – | Onix | Lowers an enemy's Defense 2 stages. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
+| Bind | 14 | Tackle | Onix | Normal, 15 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Rock Throw | 19 | Tackle | Onix | Rock, 50 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Rock Slide | 28 | Rock Throw | Onix | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Slam | 33 | Bind | Onix | Normal, 80 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Earthquake | 38 | Rock Throw | Onix | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (16) |
+| Harden | 43 | Screech | Onix | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
+
+| Link | Sets off | Lv | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Crushing Coils | Bind → Screech | 16 | Onix | 25% / 50% |
+| Rumbling Rocks | Rock Slide → Screech | 30 | Onix | 15% / 30% |
+
+---
+
+## The Diglett line
+
+Stages: Diglett → Dugtrio (Lv26, not in the game yet). Whole tree: 110 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Scratch | free | – | Diglett | Normal, 40 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Growl | 15 | Scratch | Diglett | Lowers an enemy's Attack 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
+| Dig | 19 | Scratch | Diglett | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Sweeping, Instant, Swift (17) |
+| Sand-Attack | 24 | Growl | Diglett | Lowers an enemy's accuracy 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
+| Slash | 31 | Scratch | Diglett | Normal, 70 power. High critical-hit ratio. | Potent, Staggering, Wounding, Sweeping, Twin (13) |
+| Rock Slide | 35 | Dig | Diglett | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Earthquake | 40 | Dig | Diglett | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (16) |
+
+| Link | Sets off | Lv | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Dust Cloud | Dig → Sand-Attack | 21 | Diglett | 20% / 40% |
+| Tunneling Claws | Scratch → Dig | 26 | Diglett | 5% / 10% |
+
+---
+
+## The Sandshrew line
+
+Stages: Sandshrew → Sandslash (Lv22, not in the game yet). Whole tree: 149 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Scratch | free | – | Sandshrew | Normal, 40 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Sand-Attack | 10 | Scratch | Sandshrew | Lowers an enemy's accuracy 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
+| Slash | 17 | Scratch | Sandshrew | Normal, 70 power. High critical-hit ratio. | Potent, Staggering, Wounding, Sweeping, Twin (13) |
+| Poison Sting | 24 | Scratch | Sandshrew | Poison, 15 power. 30% chance to poison. | Potent, Venomous, Wounding, Keen, Sweeping, Twin (16) |
+| Dig | 28 | Sand-Attack | Sandshrew | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Sweeping, Instant, Swift (17) |
+| Swift | 31 | Slash | Sandshrew | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Fury Swipes | 38 | Slash | Sandshrew | Normal, 18 power, hits 2-5 times. | Potent, Staggering, Wounding, Keen, Sweeping, Relentless (16) |
+| Rock Slide | 40 | Dig | Sandshrew | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Earthquake | 45 | Dig | Sandslash | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (16) |
+
+| Link | Sets off | Lv | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Sandstorm | Slash → Sand-Attack | 19 | Sandshrew | 20% / 40% |
+| Barbed Claws | Fury Swipes → Poison Sting | 40 | Sandshrew | 15% / 30% |
+
+---
+
+## The Ekans line
+
+Stages: Ekans → Arbok (Lv22, not in the game yet). Whole tree: 122 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Wrap | free | – | Ekans | Normal, 15 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Leer | free | – | Ekans | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
+| Poison Sting | 10 | Wrap | Ekans | Poison, 15 power. 30% chance to poison. | Potent, Venomous, Wounding, Keen, Sweeping, Twin (16) |
+| Bite | 17 | Wrap | Ekans | Normal, 60 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Glare | 24 | Leer | Ekans | Paralyzes an enemy (75% chance). | Sure, Wide, Lingering, Numbing, Quick (9) |
+| Screech | 31 | Glare | Ekans | Lowers an enemy's Defense 2 stages. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
+| Dig | 33 | Bite | Arbok | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Sweeping, Instant, Swift (17) |
+| Acid | 38 | Poison Sting | Ekans | Poison, 40 power. 33% chance to lower its Defense. | Potent, Venomous, Wounding, Keen, Sweeping, Twin (16) |
+
+| Link | Sets off | Lv | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Venom Coils | Wrap → Poison Sting | 12 | Ekans | 15% / 30% |
+| Paralyzing Gaze | Bite → Glare | 26 | Ekans | 15% / 30% |
+
+---
+
+## The Jigglypuff line
+
+Stages: Jigglypuff. Whole tree: 98 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Pound | free | – | Jigglypuff | Normal, 40 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Sing | free | – | Jigglypuff | Puts an enemy to sleep (55% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
+| Defense Curl | 14 | Sing | Jigglypuff | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
+| Double Slap | 24 | Pound | Jigglypuff | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Wounding, Keen, Sweeping, Relentless (16) |
+| Rest | 29 | Defense Curl | Jigglypuff | The user heals fully, is cured, and sleeps for 2 rounds. | Renewing, Quick (4) |
+| Body Slam | 34 | Double Slap | Jigglypuff | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Double-Edge | 39 | Body Slam | Jigglypuff | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (18) |
+
+| Link | Sets off | Lv | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Lullaby Slaps | Double Slap → Sing | 26 | Jigglypuff | 10% / 20% |
+| Heavy Sleeper | Body Slam → Sing | 36 | Jigglypuff | 10% / 20% |
+
 <!-- trees:end -->

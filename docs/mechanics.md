@@ -503,6 +503,8 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 1 | Common | (no boss) |
 | Viridian Forest | Common | Common 60%, Uncommon 40% |
 | Route 22 | Common | Common 60%, Uncommon 40% (the rival: a reward roll with the battle, no chest) |
+| Pewter Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (Brock: a reward roll with the battle, no chest) |
+| Route 3 | Common | (no boss) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -513,8 +515,9 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 
 - **Poké Dollars (₽)** are kept in the bag (`Bag.money`, saved) and shown
   in the pause menu and on the party screen. A new game starts with ₽0.
-- **Earned from quests** for now: every quest pays its `Quest.money` (see
-  `quests.md`), and from selling medicine.
+- **Earned from quests** (every quest pays its `Quest.money`, see
+  `quests.md`), **trainer battles** (prize money, see *Trainer battles*)
+  and selling medicine.
 - **Spent at Poké Marts** (`game/scenes/mart.py`): medicine only for now
   (gear comes later). Prices are `Medicine.price`, **half of Gen 1's**
   (money only comes from quests so far); selling pays half the price
@@ -606,6 +609,24 @@ the reward roll stays). His starter beats the player's
 Instead of a chest, winning rolls the boss loot table once (at Lv9) on top
 of the usual drops.
 
+Route 3 (3 maps, Pewter City → Mt. Moon; opens once the Boulder Badge is
+won; Sandshrew from Blue, Ekans from Red; no boss, but six trainers, see
+below):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Spearow | 35 | 6–8 |
+| Sandshrew | 25 | 6–8 |
+| Jigglypuff | 20 | 3–7 |
+| Ekans | 20 | 6–8 |
+
+**The Pewter Gym** (`Route` "pewter_gym", walked from the gym building;
+1 map in a rock hall drawn in code, no wild Pokémon, no chests): a **Jr.
+Trainer** (Diglett Lv11, Sandshrew Lv11) midway, and **Brock** (Geodude
+Lv12, Onix Lv14, Gen 1's team) guarding the way out; beating him finishes
+the Boulder Badge quest. Once it's done the gym stays shut ("You already
+have the Boulder Badge").
+
 Wild Pokémon have no gear. Their skills are filled in for their level
 (see `skill_trees.md`), and each turn they pick at random between their
 basic attack and their equipped moves, at a random target.
@@ -614,11 +635,32 @@ basic attack and their equipped moves, at a random target.
 
 `game/scenes/battle.py` (`BattleScene.trainer`)
 
-A route's boss group can be a trainer's team (`Route.trainer`):
+A route's boss group can be a trainer's team (`Route.trainer`), and
+routes can have **trainers on their maps** (`Route.trainers`, `Trainer`):
+each stands where one of the map's wild groups would (spread out evenly,
+always the same spot), with its team in a row.
 - the battle opens with "<trainer> wants to battle!" and **can't be run
   from**;
 - its Pokémon give **×1.5 XP** (as in Gen 1; wild ones ×0.5);
-- the trainer's name shows above the team on the map.
+- the trainer's name shows above the team on the map;
+- **prize money:** the trainer's base prize (by class, Gen 1's) × the
+  level of its last Pokémon, **halved** like the shop's prices
+  (`overworld.prize_money`): Bug Catcher 10, Youngster 15, Lass 15, Jr.
+  Trainer 20, the rival 35, Brock 99 (Lv14 Onix → ₽693);
+- map trainers fight **once**: beaten ones are saved (`Game.trainers`) and
+  don't come back on later trips.
+
+| Where | Trainer | Team | Prize |
+| --- | --- | --- | --- |
+| Pewter Gym | Jr. Trainer | Diglett 11, Sandshrew 11 | ₽110 |
+| Pewter Gym (boss) | Brock | Geodude 12, Onix 14 | ₽693 |
+| Route 3, map 1 | Youngster | Rattata 11, Ekans 11 | ₽82 |
+| Route 3, map 1 | Bug Catcher | Caterpie 10, Weedle 10, Caterpie 10 | ₽50 |
+| Route 3, map 2 | Lass | Pidgey 9, Pidgey 9 | ₽67 |
+| Route 3, map 2 | Bug Catcher | Weedle 9, Kakuna 9, Caterpie 9, Metapod 9 | ₽45 |
+| Route 3, map 3 | Youngster | Spearow 14 | ₽105 |
+| Route 3, map 3 | Lass | Jigglypuff 14 | ₽105 |
+| Route 22 (boss) | the rival | Pidgey 9, starter 8 | ₽140 |
 
 ---
 

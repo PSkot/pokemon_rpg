@@ -130,8 +130,18 @@ def _icicle(s, x, y, rng, p):
     pygame.draw.line(s, (235, 250, 255), (x - 1, y), (x, y + h - 2))
 
 
+def _stalactite(s, x, y, rng, p):
+    """A rock spike hanging from a ceiling whose underside is at `y`."""
+    h = rng.randint(4, 9)
+    pygame.draw.polygon(s, p.fill_dark, [(x - 3, y), (x + 3, y), (x, y + h)])
+    pygame.draw.line(s, p.fill_light, (x - 1, y), (x, y + h - 2))
+
+
+CEILING_DECOR = {"ice_cave": _icicle, "pewter_gym": _stalactite}  # theme -> what hangs from a cave's ceiling
+
 DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the meadow's come from its tileset)
     "ice_cave": [(0.07, _crystal), (0.10, _snow_mound), (0.05, _rock)],
+    "pewter_gym": [(0.12, _rock)],
 }
 
 
@@ -265,8 +275,8 @@ def render(level: Level) -> pygame.Surface:
                             break
                 if below != SOLID and row + 1 < ROWS:  # a ceiling's underside
                     _underside(surface, rect, p)
-                    if theme.ceiling and rng.random() < 0.4:
-                        decor.append((_icicle, rect.left + rng.randint(3, 13), rect.bottom, rng))
+                    if theme.ceiling and theme.key in CEILING_DECOR and rng.random() < 0.4:
+                        decor.append((CEILING_DECOR[theme.key], rect.left + rng.randint(3, 13), rect.bottom, rng))
                 # Darken the sides of steps, so height changes read clearly.
                 for dx, edge in ((-1, rect.left), (1, rect.right - 1)):
                     if level.tile(col + dx, row) == EMPTY:
@@ -440,19 +450,21 @@ def backgrounds(level: Level) -> list[tuple[pygame.Surface, float]]:
     far_w, near_w = _layer_width(level, FAR), _layer_width(level, NEAR)
     far = pygame.Surface((far_w, h))
     near = pygame.Surface((near_w, h), pygame.SRCALPHA)
-    _gradient(far, (16, 22, 42), (40, 56, 92))
+    look = level.theme.cave
+    _gradient(far, look.sky_top, look.sky_bottom)
     for x in range(0, far_w, 24):  # the cave's back wall: hanging and standing rock
         w = rng.randint(14, 30)
-        pygame.draw.polygon(far, (30, 42, 72), [(x, 0), (x + w, 0), (x + w // 2, rng.randint(30, 90))])
-        pygame.draw.polygon(far, (30, 42, 72), [(x, h), (x + w, h), (x + w // 2, h - rng.randint(60, 160))])
-    for _ in range(far_w // 40):  # faint glowing crystals
-        x, y = rng.randrange(far_w), rng.randint(100, 280)
-        pygame.draw.circle(far, (60, 100, 150), (x, y), 3)
-        far.set_at((x, y), (150, 220, 255))
+        pygame.draw.polygon(far, look.far_rock, [(x, 0), (x + w, 0), (x + w // 2, rng.randint(30, 90))])
+        pygame.draw.polygon(far, look.far_rock, [(x, h), (x + w, h), (x + w // 2, h - rng.randint(60, 160))])
+    if look.glow:
+        for _ in range(far_w // 40):  # faint glowing crystals
+            x, y = rng.randrange(far_w), rng.randint(100, 280)
+            pygame.draw.circle(far, look.glow[0], (x, y), 3)
+            far.set_at((x, y), look.glow[1])
     for x in range(0, near_w, 40):
         w = rng.randint(24, 44)
-        pygame.draw.polygon(near, (44, 60, 98), [(x, h), (x + w, h), (x + w // 2, h - rng.randint(90, 190))])
-        pygame.draw.polygon(near, (44, 60, 98), [(x, 0), (x + w, 0), (x + w // 2, rng.randint(40, 110))])
+        pygame.draw.polygon(near, look.near_rock, [(x, h), (x + w, h), (x + w // 2, h - rng.randint(90, 190))])
+        pygame.draw.polygon(near, look.near_rock, [(x, 0), (x + w, 0), (x + w // 2, rng.randint(40, 110))])
     return [(far, FAR), (near, NEAR)]
 
 

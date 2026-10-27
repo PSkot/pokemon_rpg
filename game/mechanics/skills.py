@@ -748,6 +748,83 @@ TREES = {t.species[0]: t for t in [
         Link("Lullaby", "Water Gun", "Sing", 18, (10, 20)),
         Link("Haunting Song", "Sing", "Confuse Ray", 33, (25, 50)),
     ),
+    _tree(
+        ("geodude", "graveler", "golem"),  # Golem evolves by trade (not in yet)
+        _base("Tackle"),
+        _base("Defense Curl"),
+        _move("Rock Throw", 11, "tackle"),
+        _move("Harden", 21, "defense_curl"),
+        _move("Rock Slide", 24, "rock_throw"),  # TM48
+        _move("Earthquake", 26, "rock_throw"),
+        _move("Body Slam", 30, "tackle", stage=1),  # TM08
+        _move("Dig", 34, "earthquake", stage=1),  # TM28
+        Link("Rolling Stone", "Tackle", "Rock Throw", 13, (15, 30)),
+        Link("Avalanche", "Rock Slide", "Earthquake", 28, (10, 20), stage=1),
+    ),
+    _tree(
+        ("onix",),  # Steelix comes later
+        _base("Tackle"),
+        _base("Screech"),
+        _move("Bind", 14, "tackle"),  # (Gen 1: 15; Brock's Lv14 Onix knows it)
+        _move("Rock Throw", 19, "tackle"),
+        _move("Rock Slide", 28, "rock_throw"),  # TM48
+        _move("Slam", 33, "bind"),
+        _move("Earthquake", 38, "rock_throw"),  # TM26
+        _move("Harden", 43, "screech"),
+        Link("Crushing Coils", "Bind", "Screech", 16, (25, 50)),
+        Link("Rumbling Rocks", "Rock Slide", "Screech", 30, (15, 30)),
+    ),
+    _tree(
+        ("diglett", "dugtrio"),
+        _base("Scratch"),
+        _move("Growl", 15, "scratch"),
+        _move("Dig", 19, "scratch"),
+        _move("Sand-Attack", 24, "growl"),
+        _move("Slash", 31, "scratch"),
+        _move("Rock Slide", 35, "dig"),  # TM48
+        _move("Earthquake", 40, "dig"),
+        Link("Dust Cloud", "Dig", "Sand-Attack", 21, (20, 40)),
+        Link("Tunneling Claws", "Scratch", "Dig", 26, (5, 10)),
+    ),
+    _tree(
+        ("sandshrew", "sandslash"),
+        _base("Scratch"),
+        _move("Sand-Attack", 10, "scratch"),
+        _move("Slash", 17, "scratch"),
+        _move("Poison Sting", 24, "scratch"),
+        _move("Dig", 28, "sand_attack"),  # TM28
+        _move("Swift", 31, "slash"),
+        _move("Fury Swipes", 38, "slash"),
+        _move("Rock Slide", 40, "dig"),  # TM48
+        _move("Earthquake", 45, "dig", stage=1),  # TM26
+        Link("Sandstorm", "Slash", "Sand-Attack", 19, (20, 40)),
+        Link("Barbed Claws", "Fury Swipes", "Poison Sting", 40, (15, 30)),
+    ),
+    _tree(
+        ("ekans", "arbok"),
+        _base("Wrap"),
+        _base("Leer"),
+        _move("Poison Sting", 10, "wrap"),
+        _move("Bite", 17, "wrap"),
+        _move("Glare", 24, "leer"),
+        _move("Screech", 31, "glare"),
+        _move("Dig", 33, "bite", stage=1),  # TM28
+        _move("Acid", 38, "poison_sting"),
+        Link("Venom Coils", "Wrap", "Poison Sting", 12, (15, 30)),
+        Link("Paralyzing Gaze", "Bite", "Glare", 26, (15, 30)),
+    ),
+    _tree(
+        ("jigglypuff",),  # Wigglytuff evolves by stone (not in yet)
+        _base("Pound"),
+        _base("Sing"),
+        _move("Defense Curl", 14, "sing"),
+        _move("Double Slap", 24, "pound"),
+        _move("Rest", 29, "defense_curl"),
+        _move("Body Slam", 34, "double_slap"),
+        _move("Double-Edge", 39, "body_slam"),
+        Link("Lullaby Slaps", "Double Slap", "Sing", 26, (10, 20)),
+        Link("Heavy Sleeper", "Body Slam", "Sing", 36, (10, 20)),
+    ),
 ]}
 
 

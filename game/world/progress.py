@@ -22,6 +22,7 @@ class Game:
     starter: str = "bulbasaur"  # the player's first Pokémon (species key)
     quests: dict[str, int] = field(default_factory=dict)  # quest key -> the step it's at (see quests.py)
     quest_counts: dict[str, int] = field(default_factory=dict)  # quest key -> its counted step's count so far
+    trainers: set[str] = field(default_factory=set)  # the route trainers beaten (instance.Trainer.key)
 
     @property
     def rival_starter(self) -> str:

@@ -75,6 +75,7 @@ class Quest:
     xp: int     # ... and XP for each party member
     board: str = ""                  # the town whose quest board posts it ("" = starts by itself)
     requires: tuple[str, ...] = ()   # quests that must be done first
+    starts_in: str = ""              # a quest that starts by itself: only on arriving in this town
     # Items given too: ("medicine", name, count) or ("gear", item, rarity, level).
     rewards: tuple[tuple, ...] = ()
     done_dialogue: tuple[Line, ...] = ()  # shown when it's done (after the last step's)
@@ -175,6 +176,42 @@ QUESTS = {q.key: q for q in [
         steps=(hunt("pikachu", 3, "Viridian Forest"), HAND_IN),
         money=800, xp=600,
     ),
+
+    # Pewter City: the first gym, and the road on.
+    Quest(
+        "boulder_badge", "The Boulder Badge",
+        "Pewter City's Gym Leader, Brock, trains Rock-type Pokémon. Beat him for the Boulder Badge and the "
+        "road east opens.",
+        starts_in="pewter",
+        steps=(Step("defeat", "pewter_gym", "Defeat Brock at the Pewter Gym",
+                    dialogue=(("Brock", "I took you for granted. As proof of your victory, here's the Boulder Badge!"),
+                              ("", "You received the Boulder Badge!"),
+                              ("Brock", "The road east, Route 3, is open to you. Mt. Moon lies beyond it.")),
+                    gives=("Boulder Badge",)),),
+        money=500, xp=400,
+        rewards=(("medicine", "Super Potion", 3), ("gear", None, "Rare", 14)),
+    ),
+    Quest(
+        "to_mt_moon", "Road to Mt. Moon",
+        "Route 3 runs east from Pewter City to the foot of Mt. Moon. Trainers line the road.",
+        requires=("boulder_badge",),
+        steps=(Step("reach", "mt_moon", "Reach Mt. Moon by Route 3 (east of Pewter City)"),),
+        money=400, xp=300,
+    ),
+    Quest(
+        "snake_charmer", "Snake Charmer",
+        "Ekans on Route 3 keep frightening travelers. Drive a few of them off.",
+        board="pewter", requires=("boulder_badge",),
+        steps=(hunt("ekans", 5, "Route 3"), HAND_IN),
+        money=500, xp=300,
+    ),
+    Quest(
+        "puff_fluff", "Soft as Fluff",
+        "A Pewter tailor wants the soft fluff Jigglypuff shed on Route 3.",
+        board="pewter", requires=("boulder_badge",),
+        steps=(collect("Jigglypuff Fluff", 5, "route_3", ("jigglypuff",), 40, "Jigglypuff on Route 3"), HAND_IN),
+        money=600, xp=350,
+    ),
 ]}
 
 
@@ -256,7 +293,7 @@ def defeat(game, route: str) -> Event:
 def reach(game, town: str) -> Event:
     """The player arrived in `town` (also starts quests that start by themselves)."""
     event = _advance_where(game, lambda s: s.kind == "reach" and s.target == town)
-    _start_automatic(game, event)
+    _start_automatic(game, event, town)
     return event
 
 
@@ -304,10 +341,13 @@ def step_text(game, quest: Quest, i: int) -> str:
 
 
 def open_for(game, needs: tuple[str, str] | None) -> bool:
-    """Whether a (quest, "started"/"done") condition holds (None: always)."""
+    """Whether a (quest, "started"/"done"/"not_done") condition holds
+    (None: always)."""
     if not needs:
         return True
     key, what = needs
+    if what == "not_done":
+        return not is_done(game, key)
     return is_done(game, key) if what == "done" else step(game, key) is not None
 
 
@@ -382,7 +422,9 @@ def _reward(spec: tuple) -> Reward:
     return Reward(gear=Gear.roll(item, spec[2], level=spec[3]))
 
 
-def _start_automatic(game, event: Event) -> None:
+def _start_automatic(game, event: Event, town: str = "") -> None:
+    """Start the quests without a board that are ready (those that start in
+    a town only when arriving in `town`)."""
     for quest in QUESTS.values():
-        if not quest.board and ready(game, quest):
+        if not quest.board and ready(game, quest) and quest.starts_in in ("", town):
             _start(game, quest.key, event)

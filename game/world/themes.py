@@ -45,6 +45,16 @@ class Palette:
 
 
 @dataclass(frozen=True)
+class CaveLook:
+    """The colours of a code-drawn cave's background (tileset.backgrounds)."""
+    sky_top: Color = (16, 22, 42)       # the far wall's gradient
+    sky_bottom: Color = (40, 56, 92)
+    far_rock: Color = (30, 42, 72)      # hanging and standing rock on the far wall
+    near_rock: Color = (44, 60, 98)
+    glow: tuple[Color, Color] | None = ((60, 100, 150), (150, 220, 255))  # faint crystals (None: none)
+
+
+@dataclass(frozen=True)
 class Theme:
     key: str
     name: str
@@ -54,6 +64,7 @@ class Theme:
     group_sizes: tuple[tuple[int, int], ...] = ((1, 60), (2, 30), (3, 10))  # (size, weight)
     ceiling: bool = False               # caves have a rocky ceiling
     art: str = "woods"                  # map art (tileset.py): "woods" (Pixellab) or "cave" (drawn in code)
+    cave: CaveLook = CaveLook()         # a cave's background colours
 
     @property
     def levels(self) -> Range:
@@ -132,4 +143,37 @@ ROUTE_22 = Theme(
     backdrop=MEADOW_BACKDROP,
 )
 
-THEMES = {t.key: t for t in (MEADOW, ROUTE_22, FOREST, ICE_CAVE)}
+# Route 3, east of Pewter: its Red/Blue Pokémon (Sandshrew from Blue, Ekans
+# from Red), at their Gen 1 levels.
+ROUTE_3 = Theme(
+    "route_3", "Route 3",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("spearow", 35, (6, 8)),
+        PoolEntry("jigglypuff", 20, (3, 7)),
+        PoolEntry("sandshrew", 25, (6, 8)),
+        PoolEntry("ekans", 20, (6, 8)),
+    ),
+    backdrop=Backdrop(field_far=(176, 176, 96), field_near=(150, 150, 76), stripe=(162, 162, 86),
+                      shadow=(100, 100, 50)),  # a dry, sandy field
+)
+
+# The Pewter Gym: an indoor rock hall (drawn in code). Its pool is never
+# met: gyms have only their trainers (`Route.wild`).
+PEWTER_GYM = Theme(
+    "pewter_gym", "Pewter Gym",
+    Palette(fill=(112, 92, 72), fill_dark=(84, 68, 54), fill_light=(150, 126, 100),
+            top=(176, 156, 120), top_dark=(140, 120, 92), top_light=(208, 190, 152),
+            platform=(128, 104, 80), platform_dark=(84, 68, 54), platform_light=(170, 144, 112)),
+    pool=(PoolEntry("geodude", 1, (10, 12)),),
+    backdrop=Backdrop(sky_top=(58, 46, 40), sky_bottom=(96, 80, 66),
+                      hills=((110, 92, 76), (98, 82, 68)),
+                      field_far=(168, 146, 110), field_near=(146, 124, 92), stripe=(158, 136, 100),
+                      shadow=(96, 80, 60)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(34, 26, 24), sky_bottom=(70, 56, 46), far_rock=(56, 44, 38), near_rock=(84, 68, 56),
+                  glow=None),
+)
+
+THEMES = {t.key: t for t in (MEADOW, ROUTE_22, FOREST, ICE_CAVE, ROUTE_3, PEWTER_GYM)}

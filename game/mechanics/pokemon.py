@@ -270,6 +270,13 @@ SPECIES.update({
     "jynx": _placeholder("124_jynx", "Jynx", (65, 50, 35, 95), ("ice", "psychic"), exp=137),
     "dewgong": _placeholder("087_dewgong", "Dewgong", (90, 70, 80, 70), ("water", "ice"), exp=176),
     "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60), ("water", "ice"), exp=219),
+    # The Pewter Gym and Route 3.
+    "geodude": _placeholder("074_geodude", "Geodude", (40, 80, 100, 20), ("rock", "ground"), exp=86),
+    "onix": _placeholder("095_onix", "Onix", (35, 45, 160, 70), ("rock", "ground"), exp=108),
+    "diglett": _placeholder("050_diglett", "Diglett", (10, 55, 25, 95), ("ground",), exp=81),
+    "sandshrew": _placeholder("027_sandshrew", "Sandshrew", (50, 75, 85, 40), ("ground",), exp=93),
+    "ekans": _placeholder("023_ekans", "Ekans", (35, 60, 44, 55), ("poison",), exp=62),
+    "jigglypuff": _placeholder("039_jigglypuff", "Jigglypuff", (115, 45, 20, 20), ("normal",), exp=76),
 })
 
 _KEYS = {species: key for key, species in SPECIES.items()}

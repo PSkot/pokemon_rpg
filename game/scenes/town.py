@@ -31,8 +31,9 @@ class TownScene(MapScene):
     in_town = True
     def __init__(self, game: Game, town: Town, arrive: str = "home"):
         """`arrive`: "home" (a new game, or after fainting), the key of
-        the route the player came back by (they arrive at its doorway), or
-        the name of a building they came out of (no banner then)."""
+        the route the player came back by (they arrive at its doorway, or
+        its building for a gym), or the name of a building they came out
+        of (no banner then)."""
         super().__init__(game, town.level())
         self.town = town
         game.town = town.key
@@ -41,7 +42,8 @@ class TownScene(MapScene):
         ground = level.ground_y(0)
         # (doorway, route key, where: "left"/"right" edge or a column)
         self.doors = [(Doorway(self._door_x(where), ground, palette), route, where) for where, route in town.exits]
-        out_of = next((b for b in town.buildings if b.name == arrive), None)
+        out_of = next((b for b in town.buildings
+                       if b.name == arrive or (arrive in ROUTES and ROUTES[arrive].building == b.name)), None)
         if arrive == "home":
             self.place_player(town.home_col * TILE + TILE / 2, 1)
         elif out_of:
@@ -78,6 +80,12 @@ class TownScene(MapScene):
     def _at_board(self) -> bool:
         return self.board_x is not None and abs(self.player.x - self.board_x) < 24
 
+    def _route_in(self, building: Building | None):
+        """The route walked from `building` (a gym), if any."""
+        if not building:
+            return None
+        return next((r for r in ROUTES.values() if r.building == building.name and self.town.key in r.towns), None)
+
     def _building_at_player(self) -> Building | None:
         return next((b for b in self.town.buildings
                      if b.name and b.x <= self.player.x < b.x + tileset.building(b.sprite)[0].get_width()), None)
@@ -99,6 +107,15 @@ class TownScene(MapScene):
         if building and building.inside == "mart":
             self.next_scene = Transition(self, MartScene(self.game, self.town), flashes=0)
             return
+        gym = self._route_in(building)
+        if gym:
+            if not quests.open_for(self.game, gym.needs):
+                self.show(quest_ui.Dialogue([("", gym.blocked)]))
+                return
+            first_map = OverworldScene(Instance(gym, self.town.key), self.game)
+            saves.autosave(first_map)
+            self.next_scene = Transition(self, first_map, flashes=0)
+            return
         if building:
             event = quests.visit(self.game, self.town.key, building.name)
             if event:
@@ -119,7 +136,7 @@ class TownScene(MapScene):
         if door:
             return door[0].x, door[0].feet_y - 66
         building = self._building_at_player()
-        if building and building.inside:  # it can be entered
+        if building and (building.inside or self._route_in(building)):  # it can be entered
             return building_mid(building), self.level.ground_y(0) - 60
         return None
 
@@ -130,9 +147,11 @@ class TownScene(MapScene):
             marks.append((self.board_x, ground - 60))
         for quest in quests.active(self.game):
             step = quests.current(self.game, quest.key)
-            if step.kind == "visit" and step.town == self.town.key:
-                for b in self.town.buildings:
-                    if b.name == step.target:
+            route = ROUTES.get(step.target) if step.kind == "defeat" else None
+            route = route if route and route.building else None
+            if (step.kind == "visit" and step.town == self.town.key) or (route and self.town.key in route.towns):
+                for b in self.town.buildings:  # the building it needs (a gym: the one its route starts in)
+                    if b.name == (route.building if route else step.target):
                         marks.append((building_mid(b), ground - tileset.building(b.sprite)[1] - 20))
         return marks
 

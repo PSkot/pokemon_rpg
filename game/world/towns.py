@@ -80,6 +80,11 @@ TOWNS = {t.key: t for t in [
         Building("Poké Mart", (FUNCTIONAL, 2), 32, inside="mart"),
         Building("Pewter Gym", (FUNCTIONAL, 1), 45),
         Building("", (HOUSES, 2), 58),
-    ), exits=(("left", "viridian_forest"),), home_col=23, board_col=15,
+    ), exits=(("left", "viridian_forest"), ("right", "route_3")), home_col=23, board_col=15,
        mart=("Potion", "Super Potion", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal")),
+    # The Pokémon Center at the foot of Mt. Moon (Gen 1: on Route 4), where
+    # Route 3 ends. Mt. Moon itself comes later.
+    Town("mt_moon", "Mt. Moon", 44, (
+        Building("Pokémon Center", (FUNCTIONAL, 0), 18),
+    ), exits=(("left", "route_3"),), home_col=14),
 ]}

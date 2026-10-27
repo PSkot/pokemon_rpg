@@ -104,6 +104,7 @@ def snapshot(scene) -> dict:
         "starter": game.starter,
         "quests": game.quests,
         "quest_counts": game.quest_counts,
+        "trainers": sorted(game.trainers),
         "location": scene.location(),
     }
 
@@ -211,7 +212,8 @@ def load(info: SaveInfo):
         bag = Bag([_load_gear(g) for g in data["bag"]["gear"]], Counter(data["bag"]["medicine"]),
                   list(data["bag"].get("key_items", [])), data["bag"].get("money", 0))
         game = Game(party, bag, data["town"], Counter(data["cleared"]), data.get("starter", "bulbasaur"),
-                    dict(data.get("quests", {})), dict(data.get("quest_counts", {})))
+                    dict(data.get("quests", {})), dict(data.get("quest_counts", {})),
+                    set(data.get("trainers", [])))
         where = data["location"]
         if where["kind"] == "town":
             scene = TownScene(game, TOWNS[where["town"]])

@@ -149,7 +149,8 @@ non-commercial project.
   `functional_buildings.png`, 2×2 cells of 128×128, drawn by
   `tileset.draw_building` standing on their base row) and doorways onto
   routes (`Town.exits`: at an edge, or at a column inside the town, e.g.
-  Viridian's Route 22 door). Poké Marts can be entered
+  Viridian's Route 22 door; Pewter → Route 3 → Mt. Moon, a rest stop
+  with a Pokémon Center until Mt. Moon exists). Poké Marts can be entered
   (`Building.inside = "mart"`; `scenes/mart.py`: a one-screen room drawn
   in code, `tileset.mart_room`/`mart_counter`, run by a Meowth, its
   reference icon for now): Up at the counter does a quest step there,
@@ -174,7 +175,15 @@ non-commercial project.
   `boss_chest=False`, the boss loot comes with the battle). A route with
   `trainer` makes the boss fight a trainer battle (no running, ×1.5 XP).
   `RIVAL_STARTER` in a boss group becomes the rival's starter, which beats
-  the player's (`Game.starter`, `Game.rival_starter`).
+  the player's (`Game.starter`, `Game.rival_starter`). Routes can have
+  map trainers (`Route.trainers`, `Trainer`: each takes one of a map's
+  wild-group spots, `overworld._spread`; name over the team; fight once,
+  `Game.trainers`; prize money = base × last level / 2, `prize_money`;
+  boss trainers use `Route.prize`). Gyms are routes walked from their
+  building (`Route.building`, `wild=False`: only trainers, no chests):
+  the Pewter Gym (Jr. Trainer, then Brock; shut once the Boulder Badge is
+  won, `needs` "not_done"). Code-drawn caves take their colours from
+  `Theme.cave` (`CaveLook`) and ceiling decor from `tileset.CEILING_DECOR`.
   Themes (`themes.py`) pick their map art with `Theme.art` ("woods":
   Pixellab ground and background; "cave": drawn in code). `tileset.py` draws the meadow's ground
   from `tileset_woods.png` (`_render_woods`); the ice cave's tiles and all
@@ -198,7 +207,8 @@ non-commercial project.
 - Quests (`world/quests.py`, `docs/quests.md`): `QUESTS` with steps (visit
   a building in a town, defeat a route's boss, reach a town), taken from a
   town's quest board (`Town.board_col`) or started automatically once their
-  prerequisites are done. Board jobs: hunt (defeat N of a species) and
+  prerequisites are done (`Quest.starts_in`: only on arriving in that
+  town, e.g. the Boulder Badge in Pewter). Board jobs: hunt (defeat N of a species) and
   collect (N quest items dropped by species on a route,
   `quests.won_battle` via `BattleScene.on_win`), handed in at any board
   (`HAND_IN`); counts in `Game.quest_counts`. Quests are the main XP

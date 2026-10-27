@@ -20,7 +20,7 @@ from ..engine.animation import Animation
 from ..engine.scene import Scene, Transition
 from ..mechanics.combat import MAX_STAGE, STAGE_STATS, Hit, damage, stage_factor
 from ..mechanics.items import MEDICINE, Bag, Medicine
-from ..mechanics.loot import LootTable, merge, wild_loot
+from ..mechanics.loot import LootTable, Reward, merge, wild_loot
 from ..mechanics.moves import Move
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, animations
 from ..mechanics.status import FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES, THAW_CHANCE
@@ -386,12 +386,13 @@ class BattleScene(Scene):
 
     def __init__(self, return_to: Scene, party: list[Monster], enemies: list[Monster], bag: Bag,
                  loot: LootTable | None = None, backdrop: Backdrop = MEADOW_BACKDROP, boss: bool = False,
-                 trainer: str = "", bonus: LootTable | None = None, on_win=None):
+                 trainer: str = "", bonus: LootTable | None = None, on_win=None, prize: int = 0):
         self.return_to = return_to
         self.backdrop = backdrop
         self.boss = boss  # the area's boss group (changes the intro)
         self.trainer = trainer  # a trainer's team ("" = wild): no running, more XP
         self.bonus = bonus  # rolled once (at the highest enemy level) when the party wins
+        self.prize = prize  # Poké Dollars a trainer pays when the party wins
         # Called when the party wins; returns (text, detail) rows for the
         # rewards (quest progress: Pokémon counted, quest items dropped).
         self.on_win = on_win
@@ -716,6 +717,8 @@ class BattleScene(Scene):
         if self.bonus:
             rewards += self.bonus.roll(level=max(e.monster.level for e in self.enemies))
         rewards = merge(rewards)
+        if self.prize:
+            rewards.insert(0, Reward(money=self.prize))
         for r in rewards:
             r.give(self.bag)
         rows = [r.row() for r in rewards]

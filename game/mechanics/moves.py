@@ -104,6 +104,10 @@ MOVES = {m.name: m for m in [
     Move("Focus Energy", 0, "self", type="normal", focus=True),
     Move("Rest", 0, "self", type="psychic", rest=True),
     Move("Supersonic", 0, "enemy", type="normal", confuse=55),
+    Move("Bind", 15, "enemy", type="normal", bind=1 / 16),
+    Move("Defense Curl", 0, "self", type="normal", stages=(("defense", 1),)),
+    Move("Screech", 0, "enemy", type="normal", stages=(("defense", -2),)),
+    Move("Glare", 0, "enemy", type="normal", **_status("paralysis", 75)),
     Move("Sing", 0, "enemy", type="normal", **_status("sleep", 55)),
     # Flying
     Move("Gust", 40, "enemy", "gust", type="flying"),  # Normal in Gen 1, Flying since Gen 2
@@ -137,6 +141,10 @@ MOVES = {m.name: m for m in [
     # Fighting and Ground
     Move("Double Kick", 30, "enemy", type="fighting", hits=(2, 2)),
     Move("Earthquake", 100, "enemy", type="ground"),
+    Move("Dig", 100, "enemy", type="ground", charge="{user} dug a hole!"),
+    # Rock
+    Move("Rock Throw", 50, "enemy", type="rock"),
+    Move("Rock Slide", 75, "enemy", type="rock"),
     # Electric
     Move("Thunder Shock", 40, "enemy", type="electric", **_status("paralysis", 10)),
     Move("Thunderbolt", 95, "enemy", type="electric", **_status("paralysis", 10)),
