@@ -509,6 +509,19 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 
 ---
 
+## Party and reserve
+
+`game/world/progress.py` (`MAX_PARTY`, `Game.reserve`, `Game.add_member`)
+
+- The **party** has at most **4** Pokémon (the battle screen's rows); the
+  first is the **lead** (the one on the map). Recruits beyond that wait in
+  the **reserve** (saved), and are swapped in at a Recruitment Center (Mr.
+  Mime → team).
+- Arriving in a town heals the reserve too. Quest XP goes to the party
+  only; battle XP to the party members still standing.
+
+---
+
 ## Money
 
 `game/mechanics/items.py` (`Bag.money`, `money_text`)

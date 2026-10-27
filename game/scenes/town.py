@@ -15,12 +15,14 @@ from ..engine import ui
 from ..engine.scene import Transition
 from ..world import tileset
 from ..world import quests
+from ..world.quests import QUESTS
 from ..world.instance import ROUTES, Instance
 from ..world.level import TILE
 from ..world.progress import Game
 from ..world.towns import Building, Town, building_mid
 from . import quest_ui
 from .mart import MartScene
+from .recruit import RecruitScene
 from .overworld import Doorway, MapScene, OverworldScene
 
 BANNER_TIME = 2.5   # seconds the town's name shows on arrival
@@ -107,6 +109,9 @@ class TownScene(MapScene):
         if building and building.inside == "mart":
             self.next_scene = Transition(self, MartScene(self.game, self.town), flashes=0)
             return
+        if building and building.inside == "recruit":
+            self.next_scene = Transition(self, RecruitScene(self.game, self.town), flashes=0)
+            return
         gym = self._route_in(building)
         if gym:
             if not quests.open_for(self.game, gym.needs):
@@ -149,11 +154,17 @@ class TownScene(MapScene):
             step = quests.current(self.game, quest.key)
             route = ROUTES.get(step.target) if step.kind == "defeat" else None
             route = route if route and route.building else None
-            if (step.kind == "visit" and step.town == self.town.key) or (route and self.town.key in route.towns):
+            # (A route without towns, a recruitment map, starts in every such building.)
+            if (step.kind == "visit" and step.town == self.town.key) or (
+                    route and (self.town.key in route.towns or not route.towns)):
                 for b in self.town.buildings:  # the building it needs (a gym: the one its route starts in)
                     if b.name == (route.building if route else step.target):
                         marks.append((building_mid(b), ground - tileset.building(b.sprite)[1] - 20))
-        return marks
+        if any(quests.ready(self.game, q) for q in QUESTS.values() if q.board == quests.RECRUIT_BOARD):
+            for b in self.town.buildings:  # a recruitment has opened
+                if b.inside == "recruit":
+                    marks.append((building_mid(b), ground - tileset.building(b.sprite)[1] - 20))
+        return list(dict.fromkeys(marks))
 
     def draw_things(self, layer: pygame.Surface) -> None:
         ground = round(self.level.ground_y(0))

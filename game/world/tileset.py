@@ -548,25 +548,31 @@ MART_GOODS = ((150, 90, 200), (230, 80, 80), (90, 180, 110), (240, 200, 80), (90
 CEILING_H, WAINSCOT_H = 44, 64
 
 
-def mart_room(width: int, ground: int, shelves: list[int], door_x: int) -> pygame.Surface:
-    """The shop's room (drawn once): ceiling with lamps, wall, blue
-    wainscot, tiled floor, shelves (left edges in `shelves`) and the glass
-    door out at `door_x`."""
+# A Recruitment Center's room: warm walls, red trim.
+CENTER_WALLS = ((240, 228, 206), (226, 210, 184))
+CENTER_TRIM = ((176, 72, 60), (220, 120, 100), (110, 40, 36))
+
+
+def mart_room(width: int, ground: int, shelves: list[int], door_x: int, walls=(MART_WALL, MART_WALL_LINE),
+              trim=(MART_BLUE, MART_BLUE_LIGHT, MART_BLUE_DARK)) -> pygame.Surface:
+    """A shop's room (drawn once): ceiling with lamps, wall, wainscot (blue
+    by default; `walls` and `trim` give other colours), tiled floor,
+    shelves (left edges in `shelves`) and the glass door out at `door_x`."""
     h = settings.LOGICAL_SIZE[1]
     s = pygame.Surface((width, h))
-    s.fill(MART_WALL)
+    s.fill(walls[0])
     for x in range(0, width, 16):
-        pygame.draw.line(s, MART_WALL_LINE, (x, CEILING_H), (x, ground - WAINSCOT_H))
+        pygame.draw.line(s, walls[1], (x, CEILING_H), (x, ground - WAINSCOT_H))
     pygame.draw.rect(s, MART_CEILING, (0, 0, width, CEILING_H))
-    pygame.draw.rect(s, MART_BLUE, (0, CEILING_H, width, 6))  # a blue band under the ceiling
+    pygame.draw.rect(s, trim[0], (0, CEILING_H, width, 6))  # a band under the ceiling
     for x in range(48, width, 128):  # lamps
         pygame.draw.rect(s, MART_LIGHT, (x, CEILING_H - 5, 40, 4))
         pygame.draw.line(s, OUTLINE, (x, CEILING_H - 1), (x + 39, CEILING_H - 1))
     top = ground - WAINSCOT_H
-    pygame.draw.rect(s, MART_BLUE, (0, top, width, WAINSCOT_H))
-    pygame.draw.rect(s, MART_BLUE_LIGHT, (0, top, width, 3))
+    pygame.draw.rect(s, trim[0], (0, top, width, WAINSCOT_H))
+    pygame.draw.rect(s, trim[1], (0, top, width, 3))
     for x in range(8, width, 48):  # panels
-        pygame.draw.rect(s, MART_BLUE_DARK, (x, top + 10, 40, WAINSCOT_H - 18), 1)
+        pygame.draw.rect(s, trim[2], (x, top + 10, 40, WAINSCOT_H - 18), 1)
     for row, y in enumerate(range(ground, h, 12)):  # floor tiles
         for col, x in enumerate(range(-(row % 2) * 12, width, 24)):
             pygame.draw.rect(s, MART_FLOOR[(row + col) % 2], (x, y, 24, 12))
@@ -641,3 +647,20 @@ def mart_sign(s: pygame.Surface, center_x: int, y: int) -> pygame.Rect:
     pygame.draw.rect(s, (245, 245, 250), sign.inflate(-4, -4), 1, border_radius=2)
     pygame.draw.rect(s, MART_BLUE_DARK, sign, 1, border_radius=3)
     return sign
+
+
+def recruit_board(s: pygame.Surface, rect: pygame.Rect) -> None:
+    """A Recruitment Center's big cork board in a wooden frame, on short
+    legs (the scene pins the open recruitments' icons on it)."""
+    for lx in (rect.left + 10, rect.right - 14):
+        leg = pygame.Rect(lx, rect.bottom, 4, 12)
+        pygame.draw.rect(s, WOOD_POST, leg)
+        pygame.draw.rect(s, OUTLINE, leg, 1)
+    pygame.draw.rect(s, WOOD_POST, rect)
+    pygame.draw.rect(s, OUTLINE, rect, 1)
+    cork = rect.inflate(-8, -8)
+    pygame.draw.rect(s, (196, 150, 96), cork)
+    rng = random.Random(rect.x)
+    for _ in range(cork.w * cork.h // 30):  # cork speckles
+        s.set_at((rng.randrange(cork.left, cork.right), rng.randrange(cork.top, cork.bottom)), (172, 126, 76))
+    pygame.draw.rect(s, (150, 104, 60), cork, 1)

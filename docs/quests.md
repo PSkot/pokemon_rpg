@@ -177,6 +177,57 @@ yet.
 
 ---
 
+## Recruitment
+
+How the party grows (`world/instance.py` `RECRUITS`, quests made in
+`world/quests.py`, screens in `scenes/recruit.py`).
+
+- **Defeat counts:** every Pokémon defeated in a won battle on a route
+  (wild or a trainer's) counts for its **line** (`Game.defeated`, by the
+  line's first species: Metapod counts for Caterpie).
+- **Unlocking:** once a line's count reaches its number (`Recruit.needed`,
+  10 for most, fewer for rare ones), its **recruitment quest** opens. The
+  battle's rewards say so ("Pidgey can be recruited!"), and a "!" shows
+  over the Recruitment Centers.
+- **Recruitment Centers** (in Viridian and Pewter, for now in one of the
+  town's houses): inside, a **recruitment board** with the open
+  recruitments' Pokémon pinned on it, and **Mr. Mime** beside it.
+  - Up at the board: every recruitable line, locked (with its count),
+    Open, Taken or Recruited, and the chosen one's map, levels and
+    rewards. **Enter** on an open (or taken) one takes its quest and
+    walks straight to its map.
+  - Up at Mr. Mime: a few words, then the **team**: swap Pokémon between
+    the party (at most 4) and the reserve, and choose the lead.
+- **A recruitment map** ("Pidgey Grounds"): one map that looks like the
+  Pokémon's home area, full of groups of 2–3 of it (Lv `level` − 2 to
+  `level`), with chests, and a boss: a giant one (Lv `level` + 3, drawn
+  double size) with two escorts. Beating it finishes the quest: it **joins
+  the party** (the reserve if the party is full), at the boss's level,
+  with its skills filled in. The door leads back to the Recruitment Center
+  it was walked from.
+- **Rewards:** ₽25 × `level`, 20 × `level` XP, and the Pokémon.
+
+| Line | Defeats | Map looks like | Levels | Joins at |
+| --- | --- | --- | --- | --- |
+| Pidgey | 10 | Route 1 | 4–6 | Lv9 |
+| Rattata | 10 | Route 1 | 4–6 | Lv9 |
+| Caterpie | 10 | Viridian Forest | 4–6 | Lv9 |
+| Weedle | 10 | Viridian Forest | 4–6 | Lv9 |
+| Oddish | 6 | Route 1 | 6–8 | Lv11 |
+| Bellsprout | 6 | Route 1 | 6–8 | Lv11 |
+| Pikachu | 4 | Viridian Forest | 6–8 | Lv11 |
+| Spearow | 10 | Route 22 | 6–8 | Lv11 |
+| Nidoran F | 10 | Route 22 | 6–8 | Lv11 |
+| Nidoran M | 10 | Route 22 | 6–8 | Lv11 |
+| Sandshrew | 10 | Route 3 | 8–10 | Lv13 |
+| Ekans | 10 | Route 3 | 8–10 | Lv13 |
+| Jigglypuff | 8 | Route 3 | 8–10 | Lv13 |
+
+Not every Pokémon comes this way: the starters, and those only met with
+trainers (Geodude, Onix, Diglett), will have special quests.
+
+---
+
 ## Code
 
 - `game/world/quests.py`: `Quest` and `Step` data and `QUESTS`; a game's
@@ -194,6 +245,10 @@ yet.
   rewards line.
 - `Game.quests` (quest key → step reached; the number of steps = done),
   `Game.quest_counts`, `Bag.key_items`, `Bag.money`; all saved.
+- Recruitment quests: `Quest.unlock` (line, defeats), board
+  `RECRUIT_BOARD`, reward ("pokemon", species, level) → `Reward.pokemon`,
+  given by `Game.add_member`. Their routes (`instance.RECRUITS`,
+  `_recruit_route`) have no `towns` and `building` "Recruitment Center".
 - `Route.needs` / `Route.blocked` (a quest condition for its doorways, and
   what's said when it isn't met), `Route.boss_after` (the boss group once a
   quest is done).

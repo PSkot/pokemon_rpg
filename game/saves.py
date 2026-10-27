@@ -97,6 +97,8 @@ def snapshot(scene) -> dict:
         "saved_at": datetime.now().isoformat(timespec="seconds"),
         "summary": {"where": scene.where(), "party": [[m.name, m.level] for m in game.party]},
         "party": [_monster(m) for m in game.party],
+        "reserve": [_monster(m) for m in game.reserve],
+        "defeated": dict(game.defeated),
         "bag": {"gear": [_gear(g) for g in game.bag.gear], "medicine": dict(game.bag.medicine),
                 "key_items": game.bag.key_items, "money": game.bag.money},
         "town": game.town,
@@ -213,7 +215,8 @@ def load(info: SaveInfo):
                   list(data["bag"].get("key_items", [])), data["bag"].get("money", 0))
         game = Game(party, bag, data["town"], Counter(data["cleared"]), data.get("starter", "bulbasaur"),
                     dict(data.get("quests", {})), dict(data.get("quest_counts", {})),
-                    set(data.get("trainers", [])))
+                    set(data.get("trainers", [])), [_load_monster(m) for m in data.get("reserve", [])],
+                    Counter(data.get("defeated", {})))
         where = data["location"]
         if where["kind"] == "town":
             scene = TownScene(game, TOWNS[where["town"]])

@@ -24,7 +24,8 @@ from dataclasses import dataclass, field
 from ..dev import DEV
 from ..mechanics.items import ITEMS, Gear, money_text
 from ..mechanics.loot import Reward
-from ..mechanics.pokemon import MAX_LEVEL, SPECIES
+from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, line_base
+from .instance import RECRUITS, Recruit
 
 Line = tuple[str, str]  # (speaker, text) of a dialogue page
 
@@ -76,7 +77,9 @@ class Quest:
     board: str = ""                  # the town whose quest board posts it ("" = starts by itself)
     requires: tuple[str, ...] = ()   # quests that must be done first
     starts_in: str = ""              # a quest that starts by itself: only on arriving in this town
-    # Items given too: ("medicine", name, count) or ("gear", item, rarity, level).
+    unlock: tuple[str, int] | None = None  # (line, n): only once n of that line are defeated (recruitment)
+    # Items given too: ("medicine", name, count), ("gear", item, rarity, level)
+    # or ("pokemon", species, level): it joins the party (or the reserve).
     rewards: tuple[tuple, ...] = ()
     done_dialogue: tuple[Line, ...] = ()  # shown when it's done (after the last step's)
 
@@ -215,6 +218,24 @@ QUESTS = {q.key: q for q in [
 ]}
 
 
+RECRUIT_BOARD = "recruit"  # the board of recruitment quests (in every Recruitment Center)
+
+
+def _recruit_quest(r: Recruit) -> Quest:
+    name = SPECIES[r.species].name
+    return Quest(
+        f"recruit_{r.species}", f"Recruit {name}",
+        f"Mr. Mime has found a place teeming with {name}. Beat the giant one there, and it will join you.",
+        board=RECRUIT_BOARD, unlock=(r.species, r.needed),
+        steps=(Step("defeat", r.route_key, f"Defeat the giant {name} on the {name} Grounds"),),
+        money=r.level * 25, xp=r.level * 20,
+        rewards=(("pokemon", r.species, r.boss_level),),
+    )
+
+
+QUESTS.update({q.key: q for q in map(_recruit_quest, RECRUITS.values())})
+
+
 @dataclass
 class Finished:
     """A quest that was just done, and what it gave."""
@@ -261,8 +282,10 @@ def active(game) -> list[Quest]:
 
 
 def ready(game, quest: Quest) -> bool:
-    """Not started yet, and the quests it needs are done."""
-    return step(game, quest.key) is None and all(is_done(game, r) for r in quest.requires)
+    """Not started yet, the quests it needs are done, and (recruitment) enough
+    of its line defeated."""
+    return (step(game, quest.key) is None and all(is_done(game, r) for r in quest.requires)
+            and (not quest.unlock or game.defeated[quest.unlock[0]] >= quest.unlock[1]))
 
 
 def board(game, town: str) -> list[Quest]:
@@ -303,6 +326,12 @@ def won_battle(game, route: str, defeated: list[str]) -> list[tuple[str, str]]:
     (text, detail) rows for the battle's rewards; finished counts move
     their quest on (to handing it in)."""
     rows = []
+    for species in defeated:  # towards recruitment
+        line = line_base(species)
+        game.defeated[line] += 1
+        recruit = RECRUITS.get(line)
+        if recruit and game.defeated[line] == recruit.needed and step(game, f"recruit_{line}") is None:
+            rows.append((f"{SPECIES[line].name} can be recruited!", "Recruitment Center"))
     for quest in active(game):
         s = current(game, quest.key)
         if s.kind == "hunt":
@@ -381,7 +410,10 @@ def _advance(game, quest: Quest, event: Event) -> None:
         done = Finished(quest.key, [Reward(money=quest.money)] + [_reward(r) for r in quest.rewards],
                         quest.xp * DEV.xp_multiplier)
         for r in done.rewards:
-            r.give(game.bag)
+            if r.pokemon:
+                r.joined = game.add_member(r.pokemon)
+            else:
+                r.give(game.bag)
         _give_xp(game, done)
         event.finished.append(done)
         _start_automatic(game, event)
@@ -408,6 +440,8 @@ def reward_text(quest: Quest) -> str:
     for spec in quest.rewards:
         if spec[0] == "medicine":
             parts.append(f"{spec[2]} {spec[1]}{'s' if spec[2] > 1 else ''}")
+        elif spec[0] == "pokemon":
+            parts.append(f"{SPECIES[spec[1]].name} (Lv{spec[2]}) joins you")
         else:
             parts.append(f"{spec[2]} {spec[1] or 'gear'} (Lv{spec[3]})")
     return ", ".join(parts)
@@ -418,6 +452,8 @@ def _reward(spec: tuple) -> Reward:
     any but a berry, rarity, item level)."""
     if spec[0] == "medicine":
         return Reward(medicine=spec[1], count=spec[2])
+    if spec[0] == "pokemon":
+        return Reward(pokemon=Monster.create(spec[1], spec[2]))
     item = spec[1] or random.choice([name for name, i in ITEMS.items() if i.slot != "berry"])
     return Reward(gear=Gear.roll(item, spec[2], level=spec[3]))
 

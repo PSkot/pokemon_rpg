@@ -385,6 +385,14 @@ def animations(species: Species, scale: int = 1) -> dict[str, Animation]:
 MAX_LEVEL = 100
 
 
+def line_base(species: str) -> str:
+    """The first species of `species`'s evolution line (Metapod → Caterpie)."""
+    earlier = {e.into: key for key, e in EVOLUTIONS.items()}
+    while species in earlier:
+        species = earlier[species]
+    return species
+
+
 def xp_for_level(level: int) -> int:
     """Total XP needed to reach `level` (Gen 1's "medium fast" growth rate)."""
     return 0 if level <= 1 else level ** 3

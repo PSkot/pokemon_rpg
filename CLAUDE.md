@@ -222,6 +222,15 @@ non-commercial project.
   (`Route.needs`/`blocked`) and change boss after a quest (`boss_after`).
   Screens in `scenes/quest_ui.py` (dialogue box, quest board, quest log in
   the pause menu); the map shows the current step and "!" markers.
+- Recruitment (`docs/quests.md` → Recruitment): won route battles count
+  defeated Pokémon per line (`Game.defeated`, `pokemon.line_base`); at
+  `instance.RECRUITS[line].needed` its recruitment quest opens (board
+  `quests.RECRUIT_BOARD`, `Quest.unlock`). Recruitment Centers
+  (`Building.inside = "recruit"`, a house for now; `scenes/recruit.py`:
+  room with the board and Mr. Mime, `RecruitBoard`, `TeamPanel`) send the
+  player to the line's map (a generated route: only that species, a giant
+  boss); beating it adds it (`Game.add_member`: party of at most
+  `MAX_PARTY` = 4, else `Game.reserve`). Mr. Mime swaps party and reserve.
 - Tab on the map opens the party screen (`summary.py`): stats and gear;
   Enter on a slot lists the bag's gear for it (or Remove), previewing the
   stat changes, and equips it. S opens the skill tree screen.

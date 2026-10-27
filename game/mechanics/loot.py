@@ -58,11 +58,14 @@ class LootTable:
 
 @dataclass
 class Reward:
-    """One line of loot: a piece of gear, some of one medicine, or money."""
+    """One line of loot: a piece of gear, some of one medicine, money, or (a
+    recruitment quest's) a Pokémon, given by the quest (Game.add_member)."""
     gear: Gear | None = None
     medicine: str = ""
     count: int = 0
     money: int = 0  # Poké Dollars
+    pokemon: "Monster | None" = None
+    joined: str = ""  # where the Pokémon went: "party" or "reserve"
 
     def give(self, bag: Bag) -> None:
         if self.gear:
@@ -79,6 +82,9 @@ class Reward:
             return g.name, g.rarity.color, f"Lv{g.level} {g.rarity.name} {SLOT_NAMES[g.slot]}"
         if self.money:
             return money_text(self.money), ui.YELLOW, "Poké Dollars"
+        if self.pokemon:
+            where = "joined the party!" if self.joined == "party" else "went to the reserve"
+            return f"{self.pokemon.name} Lv{self.pokemon.level}", (120, 230, 120), where
         return self.medicine, ui.WHITE, f"x{self.count}"
 
 

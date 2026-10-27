@@ -8,14 +8,19 @@ boss group guards the way out.
 Routes can have trainers (`Route.trainers`): each stands in for one of a
 map's wild groups, fights once for good (`Game.trainers`) and pays prize
 money. A gym is a route walked from its building, with only trainers.
+
+Recruitment maps (`RECRUITS`) are routes too: one map full of one species,
+with a giant one as the boss, walked from a Recruitment Center's board
+(quests.py makes their quests).
 """
 
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, Rarities
+from ..mechanics.pokemon import SPECIES
 from .level import Level, generate
-from .themes import FOREST, MEADOW, PEWTER_GYM, ROUTE_3, ROUTE_22, Theme
+from .themes import FOREST, MEADOW, PEWTER_GYM, ROUTE_3, ROUTE_22, PoolEntry, Theme
 
 # Stands in a boss group for the rival's starter, which depends on the
 # player's (`progress.Game.rival_starter`).
@@ -96,6 +101,61 @@ ROUTES = {r.key: r for r in [
               Trainer("route_3_lass_2", "Lass", (("jigglypuff", 14),), 2, 15),
           )),
 ]}
+
+
+# --- recruitment -------------------------------------------------------------
+
+@dataclass(frozen=True)
+class Recruit:
+    """A Pokémon that can be recruited: once `needed` of its line are
+    defeated, its recruitment quest opens at the Recruitment Centers. Its
+    map looks like `area` (where it lives), full of it around `level`; the
+    boss, a giant one at `level` + 3, joins the party when beaten."""
+    species: str   # the line's first species
+    needed: int
+    area: Theme
+    level: int
+
+    @property
+    def route_key(self) -> str:
+        return f"recruit_{self.species}"
+
+    @property
+    def boss_level(self) -> int:
+        return self.level + 3
+
+
+RECRUIT_BUILDING = "Recruitment Center"
+
+# Every line met up to Pewter City and on Route 3 (rare ones need fewer
+# defeats). Starters and others come by their own quests later.
+RECRUITS = {r.species: r for r in [
+    Recruit("pidgey", 10, MEADOW, 6),
+    Recruit("rattata", 10, MEADOW, 6),
+    Recruit("caterpie", 10, FOREST, 6),
+    Recruit("weedle", 10, FOREST, 6),
+    Recruit("oddish", 6, MEADOW, 8),
+    Recruit("bellsprout", 6, MEADOW, 8),
+    Recruit("pikachu", 4, FOREST, 8),
+    Recruit("spearow", 10, ROUTE_22, 8),
+    Recruit("nidoran_f", 10, ROUTE_22, 8),
+    Recruit("nidoran_m", 10, ROUTE_22, 8),
+    Recruit("sandshrew", 10, ROUTE_3, 10),
+    Recruit("ekans", 10, ROUTE_3, 10),
+    Recruit("jigglypuff", 8, ROUTE_3, 10),
+]}
+
+
+def _recruit_route(r: Recruit) -> Route:
+    theme = replace(r.area, key=f"recruit_{r.species}", pool=(PoolEntry(r.species, 1, (r.level - 2, r.level)),),
+                    group_sizes=((2, 50), (3, 50)))  # a map full of them
+    # (No `towns`: walked from any Recruitment Center, and back to it.)
+    return Route(r.route_key, f"{SPECIES[r.species].name} Grounds", theme, maps=1, towns=(), boss=True,
+                 boss_group=((r.species, r.boss_level), (r.species, r.level), (r.species, r.level)), boss_scale=2,
+                 building=RECRUIT_BUILDING)
+
+
+ROUTES.update({r.route_key: _recruit_route(r) for r in RECRUITS.values()})
 
 
 @dataclass

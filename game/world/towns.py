@@ -24,7 +24,9 @@ class Building:
     name: str                 # shown when standing in front of it ("" = an unnamed house)
     sprite: tuple[str, int]   # (sheet, cell): see tileset.building
     col: int                  # left edge, in tiles
-    inside: str = ""          # what Up there enters: "mart" (scenes/mart.py), or "" (nothing)
+    # What Up there enters: "mart" (scenes/mart.py), "recruit" (a Recruitment
+    # Center, scenes/recruit.py), or "" (nothing).
+    inside: str = ""
 
     @property
     def x(self) -> int:
@@ -70,7 +72,7 @@ TOWNS = {t.key: t for t in [
         Building("", (HOUSES, 2), 8),
         Building("Pokémon Center", (FUNCTIONAL, 0), 17),
         Building("Poké Mart", (FUNCTIONAL, 2), 30, inside="mart"),
-        Building("", (HOUSES, 3), 42),
+        Building("Recruitment Center", (HOUSES, 3), 42, inside="recruit"),
         Building("Viridian Gym", (FUNCTIONAL, 1), 53),
     ), exits=(("left", "route_1"), ("right", "viridian_forest"), (39, "route_22")), home_col=21, board_col=50,
        mart=("Potion", "Antidote", "Paralyze Heal", "Burn Heal")),
@@ -79,7 +81,7 @@ TOWNS = {t.key: t for t in [
         Building("Pokémon Center", (FUNCTIONAL, 0), 19),
         Building("Poké Mart", (FUNCTIONAL, 2), 32, inside="mart"),
         Building("Pewter Gym", (FUNCTIONAL, 1), 45),
-        Building("", (HOUSES, 2), 58),
+        Building("Recruitment Center", (HOUSES, 2), 58, inside="recruit"),
     ), exits=(("left", "viridian_forest"), ("right", "route_3")), home_col=23, board_col=15,
        mart=("Potion", "Super Potion", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal")),
     # The Pokémon Center at the foot of Mt. Moon (Gen 1: on Route 4), where
