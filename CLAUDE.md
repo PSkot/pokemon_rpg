@@ -38,7 +38,7 @@ non-commercial project.
   - `world/`: maps (`level.py`), themes, placeholder map art
     (`tileset.py`), towns, routes/instances, the player character,
     progress (`progress.Game`)
-  - `scenes/`: title, map scenes (`overworld.py`, `town.py`), battle,
+  - `scenes/`: title, map scenes (`overworld.py`, `town.py`, `mart.py`), battle,
     party screen (`summary.py`), pause menu, save/load list
   Dependencies point downwards: scenes → world/mechanics → engine.
 - `docs/mechanics.md` documents every rule and number (stats, levels/XP,
@@ -48,7 +48,8 @@ non-commercial project.
   `Player.update(dt, Controls(...), level)` and save frames with
   `pygame.image.save()`.
 - The game is a set of scenes (`scene.Scene`): title (`title.py`), maps
-  (`scenes/overworld.MapScene`: towns in `town.py`, instance maps in
+  (`scenes/overworld.MapScene`: towns in `town.py`, Poké Marts in
+  `mart.py`, instance maps in
   `overworld.py`), battle (`battle.py`) and party screen (`summary.py`).
   A scene switches by setting `next_scene`. Scenes
   draw sprites on the logical canvas and text on the scaled window
@@ -135,12 +136,21 @@ non-commercial project.
   cave ceiling). Maps scroll sideways and end at a doorway (Up) to the next
   map. Wild groups are shown in full and stay gone once beaten.
 - World: the game follows the Kanto map. Towns (`towns.py` data,
-  `town.py` scene) are flat maps with Pixellab buildings (scenery for now;
+  `town.py` scene) are flat maps with Pixellab buildings (scenery, except Poké Marts;
   `Building.sprite` = (sheet, cell) of `houses.png` /
   `functional_buildings.png`, 2×2 cells of 128×128, drawn by
   `tileset.draw_building` standing on their base row) and doorways onto
   routes (`Town.exits`: at an edge, or at a column inside the town, e.g.
-  Viridian's Route 22 door). A new game starts in Pallet Town; arriving in
+  Viridian's Route 22 door). Poké Marts can be entered
+  (`Building.inside = "mart"`; `scenes/mart.py`: a one-screen room drawn
+  in code, `tileset.mart_room`/`mart_counter`, run by a Meowth, its
+  reference icon for now): Up at the counter does a quest step there,
+  else opens the shop (`ShopMenu`: buy the town's stock, `Town.mart`;
+  sell medicine for half; `Medicine.price`); Up at the door goes back
+  out (`TownScene(arrive=building name)`). Saving inside saves the player
+  outside the shop. Only medicine is sold for now (gear later). The user
+  makes the PixelLab art themselves: don't generate it unasked.
+  A new game starts in Pallet Town; arriving in
   a town heals the party and makes it the town a fainted party wakes up
   in (`Game.town`). Progress lives in `progress.Game`
   (party, bag, last town, routes cleared).

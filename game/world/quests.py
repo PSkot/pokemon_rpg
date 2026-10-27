@@ -59,8 +59,8 @@ QUESTS = {q.key: q for q in [
         board="viridian",
         steps=(
             Step("visit", "Poké Mart", "Pick up the parcel at the Viridian Poké Mart", town="viridian",
-                 dialogue=(("Clerk", "Hey! You came from Pallet Town? Then you know Professor Oak!"),
-                           ("Clerk", "His order came in. Will you take it to him?"),
+                 dialogue=(("Meowth", "Meowth! You came from Pallet Town? Then you know Professor Oak, meow!"),
+                           ("Meowth", "His order came in. Will you take it to him?"),
                            ("", "You received Oak's Parcel!")),
                  gives=("Oak's Parcel",)),
             Step("visit", "Professor Oak's Lab", "Deliver Oak's Parcel to Professor Oak (Pallet Town)",

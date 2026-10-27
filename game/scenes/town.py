@@ -3,8 +3,9 @@ routes (Up).
 
 Arriving heals the party, and the town becomes where a fainted party wakes
 up. The town's name shows for a moment on arrival. Up at the quest board
-opens it; Up at a building a quest step needs does that step; a route's
-doorway can stay shut until a quest is started or done.
+opens it; Up at a building a quest step needs does that step, and Up at a
+Poké Mart goes inside (mart.py); a route's doorway can stay shut until a
+quest is started or done.
 """
 
 import pygame
@@ -17,8 +18,9 @@ from ..world import quests
 from ..world.instance import ROUTES, Instance
 from ..world.level import TILE
 from ..world.progress import Game
-from ..world.towns import Building, Town
+from ..world.towns import Building, Town, building_mid
 from . import quest_ui
+from .mart import MartScene
 from .overworld import Doorway, MapScene, OverworldScene
 
 BANNER_TIME = 2.5   # seconds the town's name shows on arrival
@@ -28,8 +30,9 @@ ARRIVE_GAP = 3 * TILE  # how far from the doorway the player arrives
 class TownScene(MapScene):
     in_town = True
     def __init__(self, game: Game, town: Town, arrive: str = "home"):
-        """`arrive`: "home" (a new game, or after fainting), or the key of
-        the route the player came back by (they arrive at its doorway)."""
+        """`arrive`: "home" (a new game, or after fainting), the key of
+        the route the player came back by (they arrive at its doorway), or
+        the name of a building they came out of (no banner then)."""
         super().__init__(game, town.level())
         self.town = town
         game.town = town.key
@@ -38,8 +41,12 @@ class TownScene(MapScene):
         ground = level.ground_y(0)
         # (doorway, route key, where: "left"/"right" edge or a column)
         self.doors = [(Doorway(self._door_x(where), ground, palette), route, where) for where, route in town.exits]
+        out_of = next((b for b in town.buildings if b.name == arrive), None)
         if arrive == "home":
             self.place_player(town.home_col * TILE + TILE / 2, 1)
+        elif out_of:
+            self.place_player(building_mid(out_of), 1)
+            self.t = BANNER_TIME
         else:
             where = town.exit_to(arrive)
             if where == "left":
@@ -85,6 +92,9 @@ class TownScene(MapScene):
             self.show(quest_ui.Dialogue([("", ROUTES[door[1]].blocked)]))
             return
         building = None if door else self._building_at_player()
+        if building and building.inside == "mart":
+            self.next_scene = Transition(self, MartScene(self.game, self.town), flashes=0)
+            return
         if building:
             event = quests.visit(self.game, self.town.key, building.name)
             if event:
@@ -102,7 +112,12 @@ class TownScene(MapScene):
         if self._at_board():
             return self.board_x, self.level.ground_y(0) - 74
         door = self._door_at_player()
-        return (door[0].x, door[0].feet_y - 66) if door else None
+        if door:
+            return door[0].x, door[0].feet_y - 66
+        building = self._building_at_player()
+        if building and building.inside:  # it can be entered
+            return building_mid(building), self.level.ground_y(0) - 60
+        return None
 
     def markers(self) -> list[tuple[float, float]]:
         ground, marks = self.level.ground_y(0), []
@@ -113,8 +128,7 @@ class TownScene(MapScene):
             if step.kind == "visit" and step.town == self.town.key:
                 for b in self.town.buildings:
                     if b.name == step.target:
-                        image, base = tileset.building(b.sprite)
-                        marks.append((b.x + image.get_width() / 2, ground - base - 20))
+                        marks.append((building_mid(b), ground - tileset.building(b.sprite)[1] - 20))
         return marks
 
     def draw_things(self, layer: pygame.Surface) -> None:

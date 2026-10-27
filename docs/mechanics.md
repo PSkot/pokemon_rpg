@@ -509,8 +509,35 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 - **Poké Dollars (₽)** are kept in the bag (`Bag.money`, saved) and shown
   in the pause menu and on the party screen. A new game starts with ₽0.
 - **Earned from quests** for now: every quest pays its `Quest.money` (see
-  `quests.md`). Nothing costs money yet (shops come later).
+  `quests.md`), and from selling medicine.
+- **Spent at Poké Marts** (`game/scenes/mart.py`): medicine only for now
+  (gear comes later). Prices are `Medicine.price`, **half of Gen 1's**
+  (money only comes from quests so far); selling pays half the price
+  (`Medicine.sell_price`, as in Gen 1). Up to 99 at a time.
 - The font has no ₽ sign, so `ui.text` draws it as a P with a bar.
+
+| Medicine | Price | Sells for |
+| --- | --- | --- |
+| Potion | ₽150 | ₽75 |
+| Super Potion | ₽350 | ₽175 |
+| Hyper Potion | ₽750 | ₽375 |
+| Max Potion | ₽1,250 | ₽625 |
+| Full Restore | ₽1,500 | ₽750 |
+| Revive | ₽750 | ₽375 |
+| Antidote | ₽50 | ₽25 |
+| Burn Heal | ₽125 | ₽62 |
+| Paralyze Heal | ₽100 | ₽50 |
+| Awakening | ₽100 | ₽50 |
+| Ice Heal | ₽125 | ₽62 |
+| Full Heal | ₽300 | ₽150 |
+
+What each Poké Mart sells (`Town.mart`; Gen 1's stock, minus the items
+the game doesn't have yet: Poké Balls, Repel, Escape Rope):
+
+| Town | Stock |
+| --- | --- |
+| Viridian City | Potion, Antidote, Paralyze Heal, Burn Heal |
+| Pewter City | Potion, Super Potion, Antidote, Burn Heal, Awakening, Paralyze Heal (Super Potion added: Gen 1 has it from Cerulean) |
 
 ---
 

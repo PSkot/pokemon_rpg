@@ -522,3 +522,110 @@ def quest_board(s: pygame.Surface, x: int, ground: int, notes: int) -> pygame.Re
             pygame.draw.line(s, (180, 170, 150), (note.left + 1, ly), (note.right - 2, ly))
         s.set_at((note.centerx, note.top + 1), (210, 60, 60))  # a pin
     return roof.union(board).union(pygame.Rect(board.left, board.bottom, board.w, ground - board.bottom))
+
+
+# ------------------------------------------------------------- Poké Mart
+# Placeholder art drawn in code: the shop's room, shelves and counter.
+
+MART_CEILING, MART_LIGHT = (62, 60, 78), (250, 244, 210)
+MART_WALL, MART_WALL_LINE = (238, 232, 212), (224, 216, 192)
+MART_BLUE, MART_BLUE_LIGHT, MART_BLUE_DARK = (64, 104, 184), (110, 150, 220), (36, 60, 120)
+MART_FLOOR = ((226, 228, 236), (200, 204, 216))
+MART_METAL, MART_METAL_DARK = (204, 208, 218), (60, 64, 80)
+MART_GOODS = ((150, 90, 200), (230, 80, 80), (90, 180, 110), (240, 200, 80), (90, 150, 230), (240, 150, 70))
+CEILING_H, WAINSCOT_H = 44, 64
+
+
+def mart_room(width: int, ground: int, shelves: list[int], door_x: int) -> pygame.Surface:
+    """The shop's room (drawn once): ceiling with lamps, wall, blue
+    wainscot, tiled floor, shelves (left edges in `shelves`) and the glass
+    door out at `door_x`."""
+    h = settings.LOGICAL_SIZE[1]
+    s = pygame.Surface((width, h))
+    s.fill(MART_WALL)
+    for x in range(0, width, 16):
+        pygame.draw.line(s, MART_WALL_LINE, (x, CEILING_H), (x, ground - WAINSCOT_H))
+    pygame.draw.rect(s, MART_CEILING, (0, 0, width, CEILING_H))
+    pygame.draw.rect(s, MART_BLUE, (0, CEILING_H, width, 6))  # a blue band under the ceiling
+    for x in range(48, width, 128):  # lamps
+        pygame.draw.rect(s, MART_LIGHT, (x, CEILING_H - 5, 40, 4))
+        pygame.draw.line(s, OUTLINE, (x, CEILING_H - 1), (x + 39, CEILING_H - 1))
+    top = ground - WAINSCOT_H
+    pygame.draw.rect(s, MART_BLUE, (0, top, width, WAINSCOT_H))
+    pygame.draw.rect(s, MART_BLUE_LIGHT, (0, top, width, 3))
+    for x in range(8, width, 48):  # panels
+        pygame.draw.rect(s, MART_BLUE_DARK, (x, top + 10, 40, WAINSCOT_H - 18), 1)
+    for row, y in enumerate(range(ground, h, 12)):  # floor tiles
+        for col, x in enumerate(range(-(row % 2) * 12, width, 24)):
+            pygame.draw.rect(s, MART_FLOOR[(row + col) % 2], (x, y, 24, 12))
+    pygame.draw.line(s, MART_METAL_DARK, (0, ground), (width, ground))
+    for x in shelves:
+        _mart_shelf(s, x, ground, random.Random(x))
+    door = pygame.Rect(door_x - 22, ground - 70, 44, 70)  # sliding glass doors
+    pygame.draw.rect(s, MART_METAL, door)
+    for half in (door.inflate(-8, -8).move(0, 4).clip((door.x, door.y, door.w // 2 - 1, door.h)),
+                 door.inflate(-8, -8).move(0, 4).clip((door.centerx + 1, door.y, door.w // 2, door.h))):
+        pygame.draw.rect(s, (170, 214, 240), half)
+        pygame.draw.line(s, (230, 246, 255), (half.x + 3, half.bottom - 10), (half.right - 4, half.y + 8), 2)
+    pygame.draw.rect(s, MART_METAL_DARK, door, 1)
+    pygame.draw.rect(s, (190, 60, 60), (door.x - 6, ground + 1, door.w + 12, 4))  # door mat
+    return s
+
+
+def _mart_shelf(s: pygame.Surface, x: int, ground: int, rng: random.Random) -> None:
+    """A shelf unit of goods (bottles, boxes, Poké Balls) against the wall."""
+    w, h = 72, 104
+    unit = pygame.Rect(x, ground - h, w, h)
+    pygame.draw.rect(s, MART_METAL, unit)
+    pygame.draw.rect(s, MART_METAL_DARK, unit, 1)
+    for shelf_y in range(unit.top + 30, unit.bottom, 30):
+        gx = unit.left + 4
+        while gx < unit.right - 10:
+            kind, color = rng.randrange(3), rng.choice(MART_GOODS)
+            if kind == 0:  # a spray bottle
+                pygame.draw.rect(s, color, (gx, shelf_y - 12, 7, 12))
+                pygame.draw.rect(s, (245, 245, 250), (gx + 2, shelf_y - 16, 3, 4))
+                pygame.draw.rect(s, OUTLINE, (gx, shelf_y - 12, 7, 12), 1)
+                gx += 9
+            elif kind == 1:  # a box
+                bh = rng.randint(10, 18)
+                pygame.draw.rect(s, color, (gx, shelf_y - bh, 11, bh))
+                pygame.draw.line(s, (250, 250, 250), (gx + 2, shelf_y - bh + 3), (gx + 8, shelf_y - bh + 3))
+                pygame.draw.rect(s, OUTLINE, (gx, shelf_y - bh, 11, bh), 1)
+                gx += 13
+            else:  # a Poké Ball
+                c = (gx + 4, shelf_y - 5)
+                pygame.draw.circle(s, (245, 245, 250), c, 4)
+                pygame.draw.rect(s, (220, 60, 60), (gx, shelf_y - 10, 9, 5))
+                pygame.draw.circle(s, OUTLINE, c, 5, 1)
+                gx += 11
+        pygame.draw.rect(s, MART_METAL_DARK, (unit.left + 1, shelf_y, w - 2, 3))
+    pygame.draw.rect(s, MART_BLUE, (unit.left, unit.top, w, 8))  # a price strip on top
+    pygame.draw.rect(s, MART_METAL_DARK, (unit.left, unit.top, w, 8), 1)
+
+
+def mart_counter(s: pygame.Surface, x: int, ground: int, w: int) -> pygame.Rect:
+    """The shop counter (in front of the shopkeeper), left edge at `x`;
+    returns its outline."""
+    counter = pygame.Rect(x, ground - 30, w, 30)
+    pygame.draw.rect(s, MART_BLUE, counter)
+    pygame.draw.rect(s, MART_BLUE_LIGHT, (x + 4, counter.top + 12, w - 8, 3))
+    pygame.draw.rect(s, MART_BLUE_DARK, counter, 1)
+    top = pygame.Rect(x - 3, counter.top - 4, w + 6, 5)
+    pygame.draw.rect(s, (244, 244, 250), top)
+    pygame.draw.rect(s, MART_METAL_DARK, top, 1)
+    till = pygame.Rect(x + w - 30, top.top - 12, 22, 12)  # the till
+    pygame.draw.rect(s, (150, 154, 170), till)
+    pygame.draw.rect(s, (110, 200, 140), (till.x + 3, till.y + 2, 10, 4))
+    pygame.draw.rect(s, MART_METAL_DARK, till, 1)
+    return counter.union(top).union(till)
+
+
+def mart_sign(s: pygame.Surface, center_x: int, y: int) -> pygame.Rect:
+    """The blue sign board over the counter (the scene writes on it)."""
+    sign = pygame.Rect(0, y, 120, 22)
+    sign.centerx = center_x
+    pygame.draw.rect(s, MART_BLUE, sign, border_radius=3)
+    pygame.draw.rect(s, (245, 245, 250), sign.inflate(-4, -4), 1, border_radius=2)
+    pygame.draw.rect(s, MART_BLUE_DARK, sign, 1, border_radius=3)
+    return sign

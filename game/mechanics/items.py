@@ -338,10 +338,15 @@ class Medicine:
     """An item used up to heal one of your own Pokémon (in battle, for now)."""
     name: str
     description: str
+    price: int              # in Poké Dollars, at a Poké Mart; it sells for half
     hp: int = 0             # HP restored
     fraction: float = 0.0   # ... or this share of max HP, if that's more
     revive: bool = False    # only works on (and revives) a fainted Pokémon
     cures: tuple[str, ...] = ()  # statuses it cures
+
+    @property
+    def sell_price(self) -> int:
+        return self.price // 2
 
     def heal_amount(self, monster: "Monster") -> int:
         amount = max(self.hp, math.ceil(monster.max_hp * self.fraction))
@@ -354,20 +359,21 @@ class Medicine:
         return bool(self.heal_amount(monster)) or self.cures_status(monster)
 
 
+# Prices are half of Gen 1's (money only comes from quests so far).
 MEDICINE = {m.name: m for m in [
-    Medicine("Potion", "Restores 20 HP.", hp=20),
-    Medicine("Super Potion", "Restores 50 HP.", hp=50),
-    Medicine("Hyper Potion", "Restores 200 HP.", hp=200),
-    Medicine("Max Potion", "Fully restores HP.", fraction=1.0),
-    Medicine("Full Restore", "Fully restores HP and cures any status.", fraction=1.0,
+    Medicine("Potion", "Restores 20 HP.", 150, hp=20),
+    Medicine("Super Potion", "Restores 50 HP.", 350, hp=50),
+    Medicine("Hyper Potion", "Restores 200 HP.", 750, hp=200),
+    Medicine("Max Potion", "Fully restores HP.", 1250, fraction=1.0),
+    Medicine("Full Restore", "Fully restores HP and cures any status.", 1500, fraction=1.0,
              cures=tuple(STATUSES)),
-    Medicine("Revive", "Revives a fainted Pokémon with half its HP.", fraction=0.5, revive=True),
-    Medicine("Antidote", "Cures poison.", cures=("poison",)),
-    Medicine("Burn Heal", "Heals a burn.", cures=("burn",)),
-    Medicine("Paralyze Heal", "Cures paralysis.", cures=("paralysis",)),
-    Medicine("Awakening", "Wakes up a sleeping Pokémon.", cures=("sleep",)),
-    Medicine("Ice Heal", "Thaws out a frozen Pokémon.", cures=("freeze",)),
-    Medicine("Full Heal", "Cures any status.", cures=tuple(STATUSES)),
+    Medicine("Revive", "Revives a fainted Pokémon with half its HP.", 750, fraction=0.5, revive=True),
+    Medicine("Antidote", "Cures poison.", 50, cures=("poison",)),
+    Medicine("Burn Heal", "Heals a burn.", 125, cures=("burn",)),
+    Medicine("Paralyze Heal", "Cures paralysis.", 100, cures=("paralysis",)),
+    Medicine("Awakening", "Wakes up a sleeping Pokémon.", 100, cures=("sleep",)),
+    Medicine("Ice Heal", "Thaws out a frozen Pokémon.", 125, cures=("freeze",)),
+    Medicine("Full Heal", "Cures any status.", 300, cures=tuple(STATUSES)),
 ]}
 
 

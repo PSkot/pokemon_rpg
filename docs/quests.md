@@ -29,7 +29,7 @@ change once a quest is finished.
 
 | Step | Done when |
 | --- | --- |
-| **Visit** | You press Up at a building or doorway in a town (e.g. the Viridian Poké Mart). Shows a short dialogue. |
+| **Visit** | You press Up at a building or doorway in a town (e.g. Professor Oak's Lab), or, for a Poké Mart, at the counter inside (Meowth). Shows a short dialogue. |
 | **Defeat** | You beat a route's boss (a boss group or a trainer). |
 | **Reach** | You arrive in a town (or on a route's last map). |
 | *Later:* **Catch**, **Bring an item** | Once catching and key items are used more. |
@@ -80,7 +80,7 @@ they can't be sold, used or dropped.
 
 - **Starts:** taken from the Viridian City quest board.
 - **Steps:**
-  1. Visit the **Viridian Poké Mart**: the clerk hands you **Oak's
+  1. Visit the **Viridian Poké Mart**: Meowth, the shopkeeper, hands you **Oak's
      Parcel** (key item).
   2. Visit **Professor Oak's Lab** in Pallet Town: Oak takes the parcel
      and gives you the **Pokédex** (key item).

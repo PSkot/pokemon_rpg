@@ -343,7 +343,7 @@ def _sheet(name: str, cell: int = 64) -> list[list[pygame.Surface]]:
 
 
 @cache
-def _icon_frame(icon: str) -> pygame.Surface:
+def icon_frame(icon: str) -> pygame.Surface:
     """A reference icon as a still sprite: cropped, scaled, facing right."""
     image = pygame.image.load(settings.ASSETS / "sprites" / "pokemon_icons" / f"{icon}.png").convert_alpha()
     image = image.subsurface(image.get_bounding_rect()).copy()
@@ -357,7 +357,7 @@ def animations(species: Species, scale: int = 1) -> dict[str, Animation]:
     if scale != 1:
         return {name: anim.scaled(scale) for name, anim in animations(species).items()}
     if species.icon:  # a placeholder: the same still frame for everything
-        frame = _icon_frame(species.icon)
+        frame = icon_frame(species.icon)
         still = Animation([frame], fps=1, loop=True)
         # Attacks get a few frames, so the battle's timing (impact on the
         # second-to-last frame) still works.
