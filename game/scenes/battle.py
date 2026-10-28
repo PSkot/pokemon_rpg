@@ -487,7 +487,7 @@ class BattleScene(Scene):
 
     def _choose(self, choice: Choice) -> None:
         targets = self._candidates(self.actor, choice)
-        if isinstance(choice, Move) and (choice.target == "self" or choice.spread):
+        if isinstance(choice, Move) and choice.target == "self":
             if targets:  # nothing to aim
                 self._commit(choice, targets[0])
             return
@@ -530,7 +530,7 @@ class BattleScene(Scene):
                 self._commit(self.aim, c)
         elif self.menu == "target" and c in self._targets():
             targets = self._targets()
-            if targets[self.target] is c:
+            if self._spread_aim or targets[self.target] is c:  # (a spread move: tapping any of them)
                 self._commit(self.aim, c)
             else:
                 self.target, self.blink = targets.index(c), 0.0
@@ -579,7 +579,7 @@ class BattleScene(Scene):
                 self.menu = "command"
         elif self.menu == "target":
             targets = self._targets()
-            if up or down:
+            if (up or down) and not self._spread_aim:
                 self.target = (self.target + (1 if down else -1)) % len(targets)
                 self.blink = 0.0
             elif key in CONFIRM_KEYS:
@@ -1269,9 +1269,17 @@ class BattleScene(Scene):
         return menu if menu in ("skills", "items") else ""
 
     @property
-    def _aimed(self) -> Combatant | None:
-        """The combatant under the target cursor."""
-        return self._targets()[self.target] if self.menu == "target" else None
+    def _aimed(self) -> list[Combatant]:
+        """Who the target menu has picked: the one under the cursor, or
+        everyone a spread move hits."""
+        if self.menu != "target":
+            return []
+        targets = self._targets()
+        return targets if self._spread_aim else [targets[self.target]]
+
+    @property
+    def _spread_aim(self) -> bool:
+        return isinstance(self.aim, Move) and self.aim.spread
 
     @staticmethod
     def _badge_pos(row: int) -> tuple[int, int]:
@@ -1296,6 +1304,8 @@ class BattleScene(Scene):
         return [c for c in self.enemies if c.opacity > 0]
 
     def _hint(self) -> str:
+        if self.menu == "target" and self._spread_aim:
+            return "Hits all of them   Enter / tap: confirm   X: back"
         return {
             "command": "Up/Down: choose   Enter: confirm   X: back",
             "skills": "Up/Down: choose skill   Enter: confirm   X: back",
@@ -1342,8 +1352,7 @@ class BattleScene(Scene):
                 if c.status:
                     ui.badge(canvas, self._enemy_badge_pos(i, self._enemy_row_h), STATUSES[c.status].color)
 
-        aimed = self._aimed
-        if aimed:  # a bouncing arrow over its head
+        for aimed in self._aimed:  # a bouncing arrow over each one's head
             body = aimed.body_rect
             tip = body.top - 4 - round(abs(math.sin(self.blink * 6)) * 5)
             x = body.centerx
@@ -1404,7 +1413,7 @@ class BattleScene(Scene):
                 ui.text(window, aim, (SKILL_WINDOW.x + 222, y), ui.GREY)
         else:
             for i, c in enumerate(self._enemy_rows()):
-                color = ui.YELLOW if c is aimed else ui.WHITE
+                color = ui.YELLOW if c in aimed else ui.WHITE
                 row_h = self._enemy_row_h
                 y, size = ENEMY_WINDOW.y + PAD + i * row_h, 28 if row_h == ROW_H else 24
                 ui.text(window, c.label, (ENEMY_WINDOW.x + 12, y), color, size=size)
@@ -1419,12 +1428,10 @@ class BattleScene(Scene):
                 color = ui.GREY if unavailable else ui.WHITE
                 y = COMMAND_WINDOW.y + PAD + i * ROW_H
                 ui.text(window, name, (COMMAND_WINDOW.x + 22, y), color)
-                if name == "Fight" and self.choosing and self.actor.monster.basic_attack.spread:
-                    ui.text(window, "All", (COMMAND_WINDOW.right - 8, y + 2), ui.GREY, size=22, align="right")
 
         for i, c in enumerate(self.party):
             m, y = c.monster, PARTY_WINDOW.y + PAD + i * ROW_H
-            if c is aimed or (self.menu in ("command", "skills", "items") and c is self.actor):
+            if c in aimed or (self.menu in ("command", "skills", "items") and c is self.actor):
                 color = ui.YELLOW
             elif not c.alive:
                 color = ui.GREY
