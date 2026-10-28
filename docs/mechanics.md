@@ -587,18 +587,12 @@ one) guards the last map's exit: the group the area names (`Route.boss_group`),
 or else 4–5 Pokémon from the pool at the same levels; its leader (the
 first) can be drawn bigger (`Route.boss_scale`).
 
-Route 1 (Meadow pool):
+Route 1 (Meadow pool; Red/Blue's Route 1: only Pidgey and Rattata):
 
 | Species | Weight | Levels |
 | --- | --- | --- |
-| Pidgey | 30 | 2–4 |
-| Rattata | 30 | 2–4 |
-| Caterpie | 15 | 2–4 |
-| Weedle | 15 | 2–4 |
-| Oddish | 8 | 3–5 |
-| Bellsprout | 8 | 3–5 |
-| Pikachu | 3 | 3–5 |
-| Bulbasaur | 1 | 4–5 |
+| Pidgey | 55 | 2–5 |
+| Rattata | 45 | 2–4 |
 
 Viridian Forest (3 maps, Viridian City → Pewter City; Red's and Blue's
 forest Pokémon together):

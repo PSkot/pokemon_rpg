@@ -72,20 +72,16 @@ class Theme:
         return min(e.levels[0] for e in self.pool), max(e.levels[1] for e in self.pool)
 
 
+# The meadow: Route 1 (and the look of towns). Its Pokémon are Route 1's
+# in Red/Blue: only Pidgey and Rattata.
 MEADOW = Theme(
     "meadow", "Meadow",
     Palette(fill=(124, 92, 60), fill_dark=(100, 72, 46), fill_light=(148, 112, 76),
             top=(98, 178, 72), top_dark=(70, 140, 56), top_light=(140, 210, 100),
             platform=(150, 96, 48), platform_dark=(96, 58, 28), platform_light=(186, 128, 72)),
     pool=(
-        PoolEntry("pidgey", 30, (2, 4)),
-        PoolEntry("rattata", 30, (2, 4)),
-        PoolEntry("caterpie", 15, (2, 4)),
-        PoolEntry("weedle", 15, (2, 4)),
-        PoolEntry("oddish", 8, (3, 5)),
-        PoolEntry("bellsprout", 8, (3, 5)),
-        PoolEntry("pikachu", 3, (3, 5)),
-        PoolEntry("bulbasaur", 1, (4, 5)),
+        PoolEntry("pidgey", 55, (2, 5)),
+        PoolEntry("rattata", 45, (2, 4)),
     ),
     backdrop=MEADOW_BACKDROP,
 )
