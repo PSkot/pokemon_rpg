@@ -374,6 +374,7 @@ class OverworldScene(MapScene):
         self.entry = Doorway(level.entry_x, level.ground_y(level.entry_x), palette)
         self.exit = Doorway(level.exit_x, level.ground_y(level.exit_x), palette, sealed=bool(self.boss))
         self.fighting: tuple[WildPokemon, BattleScene] | None = None
+        self.battle_event = quests.Event()  # quests started by the last battle's drops
 
     def where(self) -> str:
         inst = self.instance
@@ -432,6 +433,7 @@ class OverworldScene(MapScene):
             self.wild.remove(wild)
             if wild.trainer:  # beaten for good
                 self.game.trainers.add(wild.trainer.key)
+            self.show_event(self.battle_event)
             if wild is self.boss:
                 self._boss_beaten()
                 self.show_event(quests.defeat(self.game, self.instance.route.key))
@@ -481,7 +483,9 @@ class OverworldScene(MapScene):
                                      prize=prize_money(prize, wild.encounter) if trainer else 0,
                                      bonus=boss_loot(route.boss_loot) if boss and not route.boss_chest else None,
                                      on_win=lambda key=route.key, defeated=[s for s, _ in wild.encounter]:
-                                         quests.won_battle(self.game, key, defeated))
+                                         quests.won_battle(self.game, key, defeated, self.battle_event),
+                                     evolves=lambda m: quests.can_evolve(self.game, m))
+                self.battle_event = quests.Event()  # quests a battle's drops start
                 self.fighting = (wild, battle)
                 self.next_scene = Transition(self, battle)
             wild.armed = not touching

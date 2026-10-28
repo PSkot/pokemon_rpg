@@ -44,6 +44,7 @@ arrives around Lv18–19.
 | **Reach** | You arrive in a town (or on a route's last map). |
 | **Hunt** (`hunt(species, count, where)`) | You've beaten `count` of a species in won battles, anywhere (wild or a trainer's). Shown as "Defeat 6 Rattata (Route 1): 3/6". |
 | **Collect** (`collect(item, count, route, species, chance, where)`) | You've collected `count` quest items. In every won battle on `route` (wild or trainer), each defeated Pokémon of `species` drops one with `chance` %. Only while the quest is active; they're not bag items, just the count. |
+| **Evolve** (`Step("evolve", species)`) | You evolve a Pokémon of that species from the party screen (E), once it has the level. |
 | **Hand in** (`HAND_IN`) | You press Up at **any** town's quest board (for now): every quest waiting there is handed in, then the board opens. Board jobs end with it. |
 | *Later:* **Catch**, **Bring an item** | Once catching and key items are used more. |
 
@@ -174,6 +175,26 @@ yet.
   3. Six trainers line the road (see `mechanics.md`, *Trainer battles*).
 - **Rewards:** ₽400, 300 XP.
 - **Unlocks:** nothing yet: Mt. Moon itself comes next.
+
+---
+
+## Evolution quests
+
+Every evolution is unlocked by a quest (`quests.can_evolve`); a line
+without one doesn't evolve yet. These quests don't come from boards:
+they start when their key item turns up: dropped in battles
+(`Quest.drop`: item, route, species, chance; "You found a Metapod
+Shell!" and the New quest notice after the battle), and later from NPCs
+or trainer battles (gyms, the rival, Team Rocket). The item can be found
+at any time; it's only used once the player has a Pokémon of that
+species at its evolution level: the party screen shows "Evolve!" and E
+evolves it, using up the item and finishing the quest. After that the
+line evolves by level as usual (end of a won battle).
+
+| Quest | Item (drop) | Steps | Rewards |
+| --- | --- | --- | --- |
+| Cocoon of Steel | Metapod Shell: 15% per Caterpie or Metapod beaten in Viridian Forest | Evolve a Caterpie (Lv7+) into Metapod | ₽200, 100 XP |
+| Poison Cocoon | Kakuna Shell: 15% per Weedle or Kakuna beaten in Viridian Forest | Evolve a Weedle (Lv7+) into Kakuna | ₽200, 100 XP |
 
 ---
 

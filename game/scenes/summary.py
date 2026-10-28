@@ -4,7 +4,10 @@ Two modes:
   slots    pick a Pokémon (Left/Right) and one of its gear slots (Up/Down)
   choose   pick what goes in that slot: gear from the bag, or "Remove";
            the stats table previews the change
+  evolving the Pokémon evolves (E, once its evolution quest allows it)
 """
+
+import math
 
 from dataclasses import replace
 
@@ -15,11 +18,12 @@ from ..engine import hats, ui
 from ..engine.scene import Scene
 from ..mechanics.combat import CRIT_CHANCE
 from ..mechanics.items import RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text, money_text
-from ..mechanics.pokemon import Monster, animations
+from ..mechanics.pokemon import SPECIES, Monster, animations
 from ..mechanics.status import STATUSES
 from ..mechanics.type_chart import COLORS
 from ..mechanics.type_chart import name as type_name
-from .battle import XP_COLOR
+from ..world import quests
+from .battle import EVOLVE_TIME, XP_COLOR, _silhouette
 from .skill_tree import SkillTreeScene
 
 ROW_H = 19
@@ -45,6 +49,7 @@ BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE)
 HINTS = {
     "slots": ("Left/Right: Pokémon", "Up/Down: gear slot", "Enter: change gear", "S: skills", "Tab: close"),
     "choose": ("Up/Down: choose gear", "Enter: equip", "X: back"),
+    "evolving": (),
 }
 
 
@@ -65,10 +70,8 @@ def _rarity_rank(gear: Gear) -> int:
 
 
 class SummaryScene(Scene):
-    touch_keys = ((pygame.K_s, "Skills"),)
-
     def __init__(self, return_to: Scene, party: list[Monster], bag: Bag):
-        self.return_to = return_to
+        self.return_to = return_to  # a map scene (its game's quests decide evolutions)
         self.party = party
         self.bag = bag
         self.member = 0
@@ -76,6 +79,17 @@ class SummaryScene(Scene):
         self.mode = "slots"
         self.choice = 0      # cursor in the gear list
         self.top = 0         # first row shown, when the list scrolls
+        self.evolve_time = 0.0  # while evolving
+        self.note = ""          # e.g. "Caterpie evolved into Metapod!" (in the info window)
+
+    @property
+    def touch_keys(self):
+        return ((pygame.K_s, "Skills"),) + (((pygame.K_e, "Evolve"),) if self._can_evolve else ())
+
+    @property
+    def _can_evolve(self) -> bool:
+        game = getattr(self.return_to, "game", None)
+        return bool(game) and quests.can_evolve(game, self.monster)
 
     def save_point(self):
         return self.return_to.save_point()
@@ -112,8 +126,11 @@ class SummaryScene(Scene):
         if event.type != pygame.KEYDOWN:
             return
         key = event.key
+        self.note = ""
         if self.mode == "slots":
-            if key in (pygame.K_LEFT, pygame.K_RIGHT):
+            if key == pygame.K_e and self._can_evolve:
+                self.mode, self.evolve_time = "evolving", 0.0
+            elif key in (pygame.K_LEFT, pygame.K_RIGHT):
                 self.member = (self.member + (1 if key == pygame.K_RIGHT else -1)) % len(self.party)
             elif key in (pygame.K_UP, pygame.K_DOWN):
                 self.slot = (self.slot + (1 if key == pygame.K_DOWN else -1)) % len(SLOTS)
@@ -140,6 +157,17 @@ class SummaryScene(Scene):
             elif key in BACK_KEYS:
                 self.mode = "slots"
 
+    def update(self, dt: float) -> None:
+        if self.mode != "evolving":
+            return
+        self.evolve_time += dt
+        if self.evolve_time >= EVOLVE_TIME:
+            m, old = self.monster, self.monster.name
+            event = quests.evolve(self.return_to.game, m)
+            self.return_to.show_event(event)  # (shown back on the map)
+            self.note = f"{old} evolved into {m.name}!"
+            self.mode = "slots"
+
     # ------------------------------------------------------------------- draw
 
     def draw(self, canvas: pygame.Surface) -> None:
@@ -151,6 +179,10 @@ class SummaryScene(Scene):
         frame = idle.frame(0, False).copy()
         # The hat it wears, or the one being tried on while choosing.
         hats.draw_worn(frame, self._preview() or self.monster, idle, 0, frame.get_rect(), False)
+        if self.mode == "evolving":  # (as in battle) a white silhouette switching forms, faster and faster
+            t = self.evolve_time
+            into = animations(SPECIES[self.monster.species.evolution.into])["idle"]
+            frame = _silhouette((into if math.sin((t + 1.125 * t * t) * 2 * math.pi) > 0 else idle).frame(0, False))
         sprite = pygame.transform.scale_by(frame, 2)
         canvas.blit(sprite, sprite.get_rect(center=SPRITE_BOX.center))
         for t, pos in _type_badges(self.monster):
@@ -174,9 +206,15 @@ class SummaryScene(Scene):
     def draw_overlay(self, window: pygame.Surface) -> None:
         self._draw_party(window)
         self._draw_stats(window)
-        if self.mode == "slots":
+        if self.mode != "choose":
             self._draw_slots(window)
-            self._draw_info(window, self.monster.gear.get(self.slot_name))
+            x, y = INFO_WINDOW.x + 12, INFO_WINDOW.y + PAD
+            if self.mode == "evolving":
+                ui.text(window, f"What? {self.monster.name} is evolving!", (x, y), ui.YELLOW)
+            elif self.note:
+                ui.text(window, self.note, (x, y), ui.YELLOW)
+            else:
+                self._draw_info(window, self.monster.gear.get(self.slot_name))
         else:
             self._draw_choices(window)
             option = self._options()[self.choice]
@@ -193,6 +231,9 @@ class SummaryScene(Scene):
             y = PARTY_WINDOW.y + PAD + i * ROW_H * 2
             color = ui.YELLOW if i == self.member else ui.WHITE
             ui.text(window, m.name, (PARTY_WINDOW.x + 22, y), color)
+            game = getattr(self.return_to, "game", None)
+            if game and quests.can_evolve(game, m):
+                ui.text(window, "Evolve!", (PARTY_WINDOW.right - 10, y + 2), GREEN, size=20, align="right")
             ui.text(window, f"Lv{m.level}  {m.hp}/{m.max_hp}", (PARTY_WINDOW.x + 22, y + ROW_H - 3),
                     ui.GREY, size=22)
             if m.status:
@@ -200,6 +241,8 @@ class SummaryScene(Scene):
                 ui.text(window, status.abbrev, (PARTY_WINDOW.right - 10, y + ROW_H - 3), status.color,
                         size=22, align="right")
         hints = HINTS[self.mode]
+        if self.mode == "slots" and self._can_evolve:
+            hints = hints[:3] + ("E: evolve",) + hints[3:]
         money_y = PARTY_WINDOW.bottom - PAD - 11 - len(hints) * 13 - 8
         ui.text(window, money_text(self.bag.money), (PARTY_WINDOW.x + 12, money_y), ui.YELLOW, size=24)
         for i, hint in enumerate(hints):

@@ -3,9 +3,11 @@
 A quest has steps done in order: visit a building in a town (press Up at
 it), defeat a route's boss, reach a town, defeat a number of one species
 ("hunt"), collect a number of quest items that drop in battles on a route
-("collect"), or hand it in at any quest board ("hand_in"). Quests are
-taken from a town's quest board, or start by themselves once the quests
-they need are done. Their state lives in `Game.quests` (quest key → the
+("collect"), hand it in at any quest board ("hand_in"), or evolve a
+Pokémon ("evolve", from the party screen). Quests are taken from a town's
+quest board, start by themselves once the quests they need are done, or
+start when their item drops in a battle (`Quest.drop`: evolution quests).
+Evolutions only happen once their quest unlocks them (`can_evolve`). Their state lives in `Game.quests` (quest key → the
 step it's at; `len(steps)` = done) and `Game.quest_counts` (how far a
 counted step has got).
 
@@ -34,10 +36,12 @@ Line = tuple[str, str]  # (speaker, text) of a dialogue page
 class Step:
     # "visit" (a building in a town), "defeat" (a route's boss), "reach" (a
     # town), "hunt" (defeat `count` of a species), "collect" (`count` quest
-    # items) or "hand_in" (at any quest board)
+    # items), "hand_in" (at any quest board) or "evolve" (a Pokémon, from the
+    # party screen, once it has the level)
     kind: str
     # visit: the building's name; defeat: the route key; reach: the town
-    # key; hunt: the species key; collect: the item's name
+    # key; hunt: the species key; collect: the item's name; evolve: the
+    # species key that evolves
     target: str
     text: str     # the objective, as shown on the map and in the quest log
     town: str = ""  # visit: the town the building is in
@@ -82,6 +86,10 @@ class Quest:
     # or ("pokemon", species, level): it joins the party (or the reserve).
     rewards: tuple[tuple, ...] = ()
     done_dialogue: tuple[Line, ...] = ()  # shown when it's done (after the last step's)
+    # Starts when this key item drops: (item, route, species, chance %): in a
+    # won battle on the route, each defeated Pokémon of those species drops
+    # it with that chance (until it has dropped once).
+    drop: tuple[str, str, tuple[str, ...], int] | None = None
 
 
 QUESTS = {q.key: q for q in [
@@ -178,6 +186,27 @@ QUESTS = {q.key: q for q in [
         board="pewter",
         steps=(hunt("pikachu", 3, "Viridian Forest"), HAND_IN),
         money=800, xp=600,
+    ),
+
+    # Evolutions: each is unlocked by its quest (`can_evolve`); after that,
+    # the line evolves by level as usual. Those not listed can't evolve yet.
+    Quest(
+        "evolve_metapod", "Cocoon of Steel",
+        "An empty Metapod shell, hard as steel. A Caterpie strong enough (Lv7) could learn from it how to "
+        "harden into a Metapod.",
+        drop=("Metapod Shell", "viridian_forest", ("caterpie", "metapod"), 15),
+        steps=(Step("evolve", "caterpie", "Show the Metapod Shell to a Caterpie at Lv7+ (party screen: E)",
+                    takes=("Metapod Shell",)),),
+        money=200, xp=100,
+    ),
+    Quest(
+        "evolve_kakuna", "Poison Cocoon",
+        "An empty Kakuna shell, still smelling of poison. A Weedle strong enough (Lv7) could learn from it how "
+        "to wrap itself up as a Kakuna.",
+        drop=("Kakuna Shell", "viridian_forest", ("weedle", "kakuna"), 15),
+        steps=(Step("evolve", "weedle", "Show the Kakuna Shell to a Weedle at Lv7+ (party screen: E)",
+                    takes=("Kakuna Shell",)),),
+        money=200, xp=100,
     ),
 
     # Pewter City: the first gym, and the road on.
@@ -320,12 +349,23 @@ def reach(game, town: str) -> Event:
     return event
 
 
-def won_battle(game, route: str, defeated: list[str]) -> list[tuple[str, str]]:
+def won_battle(game, route: str, defeated: list[str], event: Event | None = None) -> list[tuple[str, str]]:
     """A battle on `route` was won against `defeated` (species keys): count
-    them for hunts, and roll collect drops. Returns what happened, as
-    (text, detail) rows for the battle's rewards; finished counts move
-    their quest on (to handing it in)."""
+    them for hunts, and roll collect drops and quest items (which start
+    their quest: added to `event`). Returns what happened, as (text,
+    detail) rows for the battle's rewards; finished counts move their
+    quest on (to handing it in)."""
     rows = []
+    for quest in QUESTS.values():
+        if not quest.drop or step(game, quest.key) is not None:
+            continue
+        item, where, species, chance = quest.drop
+        if where == route and any(random.random() * 100 < chance for s in defeated if s in species):
+            game.bag.key_items.append(item)
+            event = event if event is not None else Event()
+            event.dialogue.append(("", f"You found a {item}!"))
+            _start(game, quest.key, event)
+            rows.append((item, f"New quest: {quest.name}"))
     for species in defeated:  # towards recruitment
         line = line_base(species)
         game.defeated[line] += 1
@@ -359,6 +399,32 @@ def ready_to_hand_in(game) -> list[Quest]:
 def hand_in(game) -> Event:
     """At a quest board: finish every quest that's waiting to be handed in."""
     return _advance_where(game, lambda s: s.kind == "hand_in")
+
+
+_EVOLUTION_QUESTS = {s.target: q.key for q in QUESTS.values() for s in q.steps if s.kind == "evolve"}
+
+
+def evolution_unlocked(game, species: str) -> bool:
+    """Whether `species` (a key) evolves by level: its evolution quest is done."""
+    key = _EVOLUTION_QUESTS.get(species)
+    return bool(key) and is_done(game, key)
+
+
+def can_evolve(game, monster: Monster) -> bool:
+    """`monster` has the level to evolve, and its evolution is unlocked or its
+    quest is at the step of evolving it."""
+    key = _EVOLUTION_QUESTS.get(monster.species.key)
+    s = key and current(game, key)
+    return monster.can_evolve and (evolution_unlocked(game, monster.species.key)
+                                   or bool(s and s.kind == "evolve" and s.target == monster.species.key))
+
+
+def evolve(game, monster: Monster) -> Event:
+    """`monster` evolves (outside battle, from the party screen); this moves
+    its evolution quest on if it's at that step."""
+    species = monster.species.key
+    monster.evolve()
+    return _advance_where(game, lambda s: s.kind == "evolve" and s.target == species)
 
 
 def step_text(game, quest: Quest, i: int) -> str:
@@ -462,5 +528,5 @@ def _start_automatic(game, event: Event, town: str = "") -> None:
     """Start the quests without a board that are ready (those that start in
     a town only when arriving in `town`)."""
     for quest in QUESTS.values():
-        if not quest.board and ready(game, quest) and quest.starts_in in ("", town):
+        if not quest.board and not quest.drop and ready(game, quest) and quest.starts_in in ("", town):
             _start(game, quest.key, event)

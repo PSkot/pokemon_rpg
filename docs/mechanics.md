@@ -73,23 +73,33 @@ Example: beating wild Lv6 Pidgey (47), Lv7 Rattata (57) and Lv5 Pidgey
 
 - **Quest XP:** a finished quest gives its XP (`Quest.xp`) to **every**
   party member, fainted ones too (`quests._give_xp`), with the same level
-  ups. A Pokémon that reaches its evolution level this way evolves at its
-  next level up in a battle.
+  ups. A Pokémon that reaches its evolution level this way (and whose
+  evolution is unlocked) evolves at its next level up in a battle, or
+  from the party screen.
 
 ---
 
 ## Evolution
 
 `game/mechanics/pokemon.py` (`EVOLUTIONS`, `Monster.evolve`),
-`game/scenes/battle.py` (`_evolve`)
+`game/world/quests.py` (`can_evolve`, `evolve`), `game/scenes/battle.py`
+(`_evolve`), `game/scenes/summary.py` (E)
 
-Pokémon evolve **by level**, at the levels from Red/Blue. Trade and stone
-evolutions aren't in yet.
+Pokémon evolve at the levels from Red/Blue, but **only once a quest
+unlocks the evolution** (see `quests.md`, *Evolution quests*). Without its
+quest, a line doesn't evolve, whatever its level. For now only Caterpie →
+Metapod and Weedle → Kakuna have quests; Pokémon already evolved stay as
+they are. Trade and stone evolutions aren't in yet.
 
-- **When:** at the end of a won battle, after the XP, for each party member
-  that **leveled up in that battle** and is at or above its evolution
-  level. Its sprite flashes white between the two forms, faster and
-  faster.
+- **First time (the quest):** with the quest's item, a party member of
+  that species at or above the evolution level shows "Evolve!" on the
+  party screen; **E** there evolves it (the same flashing) and finishes
+  the quest.
+- **After that (unlocked):** at the end of a won battle, after the XP, for
+  each party member that **leveled up in that battle** and is at or above
+  its evolution level. Its sprite flashes white between the two forms,
+  faster and faster. E on the party screen also works (e.g. a Pokémon
+  already past the level).
 - **Stopping it:** pressing **X** during the flashing stops the evolution
   (B in Red/Blue). It tries again the next time that Pokémon levels up.
 - **What changes:** the species, and with it base stats, types, sprite,

@@ -133,9 +133,15 @@ non-commercial project.
 - Evolution (`pokemon.py`): `EVOLUTIONS` lists every Red/Blue level
   evolution (species key → `Evolution(into, level)`); trade/stone
   evolutions aren't in yet. An evolution is only active once its target
-  is in `SPECIES` (`Species.evolution`). After a won battle, members that
-  leveled up and reached the level evolve (`BattleScene._evolve`: white
-  flashing; X stops it, retried at the next level-up). The map player
+  is in `SPECIES` (`Species.evolution`) and its evolution quest unlocks it
+  (`quests.can_evolve`: a quest whose step is "evolve" that species; no
+  quest = no evolution). Evolution quests don't come from boards: they
+  start when their key item drops (`Quest.drop`; Metapod/Kakuna Shell in
+  Viridian Forest), later also from NPCs or trainer battles. The first
+  time, E on the party screen evolves an eligible member (same flashing,
+  `quests.evolve`, finishes the quest); once done, members that leveled
+  up in a won battle and reached the level evolve (`BattleScene.evolves`,
+  `_evolve`: X stops it, retried at the next level-up). The map player
   takes the lead Pokémon's species (`Player.become`).
 - Medicine (`items.MEDICINE`: potions, Revive, status cures) is counted in
   `Bag.medicine` and used from the battle's Item menu. Using one takes the

@@ -388,7 +388,8 @@ class BattleScene(Scene):
 
     def __init__(self, return_to: Scene, party: list[Monster], enemies: list[Monster], bag: Bag,
                  loot: LootTable | None = None, backdrop: Backdrop = MEADOW_BACKDROP, boss: bool = False,
-                 trainer: str = "", bonus: LootTable | None = None, on_win=None, prize: int = 0):
+                 trainer: str = "", bonus: LootTable | None = None, on_win=None, prize: int = 0,
+                 evolves=None):
         self.return_to = return_to
         self.backdrop = backdrop
         self.boss = boss  # the area's boss group (changes the intro)
@@ -398,6 +399,9 @@ class BattleScene(Scene):
         # Called when the party wins; returns (text, detail) rows for the
         # rewards (quest progress: Pokémon counted, quest items dropped).
         self.on_win = on_win
+        # Whether a party member that leveled up evolves (its evolution is
+        # unlocked by its quest, quests.can_evolve); None: nobody does.
+        self.evolves = evolves
         self.party = _side(party, enemy=False)
         self.enemies = _side(enemies, enemy=True)
         self.bag = bag
@@ -685,7 +689,7 @@ class BattleScene(Scene):
                 yield VICTORY_PAUSE
                 leveled = yield from self._give_xp()
                 for c in leveled:  # as in Red/Blue: after the battle, on reaching the level
-                    if c.monster.can_evolve:
+                    if self.evolves and self.evolves(c.monster):
                         yield from self._evolve(c)
                 self.message = self._won_text()
                 self._give_rewards()
