@@ -373,6 +373,7 @@ party members skip the menu.
 | Revive | A fainted Pokémon comes back with half its max HP (rounded up) |
 | Antidote / Burn Heal / Paralyze Heal / Awakening / Ice Heal | Cures that one status |
 | Full Heal | Cures any status |
+| Escape Rope | Not in battle: from the pause menu on a route or in a dungeon, back to the last town or Pokémon Center (where a fainted party would wake up) |
 
 ### Berries
 
@@ -499,7 +500,12 @@ rarity picked by weight, at an item level: see *Item level*).
 
 - **Won battle:** the wild table is rolled **once per defeated enemy**, at
   that enemy's level.
-- **Chest** on a map (Up): the chest table once (2–3 rolls).
+- **Poké Ball** lying on a map (Up): the ball table once: **one item**,
+  never nothing. Maps have 2–4 (on platforms or along the ground), a
+  dungeon room's at the same spots every trip.
+- **Chest** on a map (Up): the chest table once (2–3 rolls). Chests are
+  rare: each of a map's 1–2 chest spots gets one 40% of the time
+  (`level.CHEST_CHANCE`), about one chest every two maps.
 - **Boss chest** (areas with a boss): the boss table once (3–4 rolls).
 
 Which **rarities** can drop is set per area (`Route.loot` for wild
@@ -508,6 +514,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Table | Rolls | Nothing | Medicine | Gear |
 | --- | --- | --- | --- | --- |
 | Wild (per enemy) | 1 | 55% | 33% (Potion 18%, Super Potion 4%, status cures 11%) | 12% |
+| Poké Ball | 1 | – | 100%: Potion 40%, Super Potion 14%, Antidote 8%, Revive 6%, Paralyze Heal 6%, Burn Heal 5%, Awakening 5%, **Escape Rope 4%**, Ice Heal 3%, Full Heal 3%, Hyper Potion 2% | – |
 | Chest | 2–3 | – | 67% (Potions 1–3, Revive, cures, ...) | 33% |
 | Boss | 3–4 | – | 45% (Super/Hyper Potion, Revive, Full Heal/Restore) | 55% |
 
@@ -565,14 +572,15 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Awakening | ₽100 | ₽50 |
 | Ice Heal | ₽125 | ₽62 |
 | Full Heal | ₽300 | ₽150 |
+| Escape Rope | ₽275 | ₽137 |
 
 What each Poké Mart sells (`Town.mart`; Gen 1's stock, minus the items
-the game doesn't have yet: Poké Balls, Repel, Escape Rope):
+the game doesn't have yet: Poké Balls, Repel):
 
 | Town | Stock |
 | --- | --- |
 | Viridian City | Potion, Antidote, Paralyze Heal, Burn Heal |
-| Pewter City | Potion, Super Potion, Antidote, Burn Heal, Awakening, Paralyze Heal (Super Potion added: Gen 1 has it from Cerulean) |
+| Pewter City | Potion, Super Potion, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal (Super Potion added: Gen 1 has it from Cerulean) |
 
 ---
 

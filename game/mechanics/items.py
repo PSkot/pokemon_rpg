@@ -335,7 +335,8 @@ class Gear:
 
 @dataclass(frozen=True)
 class Medicine:
-    """An item used up to heal one of your own Pokémon (in battle, for now)."""
+    """An item used up to heal one of your own Pokémon (in battle, for now),
+    or (`escape`) the Escape Rope, used on the map from the pause menu."""
     name: str
     description: str
     price: int              # in Poké Dollars, at a Poké Mart; it sells for half
@@ -343,6 +344,7 @@ class Medicine:
     fraction: float = 0.0   # ... or this share of max HP, if that's more
     revive: bool = False    # only works on (and revives) a fainted Pokémon
     cures: tuple[str, ...] = ()  # statuses it cures
+    escape: bool = False    # Escape Rope: back to the last town or Pokémon Center (not in battle)
 
     @property
     def sell_price(self) -> int:
@@ -374,7 +376,10 @@ MEDICINE = {m.name: m for m in [
     Medicine("Awakening", "Wakes up a sleeping Pokémon.", 100, cures=("sleep",)),
     Medicine("Ice Heal", "Thaws out a frozen Pokémon.", 125, cures=("freeze",)),
     Medicine("Full Heal", "Cures any status.", 300, cures=tuple(STATUSES)),
+    Medicine("Escape Rope", "Leads back to the last town or Pokémon Center (pause menu, on a route).", 275,
+             escape=True),
 ]}
+ESCAPE_ROPE = "Escape Rope"
 
 
 def mod_text(mod: str, value: int) -> str:

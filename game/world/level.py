@@ -27,6 +27,8 @@ PLATFORM_RISE = 3          # tiles above the highest ground under it (a full jum
 CLEARANCE = 10             # rows kept free between a cave's ceiling and the ground
 STAIR_FLAT = 2             # tiles of flat ground each side of a stair
 STAIR_ROOM = 4             # tiles kept clear of Pokémon, chests and platforms each side of a stair
+CHEST_CHANCE = 0.4         # each chest spot gets a chest this often (chests are rare)
+BALLS = (2, 4)             # Poké Balls lying around a map (one item each)
 
 
 @dataclass
@@ -46,6 +48,7 @@ class Level:
     surface: list[int]                    # per column: the row of the ground's top tile
     spawns: list[Spawn] = field(default_factory=list)
     chests: list[tuple[float, float]] = field(default_factory=list)  # (x, feet y)
+    balls: list[tuple[float, float]] = field(default_factory=list)   # Poké Balls lying around: (x, feet y)
     platforms: list[tuple[int, int, int]] = field(default_factory=list)  # (row, first col, last col)
     boss: Spawn | None = None  # the last map of an instance ends with a big group
     stairs: list[int] = field(default_factory=list)  # columns of a dungeon room's stairs and doorways
@@ -233,4 +236,24 @@ def generate(theme: Theme, seed: int, final: bool = False, cols: int | None = No
     if final:
         x = (cols - 12) * TILE
         level.boss = Spawn(x, surface[cols - 12] * TILE, boss_encounter(theme, rng))
+
+    # Fewer chests, and Poké Balls (rolled on their own, so the rest of the
+    # map comes out as it always has from this seed).
+    extra = random.Random(seed * 7919 + 1)
+    level.chests = [spot for spot in level.chests if extra.random() < CHEST_CHANCE]
+    taken = {round(x // TILE) for x, _ in level.chests} | {round(s.x // TILE) for s in level.spawns}
+    wanted = extra.randint(*BALLS)
+    for _ in range(40):  # (tries: a spot can be too close to something)
+        if len(level.balls) == wanted:
+            break
+        if level.platforms and extra.random() < 0.5:
+            row, first, last = extra.choice(level.platforms)
+            c = extra.randint(first, last)
+            spot = (c * TILE + TILE / 2, row * TILE)
+        else:
+            c = extra.randint(FLAT_ENDS, cols - end - 1)
+            spot = (c * TILE + TILE / 2, surface[c] * TILE)
+        if clear(c) and all(abs(c - t) > 1 for t in taken):
+            level.balls.append(spot)
+            taken.add(c)
     return level

@@ -5,7 +5,7 @@ import pygame
 from .. import saves, settings
 from ..dev import DEV, XP_BOOSTS
 from ..engine import touch, ui
-from ..mechanics.items import money_text
+from ..mechanics.items import ESCAPE_ROPE, money_text
 from ..saves import LoadError
 from .controls_menu import ControlsMenu
 from .dev_menu import ItemMaker
@@ -50,6 +50,9 @@ class PauseMenu:
     @property
     def options(self) -> list[str]:
         options = OPTIONS
+        if self.bag is not None and self.bag.medicine.get(ESCAPE_ROPE):  # (only while there's one)
+            i = options.index("Quests") + 1
+            options = options[:i] + [ESCAPE_ROPE] + options[i:]
         if touch.enabled:  # (only with touch controls)
             i = options.index("Dev mode")
             options = options[:i] + ["Controls"] + options[i:]
@@ -71,9 +74,17 @@ class PauseMenu:
 
     def _available(self, option: str) -> bool:
         return {"Save game": self.save_point is not None, "Quests": self.save_point is not None,
+                ESCAPE_ROPE: self._can_escape,
                 "Teleport": self.save_point is not None, "Add item": self.bag is not None}.get(option, True)
 
+    @property
+    def _can_escape(self) -> bool:
+        """On a route or in a dungeon (a map of an instance), not in a town or a battle."""
+        return hasattr(self.save_point, "instance")
+
     def _label(self, option: str) -> str:
+        if option == ESCAPE_ROPE:
+            return f"{ESCAPE_ROPE}  x{self.bag.medicine[ESCAPE_ROPE]}"
         if option == "Dev mode":
             return f"Dev mode: {'On' if DEV.enabled else 'Off'}"
         if option == "XP boost":
@@ -129,6 +140,15 @@ class PauseMenu:
                     self.log = QuestLog(self.save_point.game)
                 else:
                     self.message = "Not during a battle."
+            elif option == ESCAPE_ROPE:
+                if self._can_escape:  # back to the last town / Pokémon Center, as after fainting
+                    game = self.save_point.game
+                    self.bag.use_medicine(ESCAPE_ROPE)
+                    self.loaded = TownScene(game, TOWNS[game.town])
+                    saves.autosave(self.loaded)
+                    self.done = True
+                else:
+                    self.message = "Use it on a route or in a cave."
             elif option == "Add item":
                 if self.bag is not None:
                     self.items = ItemMaker(self.bag)

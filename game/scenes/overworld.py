@@ -2,7 +2,8 @@
 an instance (`OverworldScene`), such as a route between two towns.
 
 On an instance's maps, touching wild Pokémon starts a battle (beaten ones
-are gone for the run), chests open with Up, and the doorway at the end of
+are gone for the run), Poké Balls lying around (one item each) and the
+rarer chests open with Up, and the doorway at the end of
 the map leads on (Up). An instance with a boss ends with a boss group
 guarding the doorway out; beating it opens the way and leaves a reward
 chest. Towns are in town.py.
@@ -21,7 +22,7 @@ from ..dev import DEV
 from ..engine import touch, ui
 from ..engine.scene import Scene, Transition
 from ..mechanics.items import Range
-from ..mechanics.loot import LootTable, boss_loot, chest_loot, wild_loot
+from ..mechanics.loot import LootTable, ball_loot, boss_loot, chest_loot, wild_loot
 from ..mechanics.pokemon import SPECIES, Monster, animations
 from ..world import tileset
 from ..world.instance import RIVAL_STARTER, Instance, Stair, Trainer
@@ -140,6 +141,31 @@ class Chest:
             lock = pygame.Rect(x - 3, body.y - 3, 6, 7)
             pygame.draw.rect(surface, GOLD, lock)
             pygame.draw.rect(surface, OUTLINE, lock, 1)
+
+
+class Ball:
+    """A Poké Ball lying on the map: Up picks it up (one item, `ball_loot`)."""
+
+    R = 5  # radius, logical px
+
+    def __init__(self, x: float, feet_y: float):
+        self.x, self.feet_y = x, feet_y
+        self.taken = False
+
+    @property
+    def rect(self) -> pygame.Rect:
+        return pygame.Rect(round(self.x) - 10, round(self.feet_y) - 16, 20, 16)
+
+    def draw(self, surface: pygame.Surface) -> None:
+        x, y, r = round(self.x), round(self.feet_y) - self.R, self.R
+        pygame.draw.ellipse(surface, (0, 0, 0, 70), (x - r, y + r - 2, 2 * r, 4))  # shadow
+        pygame.draw.circle(surface, (236, 236, 240), (x, y), r)
+        pygame.draw.circle(surface, (220, 52, 52), (x, y), r, draw_top_left=True, draw_top_right=True)
+        pygame.draw.line(surface, OUTLINE, (x - r, y), (x + r, y))
+        pygame.draw.circle(surface, OUTLINE, (x, y), r, 1)
+        pygame.draw.circle(surface, (250, 250, 250), (x, y), 2)
+        pygame.draw.circle(surface, OUTLINE, (x, y), 2, 1)
+        surface.set_at((x - 2, y - 3), (255, 200, 200))  # shine
 
 
 class Doorway:
@@ -424,6 +450,7 @@ class OverworldScene(MapScene):
             self.wild.append(self.boss)
         self.chests = [Chest(x, y, chest_loot(route.loot), level.theme.levels)
                        for x, y in level.chests] if route.wild else []
+        self.balls = [Ball(x, y) for x, y in level.balls] if route.wild else []
         # The doorways in and out; a dungeon room has its stairs instead.
         self.entry = Doorway(level.entry_x, level.ground_y(level.entry_x), palette)
         self.exit = Doorway(level.exit_x, level.ground_y(level.exit_x), palette, sealed=bool(self.boss))
@@ -461,6 +488,9 @@ class OverworldScene(MapScene):
             text += "   the way out is guarded!" if self.boss in self.wild else "   the way out is open"
         return text
 
+    def _ball_at_player(self) -> Ball | None:
+        return next((b for b in self.balls if not b.taken and self.player.body_rect.colliderect(b.rect)), None)
+
     def _chest_at_player(self) -> Chest | None:
         """A closed chest the player is standing at."""
         return next((c for c in self.chests if not c.opened and self.player.body_rect.colliderect(c.rect)),
@@ -475,8 +505,10 @@ class OverworldScene(MapScene):
                      if not thing.sealed and self.player.body_rect.colliderect(thing.rect)), None)
 
     def interact(self) -> None:
-        chest = self._chest_at_player()
-        if chest:
+        chest, ball = self._chest_at_player(), self._ball_at_player()
+        if ball:
+            self._pick_up(ball)
+        elif chest:
             self._open(chest)
         elif self.stairs:
             at = self._stair_at_player()
@@ -491,6 +523,9 @@ class OverworldScene(MapScene):
             self._take(at[0])
 
     def prompt(self) -> tuple[float, float] | None:
+        ball = self._ball_at_player()
+        if ball:
+            return ball.x, ball.feet_y - 26
         chest = self._chest_at_player()
         if chest:
             return chest.x, chest.feet_y - 62
@@ -503,6 +538,14 @@ class OverworldScene(MapScene):
         if self._at_exit():
             return self.exit.x, self.exit.feet_y - 66
         return None
+
+    def _pick_up(self, ball: Ball) -> None:
+        ball.taken = True
+        rewards = ball_loot().roll()
+        for r in rewards:
+            r.give(self.bag)
+        self.show(ui.ListPanel("You found:", [r.row() for r in rewards], (320, 140)))
+        saves.autosave(self)
 
     def _open(self, chest: Chest) -> None:
         chest.opened = True
@@ -615,6 +658,9 @@ class OverworldScene(MapScene):
             self.exit.draw(layer)
         for chest in self.chests:
             chest.draw(layer)
+        for ball in self.balls:
+            if not ball.taken:
+                ball.draw(layer)
         for wild in self.wild:
             wild.draw(layer, self.debug)
 
@@ -641,6 +687,7 @@ class OverworldScene(MapScene):
             "beaten": [i for i, s in enumerate(self.level.spawns) if all(w.spawn is not s for w in self.wild)],
             "boss_beaten": bool(self.boss) and self.boss not in self.wild,
             "opened": [i for i, c in enumerate(self.chests) if c.opened],
+            "balls": [i for i, b in enumerate(self.balls) if b.taken],
         }
 
     def location(self) -> dict:
@@ -660,8 +707,13 @@ class OverworldScene(MapScene):
         if state["boss_beaten"] and self.boss in self.wild:
             self.wild.remove(self.boss)
             self._boss_beaten()
+        # (Indexes past the end: a save from before the map's chests changed.)
         for i in state["opened"]:
-            self.chests[i].opened = True
+            if i < len(self.chests):
+                self.chests[i].opened = True
+        for i in state.get("balls", []):
+            if i < len(self.balls):
+                self.balls[i].taken = True
 
     def restore(self, state: dict) -> None:
         """Back to a saved `location` on this map."""

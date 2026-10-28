@@ -138,6 +138,25 @@ def chest_loot(rarity: Rarities = COMMON_ONLY) -> LootTable:
 
 
 @cache
+def ball_loot() -> LootTable:
+    """A Poké Ball lying on the map: one item, never empty; now and then an
+    Escape Rope."""
+    return LootTable((
+        (40, MedicineDrop("Potion")),
+        (14, MedicineDrop("Super Potion")),
+        (8, MedicineDrop("Antidote")),
+        (6, MedicineDrop("Paralyze Heal")),
+        (5, MedicineDrop("Burn Heal")),
+        (5, MedicineDrop("Awakening")),
+        (3, MedicineDrop("Ice Heal")),
+        (6, MedicineDrop("Revive")),
+        (3, MedicineDrop("Full Heal")),
+        (2, MedicineDrop("Hyper Potion")),
+        (4, MedicineDrop("Escape Rope")),
+    ))
+
+
+@cache
 def boss_loot(rarity: Rarities = EARLY_BOSS) -> LootTable:
     """The reward for beating a boss group: more gear, and better medicine."""
     return LootTable((

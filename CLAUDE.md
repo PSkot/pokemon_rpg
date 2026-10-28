@@ -97,8 +97,9 @@ non-commercial project.
   weights (`wild_loot`, `chest_loot`, `boss_loot`). Each `Route` sets which
   rarities drop (`loot`, `boss_loot`): early on Common only, Uncommon from
   bosses; Rare and up are for later areas. A won battle rolls the
-  battle's table once per enemy; a `Chest` on the map (opened with Up)
-  rolls its table once. Both show a `ui.ListPanel`. The starter begins
+  battle's table once per enemy; Poké Balls on the map (`Level.balls`,
+  `overworld.Ball`, 2–4 a map, Up) give one item (`ball_loot`); the rarer
+  `Chest`s (`level.CHEST_CHANCE`; Up) roll their table once. Both show a `ui.ListPanel`. The starter begins
   with just a Common Oran Berry.
 - XP (`pokemon.py`): defeating a Pokémon is worth `base_exp × level / 7`
   (Gen 1; `Species.base_exp`), and reaching a level takes `level³` total XP.
@@ -144,7 +145,9 @@ non-commercial project.
   `_evolve`: X stops it, retried at the next level-up). The map player
   takes the lead Pokémon's species (`Player.become`).
 - Medicine (`items.MEDICINE`: potions, Revive, status cures) is counted in
-  `Bag.medicine` and used from the battle's Item menu. Using one takes the
+  `Bag.medicine` and used from the battle's Item menu. The Escape Rope is
+  in `MEDICINE` too (`Medicine.escape`: not in battle; pause menu, on an
+  instance map → `TownScene` of `Game.town`). Using one takes the
   user's turn; items act before moves. An item is only used up when it
   has an effect.
 - Status conditions (`status.py`): burn, poison, paralysis, sleep, freeze;
