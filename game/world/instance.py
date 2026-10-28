@@ -184,7 +184,7 @@ class Recruit:
 
 RECRUIT_BUILDING = "Recruitment Center"
 
-# Every line met up to Pewter City and on Route 3 (rare ones need fewer
+# Every line met up to Pewter City, on Route 3 and in Mt. Moon (rare ones need fewer
 # defeats). Starters and others come by their own quests later; Oddish and
 # Bellsprout (Recruit(..., 6, MEADOW, 8)) come back with Routes 24/25,
 # where they live in Red/Blue.
@@ -200,11 +200,15 @@ RECRUITS = {r.species: r for r in [
     Recruit("sandshrew", 10, ROUTE_3, 10),
     Recruit("ekans", 10, ROUTE_3, 10),
     Recruit("jigglypuff", 8, ROUTE_3, 10),
+    Recruit("zubat", 10, MT_MOON, 12),
+    Recruit("paras", 8, MT_MOON, 12),
+    Recruit("clefairy", 4, MT_MOON, 12),
 ]}
 
 
 def _recruit_route(r: Recruit) -> Route:
-    theme = replace(r.area, key=f"recruit_{r.species}", pool=(PoolEntry(r.species, 1, (r.level - 2, r.level)),),
+    theme = replace(r.area, key=f"recruit_{r.species}", decor=r.area.decor_key,
+                    pool=(PoolEntry(r.species, 1, (r.level - 2, r.level)),),
                     group_sizes=((2, 50), (3, 50)))  # a map full of them
     # (No `towns`: walked from any Recruitment Center, and back to it.)
     return Route(r.route_key, f"{SPECIES[r.species].name} Grounds", theme, maps=1, towns=(), boss=True,

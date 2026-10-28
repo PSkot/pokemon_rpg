@@ -276,14 +276,15 @@ def render(level: Level) -> pygame.Surface:
                     _fill_tile(surface, rect, p, rng)
                 else:
                     _top_tile(surface, rect, p, rng)
-                    for chance, draw in DECOR[theme.key]:
+                    for chance, draw in DECOR[theme.decor_key]:
                         if rng.random() < chance:
                             decor.append((draw, rect.left + rng.randint(4, 12), rect.top, rng))
                             break
                 if below != SOLID and row + 1 < ROWS:  # a ceiling's underside
                     _underside(surface, rect, p)
-                    if theme.ceiling and theme.key in CEILING_DECOR and rng.random() < 0.4:
-                        decor.append((CEILING_DECOR[theme.key], rect.left + rng.randint(3, 13), rect.bottom, rng))
+                    if theme.ceiling and theme.decor_key in CEILING_DECOR and rng.random() < 0.4:
+                        decor.append((CEILING_DECOR[theme.decor_key], rect.left + rng.randint(3, 13), rect.bottom,
+                                      rng))
                 # Darken the sides of steps, so height changes read clearly.
                 for dx, edge in ((-1, rect.left), (1, rect.right - 1)):
                     if level.tile(col + dx, row) == EMPTY:

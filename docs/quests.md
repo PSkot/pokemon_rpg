@@ -253,6 +253,9 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | Sandshrew | 10 | Route 3 | 8–10 | Lv13 |
 | Ekans | 10 | Route 3 | 8–10 | Lv13 |
 | Jigglypuff | 8 | Route 3 | 8–10 | Lv13 |
+| Zubat | 10 | Mt. Moon | 10–12 | Lv15 |
+| Paras | 8 | Mt. Moon | 10–12 | Lv15 |
+| Clefairy | 4 | Mt. Moon | 10–12 | Lv15 |
 
 Not every Pokémon comes this way: the starters, and those only met with
 trainers (Geodude, Onix, Diglett), will have special quests. Oddish and

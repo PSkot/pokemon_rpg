@@ -65,6 +65,11 @@ class Theme:
     ceiling: bool = False               # caves have a rocky ceiling
     art: str = "woods"                  # map art (tileset.py): "woods" (Pixellab) or "cave" (drawn in code)
     cave: CaveLook = CaveLook()         # a cave's background colours
+    decor: str = ""                     # whose decorations a code-drawn map uses (tileset.DECOR); "" = its own
+
+    @property
+    def decor_key(self) -> str:
+        return self.decor or self.key
 
     @property
     def levels(self) -> Range:
