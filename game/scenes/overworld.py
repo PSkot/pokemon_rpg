@@ -37,7 +37,7 @@ from .battle import BattleScene
 from .summary import SummaryScene
 
 HELP = ("Left/Right: walk   Shift: run   Space: jump (hold = higher)   Up: open / go through"
-        "   Tab: party   F1: debug   Esc: menu")
+        "   Tab: party   I: bag   Esc: menu")
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z, pygame.K_UP)
 
 WOOD = (150, 96, 48)
@@ -253,6 +253,7 @@ class MapScene(Scene):
     Subclasses put things on it."""
 
     touch_map = True
+    touch_keys = ((pygame.K_i, "Bag"),)
 
     def __init__(self, game: Game, level: Level):
         self.game = game

@@ -362,8 +362,10 @@ party members skip the menu.
   makes that town where a fainted party wakes up: the checkpoint before
   Mt. Moon is the Pokémon Center stop at the end of Route 3.
 - **Medicine** (`game/mechanics/items.py`, `MEDICINE`) is used from the
-  battle's Item menu. It takes the user's turn, and is only used up if
-  it has an effect.
+  battle's Item menu (it takes the user's turn) or from the **bag**
+  outside battle (pause menu → Bag, or I on a map: pick the item, then
+  the party member). It's only used up if it has an effect: Revive only
+  works on a fainted Pokémon, everything else only on one still standing.
 
 | Medicine | Effect |
 | --- | --- |
@@ -373,7 +375,7 @@ party members skip the menu.
 | Revive | A fainted Pokémon comes back with half its max HP (rounded up) |
 | Antidote / Burn Heal / Paralyze Heal / Awakening / Ice Heal | Cures that one status |
 | Full Heal | Cures any status |
-| Escape Rope | Not in battle: from the pause menu on a route or in a dungeon, back to the last town or Pokémon Center (where a fainted party would wake up) |
+| Escape Rope | Not in battle: from the bag on a route or in a dungeon, back to the last town or Pokémon Center (where a fainted party would wake up) |
 
 ### Berries
 

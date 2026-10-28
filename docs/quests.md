@@ -200,7 +200,8 @@ Shell!" and the New quest notice after the battle), and later from NPCs
 or trainer battles (gyms, the rival, Team Rocket). The item can be found
 at any time; it's only used once the player has a Pokémon of that
 species at its evolution level: the party screen shows "Evolve!" and E
-evolves it, using up the item and finishing the quest. After that the
+evolves it (or use the item from the bag's Key items on that Pokémon),
+using up the item and finishing the quest. After that the
 line evolves by level as usual (end of a won battle).
 
 | Quest | Item (drop) | Steps | Rewards |

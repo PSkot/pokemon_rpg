@@ -358,7 +358,23 @@ class Medicine:
         return monster.status in self.cures
 
     def has_effect(self, monster: "Monster") -> bool:
+        if self.revive == monster.alive:  # Revive only on the fainted, the rest only on the standing
+            return False
         return bool(self.heal_amount(monster)) or self.cures_status(monster)
+
+    def use_on(self, monster: "Monster") -> str:
+        """Used outside battle (from the bag): heal and cure `monster` (it
+        must have an effect). Returns what happened."""
+        amount = self.heal_amount(monster)
+        notes = []
+        if self.cures_status(monster):
+            notes.append(STATUSES[monster.status].cured.format(monster.name))
+            monster.cure()
+        if amount:
+            revived = not monster.alive
+            monster.hp += amount
+            notes.insert(0, f"{monster.name} was revived!" if revived else f"{monster.name} recovered {amount} HP!")
+        return " ".join(notes)
 
 
 # Prices are half of Gen 1's (money only comes from quests so far).
@@ -380,6 +396,19 @@ MEDICINE = {m.name: m for m in [
              escape=True),
 ]}
 ESCAPE_ROPE = "Escape Rope"
+
+# Key items (`Bag.key_items`): story items from quests, never sold or used
+# up, except an evolution item, used up by evolving (from the bag or the
+# party screen; see quests.item_evolves).
+KEY_ITEMS = {
+    "Oak's Parcel": "A parcel for Professor Oak, from the Viridian Poké Mart.",
+    "Pokédex": "Professor Oak's high-tech encyclopedia of Pokémon.",
+    "Boulder Badge": "Brock's badge, from the Pewter Gym.",
+    "Metapod Shell": "An empty Metapod shell, hard as steel. Use it on a Caterpie at Lv7 or higher: it evolves "
+                     "into Metapod.",
+    "Kakuna Shell": "An empty Kakuna shell, still smelling of poison. Use it on a Weedle at Lv7 or higher: it "
+                    "evolves into Kakuna.",
+}
 
 
 def mod_text(mod: str, value: int) -> str:

@@ -428,6 +428,20 @@ def can_evolve(game, monster: Monster) -> bool:
                                    or bool(s and s.kind == "evolve" and s.target == monster.species.key))
 
 
+def item_evolves(game, item: str, monster: Monster) -> bool:
+    """Whether key item `item` (an evolution quest's drop) evolves `monster`
+    now: its quest is at the step of evolving that species, and it has the level."""
+    quest = next((q for q in QUESTS.values() if q.drop and q.drop[0] == item), None)
+    s = quest and current(game, quest.key)
+    return bool(s and s.kind == "evolve" and s.target == monster.species.key and monster.can_evolve)
+
+
+def evolution_target(item: str) -> str:
+    """The species key an evolution item works on ("" if it isn't one)."""
+    quest = next((q for q in QUESTS.values() if q.drop and q.drop[0] == item), None)
+    return next((s.target for s in quest.steps if s.kind == "evolve"), "") if quest else ""
+
+
 def evolve(game, monster: Monster) -> Event:
     """`monster` evolves (outside battle, from the party screen); this moves
     its evolution quest on if it's at that step."""

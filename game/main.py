@@ -83,6 +83,10 @@ async def main() -> None:
                     pause = None
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and scene.pausable:
                 pause = PauseMenu(scene.save_point(), scene.bag)
+            elif (event.type == pygame.KEYDOWN and event.key == pygame.K_i and scene.touch_map
+                  and scene.save_point() is not None):  # the bag, straight from a map
+                pause = PauseMenu(scene.save_point(), scene.bag)
+                pause.open_bag(only=True)
             else:
                 scene.handle_event(event)
         for pos, drag in touch.taps():

@@ -145,11 +145,19 @@ non-commercial project.
   `_evolve`: X stops it, retried at the next level-up). The map player
   takes the lead Pokémon's species (`Player.become`).
 - Medicine (`items.MEDICINE`: potions, Revive, status cures) is counted in
-  `Bag.medicine` and used from the battle's Item menu. The Escape Rope is
-  in `MEDICINE` too (`Medicine.escape`: not in battle; pause menu, on an
-  instance map → `TownScene` of `Game.town`). Using one takes the
-  user's turn; items act before moves. An item is only used up when it
-  has an effect.
+  `Bag.medicine` and used from the battle's Item menu (taking the user's
+  turn; items act before moves) or from the bag. The Escape Rope is in
+  `MEDICINE` too (`Medicine.escape`: not in battle; from the bag on an
+  instance map → `TownScene` of `Game.town`). An item is only used up
+  when it has an effect (`Medicine.has_effect`: Revive only on the
+  fainted, the rest only on the standing).
+- The bag (`scenes/bag.py`, `BagScreen`; pause menu → Bag, or I / the
+  Bag touch pill on maps): pockets Items (medicine on a party member,
+  `Medicine.use_on`; Escape Rope), Gear (equip on a party member) and
+  Key items (`items.KEY_ITEMS` descriptions; an evolution item on an
+  eligible member, `quests.item_evolves`, opens the party screen
+  evolving it). Hosted by the pause menu like its other screens;
+  `loaded` switches scene.
 - Status conditions (`status.py`): burn, poison, paralysis, sleep, freeze;
   one per Pokémon, stored on `Monster` and kept after battle; cleared on
   fainting. Asleep/frozen party members skip the menu. Cured by medicine.

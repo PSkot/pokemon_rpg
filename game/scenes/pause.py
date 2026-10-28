@@ -5,9 +5,10 @@ import pygame
 from .. import saves, settings
 from ..dev import DEV, XP_BOOSTS
 from ..engine import touch, ui
-from ..mechanics.items import ESCAPE_ROPE, money_text
+from ..mechanics.items import money_text
 from ..saves import LoadError
 from .controls_menu import ControlsMenu
+from .bag import BagScreen
 from .dev_menu import ItemMaker
 from ..world.towns import TOWNS
 from .quest_ui import QuestLog
@@ -16,7 +17,7 @@ from .save_menu import NEW_SAVE, SaveList
 
 PAD = 9
 ROW_H = 19
-OPTIONS = ["Resume", "Quests", "Save game", "Load game", "Dev mode", "Quit game"]
+OPTIONS = ["Resume", "Bag", "Quests", "Save game", "Load game", "Dev mode", "Quit game"]
 DEV_OPTIONS = ["XP boost", "God mode", "Add item", "Teleport"]  # shown under "Dev mode" while it's on
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 WIDTH = 216
@@ -44,15 +45,14 @@ class PauseMenu:
         self.items: ItemMaker | None = None  # dev mode's item maker, when open
         self.log: QuestLog | None = None     # the quest log, when open
         self.controls: ControlsMenu | None = None  # the touch controls' layout, when open
+        self.bag_screen: BagScreen | None = None   # the bag, when open
+        self.bag_only = False  # opened straight from the map (I): closing the bag resumes
         self.teleport_to = list(TOWNS)[0]    # dev mode: the town Teleport goes to
         self.message = ""
 
     @property
     def options(self) -> list[str]:
         options = OPTIONS
-        if self.bag is not None and self.bag.medicine.get(ESCAPE_ROPE):  # (only while there's one)
-            i = options.index("Quests") + 1
-            options = options[:i] + [ESCAPE_ROPE] + options[i:]
         if touch.enabled:  # (only with touch controls)
             i = options.index("Dev mode")
             options = options[:i] + ["Controls"] + options[i:]
@@ -74,17 +74,14 @@ class PauseMenu:
 
     def _available(self, option: str) -> bool:
         return {"Save game": self.save_point is not None, "Quests": self.save_point is not None,
-                ESCAPE_ROPE: self._can_escape,
+                "Bag": self.save_point is not None and self.bag is not None,
                 "Teleport": self.save_point is not None, "Add item": self.bag is not None}.get(option, True)
 
-    @property
-    def _can_escape(self) -> bool:
-        """On a route or in a dungeon (a map of an instance), not in a town or a battle."""
-        return hasattr(self.save_point, "instance")
+    def open_bag(self, only: bool = False) -> None:
+        """Open the bag (`only`: straight from the map, closing it resumes)."""
+        self.bag_screen, self.bag_only = BagScreen(self.save_point, self.bag), only
 
     def _label(self, option: str) -> str:
-        if option == ESCAPE_ROPE:
-            return f"{ESCAPE_ROPE}  x{self.bag.medicine[ESCAPE_ROPE]}"
         if option == "Dev mode":
             return f"Dev mode: {'On' if DEV.enabled else 'Off'}"
         if option == "XP boost":
@@ -98,6 +95,17 @@ class PauseMenu:
         return option
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        if self.bag_screen:
+            self.bag_screen.handle_event(event)
+            if self.bag_screen.loaded:  # Escape Rope (a town) or an evolution (the party screen)
+                self.loaded = self.bag_screen.loaded
+                if hasattr(self.loaded, "location"):  # (a map: the town the rope led back to)
+                    saves.autosave(self.loaded)
+                self.done = True
+            elif self.bag_screen.closed:
+                self.bag_screen = None
+                self.done = self.bag_only
+            return
         if self.saves:
             self._handle_saves(event)
             return
@@ -140,15 +148,11 @@ class PauseMenu:
                     self.log = QuestLog(self.save_point.game)
                 else:
                     self.message = "Not during a battle."
-            elif option == ESCAPE_ROPE:
-                if self._can_escape:  # back to the last town / Pokémon Center, as after fainting
-                    game = self.save_point.game
-                    self.bag.use_medicine(ESCAPE_ROPE)
-                    self.loaded = TownScene(game, TOWNS[game.town])
-                    saves.autosave(self.loaded)
-                    self.done = True
+            elif option == "Bag":
+                if self._available("Bag"):
+                    self.open_bag()
                 else:
-                    self.message = "Use it on a route or in a cave."
+                    self.message = "Not during a battle."
             elif option == "Add item":
                 if self.bag is not None:
                     self.items = ItemMaker(self.bag)
@@ -205,6 +209,9 @@ class PauseMenu:
         dim = pygame.Surface(window.get_size(), pygame.SRCALPHA)
         dim.fill((0, 0, 0, 120))
         window.blit(dim, (0, 0))
+        if self.bag_screen:
+            self.bag_screen.draw_overlay(window)
+            return
         if self.saves:
             self.saves.draw_overlay(window)
             return
