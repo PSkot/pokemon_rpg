@@ -10,6 +10,7 @@ from dataclasses import replace
 
 import pygame
 
+from .. import settings
 from ..engine import hats, ui
 from ..engine.scene import Scene
 from ..mechanics.combat import CRIT_CHANCE
@@ -33,6 +34,7 @@ LIST_ROWS = len(SLOTS)  # the gear list opens in the gear window
 
 STATS_X = STATS_WINDOW.x + 150  # left edge of the stats table
 COLUMNS = (190, 250, 310)       # right edges of the table's number columns, from STATS_X
+COMPARE_COLUMNS = (125, 180, 245, 305)  # ... while choosing gear: Now / Gear / New / Change
 GREEN = (120, 230, 120)
 RED = (240, 110, 100)
 
@@ -178,11 +180,13 @@ class SummaryScene(Scene):
         else:
             self._draw_choices(window)
             option = self._options()[self.choice]
+            worn = self.monster.gear.get(self.slot_name)
             if option:
-                self._draw_info(window, option)
+                self._draw_info(window, option, worn)
             else:
-                gear = self.monster.gear[self.slot_name]
-                ui.text(window, f"Take off the {gear.name}.", (INFO_WINDOW.x + 12, INFO_WINDOW.y + PAD))
+                x, y = INFO_WINDOW.x + 12, INFO_WINDOW.y + PAD
+                ui.text(window, f"Take off the {worn.name}.", (x, y))
+                self._draw_mods(window, None, worn, y + 31)
 
     def _draw_party(self, window: pygame.Surface) -> None:
         for i, m in enumerate(self.party):
@@ -217,16 +221,18 @@ class SummaryScene(Scene):
             xp_w = ui.font(22).size(f"XP {done}/{needed}" if needed else "XP max")[0] / 2
             ui.text(window, f"{m.skill_points} skill point{'s' if m.skill_points > 1 else ''}", (x + xp_w + 10, y),
                     GREEN, size=22)
-        labels = ("Now", "Gear", "New") if after else ("Base", "Gear", "Total")
-        for label, col in zip(labels, COLUMNS):
+        labels = ("Now", "Gear", "New", "Change") if after else ("Base", "Gear", "Total")
+        columns = COMPARE_COLUMNS if after else COLUMNS
+        for label, col in zip(labels, columns):
             ui.text(window, label, (x + col, y), ui.GREY, size=22, align="right")
 
-        def row(name: str, first: str, first_color, gear: str, gear_color, total: str, total_color) -> None:
+        def row(name: str, first: str, first_color, gear: str, gear_color, total: str, total_color,
+                change: str = "", change_color=ui.GREY) -> None:
             nonlocal y
             y += ROW_H
             ui.text(window, name, (x, y))
-            for s, color, col in ((first, first_color, COLUMNS[0]), (gear, gear_color, COLUMNS[1]),
-                                  (total, total_color, COLUMNS[2])):
+            for s, color, col in zip((first, gear, total, change), (first_color, gear_color, total_color, change_color),
+                                     columns):
                 ui.text(window, s, (x + col, y), color, align="right")
 
         shown = after or m
@@ -237,7 +243,8 @@ class SummaryScene(Scene):
             gear = f"{percent:+d}%" if percent else "-"
             if after:
                 row(STAT_NAMES[stat], str(now), ui.WHITE, gear, _bonus_color(percent),
-                    str(total), _bonus_color(total - now) if total != now else ui.WHITE)
+                    str(total), _bonus_color(total - now) if total != now else ui.WHITE,
+                    f"{total - now:+d}" if total != now else "-", _bonus_color(total - now))
             else:
                 row(STAT_NAMES[stat], str(base), ui.GREY, gear, _bonus_color(percent),
                     str(total), _bonus_color(total - base) if total != base else ui.WHITE)
@@ -250,8 +257,10 @@ class SummaryScene(Scene):
                 return f"{base + v:g}{unit}" if unit else (f"{v:+d}" if v else "-")
             gear = f"{value:+d}{unit}" if value else "-"
             if after:
+                change = value - value_now
                 row(name, fmt(value_now), ui.WHITE, gear, _bonus_color(value),
-                    fmt(value), _bonus_color(value - value_now) if value != value_now else ui.WHITE)
+                    fmt(value), _bonus_color(change) if change else ui.WHITE,
+                    f"{change:+g}{unit}" if change else "-", _bonus_color(change))
             else:
                 row(name, fmt(0) if unit else "-", ui.GREY, gear, _bonus_color(value),
                     fmt(value), _bonus_color(value) if value else ui.WHITE)
@@ -283,7 +292,9 @@ class SummaryScene(Scene):
                 ui.text(window, f"Remove {SLOT_NAMES[self.slot_name].lower()} gear", (GEAR_WINDOW.x + 22, y),
                         ui.GREY)
 
-    def _draw_info(self, window: pygame.Surface, gear: Gear | None) -> None:
+    def _draw_info(self, window: pygame.Surface, gear: Gear | None, worn: Gear | None = None) -> None:
+        """What `gear` is and does; while choosing, its mods are compared
+        with `worn` (what the slot holds now)."""
         x, y = INFO_WINDOW.x + 12, INFO_WINDOW.y + PAD
         if not gear:
             ui.text(window, "Nothing equipped.", (x, y), ui.GREY)
@@ -296,10 +307,34 @@ class SummaryScene(Scene):
         ui.text(window, f"Lv{gear.level} {gear.rarity.name} {SLOT_NAMES[gear.slot]} item"
                         + ("" if usable else f"  (needs Lv{gear.level})"),
                 (INFO_WINDOW.right - 12, y), ui.GREY if usable else RED, align="right")
-        ui.text(window, gear.item.description, (x, y + 15), size=24)
-        mods = gear.mods
-        if not mods and not gear.item.cures:  # (a cure berry's description says what it does)
+        if worn is gear:
+            worn = None  # (nothing to compare)
+        entries = len(gear.mods.keys() | (worn.mods.keys() if worn else set()))
+        if entries <= 9:  # (more need the description's line)
+            ui.text(window, gear.item.description, (x, y + 15), size=24)
+        if not gear.mods and not worn and not gear.item.cures:  # (a cure berry's description says what it does)
             ui.text(window, "No stat changes.", (x, y + 31), ui.GREY, size=24)
-        for i, (mod, value) in enumerate(mods.items()):  # three columns, up to 9
-            pos = (x + (i % 3) * 152, y + 31 + 12 * (i // 3))
-            ui.text(window, mod_text(mod, value), pos, _bonus_color(value), size=22)
+        self._draw_mods(window, gear, worn, y + 31 if entries <= 9 else y + 17)
+
+    def _draw_mods(self, window: pygame.Surface, gear: Gear | None, worn: Gear | None, top: float) -> None:
+        """`gear`'s mods in three columns from `top`; compared with `worn`,
+        each shows how it changes ("(+5)"), and the worn item's mods that
+        `gear` lacks show struck through."""
+        x = INFO_WINDOW.x + 12
+        mods = gear.mods if gear else {}
+        before = worn.mods if worn else {}
+        entries = [(mod, value, False) for mod, value in mods.items()]
+        entries += [(mod, value, True) for mod, value in before.items() if mod not in mods]
+        for i, (mod, value, lost) in enumerate(entries[:12]):
+            pos = (x + (i % 3) * 152, top + 12 * (i // 3))
+            s = mod_text(mod, value)
+            ui.text(window, s, pos, ui.GREY if lost else _bonus_color(value), size=22)
+            width = ui.font(22).size(s)[0] / settings.SCALE
+            if lost:
+                line_y = round((pos[1] + 5) * settings.SCALE)
+                pygame.draw.line(window, ui.GREY, (round(pos[0] * settings.SCALE), line_y),
+                                 (round((pos[0] + width) * settings.SCALE), line_y), 2)
+            change = -value if lost else value - before.get(mod, 0)
+            if worn and change:
+                ui.text(window, f"({change:+d})", (pos[0] + width + 3, pos[1] + 0.5), _bonus_color(change),
+                        size=19)

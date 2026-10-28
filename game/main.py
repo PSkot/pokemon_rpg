@@ -35,10 +35,14 @@ def fit_canvas(size: tuple[int, int]) -> None:
     w, h = size
     scale = min(window.innerWidth / w, window.innerHeight / h)
     width, height = f"{int(w * scale)}px", f"{int(h * scale)}px"
+    # Shrunk to fewer screen pixels than it has (e.g. on phones), the canvas
+    # is smoothed: pixelated, whole columns of pixels drop out of the text.
+    # (devicePixelRatio: screen pixels per CSS px.)
+    rendering = "pixelated" if scale * window.devicePixelRatio >= 1 else "auto"
     style = window.canvas.style
-    if style.width != width or style.height != height:
+    if style.width != width or style.height != height or style.imageRendering != rendering:
         style.width, style.height = width, height
-        style.imageRendering = "pixelated"
+        style.imageRendering = rendering
         platform.document.body.style.background = "#0c0c20"  # (touch.PANEL_COLOR)
 
 

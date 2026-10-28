@@ -53,10 +53,18 @@ non-commercial project.
   `overworld.py`), battle (`battle.py`) and party screen (`summary.py`).
   A scene switches by setting `next_scene`. Scenes
   draw sprites on the logical canvas and text on the scaled window
-  (`draw_overlay`), so text stays sharp.
+  (`draw_overlay`), so text stays sharp. `ui.font` draws every size
+  `ui.TEXT_SCALE` (1.25) bigger than asked, for phones (`ui.text` keeps
+  it centred on its line; touch buttons use `ui.unscaled_font`). In the
+  browser, `fit_canvas` smooths the canvas when it's shown smaller than
+  its pixels (pixelated, text loses columns).
 - Battles: separate battle screen, Final Fantasy style (enemies left, party
   right), strict turn-based: the party picks actions, then everyone's
-  actions play out fastest first. Battle sequences are generator "scripts"
+  actions play out fastest first. Single-target moves/items are aimed in
+  the target menu (arrows, or tap a Pokémon / its row; tap again to
+  confirm; tapping an enemy in the command menu fights it); it starts on
+  the member's last target (`Combatant.last_target`), and the names of
+  members who already aimed show under their targets. Battle sequences are generator "scripts"
   that yield seconds to wait (`BattleScene._round` / `_perform`).
 - Each `Animation` aligns its own baseline (lowest opaque row) to the feet
   position, because rows in a sheet sit at different heights. Rows whose
@@ -233,7 +241,8 @@ non-commercial project.
   `MAX_PARTY` = 4, else `Game.reserve`). Mr. Mime swaps party and reserve.
 - Tab on the map opens the party screen (`summary.py`): stats and gear;
   Enter on a slot lists the bag's gear for it (or Remove), previewing the
-  stat changes, and equips it. S opens the skill tree screen.
+  stat changes (Now / Gear / New / Change) and each mod's difference from
+  the worn item (mods it would lose struck through), and equips it. S opens the skill tree screen.
 - Dev mode (`dev.py`, `DEV`): switched on in the pause menu; not saved.
   XP boost (×1/3/5/10/20, `DEV.xp_multiplier` in `_give_xp`), god mode
   (`DEV.god_mode`: the party takes no damage, every hit knocks an enemy

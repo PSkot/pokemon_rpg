@@ -15,20 +15,38 @@ GREY = (150, 150, 165)
 YELLOW = (248, 224, 96)
 SHADOW = (8, 8, 24)
 
+# Text is drawn this much bigger than the sizes the screens ask for (they
+# were laid out for smaller text), so it stays readable on phones.
+TEXT_SCALE = 1.25
+
 TOP_COLOR = (52, 72, 176)
 BOTTOM_COLOR = (16, 20, 88)
 
 
 @cache
 def font(size: int) -> pygame.font.Font:
+    """The font for text of `size` (enlarged by TEXT_SCALE)."""
+    return pygame.font.Font(None, round(size * TEXT_SCALE))
+
+
+@cache
+def unscaled_font(size: int) -> pygame.font.Font:
+    """The font at exactly `size` (e.g. labels sized to fit a button)."""
     return pygame.font.Font(None, size)
+
+
+@cache
+def _grown(size: int) -> int:
+    """How much taller (window px) text of `size` is than unscaled."""
+    return font(size).get_height() - unscaled_font(size).get_height()
 
 
 def text(window: pygame.Surface, s: str, pos: tuple[float, float], color=WHITE,
          size: int = 28, align: str = "left", shadow: bool = True) -> None:
     """Draw `s`, by default with a drop shadow. `pos` is in logical pixels:
     the top-left, or the top-right / top-centre with `align="right"`/"center"."""
-    x, y = round(pos[0] * settings.SCALE), round(pos[1] * settings.SCALE)
+    # (Grown text stays centred on the line it was laid out for.)
+    x, y = round(pos[0] * settings.SCALE), round(pos[1] * settings.SCALE) - _grown(size) // 2
     f = font(size)
     if align == "right":
         x -= f.size(s)[0]

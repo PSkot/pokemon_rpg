@@ -339,7 +339,7 @@ def draw(window: pygame.Surface, on_map: bool, extra: tuple[tuple[int, str], ...
 
 
 def _label(window: pygame.Surface, s: str, center: tuple[int, int], color, size: int) -> None:
-    font = ui.font(size)
+    font = ui.unscaled_font(size)
     rect = font.render(s, True, color).get_rect(center=center)
     window.blit(font.render(s, True, ui.SHADOW), rect.move(2, 2))
     window.blit(font.render(s, True, color), rect)

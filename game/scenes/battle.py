@@ -49,7 +49,8 @@ STAT_ABBREV = {"attack": "ATK", "defense": "DEF", "speed": "SPD", "accuracy": "A
 SEED_COLOR = (150, 220, 90)
 CONFUSED_COLOR = (230, 150, 230)
 WOUND_COLOR = (230, 90, 90)
-TRIGGER_COLOR = (255, 200, 120)  # a move set off by another (Move.triggers)
+TRIGGER_COLOR = (255, 200, 120)
+TARGETED_COLOR = (255, 236, 150)  # names under the Pokémon earlier party members aim at  # a move set off by another (Move.triggers)
 CONFUSION_ROUNDS = (2, 5)   # turns a confusion lasts (counted on its own turns)
 CONFUSION_SELF_HIT = 0.5    # chance a confused Pokémon hurts itself instead of acting
 SELF_HIT = Move("its confusion", 40, "self")  # typeless, as in Gen 1
@@ -137,6 +138,7 @@ class Combatant:
         self.bleed = 0         # rounds left wounded ...
         self.bleed_share = 0.0  # ... losing this share of max HP each round
         self.berry_used = False  # its berry can be eaten once per battle
+        self.last_target: Combatant | None = None  # who it aimed at last (the target menu starts there)
         self.evolving: Animation | None = None  # the new form's idle pose, while evolving
         self.evolve_time = 0.0
         self.shown_xp = self.xp_goal = self.xp_fraction  # the XP bar fills towards its goal
@@ -489,11 +491,45 @@ class BattleScene(Scene):
             return  # e.g. a Revive with nobody fainted
         self.aim_from, self.aim, self.menu = self.menu, choice, "target"
         self.blink = 0.0
-        self.target = targets.index(self.actor) if self.actor in targets else 0
+        # Start on whoever it aimed at last (if that's still an option), else itself / the first.
+        start = self.actor.last_target if self.actor.last_target in targets else self.actor
+        self.target = targets.index(start) if start in targets else 0
 
     def _commit(self, choice: Choice, target: Combatant) -> None:
         self.actions.append(Action(self.actor, choice, target))
+        if self.menu == "target":
+            self.actor.last_target = target
         self._next_actor()
+
+    def _tapped(self, pos: tuple[float, float]) -> Combatant | None:
+        """The combatant at `pos`: its sprite, or its row in the enemy or party window."""
+        x, y = pos
+        if PARTY_WINDOW.collidepoint(pos):
+            row = int((y - PARTY_WINDOW.y - PAD + 3) // ROW_H)
+            return self.party[row] if 0 <= row < len(self.party) else None
+        if ENEMY_WINDOW.collidepoint(pos) and not self._list_open:
+            rows = self._enemy_rows()
+            row = int((y - ENEMY_WINDOW.y - PAD + 3) // self._enemy_row_h)
+            return rows[row] if 0 <= row < len(rows) else None
+        hits = [c for c in self.everyone if c.opacity > 0 and c.body_rect.inflate(12, 12).collidepoint(pos)]
+        return max(hits, key=lambda c: c.feet_y, default=None)  # (the one in front)
+
+    def tap(self, pos: tuple[float, float], drag: bool) -> None:
+        """Aiming by touch: tapping a target aims at it, tapping it again
+        confirms. Tapping an enemy in the command menu fights it."""
+        c = None if drag else self._tapped(pos)
+        if c is None:
+            return
+        if self.menu == "command" and c.enemy and c.alive:
+            self._choose(self.actor.monster.basic_attack)  # (aims, unless it hits everyone)
+            if self.menu == "target" and c in self._targets():
+                self._commit(self.aim, c)
+        elif self.menu == "target" and c in self._targets():
+            targets = self._targets()
+            if targets[self.target] is c:
+                self._commit(self.aim, c)
+            else:
+                self.target, self.blink = targets.index(c), 0.0
 
     def handle_event(self, event: pygame.event.Event) -> None:
         if event.type != pygame.KEYDOWN:
@@ -1260,7 +1296,7 @@ class BattleScene(Scene):
             "command": "Up/Down: choose   Enter: confirm   X: back",
             "skills": "Up/Down: choose skill   Enter: confirm   X: back",
             "items": "Up/Down: choose item   Enter: confirm   X: back",
-            "target": "Arrows: choose target   Enter: confirm   X: back",
+            "target": "Arrows or tap: choose target   Enter / tap again: confirm   X: back",
         }.get(self.menu, "")
 
     def draw(self, canvas: pygame.Surface) -> None:
@@ -1303,9 +1339,13 @@ class BattleScene(Scene):
                     ui.badge(canvas, self._enemy_badge_pos(i, self._enemy_row_h), STATUSES[c.status].color)
 
         aimed = self._aimed
-        if aimed and self.blink % 0.5 < 0.35:
+        if aimed:  # a bouncing arrow over its head
             body = aimed.body_rect
-            ui.cursor(canvas, body.left - 3, body.centery)
+            tip = body.top - 4 - round(abs(math.sin(self.blink * 6)) * 5)
+            x = body.centerx
+            pygame.draw.polygon(canvas, ui.SHADOW, [(x - 6, tip - 9), (x + 8, tip - 9), (x + 1, tip + 2)])
+            pygame.draw.polygon(canvas, ui.YELLOW, [(x - 7, tip - 10), (x + 7, tip - 10), (x, tip)])
+            pygame.draw.polygon(canvas, ui.SHADOW, [(x - 7, tip - 10), (x + 7, tip - 10), (x, tip)], 1)
         if self.message:
             ui.window_box(canvas, MESSAGE_WINDOW)
         if self.rewards:
@@ -1321,6 +1361,17 @@ class BattleScene(Scene):
                 ui.text(window, key_hint, (MESSAGE_WINDOW.right - 12, MESSAGE_WINDOW.y + PAD), ui.GREY,
                         align="right")
         aimed = self._aimed
+        if self.choosing:  # who the party members before this one aimed at
+            aiming: dict[Combatant, list[str]] = {}
+            for a in self.actions:
+                if isinstance(a.choice, Move) and (a.choice.spread or a.choice.target == "self"):
+                    continue
+                aiming.setdefault(a.target, []).append(a.user.label)
+            for c, users in aiming.items():
+                body = c.body_rect
+                for i, label in enumerate(users):
+                    ui.text(window, label, (body.centerx, body.bottom + 4 + 11 * i), TARGETED_COLOR, size=20,
+                            align="center")
 
         if self.rewards:
             self.rewards.draw_overlay(window)
