@@ -64,7 +64,8 @@ non-commercial project.
   the target menu (arrows, or tap a Pokémon / its row; tap again to
   confirm; tapping an enemy in the command menu fights it); it starts on
   the member's last target (`Combatant.last_target`), and the names of
-  members who already aimed show under their targets. Battle sequences are generator "scripts"
+  members who already aimed show under their targets (a spread move: under
+  every one it hits; Fight shows "All" when it's spread, e.g. Sweeping). Battle sequences are generator "scripts"
   that yield seconds to wait (`BattleScene._round` / `_perform`).
 - Each `Animation` aligns its own baseline (lowest opaque row) to the feet
   position, because rows in a sheet sit at different heights. Rows whose

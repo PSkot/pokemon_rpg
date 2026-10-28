@@ -1365,12 +1365,14 @@ class BattleScene(Scene):
                 ui.text(window, key_hint, (MESSAGE_WINDOW.right - 12, MESSAGE_WINDOW.y + PAD), ui.GREY,
                         align="right")
         aimed = self._aimed
-        if self.choosing:  # who the party members before this one aimed at
+        if self.choosing:  # who the party members before this one aimed at (a spread move: all of them)
             aiming: dict[Combatant, list[str]] = {}
             for a in self.actions:
-                if isinstance(a.choice, Move) and (a.choice.spread or a.choice.target == "self"):
+                if isinstance(a.choice, Move) and a.choice.target == "self":
                     continue
-                aiming.setdefault(a.target, []).append(a.user.label)
+                spread = isinstance(a.choice, Move) and a.choice.spread
+                for target in self._candidates(a.user, a.choice) if spread else [a.target]:
+                    aiming.setdefault(target, []).append(a.user.label)
             for c, users in aiming.items():
                 body = c.body_rect
                 for i, label in enumerate(users):
@@ -1415,7 +1417,10 @@ class BattleScene(Scene):
                 unavailable = ((name == "Item" and not self._medicine()) or (name == "Run" and self.trainer)
                                or (name == "Skills" and self.choosing and not self.actor.monster.moves))
                 color = ui.GREY if unavailable else ui.WHITE
-                ui.text(window, name, (COMMAND_WINDOW.x + 22, COMMAND_WINDOW.y + PAD + i * ROW_H), color)
+                y = COMMAND_WINDOW.y + PAD + i * ROW_H
+                ui.text(window, name, (COMMAND_WINDOW.x + 22, y), color)
+                if name == "Fight" and self.choosing and self.actor.monster.basic_attack.spread:
+                    ui.text(window, "All", (COMMAND_WINDOW.right - 8, y + 2), ui.GREY, size=22, align="right")
 
         for i, c in enumerate(self.party):
             m, y = c.monster, PARTY_WINDOW.y + PAD + i * ROW_H
