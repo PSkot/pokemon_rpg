@@ -176,4 +176,27 @@ PEWTER_GYM = Theme(
                   glow=None),
 )
 
-THEMES = {t.key: t for t in (MEADOW, ROUTE_22, FOREST, ICE_CAVE, ROUTE_3, PEWTER_GYM)}
+# Mt. Moon: a grey-violet cave with faint moonstone glints; its Red/Blue
+# Pokémon, a few levels up (the party comes in around Lv18).
+MT_MOON = Theme(
+    "mt_moon", "Mt. Moon",
+    Palette(fill=(88, 82, 100), fill_dark=(64, 60, 76), fill_light=(120, 114, 136),
+            top=(150, 144, 164), top_dark=(116, 110, 130), top_light=(186, 180, 200),
+            platform=(110, 104, 124), platform_dark=(72, 68, 84), platform_light=(150, 144, 166)),
+    pool=(
+        PoolEntry("zubat", 45, (8, 12)),
+        PoolEntry("geodude", 30, (8, 11)),
+        PoolEntry("paras", 18, (9, 13)),
+        PoolEntry("clefairy", 7, (9, 13)),
+    ),
+    backdrop=Backdrop(sky_top=(22, 20, 34), sky_bottom=(58, 54, 76),
+                      hills=((74, 70, 92), (66, 62, 82)),
+                      field_far=(132, 126, 146), field_near=(110, 104, 124), stripe=(120, 114, 134),
+                      shadow=(70, 66, 82)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(14, 12, 24), sky_bottom=(42, 38, 58), far_rock=(30, 28, 44), near_rock=(48, 44, 64),
+                  glow=((90, 80, 140), (210, 200, 255))),
+)
+
+THEMES = {t.key: t for t in (MEADOW, ROUTE_22, FOREST, ICE_CAVE, ROUTE_3, PEWTER_GYM, MT_MOON)}

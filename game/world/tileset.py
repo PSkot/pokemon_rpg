@@ -137,11 +137,18 @@ def _stalactite(s, x, y, rng, p):
     pygame.draw.line(s, p.fill_light, (x - 1, y), (x, y + h - 2))
 
 
-CEILING_DECOR = {"ice_cave": _icicle, "pewter_gym": _stalactite}  # theme -> what hangs from a cave's ceiling
+def _moonstone(s, x, y, rng, p):
+    """A faint violet glint (Mt. Moon)."""
+    pygame.draw.polygon(s, (150, 130, 210), [(x - 2, y), (x + 2, y), (x + 1, y - 5), (x - 1, y - 5)])
+    s.set_at((x, y - 4), (230, 220, 255))
+
+
+CEILING_DECOR = {"ice_cave": _icicle, "pewter_gym": _stalactite, "mt_moon": _stalactite}  # theme -> what hangs
 
 DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the meadow's come from its tileset)
     "ice_cave": [(0.07, _crystal), (0.10, _snow_mound), (0.05, _rock)],
     "pewter_gym": [(0.12, _rock)],
+    "mt_moon": [(0.10, _rock), (0.03, _moonstone)],
 }
 
 

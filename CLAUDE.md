@@ -163,8 +163,8 @@ non-commercial project.
   `functional_buildings.png`, 2×2 cells of 128×128, drawn by
   `tileset.draw_building` standing on their base row) and doorways onto
   routes (`Town.exits`: at an edge, or at a column inside the town, e.g.
-  Viridian's Route 22 door; Pewter → Route 3 → Mt. Moon, a rest stop
-  with a Pokémon Center until Mt. Moon exists). Poké Marts can be entered
+  Viridian's Route 22 door; Pewter → Route 3 → the Mt. Moon Pokémon
+  Center stop → Mt. Moon (a dungeon) → Route 4). Poké Marts can be entered
   (`Building.inside = "mart"`; `scenes/mart.py`: a one-screen room drawn
   in code, `tileset.mart_room`/`mart_counter`, run by a Meowth, its
   reference icon for now): Up at the counter does a quest step there,
@@ -196,7 +196,16 @@ non-commercial project.
   boss trainers use `Route.prize`). Gyms are routes walked from their
   building (`Route.building`, `wild=False`: only trainers, no chests):
   the Pewter Gym (Jr. Trainer, then Brock; shut once the Boulder Badge is
-  won, `needs` "not_done"). Code-drawn caves take their colours from
+  won, `needs` "not_done"). Dungeons (Mt. Moon, `Route.rooms`): `Room`s
+  joined by `Stair`s (ladder "up"/"down" to another room, arriving at its
+  stair back; "out" doorway to a town); each room is laid out from its own
+  fixed seed (`generate(cols=, stairs=)`: flat, clear ground at each
+  stair) with wild Pokémon rolled per trip; `Instance.rooms` keeps rooms'
+  beaten/opened state for the trip (saved); a room's `boss_group` guards
+  its last stair (`overworld.Ladder`, sealed with rocks). The Mt. Moon
+  Pokémon Center stop (town "mt_moon") is the checkpoint before the cave;
+  Up at any Pokémon Center heals and sets the respawn town. Route 4 is a
+  stop on the far side for now. Code-drawn caves take their colours from
   `Theme.cave` (`CaveLook`) and ceiling decor from `tileset.CEILING_DECOR`.
   Themes (`themes.py`) pick their map art with `Theme.art` ("woods":
   Pixellab ground and background; "cave": drawn in code). `tileset.py` draws the meadow's ground

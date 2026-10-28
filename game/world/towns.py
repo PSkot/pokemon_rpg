@@ -85,8 +85,10 @@ TOWNS = {t.key: t for t in [
     ), exits=(("left", "viridian_forest"), ("right", "route_3")), home_col=23, board_col=15,
        mart=("Potion", "Super Potion", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal")),
     # The Pokémon Center at the foot of Mt. Moon (Gen 1: on Route 4), where
-    # Route 3 ends. Mt. Moon itself comes later.
-    Town("mt_moon", "Mt. Moon", 44, (
+    # Route 3 ends: the last stop before the cave.
+    Town("mt_moon", "Mt. Moon Pokémon Center", 44, (
         Building("Pokémon Center", (FUNCTIONAL, 0), 18),
-    ), exits=(("left", "route_3"),), home_col=14),
+    ), exits=(("left", "route_3"), ("right", "mt_moon_cave")), home_col=14),
+    # Route 4, out of Mt. Moon's far side. Cerulean City comes later.
+    Town("route_4", "Route 4", 40, (), exits=(("left", "mt_moon_cave"),), home_col=8),
 ]}

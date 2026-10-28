@@ -277,6 +277,10 @@ SPECIES.update({
     "sandshrew": _placeholder("027_sandshrew", "Sandshrew", (50, 75, 85, 40), ("ground",), exp=93),
     "ekans": _placeholder("023_ekans", "Ekans", (35, 60, 44, 55), ("poison",), exp=62),
     "jigglypuff": _placeholder("039_jigglypuff", "Jigglypuff", (115, 45, 20, 20), ("normal",), exp=76),
+    # Mt. Moon.
+    "zubat": _placeholder("041_zubat", "Zubat", (40, 45, 35, 55), ("poison", "flying"), exp=54),
+    "paras": _placeholder("046_paras", "Paras", (35, 70, 55, 25), ("bug", "grass"), exp=70),
+    "clefairy": _placeholder("035_clefairy", "Clefairy", (70, 45, 48, 35), ("normal",), exp=68),
 })
 
 _KEYS = {species: key for key, species in SPECIES.items()}

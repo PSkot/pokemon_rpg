@@ -825,6 +825,45 @@ TREES = {t.species[0]: t for t in [
         Link("Lullaby Slaps", "Double Slap", "Sing", 26, (10, 20)),
         Link("Heavy Sleeper", "Body Slam", "Sing", 36, (10, 20)),
     ),
+    _tree(
+        ("zubat", "golbat"),
+        _base("Leech Life"),
+        _move("Supersonic", 10, "leech_life"),
+        _move("Bite", 15, "leech_life"),
+        _move("Confuse Ray", 21, "supersonic"),
+        _move("Wing Attack", 28, "bite"),
+        _move("Swift", 32, "wing_attack"),  # TM39
+        _move("Double-Edge", 38, "wing_attack", stage=1),  # TM10
+        Link("Dizzying Bite", "Bite", "Supersonic", 17, (15, 30)),
+        Link("Draining Swoop", "Wing Attack", "Leech Life", 30, (15, 30)),
+    ),
+    _tree(
+        ("paras", "parasect"),
+        _base("Scratch"),
+        _move("Stun Spore", 13, "scratch"),
+        _move("Leech Life", 20, "scratch"),
+        _move("Mega Drain", 24, "leech_life"),  # TM21
+        _move("Spore", 27, "stun_spore"),
+        _move("Slash", 34, "scratch"),
+        _move("Growth", 41, "spore"),
+        _move("Solar Beam", 44, "mega_drain", stage=1),  # TM22
+        Link("Spore Claws", "Scratch", "Stun Spore", 15, (10, 20)),
+        Link("Fungal Feast", "Leech Life", "Spore", 29, (10, 20)),
+    ),
+    _tree(
+        ("clefairy", "clefable"),  # Clefable evolves by stone (not in yet)
+        _base("Pound"),
+        _base("Growl"),
+        _move("Sing", 13, "growl"),
+        _move("Double Slap", 18, "pound"),
+        _move("Defense Curl", 24, "growl"),
+        _move("Body Slam", 30, "double_slap"),  # TM08
+        _move("Thunder Wave", 34, "sing"),  # TM45
+        _move("Psychic", 40, "thunder_wave"),  # TM29
+        _move("Rest", 44, "defense_curl"),  # TM44
+        Link("Moonlit Song", "Double Slap", "Sing", 20, (10, 20)),
+        Link("Static Slam", "Body Slam", "Thunder Wave", 36, (15, 30)),
+    ),
 ]}
 
 

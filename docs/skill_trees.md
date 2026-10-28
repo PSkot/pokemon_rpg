@@ -751,4 +751,70 @@ Stages: Jigglypuff. Whole tree: 98 points.
 | Lullaby Slaps | Double Slap → Sing | 26 | Jigglypuff | 10% / 20% |
 | Heavy Sleeper | Body Slam → Sing | 36 | Jigglypuff | 10% / 20% |
 
+---
+
+## The Zubat line
+
+Stages: Zubat → Golbat (Lv22, not in the game yet). Whole tree: 107 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Leech Life | free | – | Zubat | Bug, 20 power. Heals the user 1/2 of the damage dealt. | Potent, Venomous, Wounding, Keen, Sweeping, Twin (16) |
+| Supersonic | 10 | Leech Life | Zubat | 55% chance to confuse. | Sure, Wide, Lingering, Dizzying, Quick (9) |
+| Bite | 15 | Leech Life | Zubat | Normal, 60 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Confuse Ray | 21 | Supersonic | Zubat | Confuses an enemy. | Wide, Lingering, Dizzying, Quick (6) |
+| Wing Attack | 28 | Bite | Zubat | Flying, 35 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Swift | 32 | Wing Attack | Zubat | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Double-Edge | 38 | Wing Attack | Golbat | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (18) |
+
+| Link | Sets off | Lv | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Dizzying Bite | Bite → Supersonic | 17 | Zubat | 15% / 30% |
+| Draining Swoop | Wing Attack → Leech Life | 30 | Zubat | 15% / 30% |
+
+---
+
+## The Paras line
+
+Stages: Paras → Parasect (Lv24, not in the game yet). Whole tree: 114 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Scratch | free | – | Paras | Normal, 40 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Stun Spore | 13 | Scratch | Paras | Paralyzes an enemy (75% chance). | Sure, Wide, Lingering, Numbing, Quick (9) |
+| Leech Life | 20 | Scratch | Paras | Bug, 20 power. Heals the user 1/2 of the damage dealt. | Potent, Venomous, Wounding, Keen, Sweeping, Twin (16) |
+| Mega Drain | 24 | Leech Life | Paras | Grass, 40 power. Heals the user 1/2 of the damage dealt. | Potent, Draining, Wounding, Keen, Sweeping, Twin (16) |
+| Spore | 27 | Stun Spore | Paras | Puts an enemy to sleep. | Wide, Lingering, Deep, Quick (6) |
+| Slash | 34 | Scratch | Paras | Normal, 70 power. High critical-hit ratio. | Potent, Staggering, Wounding, Sweeping, Twin (13) |
+| Growth | 41 | Spore | Paras | Raises its Attack 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
+| Solar Beam | 44 | Mega Drain | Parasect | Grass, 120 power. Charges for a round first. | Potent, Draining, Wounding, Keen, Sweeping, Instant, Swift (17) |
+
+| Link | Sets off | Lv | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Spore Claws | Scratch → Stun Spore | 15 | Paras | 10% / 20% |
+| Fungal Feast | Leech Life → Spore | 29 | Paras | 10% / 20% |
+
+---
+
+## The Clefairy line
+
+Stages: Clefairy → Clefable (by stone, not in the game yet). Whole tree: 115 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Pound | free | – | Clefairy | Normal, 40 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Growl | free | – | Clefairy | Lowers an enemy's Attack 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
+| Sing | 13 | Growl | Clefairy | Puts an enemy to sleep (55% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
+| Double Slap | 18 | Pound | Clefairy | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Wounding, Keen, Sweeping, Relentless (16) |
+| Defense Curl | 24 | Growl | Clefairy | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
+| Body Slam | 30 | Double Slap | Clefairy | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Thunder Wave | 34 | Sing | Clefairy | Paralyzes an enemy. Doesn't affect Ground types. | Wide, Lingering, Numbing, Quick (6) |
+| Psychic | 40 | Thunder Wave | Clefairy | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Sweeping, Swift (16) |
+| Rest | 44 | Defense Curl | Clefairy | The user heals fully, is cured, and sleeps for 2 rounds. | Renewing, Quick (4) |
+
+| Link | Sets off | Lv | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Moonlit Song | Double Slap → Sing | 20 | Clefairy | 10% / 20% |
+| Static Slam | Body Slam → Thunder Wave | 36 | Clefairy | 15% / 30% |
+
 <!-- trees:end -->

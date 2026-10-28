@@ -221,7 +221,9 @@ def load(info: SaveInfo):
         if where["kind"] == "town":
             scene = TownScene(game, TOWNS[where["town"]])
         else:
-            instance = Instance(ROUTES[where["route"]], where["destination"], seed=where["seed"], index=where["map"])
+            instance = Instance(ROUTES[where["route"]], where["destination"], seed=where["seed"], index=where["map"],
+                                rooms=dict(where.get("rooms", {})))
+            instance.came_from = where.get("came_from", "")
             scene = OverworldScene(instance, game)
         scene.restore(where)
         return scene

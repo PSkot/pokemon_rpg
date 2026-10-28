@@ -231,6 +231,15 @@ QUESTS = {q.key: q for q in [
         money=400, xp=300,
     ),
     Quest(
+        "through_mt_moon", "Through Mt. Moon",
+        "Mt. Moon's tunnels lead to Route 4 and on to Cerulean City. Ladders go every which way, and Team "
+        "Rocket is said to be digging deep inside.",
+        requires=("to_mt_moon",),
+        steps=(Step("reach", "route_4", "Find the way through Mt. Moon to Route 4"),),
+        money=800, xp=600,
+        rewards=(("medicine", "Super Potion", 3), ("gear", None, "Uncommon", 14)),
+    ),
+    Quest(
         "snake_charmer", "Snake Charmer",
         "Ekans on Route 3 keep frightening travelers. Drive a few of them off.",
         board="pewter", requires=("boulder_badge",),

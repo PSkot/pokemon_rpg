@@ -25,6 +25,8 @@ ARENA = 20                 # flat tiles at the end of an instance's last map (th
 BOSS_SIZE = (4, 5)         # Pokémon in the boss group
 PLATFORM_RISE = 3          # tiles above the highest ground under it (a full jump reaches ~3)
 CLEARANCE = 10             # rows kept free between a cave's ceiling and the ground
+STAIR_FLAT = 2             # tiles of flat ground each side of a stair
+STAIR_ROOM = 4             # tiles kept clear of Pokémon, chests and platforms each side of a stair
 
 
 @dataclass
@@ -46,6 +48,7 @@ class Level:
     chests: list[tuple[float, float]] = field(default_factory=list)  # (x, feet y)
     platforms: list[tuple[int, int, int]] = field(default_factory=list)  # (row, first col, last col)
     boss: Spawn | None = None  # the last map of an instance ends with a big group
+    stairs: list[int] = field(default_factory=list)  # columns of a dungeon room's stairs and doorways
 
     @property
     def cols(self) -> int:
@@ -123,6 +126,28 @@ def _walk(rng: random.Random, cols: int, low: int, high: int, start: int, flat_s
     return heights + [heights[-1]] * flat_end
 
 
+def _flatten(heights: list[int], col: int) -> None:
+    """Make the ground flat for STAIR_FLAT tiles each side of `col`, then
+    ease the ground on either side so no step is more than 2."""
+    lo, hi = max(0, col - STAIR_FLAT), min(len(heights) - 1, col + STAIR_FLAT)
+    for c in range(lo, hi + 1):
+        heights[c] = heights[col]
+    for c in range(hi + 1, len(heights)):
+        heights[c] = max(heights[c - 1] - 2, min(heights[c - 1] + 2, heights[c]))
+    for c in range(lo - 1, -1, -1):
+        heights[c] = max(heights[c + 1] - 2, min(heights[c + 1] + 2, heights[c]))
+
+
+def stair_col(at: float, cols: int) -> int:
+    """The column of a stair `at` this far along a room (0 = its left
+    end's doorway spot, 1 = its right end's)."""
+    if at <= 0:
+        return 2
+    if at >= 1:
+        return cols - 3
+    return max(FLAT_ENDS, min(cols - FLAT_ENDS - 1, round(at * cols)))
+
+
 def _pick(rng: random.Random, weighted):
     """One item of `weighted`, a sequence of (item, weight)."""
     return rng.choices([i for i, _ in weighted], weights=[w for _, w in weighted])[0]
@@ -141,14 +166,24 @@ def boss_encounter(theme: Theme, rng: random.Random) -> list[tuple[str, int]]:
     return [(e.species, rng.randint(*e.levels)) for e in entries]
 
 
-def generate(theme: Theme, seed: int, final: bool = False) -> Level:
-    """A map. The `final` one of an instance ends in an arena with a boss group."""
+def generate(theme: Theme, seed: int, final: bool = False, cols: int | None = None,
+             stairs: tuple[float, ...] = ()) -> Level:
+    """A map. The `final` one of an instance ends in an arena with a boss
+    group. A dungeon room has a set width (`cols`) and stairs at the given
+    spots (see `stair_col`): flat ground, with nothing in the way."""
     rng = random.Random(seed)
-    cols = rng.randint(*WIDTH)
+    cols = cols or rng.randint(*WIDTH)
     end = ARENA if final else FLAT_ENDS
     if final:
         cols += ARENA - FLAT_ENDS
     heights = _walk(rng, cols, *GROUND, start=4, flat_start=FLAT_ENDS, flat_end=end)
+    stair_cols = [stair_col(at, cols) for at in stairs]
+    for col in stair_cols:
+        _flatten(heights, col)
+
+    def clear(col: int) -> bool:  # far enough from every stair
+        return all(abs(col - c) > STAIR_ROOM for c in stair_cols)
+
     surface = [ROWS - h for h in heights]
     grid = [[SOLID if row >= surface[col] else EMPTY for col in range(cols)] for row in range(ROWS)]
 
@@ -161,6 +196,7 @@ def generate(theme: Theme, seed: int, final: bool = False) -> Level:
                 grid[row][col] = SOLID
 
     level = Level(theme, seed, grid, surface)
+    level.stairs = stair_cols
 
     # One-way platforms, a full jump above the highest ground beneath them.
     col = FLAT_ENDS + 4
@@ -168,7 +204,7 @@ def generate(theme: Theme, seed: int, final: bool = False) -> Level:
         length = rng.randint(3, 6)
         span = range(col, col + length)
         row = min(surface[c] for c in span) - PLATFORM_RISE
-        if rng.random() < 0.6 and row - max(ceiling[c] for c in span) >= 4:
+        if rng.random() < 0.6 and row - max(ceiling[c] for c in span) >= 4 and all(map(clear, span)):
             for c in span:
                 grid[row][c] = PLATFORM
             level.platforms.append((row, span.start, span.stop - 1))
@@ -178,7 +214,9 @@ def generate(theme: Theme, seed: int, final: bool = False) -> Level:
     col = FLAT_ENDS + rng.randint(4, 8)
     while col < cols - end:
         x = col * TILE + TILE / 2
-        level.spawns.append(Spawn(x, surface[col] * TILE, encounter(theme, rng)))
+        group = encounter(theme, rng)
+        if clear(col):
+            level.spawns.append(Spawn(x, surface[col] * TILE, group))
         col += rng.randint(9, 16)
 
     # Chests: on platforms when there are some (a reward for the climb).
@@ -188,8 +226,8 @@ def generate(theme: Theme, seed: int, final: bool = False) -> Level:
             spot = ((first + last + 1) / 2 * TILE, row * TILE)
         else:
             c = rng.randint(FLAT_ENDS, cols - end)
-            spot = (c * TILE + TILE / 2, surface[c] * TILE)
-        if spot not in level.chests:
+            spot = (c * TILE + TILE / 2, surface[c] * TILE) if clear(c) else None
+        if spot and spot not in level.chests:
             level.chests.append(spot)
 
     if final:

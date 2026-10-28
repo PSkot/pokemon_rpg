@@ -126,10 +126,16 @@ class TownScene(MapScene):
             if event:
                 self.show_event(event)
                 saves.autosave(self)
+            elif building.name == "Pokémon Center":  # a checkpoint: heals, and a fainted party wakes up here
+                self.game.heal()
+                self.game.town = self.town.key
+                self.show(quest_ui.Dialogue([("Nurse", "We've restored your Pokémon to full health. "
+                                                       "We hope to see you again!")]))
+                saves.autosave(self)
             return
         if door:
             route = ROUTES[door[1]]
-            instance = Instance(route, route.other_end(self.town.key))
+            instance = Instance(route, route.other_end(self.town.key), came_from=self.town.key)
             first_map = OverworldScene(instance, self.game)
             saves.autosave(first_map)
             self.next_scene = Transition(self, first_map, flashes=0)
@@ -141,7 +147,7 @@ class TownScene(MapScene):
         if door:
             return door[0].x, door[0].feet_y - 66
         building = self._building_at_player()
-        if building and (building.inside or self._route_in(building)):  # it can be entered
+        if building and (building.inside or self._route_in(building) or building.name == "Pokémon Center"):
             return building_mid(building), self.level.ground_y(0) - 60
         return None
 

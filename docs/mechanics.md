@@ -358,6 +358,9 @@ party members skip the menu.
 
 - **Towns** fully heal the party (HP and status) on arrival. This is a
   stand-in for Poké Centers and Mom's house.
+- **Pokémon Centers:** Up at one heals the party too (the Nurse), and
+  makes that town where a fainted party wakes up: the checkpoint before
+  Mt. Moon is the Pokémon Center stop at the end of Route 3.
 - **Medicine** (`game/mechanics/items.py`, `MEDICINE`) is used from the
   battle's Item menu. It takes the user's turn, and is only used up if
   it has an effect.
@@ -515,6 +518,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 22 | Common | Common 60%, Uncommon 40% (the rival: a reward roll with the battle, no chest) |
 | Pewter Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (Brock: a reward roll with the battle, no chest) |
 | Route 3 | Common | (no boss) |
+| Mt. Moon | Common | Common 60%, Uncommon 40% (Team Rocket: a reward roll with the battle, no chest) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -643,6 +647,29 @@ below):
 | Jigglypuff | 20 | 3–7 |
 | Ekans | 20 | 6–8 |
 
+**Mt. Moon** (`Route` "mt_moon_cave", a dungeon, see below; entered from
+the Pokémon Center stop at the end of Route 3, out to Route 4; Gen 1's
+Pokémon a few levels up):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Zubat | 45 | 8–12 |
+| Geodude | 30 | 8–11 |
+| Paras | 18 | 9–13 |
+| Clefairy | 7 | 9–13 |
+
+**Dungeons** (`Route.rooms`, `Room`, `Stair`): instead of a row of maps, a
+set of rooms joined by **ladders** (Up to climb; Up or Down to go down a
+hole) and doorways out. Each room is laid out the same every visit (its
+own fixed seed: where the ground, platforms, groups and chests are); the
+wild groups' Pokémon are rolled anew for every trip. During a trip, rooms
+remember what's been beaten and opened (`Instance.rooms`, saved too).
+Mt. Moon: 1F has the entrance and three ladders down: two lead to dead
+ends (one B1F room with loot, or B1F → B2F west with trainers and
+chests), the middle one to B1F → B2F, where a **Team Rocket Grunt**
+(Sandshrew 12, Rattata 12, Zubat 13) blocks the ladder up to the B1F room
+with the way out. Rooms are shown by floor only ("Mt. Moon B1F").
+
 **The Pewter Gym** (`Route` "pewter_gym", walked from the gym building;
 1 map in a rock hall drawn in code, no wild Pokémon, no chests): a **Jr.
 Trainer** (Diglett Lv11, Sandshrew Lv11) midway, and **Brock** (Geodude
@@ -669,7 +696,8 @@ always the same spot), with its team in a row.
 - **prize money:** the trainer's base prize (by class, Gen 1's) × the
   level of its last Pokémon, **halved** like the shop's prices
   (`overworld.prize_money`): Bug Catcher 10, Youngster 15, Lass 15, Jr.
-  Trainer 20, the rival 35, Brock 99 (Lv14 Onix → ₽693);
+  Trainer 20, Team Rocket Grunt 30, the rival 35, Hiker 35, Brock 99
+  (Lv14 Onix → ₽693);
 - map trainers fight **once**: beaten ones are saved (`Game.trainers`) and
   don't come back on later trips.
 
@@ -683,6 +711,13 @@ always the same spot), with its team in a row.
 | Route 3, map 2 | Bug Catcher | Weedle 9, Kakuna 9, Caterpie 9, Metapod 9 | ₽45 |
 | Route 3, map 3 | Youngster | Spearow 14 | ₽105 |
 | Route 3, map 3 | Lass | Jigglypuff 14 | ₽105 |
+| Mt. Moon 1F | Bug Catcher | Weedle 11, Kakuna 11 | ₽55 |
+| Mt. Moon 1F | Lass | Clefairy 14 | ₽105 |
+| Mt. Moon 1F | Youngster | Rattata 10, Rattata 10, Zubat 10 | ₽75 |
+| Mt. Moon B1F (on the way) | Hiker | Geodude 10 ×3, Onix 11 | ₽192 |
+| Mt. Moon B2F west (dead end) | Team Rocket Grunt | Rattata 13, Zubat 13 | ₽195 |
+| Mt. Moon B2F | Team Rocket Grunt | Zubat 12, Ekans 12 | ₽180 |
+| Mt. Moon B2F (boss) | Team Rocket Grunt | Sandshrew 12, Rattata 12, Zubat 13 | ₽195 |
 | Route 22 (boss) | the rival | Pidgey 9, starter 8 | ₽140 |
 
 ---

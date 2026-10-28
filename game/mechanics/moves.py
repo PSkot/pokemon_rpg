@@ -118,6 +118,7 @@ MOVES = {m.name: m for m in [
     # Grass
     Move("Absorb", 20, "enemy", type="grass", drain=0.5),
     Move("Mega Drain", 40, "enemy", type="grass", drain=0.5),
+    Move("Leech Life", 20, "enemy", type="bug", drain=0.5),
     Move("Vine Whip", 35, "enemy", type="grass"),
     Move("Razor Leaf", 55, "enemy", type="grass", crit_ratio=8),
     Move("Petal Dance", 70, "enemy", type="grass", spread=True, self_confuse=True),
@@ -125,6 +126,7 @@ MOVES = {m.name: m for m in [
     Move("Leech Seed", 0, "enemy", type="grass", seed=1 / 16, immune=("grass",)),
     Move("Leaf Shield", 0, "ally", "leaf_shield", type="grass", shield=2),
     Move("Sleep Powder", 0, "enemy", type="grass", **_status("sleep", 75)),
+    Move("Spore", 0, "enemy", type="grass", **_status("sleep")),
     Move("Stun Spore", 0, "enemy", type="grass", **_status("paralysis", 75)),
     # Poison
     Move("Poison Sting", 15, "enemy", type="poison", **_status("poison", 30)),

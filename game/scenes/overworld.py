@@ -6,6 +6,9 @@ are gone for the run), chests open with Up, and the doorway at the end of
 the map leads on (Up). An instance with a boss ends with a boss group
 guarding the doorway out; beating it opens the way and leaves a reward
 chest. Towns are in town.py.
+
+A dungeon's rooms (Mt. Moon) have ladders up and down (`Ladder`) to other
+rooms and doorways out instead: Up (or Down, at a ladder down) uses them.
 """
 
 import math
@@ -21,8 +24,8 @@ from ..mechanics.items import Range
 from ..mechanics.loot import LootTable, boss_loot, chest_loot, wild_loot
 from ..mechanics.pokemon import SPECIES, Monster, animations
 from ..world import tileset
-from ..world.instance import RIVAL_STARTER, Instance, Trainer
-from ..world.level import Level, Spawn
+from ..world.instance import RIVAL_STARTER, Instance, Stair, Trainer
+from ..world.level import SOLID, TILE, Level, Spawn
 from ..world.player import Controls, Player
 from ..world import quests
 from ..world.progress import Game
@@ -173,6 +176,48 @@ class Doorway:
                 pygame.draw.rect(surface, OUTLINE, plank, 1)
 
 
+class Ladder:
+    """A dungeon room's ladder: "down" sticks out of a hole in the floor,
+    "up" climbs to a hole in the ceiling (`ceiling_y`). A `sealed` one is
+    boarded up (a boss guards it)."""
+
+    def __init__(self, kind: str, x: float, feet_y: float, ceiling_y: float, sealed: bool = False):
+        self.kind, self.x, self.feet_y, self.ceiling_y = kind, x, feet_y, ceiling_y
+        self.sealed = sealed
+
+    @property
+    def rect(self) -> pygame.Rect:
+        if self.kind == "down":
+            return pygame.Rect(round(self.x) - 16, round(self.feet_y) - 40, 32, 40)
+        return pygame.Rect(round(self.x) - 12, round(self.feet_y) - 50, 24, 50)
+
+    @property
+    def prompt_top(self) -> float:
+        return self.feet_y - 62 if self.kind == "down" else self.feet_y - 72
+
+    def draw(self, surface: pygame.Surface) -> None:
+        x, ground = round(self.x), round(self.feet_y)
+        if self.kind == "down":
+            hole = pygame.Rect(x - 15, ground - 3, 30, 12)
+            pygame.draw.ellipse(surface, (10, 8, 16), hole)
+            pygame.draw.ellipse(surface, OUTLINE, hole, 1)
+            top, bottom = ground - 14, ground + 5
+        else:
+            top, bottom = round(self.ceiling_y) - 2, ground
+            hole = pygame.Rect(x - 14, top - 8, 28, 12)
+            pygame.draw.ellipse(surface, (10, 8, 16), hole)
+        for rail in (x - 8, x + 6):
+            pygame.draw.rect(surface, WOOD, (rail, top, 3, bottom - top))
+            pygame.draw.line(surface, OUTLINE, (rail - 1, top), (rail - 1, bottom))
+            pygame.draw.line(surface, OUTLINE, (rail + 3, top), (rail + 3, bottom))
+        for y in range(bottom - 4, top, -7):
+            pygame.draw.line(surface, WOOD_DARK, (x - 7, y), (x + 6, y), 2)
+        if self.sealed:  # rocks piled against it
+            for dx, dy, r in ((-9, -6, 7), (6, -7, 8), (-1, -15, 7)):
+                pygame.draw.circle(surface, (96, 90, 104), (x + dx, ground + dy), r)
+                pygame.draw.circle(surface, OUTLINE, (x + dx, ground + dy), r, 1)
+
+
 class MapScene(Scene):
     """A map the player walks around: the tiles, the player and the camera,
     the party screen (Tab), and panels (loot, notices, dialogue, a quest
@@ -218,6 +263,9 @@ class MapScene(Scene):
 
     def interact(self) -> None:
         """Up was pressed."""
+
+    def interact_down(self) -> None:
+        """Down was pressed."""
 
     def prompt(self) -> tuple[float, float] | None:
         """(x, top) for a "press Up" arrow, if there's something to do here."""
@@ -271,6 +319,8 @@ class MapScene(Scene):
             return
         if event.key == pygame.K_UP:
             self.interact()
+        elif event.key == pygame.K_DOWN:
+            self.interact_down()
         elif event.key == pygame.K_SPACE:
             self.jump = True
         elif event.key == pygame.K_TAB:
@@ -343,7 +393,9 @@ class MapScene(Scene):
 class OverworldScene(MapScene):
     """One map of an instance."""
 
-    def __init__(self, instance: Instance, game: Game):
+    def __init__(self, instance: Instance, game: Game, arrive: str = ""):
+        """`arrive` (a dungeon room): the room or town key the player came
+        from; they arrive at the stair or doorway from there."""
         super().__init__(game, instance.level())
         self.instance = instance
         level, palette = self.level, self.level.theme.palette
@@ -360,7 +412,8 @@ class OverworldScene(MapScene):
             if (trainer and trainer.key not in game.trainers) or (not trainer and route.wild):
                 self.wild.append(WildPokemon(spawn))
                 self.wild[-1].trainer = trainer
-        self.trainer = route.trainer  # whose team the boss group is ("" = wild)
+        room = instance.room
+        self.trainer = room.trainer if room else route.trainer  # whose team the boss group is ("" = wild)
         if level.boss and route.boss_after and quests.is_done(game, route.boss_after[0]):
             level.boss.encounter, self.trainer = list(route.boss_after[1]), ""  # the quest's boss is beaten
         if level.boss:  # the rival's starter depends on the player's
@@ -371,14 +424,39 @@ class OverworldScene(MapScene):
             self.wild.append(self.boss)
         self.chests = [Chest(x, y, chest_loot(route.loot), level.theme.levels)
                        for x, y in level.chests] if route.wild else []
+        # The doorways in and out; a dungeon room has its stairs instead.
         self.entry = Doorway(level.entry_x, level.ground_y(level.entry_x), palette)
         self.exit = Doorway(level.exit_x, level.ground_y(level.exit_x), palette, sealed=bool(self.boss))
+        self.stairs: list[tuple[Stair, Doorway | Ladder]] = []
+        if room:
+            for i, (stair, col) in enumerate(zip(room.stairs, level.stairs)):
+                x = col * TILE + TILE / 2
+                sealed = bool(self.boss) and i == len(room.stairs) - 1  # the boss guards the last one
+                thing = (Doorway(x, level.ground_y(x), palette, sealed) if stair.kind == "out"
+                         else Ladder(stair.kind, x, level.ground_y(x), self._ceiling_y(col), sealed))
+                self.stairs.append((stair, thing))
+            self.exit = self.stairs[-1][1]  # (what the boss guards)
+            here = next((thing for stair, thing in self.stairs if stair.to == (arrive or instance.came_from)), None)
+            if here:
+                self.place_player(here.x, 1 if here.x < level.width / 2 else -1)
         self.fighting: tuple[WildPokemon, BattleScene] | None = None
         self.battle_event = quests.Event()  # quests started by the last battle's drops
+        if str(instance.index) in instance.rooms:  # back in a room left earlier this trip
+            self._apply_room_state(instance.rooms[str(instance.index)])
+
+    def _ceiling_y(self, col: int) -> float:
+        """The bottom of the cave's ceiling over `col` (a ladder up reaches it)."""
+        row = 0
+        while row < len(self.level.grid) and self.level.grid[row][col] == SOLID:
+            row += 1
+        return max(row * TILE, self.level.ground_y(col * TILE) - 9 * TILE)
 
     def where(self) -> str:
         inst = self.instance
-        text = f"{inst.route.name}   map {inst.index + 1}/{inst.maps}   to {TOWNS[inst.destination].name}"
+        if inst.room:
+            text = f"{inst.route.name} {inst.room.name}"
+        else:
+            text = f"{inst.route.name}   map {inst.index + 1}/{inst.maps}   to {TOWNS[inst.destination].name}"
         if self.boss:
             text += "   the way out is guarded!" if self.boss in self.wild else "   the way out is open"
         return text
@@ -391,17 +469,37 @@ class OverworldScene(MapScene):
     def _at_exit(self) -> bool:
         return not self.exit.sealed and self.player.body_rect.colliderect(self.exit.rect)
 
+    def _stair_at_player(self) -> tuple[Stair, Doorway | Ladder] | None:
+        """The (open) stair or doorway of a dungeon room the player stands at."""
+        return next(((stair, thing) for stair, thing in self.stairs
+                     if not thing.sealed and self.player.body_rect.colliderect(thing.rect)), None)
+
     def interact(self) -> None:
         chest = self._chest_at_player()
         if chest:
             self._open(chest)
+        elif self.stairs:
+            at = self._stair_at_player()
+            if at:
+                self._take(at[0])
         elif self._at_exit():
             self._go_on()
+
+    def interact_down(self) -> None:
+        at = self._stair_at_player()
+        if at and at[0].kind == "down":
+            self._take(at[0])
 
     def prompt(self) -> tuple[float, float] | None:
         chest = self._chest_at_player()
         if chest:
             return chest.x, chest.feet_y - 62
+        if self.stairs:
+            at = self._stair_at_player()
+            if not at:
+                return None
+            thing = at[1]
+            return thing.x, (thing.prompt_top if isinstance(thing, Ladder) else thing.feet_y - 66)
         if self._at_exit():
             return self.exit.x, self.exit.feet_y - 66
         return None
@@ -413,6 +511,23 @@ class OverworldScene(MapScene):
             r.give(self.bag)
         self.show(ui.ListPanel("The chest contained:", [r.row() for r in rewards], (320, 140)))
         saves.autosave(self)
+
+    def _take(self, stair: Stair) -> None:
+        """Up or down a ladder to another room of the dungeon, or out of a
+        doorway into a town (going through to the far end clears it). The
+        room left keeps what's been beaten and opened for this trip."""
+        inst = self.instance
+        inst.rooms[str(inst.index)] = self.room_state()
+        if stair.kind == "out":
+            if stair.to == inst.destination:
+                self.game.cleared[inst.route.key] += 1
+            next_map = town_scene(self.game, TOWNS[stair.to], arrive=inst.route.key)
+        else:
+            here = inst.room.key
+            inst.index = next(i for i, room in enumerate(inst.route.rooms) if room.key == stair.to)
+            next_map = OverworldScene(inst, self.game, arrive=here)
+        saves.autosave(next_map)
+        self.next_scene = Transition(self, next_map, flashes=0)
 
     def _go_on(self) -> None:
         """Through the doorway: the next map, or into the town at the end of
@@ -476,7 +591,8 @@ class OverworldScene(MapScene):
                     enemy.scale = scale
                 route, boss = self.instance.route, wild is self.boss
                 loot = wild_loot(route.boss_loot if boss else route.loot)
-                trainer, prize = (self.trainer, route.prize) if boss else (
+                boss_prize = self.instance.room.prize if self.instance.room else route.prize
+                trainer, prize = (self.trainer, boss_prize) if boss else (
                     (wild.trainer.name, wild.trainer.prize) if wild.trainer else ("", 0))
                 battle = BattleScene(self, self.party, enemies, self.bag, loot=loot,
                                      backdrop=self.level.theme.backdrop, boss=boss, trainer=trainer,
@@ -491,8 +607,12 @@ class OverworldScene(MapScene):
             wild.armed = not touching
 
     def draw_things(self, layer: pygame.Surface) -> None:
-        self.entry.draw(layer)
-        self.exit.draw(layer)
+        if self.stairs:
+            for _, thing in self.stairs:
+                thing.draw(layer)
+        else:
+            self.entry.draw(layer)
+            self.exit.draw(layer)
         for chest in self.chests:
             chest.draw(layer)
         for wild in self.wild:
@@ -515,28 +635,37 @@ class OverworldScene(MapScene):
         # Not right after a battle, or while the party is about to head home.
         return None if self.fighting else super().save_point()
 
-    def location(self) -> dict:
-        """Where the run is at: the map, what's been beaten and opened on it,
-        and where the player stands."""
-        inst, p = self.instance, self.player
+    def room_state(self) -> dict:
+        """What's been beaten and opened on this map."""
         return {
-            "kind": "route", "route": inst.route.key, "destination": inst.destination,
-            "seed": inst.seed, "map": inst.index,
             "beaten": [i for i, s in enumerate(self.level.spawns) if all(w.spawn is not s for w in self.wild)],
             "boss_beaten": bool(self.boss) and self.boss not in self.wild,
             "opened": [i for i, c in enumerate(self.chests) if c.opened],
+        }
+
+    def location(self) -> dict:
+        """Where the run is at: the map, what's been beaten and opened on it
+        (in a dungeon: in every room visited), and where the player stands."""
+        inst, p = self.instance, self.player
+        return {
+            "kind": "route", "route": inst.route.key, "destination": inst.destination,
+            "seed": inst.seed, "map": inst.index, **self.room_state(),
+            "rooms": inst.rooms, "came_from": inst.came_from,
             "player": [p.x, p.feet_y, p.facing],
         }
 
-    def restore(self, state: dict) -> None:
-        """Back to a saved `location` on this map."""
+    def _apply_room_state(self, state: dict) -> None:
         beaten = [self.level.spawns[i] for i in state["beaten"]]
         self.wild = [w for w in self.wild if all(w.spawn is not s for s in beaten)]
-        if state["boss_beaten"]:
+        if state["boss_beaten"] and self.boss in self.wild:
             self.wild.remove(self.boss)
             self._boss_beaten()
         for i in state["opened"]:
             self.chests[i].opened = True
+
+    def restore(self, state: dict) -> None:
+        """Back to a saved `location` on this map."""
+        self._apply_room_state(state)
         p = self.player
         p.x, p.feet_y, p.facing = state["player"]
         self._follow()

@@ -174,7 +174,19 @@ yet.
 - **Steps:** reach **Mt. Moon** (the Pokémon Center at its foot) by Route
   3. Six trainers line the road (see `mechanics.md`, *Trainer battles*).
 - **Rewards:** ₽400, 300 XP.
-- **Unlocks:** nothing yet: Mt. Moon itself comes next.
+- **Unlocks:** quest 5 (Mt. Moon's doorway is on the stop's right edge).
+
+### 5. Through Mt. Moon
+
+- **Starts:** automatically when quest 4 is done (or on arriving at the
+  Mt. Moon Pokémon Center if it already is).
+- **Steps:** reach **Route 4** through Mt. Moon, a dungeon of ladders and
+  dead ends (see `mechanics.md`, *Dungeons*); a Team Rocket Grunt on B2F
+  guards the ladder to the way out.
+- **Rewards:** ₽800, 600 XP, 3 Super Potions and an Uncommon gear piece
+  (item level 14).
+- **Unlocks:** nothing yet: Route 4 is a stop for now; Cerulean City
+  comes next.
 
 ---
 
