@@ -185,14 +185,14 @@ class Recruit:
 RECRUIT_BUILDING = "Recruitment Center"
 
 # Every line met up to Pewter City and on Route 3 (rare ones need fewer
-# defeats). Starters and others come by their own quests later.
+# defeats). Starters and others come by their own quests later; Oddish and
+# Bellsprout (Recruit(..., 6, MEADOW, 8)) come back with Routes 24/25,
+# where they live in Red/Blue.
 RECRUITS = {r.species: r for r in [
     Recruit("pidgey", 10, MEADOW, 6),
     Recruit("rattata", 10, MEADOW, 6),
     Recruit("caterpie", 10, FOREST, 6),
     Recruit("weedle", 10, FOREST, 6),
-    Recruit("oddish", 6, MEADOW, 8),
-    Recruit("bellsprout", 6, MEADOW, 8),
     Recruit("pikachu", 4, FOREST, 8),
     Recruit("spearow", 10, ROUTE_22, 8),
     Recruit("nidoran_f", 10, ROUTE_22, 8),

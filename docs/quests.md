@@ -246,8 +246,6 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | Rattata | 10 | Route 1 | 4–6 | Lv9 |
 | Caterpie | 10 | Viridian Forest | 4–6 | Lv9 |
 | Weedle | 10 | Viridian Forest | 4–6 | Lv9 |
-| Oddish | 6 | Route 1 | 6–8 | Lv11 |
-| Bellsprout | 6 | Route 1 | 6–8 | Lv11 |
 | Pikachu | 4 | Viridian Forest | 6–8 | Lv11 |
 | Spearow | 10 | Route 22 | 6–8 | Lv11 |
 | Nidoran F | 10 | Route 22 | 6–8 | Lv11 |
@@ -257,7 +255,9 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | Jigglypuff | 8 | Route 3 | 8–10 | Lv13 |
 
 Not every Pokémon comes this way: the starters, and those only met with
-trainers (Geodude, Onix, Diglett), will have special quests.
+trainers (Geodude, Onix, Diglett), will have special quests. Oddish and
+Bellsprout are hidden until Routes 24/25 (where they live in Red/Blue)
+exist.
 
 ---
 
