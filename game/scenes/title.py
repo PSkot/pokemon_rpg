@@ -1,5 +1,7 @@
 """The title screen: continue the latest save, load one, or start a new game."""
 
+from functools import cache
+
 import pygame
 
 from .. import saves, settings
@@ -12,6 +14,12 @@ from .starter import StarterScene
 PAD = 9
 ROW_H = 19
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
+BACKGROUND = settings.ASSETS / "sprites" / "pixellab" / "backdrops" / "title.png"  # 320×180, drawn 2×
+
+
+@cache
+def _background() -> pygame.Surface:
+    return pygame.transform.scale(pygame.image.load(BACKGROUND).convert(), settings.LOGICAL_SIZE)
 
 
 class TitleScene(Scene):
@@ -63,9 +71,12 @@ class TitleScene(Scene):
                 self.next_scene = Transition(self, StarterScene(self), flashes=0)
 
     def draw(self, canvas: pygame.Surface) -> None:
-        canvas.fill((24, 32, 72))
-        for y in range(0, settings.LOGICAL_SIZE[1], 4):  # faint stripes
-            pygame.draw.line(canvas, (28, 38, 82), (0, y), (settings.LOGICAL_SIZE[0], y))
+        canvas.blit(_background(), (0, 0))
+        band = pygame.Surface((settings.LOGICAL_SIZE[0], 1), pygame.SRCALPHA)
+        band.fill((10, 14, 40, 150))  # dark bands under the title and the save line, so they read
+        canvas.blit(pygame.transform.scale(band, (settings.LOGICAL_SIZE[0], 40)), (0, 90))
+        if self.latest or self.message:
+            canvas.blit(pygame.transform.scale(band, (settings.LOGICAL_SIZE[0], 30)), (0, self.menu.bottom + 4))
         ui.window_box(canvas, self.menu)
         ui.cursor(canvas, self.menu.x + 16, self.menu.y + PAD + 5 + self.choice * ROW_H)
 

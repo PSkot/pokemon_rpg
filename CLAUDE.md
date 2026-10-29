@@ -373,6 +373,12 @@ non-commercial project.
   per quest on offer), doorways (`Theme.doorway`: a stone arch outside, a
   rock arch in Mt. Moon; "" = drawn in code, boards over a sealed one in
   code) and the ladder (its 16 px middle repeated to any height).
+- Painted far layers (`assets/sprites/pixellab/far/`, `Theme.far`): Viridian
+  Forest's and Route 3's maps show a 320×180 painting (drawn 2×, mirrored
+  every other copy) instead of the meadow's sky and hills, with the
+  meadow's tree line in front.
+- The title screen's background: `backdrops/title.png` (dark bands keep
+  the title and save line readable).
 - Cave walls (`assets/sprites/pixellab/walls/`, `CaveLook.wall`): 320×180
   paintings of Mt. Moon's and the Pewter Gym's far wall, drawn 2×,
   mirrored every other copy, dimmed (`dim`); the code-drawn rock in front

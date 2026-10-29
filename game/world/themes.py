@@ -75,6 +75,7 @@ class Theme:
     cave: CaveLook = CaveLook()         # a cave's background colours
     decor: str = ""                     # whose decorations a code-drawn map uses (tileset.DECOR); "" = its own
     doorway: str = "doorway"            # its doorways' prop (tileset.draw_prop); "" = drawn in code
+    far: str = ""                       # "woods" maps: a painted far layer (pixellab/far/) instead of sky and hills
 
     @property
     def decor_key(self) -> str:
@@ -139,6 +140,7 @@ FOREST = Theme(
                       hills=((52, 104, 64), (44, 92, 56)),
                       field_far=(88, 150, 72), field_near=(62, 122, 56), stripe=(74, 136, 64),
                       shadow=(40, 80, 40)),
+    far="forest.png",
 )
 
 # Route 22, west of Viridian: its Red/Blue Pokémon (same look as the meadow).
@@ -167,6 +169,7 @@ ROUTE_3 = Theme(
     ),
     backdrop=Backdrop(art="route_3.png", field_far=(176, 176, 96), field_near=(150, 150, 76), stripe=(162, 162, 86),
                       shadow=(100, 100, 50)),  # a dry, sandy field
+    far="route_3.png",
 )
 
 # The Pewter Gym: an indoor rock hall (drawn in code). Its pool is never
