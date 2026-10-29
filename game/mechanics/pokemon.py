@@ -274,16 +274,16 @@ def _animated(key: str, name: str, stats: tuple[int, int, int, int], types: tupl
 SPECIES.update({
     "spearow": _animated("spearow", "Spearow", (40, 60, 30, 70), ("normal", "flying"), exp=58, hit=4),
     # (The game's font has no ♀/♂ symbols.)
-    "nidoran_f": _animated("nidoran_f", "Nidoran F", (55, 47, 52, 41), ("poison",), exp=59, hit=5),
-    "nidoran_m": _animated("nidoran_m", "Nidoran M", (46, 57, 40, 50), ("poison",), exp=60, hit=5),
+    "nidoran_f": _animated("nidoran_f", "Nidoran F", (55, 47, 52, 41), ("poison",), exp=59, hit=4),
+    "nidoran_m": _animated("nidoran_m", "Nidoran M", (46, 57, 40, 50), ("poison",), exp=60, hit=4),
     "rattata": _animated("rattata", "Rattata", (30, 56, 35, 72), ("normal",), exp=57, hit=5),
-    "caterpie": _animated("caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), exp=53, hit=6),
-    "metapod": _animated("metapod", "Metapod", (50, 20, 55, 30), ("bug",), exp=72, hit=6),
-    "weedle": _animated("weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"), exp=52, hit=6),
-    "kakuna": _animated("kakuna", "Kakuna", (45, 25, 50, 35), ("bug", "poison"), exp=71, hit=4),
+    "caterpie": _animated("caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), exp=53, hit=5),
+    "metapod": _animated("metapod", "Metapod", (50, 20, 55, 30), ("bug",), exp=72, hit=5),
+    "weedle": _animated("weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"), exp=52, hit=4),
+    "kakuna": _animated("kakuna", "Kakuna", (45, 25, 50, 35), ("bug", "poison"), exp=71, hit=5),
     "oddish": _placeholder("043_oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"), exp=78),
     "bellsprout": _placeholder("069_bellsprout", "Bellsprout", (50, 75, 35, 40), ("grass", "poison"), exp=84),
-    "pikachu": _animated("pikachu", "Pikachu", (35, 55, 30, 90), ("electric",), exp=82, hit=6),
+    "pikachu": _animated("pikachu", "Pikachu", (35, 55, 30, 90), ("electric",), exp=82, hit=5),
     "seel": _placeholder("086_seel", "Seel", (65, 45, 55, 45), ("water",), exp=100),
     "shellder": _placeholder("090_shellder", "Shellder", (30, 65, 100, 40), ("water",), exp=97),
     "psyduck": _placeholder("054_psyduck", "Psyduck", (50, 52, 48, 55), ("water",), exp=80),
@@ -292,16 +292,16 @@ SPECIES.update({
     "dewgong": _placeholder("087_dewgong", "Dewgong", (90, 70, 80, 70), ("water", "ice"), exp=176),
     "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60), ("water", "ice"), exp=219),
     # The Pewter Gym and Route 3.
-    "geodude": _animated("geodude", "Geodude", (40, 80, 100, 20), ("rock", "ground"), exp=86, hit=3),
+    "geodude": _animated("geodude", "Geodude", (40, 80, 100, 20), ("rock", "ground"), exp=86, hit=5),
     "onix": _animated("onix", "Onix", (35, 45, 160, 70), ("rock", "ground"), exp=108, hit=5, size=1.5),
-    "diglett": _animated("diglett", "Diglett", (10, 55, 25, 95), ("ground",), exp=81, hit=6),
-    "sandshrew": _animated("sandshrew", "Sandshrew", (50, 75, 85, 40), ("ground",), exp=93, hit=4),
-    "ekans": _animated("ekans", "Ekans", (35, 60, 44, 55), ("poison",), exp=62, hit=5),
-    "jigglypuff": _animated("jigglypuff", "Jigglypuff", (115, 45, 20, 20), ("normal",), exp=76, hit=6),
+    "diglett": _animated("diglett", "Diglett", (10, 55, 25, 95), ("ground",), exp=81, hit=4),
+    "sandshrew": _animated("sandshrew", "Sandshrew", (50, 75, 85, 40), ("ground",), exp=93, hit=5),
+    "ekans": _animated("ekans", "Ekans", (35, 60, 44, 55), ("poison",), exp=62, hit=4),
+    "jigglypuff": _animated("jigglypuff", "Jigglypuff", (115, 45, 20, 20), ("normal",), exp=76, hit=4),
     # Mt. Moon.
-    "zubat": _animated("zubat", "Zubat", (40, 45, 35, 55), ("poison", "flying"), exp=54, hit=4),
-    "paras": _animated("paras", "Paras", (35, 70, 55, 25), ("bug", "grass"), exp=70, hit=5),
-    "clefairy": _animated("clefairy", "Clefairy", (70, 45, 48, 35), ("normal",), exp=68, hit=4),
+    "zubat": _animated("zubat", "Zubat", (40, 45, 35, 55), ("poison", "flying"), exp=54, hit=5),
+    "paras": _animated("paras", "Paras", (35, 70, 55, 25), ("bug", "grass"), exp=70, hit=4),
+    "clefairy": _animated("clefairy", "Clefairy", (70, 45, 48, 35), ("normal",), exp=68, hit=3),
 })
 
 _KEYS = {species: key for key, species in SPECIES.items()}

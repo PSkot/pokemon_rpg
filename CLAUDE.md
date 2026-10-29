@@ -342,8 +342,12 @@ non-commercial project.
   idle, walk, run (8 frames each, looping), attack (9 frames: still
   pose + 8) and jump (crouch, rise, fall, land: picked from 9 generated
   frames). `hit=` is the attack frame that strikes; the attack is cut
-  one frame after it (battles strike on the second-to-last frame). Onix
-  is drawn 1.5×. Placeholder quality: likely to be redone.
+  one frame after it (battles strike on the second-to-last frame). Their
+  sprites are drawn small in the 64 px cells (bases generated at 32/44 px,
+  roughly to scale with each other; side profiles facing right); Onix
+  keeps its larger sheet, drawn 1.5×. Geodude's attack (a lunge) and jump
+  are made from its base pose rather than generated. Placeholder
+  quality: likely to be redone.
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,
   row, fps, baseline, ...) and shared by the map player and battles.
 - Background art (`tileset.py`): `background.png` (64×64 cells) rows 3–4
