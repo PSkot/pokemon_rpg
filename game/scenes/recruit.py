@@ -29,12 +29,12 @@ from .overworld import MapScene, OverworldScene
 
 COLS = 40            # one screen wide
 GROUND = 4           # tiles of floor
-BOARD = pygame.Rect(70, 150, 200, 110)  # the cork board on the wall (it stands on short legs)
+BOARD = pygame.Rect(70, 181, 200, 110)  # the cork board (its frame; its legs stand on the floor)
 MIME_X = 320         # Mr. Mime, beside the board
 MIME_FPS = 6        # Mr. Mime's idle animation
 DOOR_X = 592
 REACH = 26
-PIN_SIZE = 0.55      # the open recruitments' icons pinned on the board
+PIN_BOX = (30, 34)   # the most room an open recruitment's icon takes on the board
 
 LOCKED_COLOR = (150, 150, 165)
 NEW_COLOR = (120, 200, 255)
@@ -62,6 +62,15 @@ def _quest(species: str):
 def _still(species: str) -> pygame.Surface:
     """A species' standing pose (its sheet's or its placeholder icon's)."""
     return animations(SPECIES[species])["idle"].frame(0, False)
+
+
+def _pin_icon(species: str) -> pygame.Surface:
+    """A species' standing pose cut to its outline, as pinned on the board:
+    at its own size if it fits a `PIN_BOX`, else shrunk to fit."""
+    still = _still(species)
+    still = still.subsurface(still.get_bounding_rect())
+    scale = min(1.0, PIN_BOX[0] / still.get_width(), PIN_BOX[1] / still.get_height())
+    return still if scale == 1.0 else pygame.transform.smoothscale_by(still, scale)
 
 
 class RecruitScene(MapScene):
@@ -140,11 +149,11 @@ class RecruitScene(MapScene):
         # The open (and taken) recruitments, pinned on the board.
         pinned = [s for s in RECRUITS if quests.ready(self.game, _quest(s)) or quests.is_active(self.game, _quest(s).key)]
         for i, species in enumerate(pinned[:10]):
-            icon = pygame.transform.smoothscale_by(_still(species), PIN_SIZE)
-            x = BOARD.x + 18 + (i % 5) * 34
-            y = BOARD.y + 12 + (i // 5) * 46
-            layer.blit(icon, (x + 14 - icon.get_width() // 2, y + 38 - icon.get_height()))
-            pygame.draw.circle(layer, (210, 60, 60), (x + 14, y + 2), 2)  # a pin
+            icon = _pin_icon(species)
+            x = BOARD.x + 32 + (i % 5) * 34
+            y = BOARD.y + 18 + (i // 5) * 42
+            layer.blit(icon, (x - icon.get_width() // 2, y + 3))
+            pygame.draw.circle(layer, (210, 60, 60), (x, y + 2), 2)  # a pin
         layer.blit(self.mime, (MIME_X - self.mime.get_width() // 2, self._mime_top))
 
     def draw_overlay(self, window: pygame.Surface) -> None:
