@@ -83,7 +83,7 @@ SPECIES = {
         "Bulbasaur", 45, 49, 49, 45, ("grass", "poison"),
         fight_anim="attack",
         anims={
-            "idle": AnimSpec("bulbasaur.png", 0, fps=1, loop=True, frames=1),
+            "idle": AnimSpec("bulbasaur idle.png", 0, fps=6, loop=True),
             "walk": AnimSpec("bulbasaur.png", 0, loop=True),
             "run": AnimSpec("bulbasaur.png", 1, fps=12, loop=True),
             "jump": AnimSpec("bulbasaur.png", 2, fps=1, per_frame_baseline=True),
@@ -101,7 +101,7 @@ SPECIES = {
         "Ivysaur", 60, 62, 63, 60, ("grass", "poison"),
         fight_anim="attack",
         anims={
-            "idle": AnimSpec("ivysaur.png", 0, fps=1, loop=True, frames=1),
+            "idle": AnimSpec("ivysaur idle.png", 0, fps=6, loop=True),
             "walk": AnimSpec("ivysaur.png", 0, loop=True),
             "run": AnimSpec("ivysaur.png", 1, fps=12, loop=True),
             "jump": AnimSpec("ivysaur.png", 2, fps=1, per_frame_baseline=True),
@@ -115,7 +115,7 @@ SPECIES = {
         "Venusaur", 80, 82, 83, 80, ("grass", "poison"),
         fight_anim="attack",
         anims={
-            "idle": AnimSpec("venusaur.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "idle": AnimSpec("venusaur idle.png", 0, fps=6, loop=True, cell=88),
             "walk": AnimSpec("venusaur.png", 0, loop=True, cell=88),
             "run": AnimSpec("venusaur.png", 1, fps=12, loop=True, cell=88),
             "jump": AnimSpec("venusaur.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
@@ -128,7 +128,7 @@ SPECIES = {
         "Charmander", 39, 52, 43, 65, ("fire",),
         fight_anim="attack",
         anims={
-            "idle": AnimSpec("charmander.png", 0, fps=1, loop=True, frames=1),
+            "idle": AnimSpec("charmander idle.png", 0, fps=6, loop=True),
             "walk": AnimSpec("charmander.png", 0, loop=True),
             "run": AnimSpec("charmander.png", 1, fps=12, loop=True),
             # The rising frame's tail flame hangs below its feet.
@@ -142,7 +142,7 @@ SPECIES = {
         "Charmeleon", 58, 64, 58, 80, ("fire",),
         fight_anim="attack",
         anims={
-            "idle": AnimSpec("charmeleon.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "idle": AnimSpec("charmeleon idle.png", 0, fps=6, loop=True, cell=88),
             "walk": AnimSpec("charmeleon.png", 0, loop=True, cell=88),
             "run": AnimSpec("charmeleon.png", 1, fps=12, loop=True, cell=88),
             "jump": AnimSpec("charmeleon.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
@@ -154,7 +154,7 @@ SPECIES = {
         "Charizard", 78, 84, 78, 100, ("fire", "flying"),
         fight_anim="attack",
         anims={
-            "idle": AnimSpec("charizard.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "idle": AnimSpec("charizard idle.png", 0, fps=6, loop=True, cell=88),
             "walk": AnimSpec("charizard.png", 0, loop=True, cell=88),
             "run": AnimSpec("charizard.png", 1, fps=12, loop=True, cell=88),
             "jump": AnimSpec("charizard.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
@@ -167,7 +167,7 @@ SPECIES = {
         "Squirtle", 44, 48, 65, 43, ("water",),
         fight_anim="attack",
         anims={
-            "idle": AnimSpec("squirtle.png", 0, fps=1, loop=True, frames=1),
+            "idle": AnimSpec("squirtle idle.png", 0, fps=6, loop=True),
             "walk": AnimSpec("squirtle.png", 0, loop=True),
             "run": AnimSpec("squirtle.png", 1, fps=12, loop=True),
             "jump": AnimSpec("squirtle.png", 2, fps=1, per_frame_baseline=True),
@@ -179,7 +179,7 @@ SPECIES = {
         "Wartortle", 59, 63, 80, 58, ("water",),
         fight_anim="attack",
         anims={
-            "idle": AnimSpec("wartortle.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "idle": AnimSpec("wartortle idle.png", 0, fps=6, loop=True, cell=88),
             "walk": AnimSpec("wartortle.png", 0, loop=True, cell=88),
             "run": AnimSpec("wartortle.png", 1, fps=12, loop=True, cell=88),
             "jump": AnimSpec("wartortle.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
@@ -191,7 +191,7 @@ SPECIES = {
         "Blastoise", 79, 83, 100, 78, ("water",),
         fight_anim="attack",
         anims={
-            "idle": AnimSpec("blastoise.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "idle": AnimSpec("blastoise idle.png", 0, fps=6, loop=True, cell=88),
             "walk": AnimSpec("blastoise.png", 0, loop=True, cell=88),
             "run": AnimSpec("blastoise.png", 1, fps=12, loop=True, cell=88),
             "jump": AnimSpec("blastoise.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
@@ -204,8 +204,9 @@ SPECIES = {
         "Pidgey", 40, 45, 40, 56, ("normal", "flying"),
         fight_anim="tackle",
         anims={
-            "idle": AnimSpec("pidgey.png", 0, fps=1, loop=True, frames=1),
+            "idle": AnimSpec("pidgey idle.png", 0, fps=6, loop=True),
             "walk": AnimSpec("pidgey.png", 0, loop=True),
+            "run": AnimSpec("pidgey run.png", 0, fps=16, loop=True),
             "fly": AnimSpec("pidgey.png", 1, loop=True, face_left=(0, 1, 2, 3)),
             "gust": AnimSpec("pidgey.png", 2, face_left=(0, 1)),
             "tackle": AnimSpec("pidgey.png", 3, face_left=(0,)),
@@ -218,8 +219,9 @@ SPECIES = {
         "Pidgeotto", 63, 60, 55, 71, ("normal", "flying"),
         fight_anim="tackle",
         anims={
-            "idle": AnimSpec("pidgeotto.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "idle": AnimSpec("pidgeotto idle.png", 0, fps=6, loop=True, cell=88),
             "walk": AnimSpec("pidgeotto.png", 0, loop=True, cell=88),
+            "run": AnimSpec("pidgeotto run.png", 0, fps=16, loop=True, cell=88),
             "fly": AnimSpec("pidgeotto.png", 1, loop=True, cell=88),
             "gust": AnimSpec("pidgeotto.png", 2, cell=88),
             "tackle": AnimSpec("pidgeotto.png", 3, cell=88),
@@ -230,8 +232,9 @@ SPECIES = {
         "Pidgeot", 83, 80, 75, 91, ("normal", "flying"),
         fight_anim="tackle",
         anims={
-            "idle": AnimSpec("pidgeot.png", 0, fps=1, loop=True, frames=1, cell=88),
+            "idle": AnimSpec("pidgeot idle.png", 0, fps=6, loop=True, cell=88),
             "walk": AnimSpec("pidgeot.png", 0, loop=True, cell=88),
+            "run": AnimSpec("pidgeot run.png", 0, fps=16, loop=True, cell=88),
             "fly": AnimSpec("pidgeot.png", 1, loop=True, cell=88),
             "gust": AnimSpec("pidgeot.png", 2, cell=88),
             "tackle": AnimSpec("pidgeot.png", 3, cell=88),
@@ -247,22 +250,38 @@ def _placeholder(icon: str, name: str, stats: tuple[int, int, int, int], types: 
     return Species(name, *stats, types, fight_anim="attack", anims={}, icon=icon, base_exp=exp)
 
 
-# Species that only have a reference icon so far: Gen 1 base stats (HP,
-# Attack, Defense, Speed), types and base experience yield. (Their moves come
-# from their line's skill tree, skills.TREES.)
+def _animated(key: str, name: str, stats: tuple[int, int, int, int], types: tuple[str, ...], exp: int,
+              hit: int, size: float = 1.0) -> Species:
+    """A species with a PixelLab sheet `<key>.png` (64 px cells): rows idle,
+    walk and run (8 frames, looping) and attack (9 frames: the still pose,
+    then 8 generated). `hit` is the attack frame that strikes; the attack
+    stops one frame later, as battles strike on its second-to-last frame."""
+    sheet = f"{key}.png"
+    return Species(name, *stats, types, fight_anim="attack", anims={
+        "idle": AnimSpec(sheet, 0, fps=6, loop=True),
+        "walk": AnimSpec(sheet, 1, fps=12, loop=True),
+        "run": AnimSpec(sheet, 2, fps=16, loop=True),
+        "attack": AnimSpec(sheet, 3, fps=12, frames=hit + 2),
+    }, base_exp=exp, size=size)
+
+
+# The other species: Gen 1 base stats (HP, Attack, Defense, Speed), types and
+# base experience yield. (Their moves come from their line's skill tree,
+# skills.TREES.) Those met up to Mt. Moon have PixelLab sheets; the rest only
+# a reference icon so far.
 SPECIES.update({
-    "spearow": _placeholder("021_spearow", "Spearow", (40, 60, 30, 70), ("normal", "flying"), exp=58),
+    "spearow": _animated("spearow", "Spearow", (40, 60, 30, 70), ("normal", "flying"), exp=58, hit=4),
     # (The game's font has no ♀/♂ symbols.)
-    "nidoran_f": _placeholder("029_nidoran-f", "Nidoran F", (55, 47, 52, 41), ("poison",), exp=59),
-    "nidoran_m": _placeholder("032_nidoran-m", "Nidoran M", (46, 57, 40, 50), ("poison",), exp=60),
-    "rattata": _placeholder("019_rattata", "Rattata", (30, 56, 35, 72), ("normal",), exp=57),
-    "caterpie": _placeholder("010_caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), exp=53),
-    "metapod": _placeholder("011_metapod", "Metapod", (50, 20, 55, 30), ("bug",), exp=72),
-    "weedle": _placeholder("013_weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"), exp=52),
-    "kakuna": _placeholder("014_kakuna", "Kakuna", (45, 25, 50, 35), ("bug", "poison"), exp=71),
+    "nidoran_f": _animated("nidoran_f", "Nidoran F", (55, 47, 52, 41), ("poison",), exp=59, hit=5),
+    "nidoran_m": _animated("nidoran_m", "Nidoran M", (46, 57, 40, 50), ("poison",), exp=60, hit=5),
+    "rattata": _animated("rattata", "Rattata", (30, 56, 35, 72), ("normal",), exp=57, hit=5),
+    "caterpie": _animated("caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), exp=53, hit=6),
+    "metapod": _animated("metapod", "Metapod", (50, 20, 55, 30), ("bug",), exp=72, hit=6),
+    "weedle": _animated("weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"), exp=52, hit=6),
+    "kakuna": _animated("kakuna", "Kakuna", (45, 25, 50, 35), ("bug", "poison"), exp=71, hit=4),
     "oddish": _placeholder("043_oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"), exp=78),
     "bellsprout": _placeholder("069_bellsprout", "Bellsprout", (50, 75, 35, 40), ("grass", "poison"), exp=84),
-    "pikachu": _placeholder("025_pikachu", "Pikachu", (35, 55, 30, 90), ("electric",), exp=82),
+    "pikachu": _animated("pikachu", "Pikachu", (35, 55, 30, 90), ("electric",), exp=82, hit=6),
     "seel": _placeholder("086_seel", "Seel", (65, 45, 55, 45), ("water",), exp=100),
     "shellder": _placeholder("090_shellder", "Shellder", (30, 65, 100, 40), ("water",), exp=97),
     "psyduck": _placeholder("054_psyduck", "Psyduck", (50, 52, 48, 55), ("water",), exp=80),
@@ -271,16 +290,16 @@ SPECIES.update({
     "dewgong": _placeholder("087_dewgong", "Dewgong", (90, 70, 80, 70), ("water", "ice"), exp=176),
     "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60), ("water", "ice"), exp=219),
     # The Pewter Gym and Route 3.
-    "geodude": _placeholder("074_geodude", "Geodude", (40, 80, 100, 20), ("rock", "ground"), exp=86),
-    "onix": _placeholder("095_onix", "Onix", (35, 45, 160, 70), ("rock", "ground"), exp=108),
-    "diglett": _placeholder("050_diglett", "Diglett", (10, 55, 25, 95), ("ground",), exp=81),
-    "sandshrew": _placeholder("027_sandshrew", "Sandshrew", (50, 75, 85, 40), ("ground",), exp=93),
-    "ekans": _placeholder("023_ekans", "Ekans", (35, 60, 44, 55), ("poison",), exp=62),
-    "jigglypuff": _placeholder("039_jigglypuff", "Jigglypuff", (115, 45, 20, 20), ("normal",), exp=76),
+    "geodude": _animated("geodude", "Geodude", (40, 80, 100, 20), ("rock", "ground"), exp=86, hit=3),
+    "onix": _animated("onix", "Onix", (35, 45, 160, 70), ("rock", "ground"), exp=108, hit=5, size=1.5),
+    "diglett": _animated("diglett", "Diglett", (10, 55, 25, 95), ("ground",), exp=81, hit=6),
+    "sandshrew": _animated("sandshrew", "Sandshrew", (50, 75, 85, 40), ("ground",), exp=93, hit=4),
+    "ekans": _animated("ekans", "Ekans", (35, 60, 44, 55), ("poison",), exp=62, hit=5),
+    "jigglypuff": _animated("jigglypuff", "Jigglypuff", (115, 45, 20, 20), ("normal",), exp=76, hit=6),
     # Mt. Moon.
-    "zubat": _placeholder("041_zubat", "Zubat", (40, 45, 35, 55), ("poison", "flying"), exp=54),
-    "paras": _placeholder("046_paras", "Paras", (35, 70, 55, 25), ("bug", "grass"), exp=70),
-    "clefairy": _placeholder("035_clefairy", "Clefairy", (70, 45, 48, 35), ("normal",), exp=68),
+    "zubat": _animated("zubat", "Zubat", (40, 45, 35, 55), ("poison", "flying"), exp=54, hit=4),
+    "paras": _animated("paras", "Paras", (35, 70, 55, 25), ("bug", "grass"), exp=70, hit=5),
+    "clefairy": _animated("clefairy", "Clefairy", (70, 45, 48, 35), ("normal",), exp=68, hit=4),
 })
 
 _KEYS = {species: key for key, species in SPECIES.items()}
