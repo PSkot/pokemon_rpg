@@ -568,6 +568,16 @@ def prop(name: str) -> pygame.Surface:
     return pygame.image.load(ART / "props" / f"{name}.png").convert_alpha()
 
 
+@cache
+def npc_frames(name: str) -> list[pygame.Surface]:
+    """An NPC's idle animation (props/<name>.png: one row of 64×64 frames),
+    each frame cut to the outline of them all, so they line up."""
+    sheet = prop(name)
+    frames = [sheet.subsurface((x, 0, 64, 64)) for x in range(0, sheet.get_width(), 64)]
+    box = frames[0].get_bounding_rect().unionall([f.get_bounding_rect() for f in frames])
+    return [f.subsurface(box).copy() for f in frames]
+
+
 def draw_prop(s: pygame.Surface, name: str, x: int, ground: int) -> pygame.Rect:
     """Draw prop `name` centred on `x`, its lowest row on `ground`; returns
     the outline of what was drawn."""

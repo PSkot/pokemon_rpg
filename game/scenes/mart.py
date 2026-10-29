@@ -6,7 +6,6 @@ for half). Up at the glass door goes back out into the town. Saving here
 saves the player outside, at the shop's door.
 """
 
-import math
 import zlib
 
 import pygame
@@ -15,7 +14,6 @@ from .. import saves, settings
 from ..engine import ui
 from ..engine.scene import Transition
 from ..mechanics.items import MEDICINE, Bag, money_text
-from ..mechanics.pokemon import icon_frame
 from ..world import quests, tileset
 from ..world.level import EMPTY, ROWS, SOLID, TILE, Level
 from ..world.progress import Game
@@ -28,7 +26,7 @@ GROUND = 4          # tiles of floor
 COUNTER_X, COUNTER_W = 40, 136
 MEOWTH_X = 92       # behind the counter
 MEOWTH_LIFT = 24    # Meowth stands on a step, so it shows over the counter
-MEOWTH_SIZE = 1.3   # its icon (a placeholder sprite) is drawn bigger: it's the shopkeeper
+MEOWTH_FPS = 6         # Meowth's idle animation
 SHELVES = [232, 328, 424]
 DOOR_X = 592
 REACH = 24          # how close the player must be to the counter or door
@@ -51,7 +49,7 @@ class MartScene(MapScene):
         self.ground = round(self.level.ground_y(0))
         self.tiles = pygame.Surface((1, 1), pygame.SRCALPHA)  # the floor is part of the room
         self.backgrounds = [(tileset.mart_room(self.level.width, self.ground, SHELVES, DOOR_X), 0.0)]
-        self.meowth = pygame.transform.smoothscale_by(icon_frame("052_meowth"), MEOWTH_SIZE)
+        self.meowth_frames = tileset.npc_frames("meowth")
         self.place_player(DOOR_X - 36, -1)
 
     def where(self) -> str:
@@ -67,6 +65,10 @@ class MartScene(MapScene):
 
     def _at_door(self) -> bool:
         return abs(self.player.x - DOOR_X) < REACH
+
+    @property
+    def meowth(self) -> pygame.Surface:
+        return self.meowth_frames[int(self.t * MEOWTH_FPS) % len(self.meowth_frames)]
 
     @property
     def _meowth_top(self) -> float:
@@ -99,9 +101,8 @@ class MartScene(MapScene):
         return []
 
     def draw_things(self, layer: pygame.Surface) -> None:
-        bob = round(math.sin(self.t * 2.5))  # Meowth sways a little
         image = self.meowth
-        layer.blit(image, (MEOWTH_X - image.get_width() // 2, self._meowth_top + bob))
+        layer.blit(image, (MEOWTH_X - image.get_width() // 2, self._meowth_top))
         tileset.mart_counter(layer, COUNTER_X, self.ground, COUNTER_W)
         tileset.mart_sign(layer, COUNTER_X + COUNTER_W // 2, 70)
 

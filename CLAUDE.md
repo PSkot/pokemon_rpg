@@ -180,8 +180,8 @@ non-commercial project.
   Viridian's Route 22 door; Pewter → Route 3 → the Mt. Moon Pokémon
   Center stop → Mt. Moon (a dungeon) → Route 4). Poké Marts can be entered
   (`Building.inside = "mart"`; `scenes/mart.py`: a one-screen room drawn
-  in code, `tileset.mart_room`/`mart_counter`, run by a Meowth, its
-  reference icon for now): Up at the counter does a quest step there,
+  in code, `tileset.mart_room`/`mart_counter`, run by a Meowth: an idle
+  animation, `props/meowth.png`, `tileset.npc_frames`): Up at the counter does a quest step there,
   else opens the shop (`ShopMenu`: buy the town's stock, `Town.mart`;
   sell medicine for half; `Medicine.price`); Up at the door goes back
   out (`TownScene(arrive=building name)`). Saving inside saves the player
@@ -264,7 +264,7 @@ non-commercial project.
   `instance.RECRUITS[line].needed` its recruitment quest opens (board
   `quests.RECRUIT_BOARD`, `Quest.unlock`). Recruitment Centers
   (`Building.inside = "recruit"`, a house for now; `scenes/recruit.py`:
-  room with the board and Mr. Mime, `RecruitBoard`, `TeamPanel`) send the
+  room with the board and Mr. Mime (`props/mr_mime.png`), `RecruitBoard`, `TeamPanel`) send the
   player to the line's map (a generated route: only that species, a giant
   boss); beating it adds it (`Game.add_member`: party of at most
   `MAX_PARTY` = 4, else `Game.reserve`). Mr. Mime swaps party and reserve.

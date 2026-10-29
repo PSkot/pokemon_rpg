@@ -10,7 +10,6 @@ party and the reserve). Up at the door goes back out. Saving here saves
 the player outside, at the door.
 """
 
-import math
 import zlib
 
 import pygame
@@ -18,7 +17,7 @@ import pygame
 from .. import saves, settings
 from ..engine import ui
 from ..engine.scene import Transition
-from ..mechanics.pokemon import SPECIES, animations, icon_frame
+from ..mechanics.pokemon import SPECIES, animations
 from ..world import quests, tileset
 from ..world.instance import RECRUIT_BUILDING, RECRUITS, ROUTES, Instance
 from ..world.level import EMPTY, ROWS, SOLID, Level
@@ -32,7 +31,7 @@ COLS = 40            # one screen wide
 GROUND = 4           # tiles of floor
 BOARD = pygame.Rect(70, 150, 200, 110)  # the cork board on the wall (it stands on short legs)
 MIME_X = 320         # Mr. Mime, beside the board
-MIME_SIZE = 1.3
+MIME_FPS = 6        # Mr. Mime's idle animation
 DOOR_X = 592
 REACH = 26
 PIN_SIZE = 0.55      # the open recruitments' icons pinned on the board
@@ -77,7 +76,7 @@ class RecruitScene(MapScene):
                                  tileset.CENTER_TRIM)
         tileset.recruit_board(room, BOARD)
         self.backgrounds = [(room, 0.0)]
-        self.mime = pygame.transform.smoothscale_by(icon_frame("122_mr-mime"), MIME_SIZE)
+        self.mime_frames = tileset.npc_frames("mr_mime")
         self.place_player(DOOR_X - 36, -1)
 
     def where(self) -> str:
@@ -96,6 +95,10 @@ class RecruitScene(MapScene):
 
     def _at_door(self) -> bool:
         return abs(self.player.x - DOOR_X) < REACH
+
+    @property
+    def mime(self) -> pygame.Surface:
+        return self.mime_frames[int(self.t * MIME_FPS) % len(self.mime_frames)]
 
     @property
     def _mime_top(self) -> float:
@@ -143,8 +146,7 @@ class RecruitScene(MapScene):
             y = BOARD.y + 12 + (i // 5) * 46
             layer.blit(icon, (x + 14 - icon.get_width() // 2, y + 38 - icon.get_height()))
             pygame.draw.circle(layer, (210, 60, 60), (x + 14, y + 2), 2)  # a pin
-        bob = round(math.sin(self.t * 2.0) * 1.5)  # Mr. Mime sways
-        layer.blit(self.mime, (MIME_X - self.mime.get_width() // 2, self._mime_top + bob))
+        layer.blit(self.mime, (MIME_X - self.mime.get_width() // 2, self._mime_top))
 
     def draw_overlay(self, window: pygame.Surface) -> None:
         if not self.panel:
