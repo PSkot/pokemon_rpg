@@ -253,15 +253,17 @@ def _placeholder(icon: str, name: str, stats: tuple[int, int, int, int], types: 
 def _animated(key: str, name: str, stats: tuple[int, int, int, int], types: tuple[str, ...], exp: int,
               hit: int, size: float = 1.0) -> Species:
     """A species with a PixelLab sheet `<key>.png` (64 px cells): rows idle,
-    walk and run (8 frames, looping) and attack (9 frames: the still pose,
-    then 8 generated). `hit` is the attack frame that strikes; the attack
-    stops one frame later, as battles strike on its second-to-last frame."""
+    walk and run (8 frames, looping), attack (9 frames: the still pose,
+    then 8 generated) and jump (crouch, rise, fall, land). `hit` is the
+    attack frame that strikes; the attack stops one frame later, as battles
+    strike on its second-to-last frame."""
     sheet = f"{key}.png"
     return Species(name, *stats, types, fight_anim="attack", anims={
         "idle": AnimSpec(sheet, 0, fps=6, loop=True),
         "walk": AnimSpec(sheet, 1, fps=12, loop=True),
         "run": AnimSpec(sheet, 2, fps=16, loop=True),
         "attack": AnimSpec(sheet, 3, fps=12, frames=hit + 2),
+        "jump": AnimSpec(sheet, 4, fps=1, per_frame_baseline=True),
     }, base_exp=exp, size=size)
 
 
