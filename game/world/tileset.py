@@ -459,21 +459,37 @@ def backgrounds(level: Level) -> list[tuple[pygame.Surface, float]]:
     far = pygame.Surface((far_w, h))
     near = pygame.Surface((near_w, h), pygame.SRCALPHA)
     look = level.theme.cave
-    _gradient(far, look.sky_top, look.sky_bottom)
-    for x in range(0, far_w, 24):  # the cave's back wall: hanging and standing rock
-        w = rng.randint(14, 30)
-        pygame.draw.polygon(far, look.far_rock, [(x, 0), (x + w, 0), (x + w // 2, rng.randint(30, 90))])
-        pygame.draw.polygon(far, look.far_rock, [(x, h), (x + w, h), (x + w // 2, h - rng.randint(60, 160))])
-    if look.glow:
+    if look.wall:
+        _wall(far, look)
+    else:
+        _gradient(far, look.sky_top, look.sky_bottom)
+        for x in range(0, far_w, 24):  # the cave's back wall: hanging and standing rock
+            w = rng.randint(14, 30)
+            pygame.draw.polygon(far, look.far_rock, [(x, 0), (x + w, 0), (x + w // 2, rng.randint(30, 90))])
+            pygame.draw.polygon(far, look.far_rock, [(x, h), (x + w, h), (x + w // 2, h - rng.randint(60, 160))])
+    if look.glow and not look.wall:
         for _ in range(far_w // 40):  # faint glowing crystals
             x, y = rng.randrange(far_w), rng.randint(100, 280)
             pygame.draw.circle(far, look.glow[0], (x, y), 3)
             far.set_at((x, y), look.glow[1])
-    for x in range(0, near_w, 40):
+    for x in range(0, near_w if look.near_rocks else 0, 40):
         w = rng.randint(24, 44)
         pygame.draw.polygon(near, look.near_rock, [(x, h), (x + w, h), (x + w // 2, h - rng.randint(90, 190))])
         pygame.draw.polygon(near, look.near_rock, [(x, 0), (x + w, 0), (x + w // 2, rng.randint(40, 110))])
     return [(far, FAR), (near, NEAR)]
+
+
+def _wall(surface: pygame.Surface, look) -> None:
+    """Cover `surface` with the cave's painted far wall (every other copy
+    mirrored, so they join up), dimmed."""
+    art = pygame.image.load(ART / "walls" / look.wall).convert()
+    art = pygame.transform.scale_by(art, 2)
+    tiles = (art, pygame.transform.flip(art, True, False))
+    for i, x in enumerate(range(0, surface.get_width(), art.get_width())):
+        surface.blit(tiles[i % 2], (x, surface.get_height() - art.get_height()))
+    shade = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
+    shade.fill((0, 0, 0, look.dim))
+    surface.blit(shade, (0, 0))
 
 
 def _gradient(surface: pygame.Surface, top, bottom) -> None:

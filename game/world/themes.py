@@ -55,6 +55,11 @@ class CaveLook:
     far_rock: Color = (30, 42, 72)      # hanging and standing rock on the far wall
     near_rock: Color = (44, 60, 98)
     glow: tuple[Color, Color] | None = ((60, 100, 150), (150, 220, 255))  # faint crystals (None: none)
+    # A painted far wall instead (assets/sprites/pixellab/walls/, 320×180,
+    # drawn 2×, mirrored every other time so it joins up), dimmed by `dim`.
+    wall: str = ""
+    dim: int = 90
+    near_rocks: bool = True  # rock drawn in front of the far wall (not in halls)
 
 
 @dataclass(frozen=True)
@@ -69,6 +74,7 @@ class Theme:
     art: str = "woods"                  # map art (tileset.py): "woods" (Pixellab) or "cave" (drawn in code)
     cave: CaveLook = CaveLook()         # a cave's background colours
     decor: str = ""                     # whose decorations a code-drawn map uses (tileset.DECOR); "" = its own
+    doorway: str = "doorway"            # its doorways' prop (tileset.draw_prop); "" = drawn in code
 
     @property
     def decor_key(self) -> str:
@@ -114,6 +120,7 @@ ICE_CAVE = Theme(
                       shadow=(96, 124, 160)),
     ceiling=True,
     art="cave",
+    doorway="",
 )
 
 # Viridian Forest: Red's and Blue's forest Pokémon together, at their Gen 1
@@ -177,7 +184,8 @@ PEWTER_GYM = Theme(
     ceiling=True,
     art="cave",
     cave=CaveLook(sky_top=(34, 26, 24), sky_bottom=(70, 56, 46), far_rock=(56, 44, 38), near_rock=(84, 68, 56),
-                  glow=None),
+                  glow=None, wall="pewter_gym.png", near_rocks=False),
+    doorway="",
 )
 
 # Mt. Moon: a grey-violet cave with faint moonstone glints; its Red/Blue
@@ -200,7 +208,8 @@ MT_MOON = Theme(
     ceiling=True,
     art="cave",
     cave=CaveLook(sky_top=(14, 12, 24), sky_bottom=(42, 38, 58), far_rock=(30, 28, 44), near_rock=(48, 44, 64),
-                  glow=((90, 80, 140), (210, 200, 255))),
+                  glow=((90, 80, 140), (210, 200, 255)), wall="mt_moon.png"),
+    doorway="doorway_cave",
 )
 
 THEMES = {t.key: t for t in (MEADOW, ROUTE_22, FOREST, ICE_CAVE, ROUTE_3, PEWTER_GYM, MT_MOON)}

@@ -43,7 +43,7 @@ class TownScene(MapScene):
         level, palette = self.level, self.level.theme.palette
         ground = level.ground_y(0)
         # (doorway, route key, where: "left"/"right" edge or a column)
-        self.doors = [(Doorway(self._door_x(where), ground, palette), route, where) for where, route in town.exits]
+        self.doors = [(Doorway(self._door_x(where), ground, palette, art=level.theme.doorway), route, where) for where, route in town.exits]
         out_of = next((b for b in town.buildings
                        if b.name == arrive or (arrive in ROUTES and ROUTES[arrive].building == b.name)), None)
         if arrive == "home":

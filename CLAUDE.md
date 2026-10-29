@@ -369,8 +369,14 @@ non-commercial project.
   `Backdrop` colours.
 - Map props (`assets/sprites/pixellab/props/`, `tileset.draw_prop`: centred,
   standing on the ground): chests (closed/open, plain and the boss's fancy
-  one), the Poké Ball and the quest board (its notes are drawn in code, one
-  per quest on offer).
+  one), the Poké Ball, the quest board (its notes are drawn in code, one
+  per quest on offer), doorways (`Theme.doorway`: a stone arch outside, a
+  rock arch in Mt. Moon; "" = drawn in code, boards over a sealed one in
+  code) and the ladder (its 16 px middle repeated to any height).
+- Cave walls (`assets/sprites/pixellab/walls/`, `CaveLook.wall`): 320×180
+  paintings of Mt. Moon's and the Pewter Gym's far wall, drawn 2×,
+  mirrored every other copy, dimmed (`dim`); the code-drawn rock in front
+  stays (`near_rocks`, off in the gym).
 - `assets/sprites/pokemon_icons/` holds reference icons. Species without a
   Pixellab sheet use their icon as a still placeholder sprite
   (`Species.icon`; mirrored to face right) until they get one.

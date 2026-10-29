@@ -41,9 +41,9 @@ HELP = ("Left/Right: walk   Shift: run   Space: jump (hold = higher)   Up: open 
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z, pygame.K_UP)
 
 WOOD = (150, 96, 48)
-WOOD_DARK = (96, 58, 28)
 OUTLINE = (48, 28, 16)
 TRACKED = 3  # active quests shown under the location
+LADDER_SEGMENT = pygame.Rect(8, 16, 16, 16)  # a repeating stretch of the ladder prop
 GROUP_SPACING = 30  # px between the members of a wild group, standing in a row
 
 
@@ -139,19 +139,25 @@ class Ball:
 
 class Doorway:
     """An archway between maps: a dark opening in a frame of the theme's
-    stone. A `sealed` one is boarded up (the boss is still guarding it)."""
+    stone, or the theme's `art` (a prop). A `sealed` one is boarded up (the
+    boss is still guarding it)."""
 
     W, H = 34, 50
 
-    def __init__(self, x: float, feet_y: float, palette: Palette, sealed: bool = False):
+    def __init__(self, x: float, feet_y: float, palette: Palette, sealed: bool = False, art: str = ""):
         self.x, self.feet_y, self.p = x, feet_y, palette
-        self.sealed = sealed
+        self.sealed, self.art = sealed, art
 
     @property
     def rect(self) -> pygame.Rect:
         return pygame.Rect(round(self.x) - self.W // 2, round(self.feet_y) - self.H, self.W, self.H)
 
     def draw(self, surface: pygame.Surface) -> None:
+        if self.art:
+            drawn = tileset.draw_prop(surface, self.art, round(self.x), round(self.feet_y))
+            opening = pygame.Rect(drawn.x + drawn.w // 4, drawn.y + drawn.h // 3, drawn.w // 2, drawn.h * 2 // 3)
+            self._planks(surface, opening)
+            return
         r, p = self.rect, self.p
         arch = [(r.left, r.bottom), (r.left, r.top + 12), (r.left + 5, r.top + 4), (r.centerx, r.top),
                 (r.right - 5, r.top + 4), (r.right, r.top + 12), (r.right, r.bottom)]
@@ -164,6 +170,9 @@ class Doorway:
             pygame.draw.line(surface, p.fill, (opening.right, y), (r.right - 1, y))
         pygame.draw.rect(surface, p.top, (r.left - 2, r.top + 1, 6, 3))  # a bit of grass / snow
         pygame.draw.rect(surface, p.top, (r.right - 4, r.top + 3, 6, 3))
+        self._planks(surface, opening)
+
+    def _planks(self, surface: pygame.Surface, opening: pygame.Rect) -> None:
         if self.sealed:
             for y in (opening.top + 8, opening.centery + 2, opening.bottom - 8):
                 plank = pygame.Rect(opening.left - 3, y - 2, opening.width + 6, 5)
@@ -201,12 +210,17 @@ class Ladder:
             top, bottom = round(self.ceiling_y) - 2, ground
             hole = pygame.Rect(x - 14, top - 8, 28, 12)
             pygame.draw.ellipse(surface, (10, 8, 16), hole)
-        for rail in (x - 8, x + 6):
-            pygame.draw.rect(surface, WOOD, (rail, top, 3, bottom - top))
-            pygame.draw.line(surface, OUTLINE, (rail - 1, top), (rail - 1, bottom))
-            pygame.draw.line(surface, OUTLINE, (rail + 3, top), (rail + 3, bottom))
-        for y in range(bottom - 4, top, -7):
-            pygame.draw.line(surface, WOOD_DARK, (x - 7, y), (x + 6, y), 2)
+        # The ladder prop's middle (two rungs, 16 px) repeated from the bottom up.
+        art = tileset.prop("ladder")
+        segment = art.subsurface(LADDER_SEGMENT)
+        w, h = segment.get_size()
+        y = bottom
+        while y > top:
+            part = min(h, y - top)
+            surface.blit(segment, (x - w // 2, y - part), (0, h - part, w, part))
+            y -= part
+        top_row = pygame.Rect(LADDER_SEGMENT.x, LADDER_SEGMENT.y - 1, w, 1)
+        surface.blit(art, (x - w // 2, top - 1), top_row)  # the rails' rounded tops
         if self.sealed:  # rocks piled against it
             for dx, dy, r in ((-9, -6, 7), (6, -7, 8), (-1, -15, 7)):
                 pygame.draw.circle(surface, (96, 90, 104), (x + dx, ground + dy), r)
@@ -422,14 +436,15 @@ class OverworldScene(MapScene):
                        for x, y in level.chests] if route.wild else []
         self.balls = [Ball(x, y) for x, y in level.balls] if route.wild else []
         # The doorways in and out; a dungeon room has its stairs instead.
-        self.entry = Doorway(level.entry_x, level.ground_y(level.entry_x), palette)
-        self.exit = Doorway(level.exit_x, level.ground_y(level.exit_x), palette, sealed=bool(self.boss))
+        art = level.theme.doorway
+        self.entry = Doorway(level.entry_x, level.ground_y(level.entry_x), palette, art=art)
+        self.exit = Doorway(level.exit_x, level.ground_y(level.exit_x), palette, sealed=bool(self.boss), art=art)
         self.stairs: list[tuple[Stair, Doorway | Ladder]] = []
         if room:
             for i, (stair, col) in enumerate(zip(room.stairs, level.stairs)):
                 x = col * TILE + TILE / 2
                 sealed = bool(self.boss) and i == len(room.stairs) - 1  # the boss guards the last one
-                thing = (Doorway(x, level.ground_y(x), palette, sealed) if stair.kind == "out"
+                thing = (Doorway(x, level.ground_y(x), palette, sealed, art) if stair.kind == "out"
                          else Ladder(stair.kind, x, level.ground_y(x), self._ceiling_y(col), sealed))
                 self.stairs.append((stair, thing))
             self.exit = self.stairs[-1][1]  # (what the boss guards)
