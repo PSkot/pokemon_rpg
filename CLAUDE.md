@@ -362,6 +362,15 @@ non-commercial project.
   soil cell, with its pebbles. Step sides are drawn in the sheet's colours
   (its cliff cells don't fit 1–2 tile steps). Row 3 sits 3px lower,
   slopes/islands/roots aren't used yet.
+- Battle backdrops (`assets/sprites/pixellab/backdrops/`, `Backdrop.art`):
+  320×132 Pixellab paintings drawn 2× over the battle area (meadow, forest,
+  route_3, pewter_gym, mt_moon), their ground starting high enough for the
+  back row; themes without one (ice cave) are drawn in code from the
+  `Backdrop` colours.
+- Map props (`assets/sprites/pixellab/props/`, `tileset.draw_prop`: centred,
+  standing on the ground): chests (closed/open, plain and the boss's fancy
+  one), the Poké Ball and the quest board (its notes are drawn in code, one
+  per quest on offer).
 - `assets/sprites/pokemon_icons/` holds reference icons. Species without a
   Pixellab sheet use their icon as a still placeholder sprite
   (`Species.icon`; mirrored to face right) until they get one.

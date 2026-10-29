@@ -352,6 +352,9 @@ def _side(monsters: list[Monster], enemy: bool) -> list[Combatant]:
 @cache
 def _background(b: Backdrop) -> pygame.Surface:
     w, _ = settings.LOGICAL_SIZE
+    if b.art:
+        art = pygame.image.load(settings.ASSETS / "sprites" / "pixellab" / "backdrops" / b.art).convert()
+        return pygame.transform.scale(art, (w, PANEL_Y))
     bg = pygame.Surface((w, PANEL_Y))
     for y in range(HORIZON_Y):
         t = y / HORIZON_Y

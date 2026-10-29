@@ -17,9 +17,12 @@ class Backdrop:
     field_near: tuple[int, int, int] = (84, 160, 68)
     stripe: tuple[int, int, int] = (96, 168, 76)
     shadow: tuple[int, int, int] = (60, 110, 50)  # under the combatants
+    # A painted background instead (assets/sprites/pixellab/backdrops/), at
+    # half the battle area's size: drawn 2x.
+    art: str = ""
 
 
-MEADOW_BACKDROP = Backdrop()
+MEADOW_BACKDROP = Backdrop(art="meadow.png")
 
 
 @dataclass(frozen=True)
@@ -125,7 +128,7 @@ FOREST = Theme(
         PoolEntry("kakuna", 20, (4, 6)),
         PoolEntry("pikachu", 5, (3, 5)),
     ),
-    backdrop=Backdrop(sky_top=(70, 120, 90), sky_bottom=(140, 180, 130),
+    backdrop=Backdrop(art="forest.png", sky_top=(70, 120, 90), sky_bottom=(140, 180, 130),
                       hills=((52, 104, 64), (44, 92, 56)),
                       field_far=(88, 150, 72), field_near=(62, 122, 56), stripe=(74, 136, 64),
                       shadow=(40, 80, 40)),
@@ -155,7 +158,7 @@ ROUTE_3 = Theme(
         PoolEntry("sandshrew", 25, (6, 8)),
         PoolEntry("ekans", 20, (6, 8)),
     ),
-    backdrop=Backdrop(field_far=(176, 176, 96), field_near=(150, 150, 76), stripe=(162, 162, 86),
+    backdrop=Backdrop(art="route_3.png", field_far=(176, 176, 96), field_near=(150, 150, 76), stripe=(162, 162, 86),
                       shadow=(100, 100, 50)),  # a dry, sandy field
 )
 
@@ -167,7 +170,7 @@ PEWTER_GYM = Theme(
             top=(176, 156, 120), top_dark=(140, 120, 92), top_light=(208, 190, 152),
             platform=(128, 104, 80), platform_dark=(84, 68, 54), platform_light=(170, 144, 112)),
     pool=(PoolEntry("geodude", 1, (10, 12)),),
-    backdrop=Backdrop(sky_top=(58, 46, 40), sky_bottom=(96, 80, 66),
+    backdrop=Backdrop(art="pewter_gym.png", sky_top=(58, 46, 40), sky_bottom=(96, 80, 66),
                       hills=((110, 92, 76), (98, 82, 68)),
                       field_far=(168, 146, 110), field_near=(146, 124, 92), stripe=(158, 136, 100),
                       shadow=(96, 80, 60)),
@@ -190,7 +193,7 @@ MT_MOON = Theme(
         PoolEntry("paras", 18, (9, 13)),
         PoolEntry("clefairy", 7, (9, 13)),
     ),
-    backdrop=Backdrop(sky_top=(22, 20, 34), sky_bottom=(58, 54, 76),
+    backdrop=Backdrop(art="mt_moon.png", sky_top=(22, 20, 34), sky_bottom=(58, 54, 76),
                       hills=((74, 70, 92), (66, 62, 82)),
                       field_far=(132, 126, 146), field_near=(110, 104, 124), stripe=(120, 114, 134),
                       shadow=(70, 66, 82)),

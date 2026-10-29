@@ -43,7 +43,6 @@ CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z, pygame.K_UP)
 WOOD = (150, 96, 48)
 WOOD_DARK = (96, 58, 28)
 OUTLINE = (48, 28, 16)
-GOLD = (232, 192, 72)
 TRACKED = 3  # active quests shown under the location
 GROUP_SPACING = 30  # px between the members of a wild group, standing in a row
 
@@ -117,36 +116,12 @@ class Chest:
                            self.W, self.BODY_H + self.LID_H)
 
     def draw(self, surface: pygame.Surface) -> None:
-        x, ground, half = round(self.x), round(self.feet_y), self.W // 2
-        wood, band = ((120, 40, 60), GOLD) if self.fancy else (WOOD, WOOD_DARK)
-        body = pygame.Rect(x - half + 1, ground - self.BODY_H, self.W - 2, self.BODY_H)
-        lid = pygame.Rect(x - half, body.y - self.LID_H + 1, self.W, self.LID_H)
-        if self.opened:  # lid flipped up behind, the dark inside showing
-            lid.bottom = body.y - 2  # hinged at the back edge
-            pygame.draw.rect(surface, band if self.fancy else WOOD_DARK, lid)
-            pygame.draw.rect(surface, OUTLINE, lid, 1)
-        pygame.draw.rect(surface, wood, body)
-        pygame.draw.line(surface, band, (body.x + 1, body.centery), (body.right - 2, body.centery))
-        for bx in (body.x + 4, body.right - 6):  # metal corner bands
-            pygame.draw.rect(surface, band, (bx, body.y + 1, 2, body.h - 2))
-        pygame.draw.rect(surface, OUTLINE, body, 1)
-        if self.opened:
-            pygame.draw.rect(surface, OUTLINE, (body.x + 1, body.y - 3, body.w - 2, 4))
-        else:
-            corners = dict(border_top_left_radius=4, border_top_right_radius=4)
-            pygame.draw.rect(surface, wood, lid, **corners)
-            if self.fancy:
-                pygame.draw.line(surface, GOLD, (lid.x + 2, lid.y + 2), (lid.right - 3, lid.y + 2))
-            pygame.draw.rect(surface, OUTLINE, lid, 1, **corners)
-            lock = pygame.Rect(x - 3, body.y - 3, 6, 7)
-            pygame.draw.rect(surface, GOLD, lock)
-            pygame.draw.rect(surface, OUTLINE, lock, 1)
+        name = ("chest_fancy" if self.fancy else "chest") + ("_open" if self.opened else "")
+        tileset.draw_prop(surface, name, round(self.x), round(self.feet_y))
 
 
 class Ball:
     """A Poké Ball lying on the map: Up picks it up (one item, `ball_loot`)."""
-
-    R = 5  # radius, logical px
 
     def __init__(self, x: float, feet_y: float):
         self.x, self.feet_y = x, feet_y
@@ -157,15 +132,9 @@ class Ball:
         return pygame.Rect(round(self.x) - 10, round(self.feet_y) - 16, 20, 16)
 
     def draw(self, surface: pygame.Surface) -> None:
-        x, y, r = round(self.x), round(self.feet_y) - self.R, self.R
-        pygame.draw.ellipse(surface, (0, 0, 0, 70), (x - r, y + r - 2, 2 * r, 4))  # shadow
-        pygame.draw.circle(surface, (236, 236, 240), (x, y), r)
-        pygame.draw.circle(surface, (220, 52, 52), (x, y), r, draw_top_left=True, draw_top_right=True)
-        pygame.draw.line(surface, OUTLINE, (x - r, y), (x + r, y))
-        pygame.draw.circle(surface, OUTLINE, (x, y), r, 1)
-        pygame.draw.circle(surface, (250, 250, 250), (x, y), 2)
-        pygame.draw.circle(surface, OUTLINE, (x, y), 2, 1)
-        surface.set_at((x - 2, y - 3), (255, 200, 200))  # shine
+        x, ground = round(self.x), round(self.feet_y)
+        pygame.draw.ellipse(surface, (0, 0, 0, 70), (x - 6, ground - 2, 12, 4))  # shadow
+        tileset.draw_prop(surface, "poke_ball", x, ground)
 
 
 class Doorway:
