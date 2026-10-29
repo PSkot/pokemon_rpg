@@ -72,8 +72,7 @@ class RecruitScene(MapScene):
         self.town = town
         self.ground = round(self.level.ground_y(0))
         self.tiles = pygame.Surface((1, 1), pygame.SRCALPHA)  # the floor is part of the room
-        room = tileset.mart_room(self.level.width, self.ground, [], DOOR_X, tileset.CENTER_WALLS,
-                                 tileset.CENTER_TRIM)
+        room = tileset.room("recruit", self.level.width, self.ground, [], DOOR_X)
         tileset.recruit_board(room, BOARD)
         self.backgrounds = [(room, 0.0)]
         self.mime_frames = tileset.npc_frames("mr_mime")
@@ -142,7 +141,7 @@ class RecruitScene(MapScene):
         pinned = [s for s in RECRUITS if quests.ready(self.game, _quest(s)) or quests.is_active(self.game, _quest(s).key)]
         for i, species in enumerate(pinned[:10]):
             icon = pygame.transform.smoothscale_by(_still(species), PIN_SIZE)
-            x = BOARD.x + 14 + (i % 5) * 36
+            x = BOARD.x + 18 + (i % 5) * 34
             y = BOARD.y + 12 + (i // 5) * 46
             layer.blit(icon, (x + 14 - icon.get_width() // 2, y + 38 - icon.get_height()))
             pygame.draw.circle(layer, (210, 60, 60), (x + 14, y + 2), 2)  # a pin

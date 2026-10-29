@@ -48,7 +48,7 @@ class MartScene(MapScene):
         self.town = town
         self.ground = round(self.level.ground_y(0))
         self.tiles = pygame.Surface((1, 1), pygame.SRCALPHA)  # the floor is part of the room
-        self.backgrounds = [(tileset.mart_room(self.level.width, self.ground, SHELVES, DOOR_X), 0.0)]
+        self.backgrounds = [(tileset.room("mart", self.level.width, self.ground, SHELVES, DOOR_X), 0.0)]
         self.meowth_frames = tileset.npc_frames("meowth")
         self.place_player(DOOR_X - 36, -1)
 

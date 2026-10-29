@@ -510,7 +510,6 @@ def _gradient(surface: pygame.Surface, top, bottom) -> None:
 BUILDING_CELL = (128, 128)  # cells of the building sheets (houses.png, functional_buildings.png)
 OUTLINE = (48, 28, 16)
 BUILDING_SINK = 1  # px a building's base sits into the ground (over the grass edge)
-WOOD_POST = (120, 78, 42)  # the recruitment board's frame
 
 
 @cache
@@ -578,10 +577,10 @@ def npc_frames(name: str) -> list[pygame.Surface]:
     return [f.subsurface(box).copy() for f in frames]
 
 
-def draw_prop(s: pygame.Surface, name: str, x: int, ground: int) -> pygame.Rect:
-    """Draw prop `name` centred on `x`, its lowest row on `ground`; returns
-    the outline of what was drawn."""
-    image = prop(name)
+def draw_prop(s: pygame.Surface, name: str, x: int, ground: int, flip: bool = False) -> pygame.Rect:
+    """Draw prop `name` (mirrored with `flip`) centred on `x`, its lowest row
+    on `ground`; returns the outline of what was drawn."""
+    image = pygame.transform.flip(prop(name), True, False) if flip else prop(name)
     box = image.get_bounding_rect()
     pos = (x - image.get_width() // 2, ground - box.bottom + PROP_SINK)
     s.blit(image, pos)
@@ -589,106 +588,33 @@ def draw_prop(s: pygame.Surface, name: str, x: int, ground: int) -> pygame.Rect:
 
 
 # ------------------------------------------------------------- Poké Mart
-# Placeholder art drawn in code: the shop's room, shelves and counter.
+# Rooms (Poké Marts, Recruitment Centers): a painted back wall and floor
+# (pixellab/rooms/, drawn 2×), with Pixellab furniture standing on the floor.
 
-MART_CEILING, MART_LIGHT = (62, 60, 78), (250, 244, 210)
-MART_WALL, MART_WALL_LINE = (238, 232, 212), (224, 216, 192)
-MART_BLUE, MART_BLUE_LIGHT, MART_BLUE_DARK = (64, 104, 184), (110, 150, 220), (36, 60, 120)
-MART_FLOOR = ((226, 228, 236), (200, 204, 216))
-MART_METAL, MART_METAL_DARK = (204, 208, 218), (60, 64, 80)
-MART_GOODS = ((150, 90, 200), (230, 80, 80), (90, 180, 110), (240, 200, 80), (90, 150, 230), (240, 150, 70))
-CEILING_H, WAINSCOT_H = 44, 64
+MART_BLUE, MART_BLUE_DARK = (64, 104, 184), (36, 60, 120)  # the sign
+SHELF_W = 72
 
 
-# A Recruitment Center's room: warm walls, red trim.
-CENTER_WALLS = ((240, 228, 206), (226, 210, 184))
-CENTER_TRIM = ((176, 72, 60), (220, 120, 100), (110, 40, 36))
-
-
-def mart_room(width: int, ground: int, shelves: list[int], door_x: int, walls=(MART_WALL, MART_WALL_LINE),
-              trim=(MART_BLUE, MART_BLUE_LIGHT, MART_BLUE_DARK)) -> pygame.Surface:
-    """A shop's room (drawn once): ceiling with lamps, wall, wainscot (blue
-    by default; `walls` and `trim` give other colours), tiled floor,
-    shelves (left edges in `shelves`) and the glass door out at `door_x`."""
-    h = settings.LOGICAL_SIZE[1]
-    s = pygame.Surface((width, h))
-    s.fill(walls[0])
-    for x in range(0, width, 16):
-        pygame.draw.line(s, walls[1], (x, CEILING_H), (x, ground - WAINSCOT_H))
-    pygame.draw.rect(s, MART_CEILING, (0, 0, width, CEILING_H))
-    pygame.draw.rect(s, trim[0], (0, CEILING_H, width, 6))  # a band under the ceiling
-    for x in range(48, width, 128):  # lamps
-        pygame.draw.rect(s, MART_LIGHT, (x, CEILING_H - 5, 40, 4))
-        pygame.draw.line(s, OUTLINE, (x, CEILING_H - 1), (x + 39, CEILING_H - 1))
-    top = ground - WAINSCOT_H
-    pygame.draw.rect(s, trim[0], (0, top, width, WAINSCOT_H))
-    pygame.draw.rect(s, trim[1], (0, top, width, 3))
-    for x in range(8, width, 48):  # panels
-        pygame.draw.rect(s, trim[2], (x, top + 10, 40, WAINSCOT_H - 18), 1)
-    for row, y in enumerate(range(ground, h, 12)):  # floor tiles
-        for col, x in enumerate(range(-(row % 2) * 12, width, 24)):
-            pygame.draw.rect(s, MART_FLOOR[(row + col) % 2], (x, y, 24, 12))
-    pygame.draw.line(s, MART_METAL_DARK, (0, ground), (width, ground))
-    for x in shelves:
-        _mart_shelf(s, x, ground, random.Random(x))
-    door = pygame.Rect(door_x - 22, ground - 70, 44, 70)  # sliding glass doors
-    pygame.draw.rect(s, MART_METAL, door)
-    for half in (door.inflate(-8, -8).move(0, 4).clip((door.x, door.y, door.w // 2 - 1, door.h)),
-                 door.inflate(-8, -8).move(0, 4).clip((door.centerx + 1, door.y, door.w // 2, door.h))):
-        pygame.draw.rect(s, (170, 214, 240), half)
-        pygame.draw.line(s, (230, 246, 255), (half.x + 3, half.bottom - 10), (half.right - 4, half.y + 8), 2)
-    pygame.draw.rect(s, MART_METAL_DARK, door, 1)
-    pygame.draw.rect(s, (190, 60, 60), (door.x - 6, ground + 1, door.w + 12, 4))  # door mat
+def room(name: str, width: int, ground: int, shelves: list[int], door_x: int) -> pygame.Surface:
+    """A room (drawn once): `name`'s wall above `ground` and floor below it,
+    repeated across `width`; shelves (left edges in `shelves`) and the glass
+    door out at `door_x`."""
+    s = pygame.Surface((width, settings.LOGICAL_SIZE[1]))
+    wall, floor = (pygame.transform.scale_by(pygame.image.load(ART / "rooms" / f"{name}_{part}.png").convert(), 2)
+                   for part in ("wall", "floor"))
+    for x in range(0, width, wall.get_width()):
+        s.blit(wall, (x, ground - wall.get_height()))
+        s.blit(floor, (x, ground))
+    for i, x in enumerate(shelves):
+        draw_prop(s, "mart_shelf", x + SHELF_W // 2, ground, flip=i % 2 == 1)  # (not all alike)
+    draw_prop(s, "glass_door", door_x, ground + 3)  # its mat lies on the floor
     return s
 
 
-def _mart_shelf(s: pygame.Surface, x: int, ground: int, rng: random.Random) -> None:
-    """A shelf unit of goods (bottles, boxes, Poké Balls) against the wall."""
-    w, h = 72, 104
-    unit = pygame.Rect(x, ground - h, w, h)
-    pygame.draw.rect(s, MART_METAL, unit)
-    pygame.draw.rect(s, MART_METAL_DARK, unit, 1)
-    for shelf_y in range(unit.top + 30, unit.bottom, 30):
-        gx = unit.left + 4
-        while gx < unit.right - 10:
-            kind, color = rng.randrange(3), rng.choice(MART_GOODS)
-            if kind == 0:  # a spray bottle
-                pygame.draw.rect(s, color, (gx, shelf_y - 12, 7, 12))
-                pygame.draw.rect(s, (245, 245, 250), (gx + 2, shelf_y - 16, 3, 4))
-                pygame.draw.rect(s, OUTLINE, (gx, shelf_y - 12, 7, 12), 1)
-                gx += 9
-            elif kind == 1:  # a box
-                bh = rng.randint(10, 18)
-                pygame.draw.rect(s, color, (gx, shelf_y - bh, 11, bh))
-                pygame.draw.line(s, (250, 250, 250), (gx + 2, shelf_y - bh + 3), (gx + 8, shelf_y - bh + 3))
-                pygame.draw.rect(s, OUTLINE, (gx, shelf_y - bh, 11, bh), 1)
-                gx += 13
-            else:  # a Poké Ball
-                c = (gx + 4, shelf_y - 5)
-                pygame.draw.circle(s, (245, 245, 250), c, 4)
-                pygame.draw.rect(s, (220, 60, 60), (gx, shelf_y - 10, 9, 5))
-                pygame.draw.circle(s, OUTLINE, c, 5, 1)
-                gx += 11
-        pygame.draw.rect(s, MART_METAL_DARK, (unit.left + 1, shelf_y, w - 2, 3))
-    pygame.draw.rect(s, MART_BLUE, (unit.left, unit.top, w, 8))  # a price strip on top
-    pygame.draw.rect(s, MART_METAL_DARK, (unit.left, unit.top, w, 8), 1)
-
-
 def mart_counter(s: pygame.Surface, x: int, ground: int, w: int) -> pygame.Rect:
-    """The shop counter (in front of the shopkeeper), left edge at `x`;
-    returns its outline."""
-    counter = pygame.Rect(x, ground - 30, w, 30)
-    pygame.draw.rect(s, MART_BLUE, counter)
-    pygame.draw.rect(s, MART_BLUE_LIGHT, (x + 4, counter.top + 12, w - 8, 3))
-    pygame.draw.rect(s, MART_BLUE_DARK, counter, 1)
-    top = pygame.Rect(x - 3, counter.top - 4, w + 6, 5)
-    pygame.draw.rect(s, (244, 244, 250), top)
-    pygame.draw.rect(s, MART_METAL_DARK, top, 1)
-    till = pygame.Rect(x + w - 30, top.top - 12, 22, 12)  # the till
-    pygame.draw.rect(s, (150, 154, 170), till)
-    pygame.draw.rect(s, (110, 200, 140), (till.x + 3, till.y + 2, 10, 4))
-    pygame.draw.rect(s, MART_METAL_DARK, till, 1)
-    return counter.union(top).union(till)
+    """The shop counter (in front of the shopkeeper), centred on the `w` px
+    from `x`; returns its outline."""
+    return draw_prop(s, "mart_counter", x + w // 2, ground)
 
 
 def mart_sign(s: pygame.Surface, center_x: int, y: int) -> pygame.Rect:
@@ -702,17 +628,8 @@ def mart_sign(s: pygame.Surface, center_x: int, y: int) -> pygame.Rect:
 
 
 def recruit_board(s: pygame.Surface, rect: pygame.Rect) -> None:
-    """A Recruitment Center's big cork board in a wooden frame, on short
+    """A Recruitment Center's big cork board, its frame over `rect`, on short
     legs (the scene pins the open recruitments' icons on it)."""
-    for lx in (rect.left + 10, rect.right - 14):
-        leg = pygame.Rect(lx, rect.bottom, 4, 12)
-        pygame.draw.rect(s, WOOD_POST, leg)
-        pygame.draw.rect(s, OUTLINE, leg, 1)
-    pygame.draw.rect(s, WOOD_POST, rect)
-    pygame.draw.rect(s, OUTLINE, rect, 1)
-    cork = rect.inflate(-8, -8)
-    pygame.draw.rect(s, (196, 150, 96), cork)
-    rng = random.Random(rect.x)
-    for _ in range(cork.w * cork.h // 30):  # cork speckles
-        s.set_at((rng.randrange(cork.left, cork.right), rng.randrange(cork.top, cork.bottom)), (172, 126, 76))
-    pygame.draw.rect(s, (150, 104, 60), cork, 1)
+    image = prop("cork_board")
+    box = image.get_bounding_rect()
+    s.blit(image, (rect.centerx - box.centerx, rect.top - box.top))
