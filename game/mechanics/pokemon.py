@@ -278,7 +278,7 @@ SPECIES.update({
     "nidoran_m": _animated("nidoran_m", "Nidoran M", (46, 57, 40, 50), ("poison",), exp=60, hit=4),
     "rattata": _animated("rattata", "Rattata", (30, 56, 35, 72), ("normal",), exp=57, hit=5),
     "caterpie": _animated("caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), exp=53, hit=5),
-    "metapod": _animated("metapod", "Metapod", (50, 20, 55, 30), ("bug",), exp=72, hit=5),
+    "metapod": _animated("metapod", "Metapod", (50, 20, 55, 30), ("bug",), exp=72, hit=2),
     "weedle": _animated("weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"), exp=52, hit=4),
     "kakuna": _animated("kakuna", "Kakuna", (45, 25, 50, 35), ("bug", "poison"), exp=71, hit=5),
     "oddish": _placeholder("043_oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"), exp=78),
