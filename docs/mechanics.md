@@ -670,13 +670,13 @@ wild groups' Pokémon are rolled anew for every trip. During a trip, rooms
 remember what's been beaten and opened (`Instance.rooms`, saved too).
 Mt. Moon: 1F has the entrance and three ladders down: two lead to dead
 ends (one B1F room with loot, or B1F → B2F west with trainers and
-chests), the middle one to B1F → B2F, where a **Team Rocket Grunt**
+chests), the middle one to B1F → B2F, where the **Rocket Gang Leader**
 (Sandshrew 12, Rattata 12, Zubat 13) blocks the ladder up to the B1F room
 with the way out. Rooms are shown by floor only ("Mt. Moon B1F").
 
 **The Pewter Gym** (`Route` "pewter_gym", walked from the gym building;
-1 map in a rock hall drawn in code, no wild Pokémon, no chests): a **Jr.
-Trainer** (Diglett Lv11, Sandshrew Lv11) midway, and **Brock** (Geodude
+1 map in a rock hall drawn in code, no wild Pokémon, no chests): **Brock's
+Diggers** (Diglett Lv11, Sandshrew Lv11) midway, and **Brock** (Geodude
 Lv12, Onix Lv14, Gen 1's team) guarding the way out; beating him finishes
 the Boulder Badge quest. Once it's done the gym stays shut ("You already
 have the Boulder Badge").
@@ -690,38 +690,39 @@ basic attack and their equipped moves, at a random target.
 `game/scenes/battle.py` (`BattleScene.trainer`)
 
 A route's boss group can be a trainer's team (`Route.trainer`), and
-routes can have **trainers on their maps** (`Route.trainers`, `Trainer`):
-each stands where one of the map's wild groups would (spread out evenly,
+routes can have **trainers on their maps** (`Route.trainers`, `Trainer`).
+There are no human trainers: each is a **band of Pokémon** with a name
+("Crawler Swarm", "Rocket Gang") standing in for a Gen 1 trainer. Each stands where one of the map's wild groups would (spread out evenly,
 always the same spot), with its team in a row.
-- the battle opens with "<trainer> wants to battle!" and **can't be run
+- the battle opens with "<name> challenges you!" and **can't be run
   from**;
 - its Pokémon give **×1.5 XP** (as in Gen 1; wild ones ×0.5);
-- the trainer's name shows above the team on the map;
-- **prize money:** the trainer's base prize (by class, Gen 1's) × the
-  level of its last Pokémon, **halved** like the shop's prices
+- the band's name shows above the team on the map;
+- **prize money:** the base prize of the Gen 1 trainer class it stands in
+  for × the level of its last Pokémon, **halved** like the shop's prices
   (`overworld.prize_money`): Bug Catcher 10, Youngster 15, Lass 15, Jr.
   Trainer 20, Team Rocket Grunt 30, the rival 35, Hiker 35, Brock 99
   (Lv14 Onix → ₽693);
 - map trainers fight **once**: beaten ones are saved (`Game.trainers`) and
   don't come back on later trips.
 
-| Where | Trainer | Team | Prize |
+| Where | Band (Gen 1 class) | Team | Prize |
 | --- | --- | --- | --- |
-| Pewter Gym | Jr. Trainer | Diglett 11, Sandshrew 11 | ₽110 |
+| Pewter Gym | Brock's Diggers (Jr. Trainer) | Diglett 11, Sandshrew 11 | ₽110 |
 | Pewter Gym (boss) | Brock | Geodude 12, Onix 14 | ₽693 |
-| Route 3, map 1 | Youngster | Rattata 11, Ekans 11 | ₽82 |
-| Route 3, map 1 | Bug Catcher | Caterpie 10, Weedle 10, Caterpie 10 | ₽50 |
-| Route 3, map 2 | Lass | Pidgey 9, Pidgey 9 | ₽67 |
-| Route 3, map 2 | Bug Catcher | Weedle 9, Kakuna 9, Caterpie 9, Metapod 9 | ₽45 |
-| Route 3, map 3 | Youngster | Spearow 14 | ₽105 |
-| Route 3, map 3 | Lass | Jigglypuff 14 | ₽105 |
-| Mt. Moon 1F | Bug Catcher | Weedle 11, Kakuna 11 | ₽55 |
-| Mt. Moon 1F | Lass | Clefairy 14 | ₽105 |
-| Mt. Moon 1F | Youngster | Rattata 10, Rattata 10, Zubat 10 | ₽75 |
-| Mt. Moon B1F (on the way) | Hiker | Geodude 10 ×3, Onix 11 | ₽192 |
-| Mt. Moon B2F west (dead end) | Team Rocket Grunt | Rattata 13, Zubat 13 | ₽195 |
-| Mt. Moon B2F | Team Rocket Grunt | Zubat 12, Ekans 12 | ₽180 |
-| Mt. Moon B2F (boss) | Team Rocket Grunt | Sandshrew 12, Rattata 12, Zubat 13 | ₽195 |
+| Route 3, map 1 | Alley Gang (Youngster) | Rattata 11, Ekans 11 | ₽82 |
+| Route 3, map 1 | Crawler Swarm (Bug Catcher) | Caterpie 10, Weedle 10, Caterpie 10 | ₽50 |
+| Route 3, map 2 | Pidgey Flock (Lass) | Pidgey 9, Pidgey 9 | ₽67 |
+| Route 3, map 2 | Bug Brood (Bug Catcher) | Weedle 9, Kakuna 9, Caterpie 9, Metapod 9 | ₽45 |
+| Route 3, map 3 | Lone Spearow (Youngster) | Spearow 14 | ₽105 |
+| Route 3, map 3 | Singing Jigglypuff (Lass) | Jigglypuff 14 | ₽105 |
+| Mt. Moon 1F | Stinger Nest (Bug Catcher) | Weedle 11, Kakuna 11 | ₽55 |
+| Mt. Moon 1F | Moon Clefairy (Lass) | Clefairy 14 | ₽105 |
+| Mt. Moon 1F | Cave Rats (Youngster) | Rattata 10, Rattata 10, Zubat 10 | ₽75 |
+| Mt. Moon B1F (on the way) | Rockslide Clan (Hiker) | Geodude 10 ×3, Onix 11 | ₽192 |
+| Mt. Moon B2F west (dead end) | Rocket Gang (Team Rocket Grunt) | Rattata 13, Zubat 13 | ₽195 |
+| Mt. Moon B2F | Rocket Gang (Team Rocket Grunt) | Zubat 12, Ekans 12 | ₽180 |
+| Mt. Moon B2F (boss) | Rocket Gang Leader (Team Rocket Grunt) | Sandshrew 12, Rattata 12, Zubat 13 | ₽195 |
 | Route 22 (boss) | the rival | Pidgey 9, starter 8 | ₽140 |
 
 ---

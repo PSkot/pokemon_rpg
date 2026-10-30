@@ -37,13 +37,14 @@ RIVAL_STARTER = "rival_starter"
 
 @dataclass(frozen=True)
 class Trainer:
-    """A trainer on one of a route's maps: beaten once for good. Prize
+    """A trainer on one of a route's maps: a band of Pokémon standing in for
+    a Gen 1 trainer (there are no human trainers). Beaten once for good. Prize
     money is `prize` × the level of its last Pokémon (Gen 1's rule)."""
     key: str     # unique in the game (saved in Game.trainers once beaten)
-    name: str    # shown over the team on the map: "Bug Catcher"
+    name: str    # the band's name, shown over the team on the map: "Crawler Swarm"
     team: tuple[tuple[str, int], ...]  # (species, level), shown in a row on the map
     map: int     # which of the route's maps it's on
-    prize: int   # Gen 1's base prize for its class (Youngster 15, Bug Catcher 10, ...)
+    prize: int   # the Gen 1 class's base prize it stands in for (Youngster 15, Bug Catcher 10, ...)
 
 
 @dataclass(frozen=True)
@@ -111,26 +112,26 @@ ROUTES = {r.key: r for r in [
           boss_group=(("pidgey", 9), (RIVAL_STARTER, 8)), trainer="Rival", boss_chest=False,
           needs=("rival_22", "started"), blocked="A guard says there's nothing to see on Route 22 for now.",
           boss_after=("rival_22", (("pidgey", 9), ("spearow", 9))), prize=35),
-    # The Pewter Gym, from its building: a Jr. Trainer, then Brock (Gen 1's teams).
+    # The Pewter Gym, from its building: Brock's Diggers, then Brock (Gen 1's teams).
     Route("pewter_gym", "Pewter Gym", PEWTER_GYM, maps=1, towns=("pewter", "pewter"), boss=True,
           boss_group=(("geodude", 12), ("onix", 14)), trainer="Brock", boss_chest=False, prize=99,
-          trainers=(Trainer("pewter_gym_jr", "Jr. Trainer", (("diglett", 11), ("sandshrew", 11)), 0, 20),),
+          trainers=(Trainer("pewter_gym_jr", "Brock's Diggers", (("diglett", 11), ("sandshrew", 11)), 0, 20),),
           wild=False, building="Pewter Gym",
           needs=("boulder_badge", "not_done"),
           blocked="Brock: You already have the Boulder Badge. The road east, Route 3, is open to you!"),
     # Route 3, from Pewter to the foot of Mt. Moon: Gen 1's trainer road.
     Route("route_3", "Route 3", ROUTE_3, maps=3, towns=("pewter", "mt_moon"),
           needs=("boulder_badge", "done"),
-          blocked="A boy blocks the way: \"You're a trainer? Brock's looking for challengers! Beat him first!\"",
+          blocked="A Geodude blocks the way: \"Brock's looking for challengers! Beat him first!\"",
           trainers=(
-              Trainer("route_3_youngster_1", "Youngster", (("rattata", 11), ("ekans", 11)), 0, 15),
-              Trainer("route_3_bug_catcher_1", "Bug Catcher", (("caterpie", 10), ("weedle", 10), ("caterpie", 10)),
+              Trainer("route_3_youngster_1", "Alley Gang", (("rattata", 11), ("ekans", 11)), 0, 15),
+              Trainer("route_3_bug_catcher_1", "Crawler Swarm", (("caterpie", 10), ("weedle", 10), ("caterpie", 10)),
                       0, 10),
-              Trainer("route_3_lass_1", "Lass", (("pidgey", 9), ("pidgey", 9)), 1, 15),
-              Trainer("route_3_bug_catcher_2", "Bug Catcher", (("weedle", 9), ("kakuna", 9), ("caterpie", 9),
+              Trainer("route_3_lass_1", "Pidgey Flock", (("pidgey", 9), ("pidgey", 9)), 1, 15),
+              Trainer("route_3_bug_catcher_2", "Bug Brood", (("weedle", 9), ("kakuna", 9), ("caterpie", 9),
                                                                ("metapod", 9)), 1, 10),
-              Trainer("route_3_youngster_2", "Youngster", (("spearow", 14),), 2, 15),
-              Trainer("route_3_lass_2", "Lass", (("jigglypuff", 14),), 2, 15),
+              Trainer("route_3_youngster_2", "Lone Spearow", (("spearow", 14),), 2, 15),
+              Trainer("route_3_lass_2", "Singing Jigglypuff", (("jigglypuff", 14),), 2, 15),
           )),
     # Mt. Moon, as in Red/Blue: three ladders down from 1F, two of them to
     # dead ends; the way on goes down to B2F, past Team Rocket, and up to
@@ -144,18 +145,18 @@ ROUTES = {r.key: r for r in [
               Room("b1_east", "B1F", 70, (Stair("up", "1f", 0.15), Stair("down", "b2", 0.85))),
               Room("b2_west", "B2F", 80, (Stair("up", "b1_west", 0.15),)),
               Room("b2", "B2F", 90, (Stair("up", "b1_east", 0.1), Stair("up", "b1_exit", 1)),
-                   boss_group=(("sandshrew", 12), ("rattata", 12), ("zubat", 13)), trainer="Team Rocket Grunt",
+                   boss_group=(("sandshrew", 12), ("rattata", 12), ("zubat", 13)), trainer="Rocket Gang Leader",
                    prize=30),
               Room("b1_exit", "B1F", 50, (Stair("down", "b2", 0.2), Stair("out", "route_4", 1))),
           ),
           trainers=(  # (`map`: the room's place in `rooms`)
-              Trainer("mt_moon_bug_catcher", "Bug Catcher", (("weedle", 11), ("kakuna", 11)), 0, 10),
-              Trainer("mt_moon_lass", "Lass", (("clefairy", 14),), 0, 15),
-              Trainer("mt_moon_youngster", "Youngster", (("rattata", 10), ("rattata", 10), ("zubat", 10)), 0, 15),
-              Trainer("mt_moon_hiker", "Hiker", (("geodude", 10), ("geodude", 10), ("geodude", 10), ("onix", 11)),
+              Trainer("mt_moon_bug_catcher", "Stinger Nest", (("weedle", 11), ("kakuna", 11)), 0, 10),
+              Trainer("mt_moon_lass", "Moon Clefairy", (("clefairy", 14),), 0, 15),
+              Trainer("mt_moon_youngster", "Cave Rats", (("rattata", 10), ("rattata", 10), ("zubat", 10)), 0, 15),
+              Trainer("mt_moon_hiker", "Rockslide Clan", (("geodude", 10), ("geodude", 10), ("geodude", 10), ("onix", 11)),
                       3, 35),
-              Trainer("mt_moon_rocket_1", "Team Rocket Grunt", (("rattata", 13), ("zubat", 13)), 4, 30),
-              Trainer("mt_moon_rocket_2", "Team Rocket Grunt", (("zubat", 12), ("ekans", 12)), 5, 30),
+              Trainer("mt_moon_rocket_1", "Rocket Gang", (("rattata", 13), ("zubat", 13)), 4, 30),
+              Trainer("mt_moon_rocket_2", "Rocket Gang", (("zubat", 12), ("ekans", 12)), 5, 30),
           )),
 ]}
 

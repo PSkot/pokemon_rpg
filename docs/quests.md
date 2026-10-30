@@ -16,7 +16,7 @@ stay worth fighting. Budget up to Pewter City: the quests before it pay
 1,800 XP in all, a full run of each route there about 1,500 in battle XP,
 so a player who does both arrives around Lv14–15 (Brock's Onix is Lv14
 in Gen 1). From Pewter to Mt. Moon: the quests pay 1,350 XP (Brock 400,
-Road to Mt. Moon 300, Route 3 jobs 650), Brock and his Jr. Trainer about
+Road to Mt. Moon 300, Route 3 jobs 650), Brock and his Diggers about
 950 in battle XP and Route 3's six trainers about 1,200, so a party
 arrives around Lv18–19.
 
@@ -160,7 +160,7 @@ yet.
 - **Starts:** automatically on first arriving in Pewter City
   (`Quest.starts_in`).
 - **Steps:** defeat **Brock** at the end of the Pewter Gym (Up at the gym
-  building; a Jr. Trainer stands midway). Brock: "I took you for granted.
+  building; Brock's Diggers stand midway). Brock: "I took you for granted.
   As proof of your victory, here's the Boulder Badge!" (key item).
 - **Rewards:** ₽500, 400 XP, 3 Super Potions and a **Rare** gear piece
   (item level 14), on top of Brock's prize money (₽693) and reward roll.
@@ -172,7 +172,7 @@ yet.
 
 - **Starts:** automatically when the Boulder Badge is won.
 - **Steps:** reach **Mt. Moon** (the Pokémon Center at its foot) by Route
-  3. Six trainers line the road (see `mechanics.md`, *Trainer battles*).
+  3. Six bands of Pokémon have claimed the road (see `mechanics.md`, *Trainer battles*).
 - **Rewards:** ₽400, 300 XP.
 - **Unlocks:** quest 5 (Mt. Moon's doorway is on the stop's right edge).
 
@@ -181,7 +181,7 @@ yet.
 - **Starts:** automatically when quest 4 is done (or on arriving at the
   Mt. Moon Pokémon Center if it already is).
 - **Steps:** reach **Route 4** through Mt. Moon, a dungeon of ladders and
-  dead ends (see `mechanics.md`, *Dungeons*); a Team Rocket Grunt on B2F
+  dead ends (see `mechanics.md`, *Dungeons*); the Rocket Gang Leader on B2F
   guards the ladder to the way out.
 - **Rewards:** ₽800, 600 XP, 3 Super Potions and an Uncommon gear piece
   (item level 14).

@@ -557,7 +557,7 @@ class BattleScene(Scene):
                 elif command == "Item" and self._medicine():
                     self.menu = "items"
                 elif command == "Run" and self.trainer:
-                    self.message = "There's no running from a trainer battle!"
+                    self.message = "You can't run from a challenge!"
                 elif command == "Run":
                     self.next_scene = Transition(self, self.return_to, flashes=0)
             elif key in CANCEL_KEYS:
@@ -604,7 +604,7 @@ class BattleScene(Scene):
 
     def _intro(self):
         if self.trainer:
-            self.message = f"{self.trainer} wants to battle!"
+            self.message = f"{self.trainer} challenges you!"
         elif self.boss:
             first = self.enemies[0]
             giant = "giant " if first.monster.scale > 1 else ""

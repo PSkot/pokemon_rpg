@@ -225,7 +225,7 @@ QUESTS = {q.key: q for q in [
     ),
     Quest(
         "to_mt_moon", "Road to Mt. Moon",
-        "Route 3 runs east from Pewter City to the foot of Mt. Moon. Trainers line the road.",
+        "Route 3 runs east from Pewter City to the foot of Mt. Moon. Bands of Pokémon have claimed the road.",
         requires=("boulder_badge",),
         steps=(Step("reach", "mt_moon", "Reach Mt. Moon by Route 3 (east of Pewter City)"),),
         money=400, xp=300,

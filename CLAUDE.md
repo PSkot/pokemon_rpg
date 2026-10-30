@@ -206,12 +206,14 @@ non-commercial project.
   `trainer` makes the boss fight a trainer battle (no running, ×1.5 XP).
   `RIVAL_STARTER` in a boss group becomes the rival's starter, which beats
   the player's (`Game.starter`, `Game.rival_starter`). Routes can have
-  map trainers (`Route.trainers`, `Trainer`: each takes one of a map's
+  map trainers (`Route.trainers`, `Trainer`: bands of Pokémon named for
+  their team, e.g. "Crawler Swarm" (no human trainers in this game; each
+  stands in for a Gen 1 trainer); each takes one of a map's
   wild-group spots, `overworld._spread`; name over the team; fight once,
   `Game.trainers`; prize money = base × last level / 2, `prize_money`;
   boss trainers use `Route.prize`). Gyms are routes walked from their
   building (`Route.building`, `wild=False`: only trainers, no chests):
-  the Pewter Gym (Jr. Trainer, then Brock; shut once the Boulder Badge is
+  the Pewter Gym (Brock's Diggers, then Brock; shut once the Boulder Badge is
   won, `needs` "not_done"). Dungeons (Mt. Moon, `Route.rooms`): `Room`s
   joined by `Stair`s (ladder "up"/"down" to another room, arriving at its
   stair back; "out" doorway to a town); each room is laid out from its own
