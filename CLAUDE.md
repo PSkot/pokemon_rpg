@@ -347,43 +347,24 @@ non-commercial project.
 
 ## Assets
 
-- Sprite sheets in `assets/sprites/pixellab/`: grid of 64×64 frames, one
-  animation per row, sprites face right (mirror for left). Row order:
-  walk, run, jump (crouch/rise/fall/land), attack.
+- Sprite sheets in `assets/sprites/pixellab/`: every species with art has
+  one PixelLab sheet, `<species>.png` (`pokemon._animated`): 64×64 cells,
+  sprites face right (mirrored for left), rows idle, walk, run (8 frames
+  each, looping), attack (9 frames: still pose + 8) and jump (crouch,
+  rise, fall, land: picked from 9 generated frames, `per_frame_baseline`).
+  `hit=` is the attack frame that strikes; the attack is cut one frame
+  after it (battles strike on the second-to-last frame). Each starts from
+  a base sprite (create_image_pro, a side profile facing right, padded to
+  the cell's bottom) animated with pixminimax. Bases are generated at
+  sizes that keep species roughly to scale: 32–40 px canvases for small
+  ones (Rattata, Spearow, the starters, Pidgey), 48–52 px for middle forms
+  and big ones (Ivysaur, Charmeleon, Wartortle, Pidgeotto, Fearow,
+  Charizard, Blastoise, Pidgeot), 64 px for Venusaur. Onix keeps its larger
+  sheet, drawn 1.5× (`Species.size`, nearest-neighbour; hats follow it).
+  Geodude's attack and jump and Venusaur's jump are made from the base pose
+  (a lunge, squash and stretch). Placeholder quality: likely to be redone.
 - A move's `anim` plays if the species has that animation; otherwise the
   species' `fight_anim` does (no move-specific sheets for now).
-- `pidgey.png` rows: walk, fly, gust, tackle. Its frames don't all face
-  right; the left-facing ones are listed in `face_left` and mirrored on load.
-- `pidgeotto.png` and `pidgeot.png` (generated through the PixelLab MCP
-  connector): the same rows as `pidgey.png`, but 88×88 cells (`AnimSpec.cell`,
-  room for spread wings) and 5 frames a row (the still pose, then 4
-  generated frames). Each species' `Species.size` (nearest-neighbour
-  `Animation.scaled`; hats follow it) brings the big early sheets roughly
-  to scale with the rest: Pidgey 0.6, Pidgeotto 0.75; Ivysaur 0.7,
-  Charmeleon and Wartortle 0.65, the final stages 0.8.
-- `ivysaur.png` has rows walk, run, jump, attack (64×64).
-- `venusaur.png`, `charmeleon.png`, `charizard.png`, `wartortle.png` and
-  `blastoise.png` (generated with PixelLab, styled after the line's
-  earlier sheets): the same rows as `ivysaur.png` in 88×88 cells, 5
-  frames a row (still pose + 4), the jump row's 4 frames being crouch,
-  rise, fall, land.
-- Idle animations: `<species> idle.png` (one row, 8 frames, the sheet's
-  cell size) for the starters' evolutions and the Pidgey line; the Pidgey line
-  also has `<species> run.png` (same layout). Generated with PixelLab
-  (pixminimax) from each sheet's still pose.
-- The starters (Bulbasaur, Charmander, Squirtle: redrawn small, bases at
-  40 px) and the species met up to Mt. Moon (Rattata ... Clefairy) have one PixelLab
-  sheet each, `<species>.png` (`pokemon._animated`): 64×64 cells, rows
-  idle, walk, run (8 frames each, looping), attack (9 frames: still
-  pose + 8) and jump (crouch, rise, fall, land: picked from 9 generated
-  frames). `hit=` is the attack frame that strikes; the attack is cut
-  one frame after it (battles strike on the second-to-last frame). Their
-  sprites are drawn small in the 64 px cells (bases generated at 32/44 px,
-  roughly to scale with each other; side profiles facing right); Onix
-  keeps its larger sheet, drawn 1.5×. Geodude's attack (a lunge) and jump
-  are made from its base pose rather than generated. Placeholder
-  quality: likely to be redone. Fearow (the feud quests) has the same
-  layout, its base generated at 48 px and drawn 1.25×.
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,
   row, fps, baseline, ...) and shared by the map player and battles.
 - Background art (`tileset.py`): `background.png` (64×64 cells) rows 3–4

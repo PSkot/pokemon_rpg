@@ -93,6 +93,5 @@ python3 tools/anim_viewer.py path/to/sheet.png --frame 64 --rows walk run jump a
 - Sprites face **right**; the game mirrors them to face left.
 - Most species (the starters, Rattata, ...): rows `idle`, `walk`, `run`,
   `attack`, `jump`.
-- Pidgey rows: `walk`, `fly`, `gust`, `tackle`.
 - Jump rows have 4 frames: crouch, leap (rising), airborne (falling), landing.
   The game picks the frame from the jump's phase, not from a timer.

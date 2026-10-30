@@ -25,7 +25,6 @@ class AnimSpec:
     frames: int | None = None  # use only the first N frames
     baseline: int | tuple[int | None, ...] | None = None  # see Animation
     per_frame_baseline: bool = False
-    face_left: tuple[int, ...] = ()  # frames drawn facing left; mirrored on load
     cell: int = 64             # the sheet's frame size (square)
 
 
@@ -44,10 +43,7 @@ class Species:
     # as a still sprite until the species gets a Pixellab sheet.
     icon: str = ""
     base_exp: int = 64  # Gen 1 base experience yield: XP for defeating one
-    # Drawn this many times its sheet's size (nearest-neighbour), so species
-    # come out roughly to scale with each other: the starters' evolutions'
-    # and Pidgey line's sheets are drawn big, so they're shrunk (Pidgey 0.6).
-    size: float = 1.0
+    size: float = 1.0  # drawn this many times its sheet's size (nearest-neighbour: Onix)
 
     @property
     def key(self) -> str:
@@ -79,131 +75,7 @@ class Species:
         return TREES.get(key) or stand_in_tree(key)
 
 
-SPECIES = {
-    "ivysaur": Species(
-        "Ivysaur", 60, 62, 63, 60, ("grass", "poison"),
-        fight_anim="attack",
-        anims={
-            "idle": AnimSpec("ivysaur idle.png", 0, fps=6, loop=True),
-            "walk": AnimSpec("ivysaur.png", 0, loop=True),
-            "run": AnimSpec("ivysaur.png", 1, fps=12, loop=True),
-            "jump": AnimSpec("ivysaur.png", 2, fps=1, per_frame_baseline=True),
-            "attack": AnimSpec("ivysaur.png", 3),
-        },
-        foot_sink=3,
-        base_exp=141,
-        size=0.7),
-    # The starters' evolutions (generated with PixelLab, like Pidgeotto): 88 px
-    # cells, rows walk, run, jump (crouch, rise, fall, land) and attack.
-    "venusaur": Species(
-        "Venusaur", 80, 82, 83, 80, ("grass", "poison"),
-        fight_anim="attack",
-        anims={
-            "idle": AnimSpec("venusaur idle.png", 0, fps=6, loop=True, cell=88),
-            "walk": AnimSpec("venusaur.png", 0, loop=True, cell=88),
-            "run": AnimSpec("venusaur.png", 1, fps=12, loop=True, cell=88),
-            "jump": AnimSpec("venusaur.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
-            "attack": AnimSpec("venusaur.png", 3, cell=88),
-        },
-        foot_sink=3,
-        base_exp=208,
-        size=0.8),
-    "charmeleon": Species(
-        "Charmeleon", 58, 64, 58, 80, ("fire",),
-        fight_anim="attack",
-        anims={
-            "idle": AnimSpec("charmeleon idle.png", 0, fps=6, loop=True, cell=88),
-            "walk": AnimSpec("charmeleon.png", 0, loop=True, cell=88),
-            "run": AnimSpec("charmeleon.png", 1, fps=12, loop=True, cell=88),
-            "jump": AnimSpec("charmeleon.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
-            "attack": AnimSpec("charmeleon.png", 3, cell=88),
-        },
-        foot_sink=2,
-        base_exp=142,
-        size=0.65),
-    "charizard": Species(
-        "Charizard", 78, 84, 78, 100, ("fire", "flying"),
-        fight_anim="attack",
-        anims={
-            "idle": AnimSpec("charizard idle.png", 0, fps=6, loop=True, cell=88),
-            "walk": AnimSpec("charizard.png", 0, loop=True, cell=88),
-            "run": AnimSpec("charizard.png", 1, fps=12, loop=True, cell=88),
-            "jump": AnimSpec("charizard.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
-            "attack": AnimSpec("charizard.png", 3, cell=88),
-        },
-        foot_sink=2,
-        base_exp=209,
-        size=0.8),
-    "wartortle": Species(
-        "Wartortle", 59, 63, 80, 58, ("water",),
-        fight_anim="attack",
-        anims={
-            "idle": AnimSpec("wartortle idle.png", 0, fps=6, loop=True, cell=88),
-            "walk": AnimSpec("wartortle.png", 0, loop=True, cell=88),
-            "run": AnimSpec("wartortle.png", 1, fps=12, loop=True, cell=88),
-            "jump": AnimSpec("wartortle.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
-            "attack": AnimSpec("wartortle.png", 3, cell=88),
-        },
-        foot_sink=2,
-        base_exp=143,
-        size=0.65),
-    "blastoise": Species(
-        "Blastoise", 79, 83, 100, 78, ("water",),
-        fight_anim="attack",
-        anims={
-            "idle": AnimSpec("blastoise idle.png", 0, fps=6, loop=True, cell=88),
-            "walk": AnimSpec("blastoise.png", 0, loop=True, cell=88),
-            "run": AnimSpec("blastoise.png", 1, fps=12, loop=True, cell=88),
-            "jump": AnimSpec("blastoise.png", 2, fps=1, frames=4, per_frame_baseline=True, cell=88),
-            "attack": AnimSpec("blastoise.png", 3, cell=88),
-        },
-        foot_sink=2,
-        base_exp=210,
-        size=0.8),
-    "pidgey": Species(
-        "Pidgey", 40, 45, 40, 56, ("normal", "flying"),
-        fight_anim="tackle",
-        anims={
-            "idle": AnimSpec("pidgey idle.png", 0, fps=6, loop=True),
-            "walk": AnimSpec("pidgey.png", 0, loop=True),
-            "run": AnimSpec("pidgey run.png", 0, fps=16, loop=True),
-            "fly": AnimSpec("pidgey.png", 1, loop=True, face_left=(0, 1, 2, 3)),
-            "gust": AnimSpec("pidgey.png", 2, face_left=(0, 1)),
-            "tackle": AnimSpec("pidgey.png", 3, face_left=(0,)),
-        },
-        foot_sink=1,
-        base_exp=55,
-        size=0.6),
-    # Pidgeotto's and Pidgeot's sheets have 88 px cells (room for the wings)
-    # and 5 frames a row: the still pose, then 4 generated frames.
-    "pidgeotto": Species(
-        "Pidgeotto", 63, 60, 55, 71, ("normal", "flying"),
-        fight_anim="tackle",
-        anims={
-            "idle": AnimSpec("pidgeotto idle.png", 0, fps=6, loop=True, cell=88),
-            "walk": AnimSpec("pidgeotto.png", 0, loop=True, cell=88),
-            "run": AnimSpec("pidgeotto run.png", 0, fps=16, loop=True, cell=88),
-            "fly": AnimSpec("pidgeotto.png", 1, loop=True, cell=88),
-            "gust": AnimSpec("pidgeotto.png", 2, cell=88),
-            "tackle": AnimSpec("pidgeotto.png", 3, cell=88),
-        },
-        foot_sink=1,
-        base_exp=113,
-        size=0.75),
-    "pidgeot": Species(
-        "Pidgeot", 83, 80, 75, 91, ("normal", "flying"),
-        fight_anim="tackle",
-        anims={
-            "idle": AnimSpec("pidgeot idle.png", 0, fps=6, loop=True, cell=88),
-            "walk": AnimSpec("pidgeot.png", 0, loop=True, cell=88),
-            "run": AnimSpec("pidgeot run.png", 0, fps=16, loop=True, cell=88),
-            "fly": AnimSpec("pidgeot.png", 1, loop=True, cell=88),
-            "gust": AnimSpec("pidgeot.png", 2, cell=88),
-            "tackle": AnimSpec("pidgeot.png", 3, cell=88),
-        },
-        foot_sink=1,
-        base_exp=172),
-}
+SPECIES: dict[str, Species] = {}  # filled in below (`_animated`, `_placeholder`)
 
 
 def _placeholder(icon: str, name: str, stats: tuple[int, int, int, int], types: tuple[str, ...],
@@ -233,13 +105,21 @@ def _animated(key: str, name: str, stats: tuple[int, int, int, int], types: tupl
 # skills.TREES.) Those met up to Mt. Moon have PixelLab sheets; the rest only
 # a reference icon so far.
 SPECIES.update({
-    # The starters (redrawn small, like the species below; their evolutions
-    # still use the older, bigger sheets, drawn smaller).
+    # The starters' lines and the Pidgey line.
     "bulbasaur": _animated("bulbasaur", "Bulbasaur", (45, 49, 49, 45), ("grass", "poison"), exp=64, hit=4),
+    "ivysaur": _animated("ivysaur", "Ivysaur", (60, 62, 63, 60), ("grass", "poison"), exp=141, hit=5),
+    "venusaur": _animated("venusaur", "Venusaur", (80, 82, 83, 80), ("grass", "poison"), exp=208, hit=6),
     "charmander": _animated("charmander", "Charmander", (39, 52, 43, 65), ("fire",), exp=65, hit=4),
+    "charmeleon": _animated("charmeleon", "Charmeleon", (58, 64, 58, 80), ("fire",), exp=142, hit=3),
+    "charizard": _animated("charizard", "Charizard", (78, 84, 78, 100), ("fire", "flying"), exp=209, hit=4),
     "squirtle": _animated("squirtle", "Squirtle", (44, 48, 65, 43), ("water",), exp=66, hit=3),
+    "wartortle": _animated("wartortle", "Wartortle", (59, 63, 80, 58), ("water",), exp=143, hit=3),
+    "blastoise": _animated("blastoise", "Blastoise", (79, 83, 100, 78), ("water",), exp=210, hit=4),
+    "pidgey": _animated("pidgey", "Pidgey", (40, 45, 40, 56), ("normal", "flying"), exp=55, hit=5),
+    "pidgeotto": _animated("pidgeotto", "Pidgeotto", (63, 60, 55, 71), ("normal", "flying"), exp=113, hit=3),
+    "pidgeot": _animated("pidgeot", "Pidgeot", (83, 80, 75, 91), ("normal", "flying"), exp=172, hit=3),
     "spearow": _animated("spearow", "Spearow", (40, 60, 30, 70), ("normal", "flying"), exp=58, hit=4),
-    "fearow": _animated("fearow", "Fearow", (65, 90, 65, 100), ("normal", "flying"), exp=162, hit=3, size=1.25),
+    "fearow": _animated("fearow", "Fearow", (65, 90, 65, 100), ("normal", "flying"), exp=162, hit=3),
     # (The game's font has no ♀/♂ symbols.)
     "nidoran_f": _animated("nidoran_f", "Nidoran F", (55, 47, 52, 41), ("poison",), exp=59, hit=4),
     "nidoran_m": _animated("nidoran_m", "Nidoran M", (46, 57, 40, 50), ("poison",), exp=60, hit=4),
@@ -364,8 +244,6 @@ def animations(species: Species, scale: int = 1) -> dict[str, Animation]:
     anims = {}
     for name, spec in species.anims.items():
         frames = _sheet(spec.sheet, spec.cell)[spec.row][:spec.frames]
-        frames = [pygame.transform.flip(f, True, False) if i in spec.face_left else f
-                  for i, f in enumerate(frames)]
         anims[name] = Animation(frames, spec.fps, spec.loop,
                                 per_frame_baseline=spec.per_frame_baseline, baseline=spec.baseline)
         anims[name].heads = hats.head_anchors(spec.sheet, spec.row, len(frames))
