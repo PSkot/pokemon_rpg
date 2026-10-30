@@ -99,7 +99,7 @@ def _frame(clock, canvas, screen, window, scene, pause):
     # The map's touch buttons show on maps, and all of them while their
     # layout is being set (pause menu -> Controls).
     on_map = pause.editing_controls if pause else scene.touch_map
-    extra = () if pause else scene.touch_keys
+    extra = pause.touch_keys if pause else scene.touch_keys
     for event in pygame.event.get():
         if touch.handle(event, on_map, extra):
             continue  # (touch buttons post key events)
@@ -108,7 +108,10 @@ def _frame(clock, canvas, screen, window, scene, pause):
         elif pause:
             pause.handle_event(event)
             if pause.done:
-                running = not pause.quit
+                if pause.quit and saves.WEB:  # a page can't close itself: back to the title screen
+                    scene = Transition(scene, TitleScene(), flashes=0)
+                elif pause.quit:
+                    running = False
                 if pause.loaded:
                     scene = Transition(scene, pause.loaded, flashes=0)
                 pause = None
@@ -135,7 +138,7 @@ def _frame(clock, canvas, screen, window, scene, pause):
     if pause:
         pause.draw_overlay(window)
     on_map = pause.editing_controls if pause else scene.touch_map
-    touch.draw(screen, on_map, () if pause else scene.touch_keys)
+    touch.draw(screen, on_map, pause.touch_keys if pause else scene.touch_keys)
     pygame.display.flip()
     if saves.WEB:
         fit_canvas(screen.get_size())

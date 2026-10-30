@@ -13,7 +13,7 @@ from .dev_menu import ItemMaker
 from ..world.towns import TOWNS
 from .quest_ui import QuestLog
 from .town import TownScene
-from .save_menu import NEW_SAVE, SaveList
+from .save_menu import DELETE_PILL, NEW_SAVE, SaveList
 
 PAD = 9
 ROW_H = 19
@@ -60,6 +60,10 @@ class PauseMenu:
             return options
         i = options.index("Dev mode") + 1
         return options[:i] + DEV_OPTIONS + options[i:]
+
+    @property
+    def touch_keys(self):
+        return DELETE_PILL if self.saves else ()
 
     @property
     def editing_controls(self) -> bool:

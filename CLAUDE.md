@@ -247,7 +247,10 @@ non-commercial project.
   regenerated from the seed. Scenes say what can be saved via
   `Scene.save_point()`. The game starts at
   the title screen (`title.py`: Continue / Load game / New game); the save
-  and load lists are `save_menu.SaveList`. New game opens the starter
+  and load lists are `save_menu.SaveList` (Delete key, or the Delete touch
+  pill `DELETE_PILL` shown by the title and pause menu, deletes a save after
+  asking). Pause menu → Quit game closes the game; in the browser it goes
+  back to the title screen (a page can't close itself). New game opens the starter
   choice (`scenes/starter.py`: Bulbasaur, Charmander or Squirtle,
   `progress.STARTERS`; `Game.new(starter)`, saved as `Game.starter`).
 - Quests (`world/quests.py`, `docs/quests.md`): `QUESTS` with steps (visit

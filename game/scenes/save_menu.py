@@ -2,7 +2,9 @@
 title screen). It's drawn on top of everything, like the pause menu.
 
 Picking a save sets `picked`: a `SaveInfo`, or `NEW_SAVE`. Overwriting,
-loading over a game in progress and deleting (Delete key) ask first.
+loading over a game in progress and deleting (Delete key, or the Delete
+touch button: `DELETE_PILL`, which the screens hosting the list show) ask
+first.
 """
 
 import pygame
@@ -18,6 +20,7 @@ VISIBLE = 5       # entries shown at once; the list scrolls
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE, pygame.K_ESCAPE)
 DELETE_KEYS = (pygame.K_DELETE,)
+DELETE_PILL = ((pygame.K_DELETE, "Delete"),)  # the touch button for it (phones have no Delete key)
 
 NEW_SAVE = "new"
 

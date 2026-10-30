@@ -8,7 +8,7 @@ from .. import saves, settings
 from ..engine import ui
 from ..engine.scene import Scene, Transition
 from ..saves import LoadError
-from .save_menu import SaveList
+from .save_menu import DELETE_PILL, SaveList
 from .starter import StarterScene
 
 PAD = 9
@@ -24,6 +24,10 @@ def _background() -> pygame.Surface:
 
 class TitleScene(Scene):
     pausable = False  # Esc belongs to the load list here
+
+    @property
+    def touch_keys(self):
+        return DELETE_PILL if self.saves else ()
 
     def __init__(self):
         self.saves: SaveList | None = None
