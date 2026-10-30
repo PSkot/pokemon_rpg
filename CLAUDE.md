@@ -272,6 +272,14 @@ non-commercial project.
   `quest_mark`; "?" quests to hand in). Evolution quests (`Quest.evolves`)
   are only on offer (and only drop their item) once that species is at
   its evolution level in the team (`quests.evolution_level`).
+- Townsfolk (`towns.Folk`, `Town.folk`; drawn and talked to in `town.py`):
+  Pokémon in towns (their species' idle animation, facing the player; `ELDER`
+  = the last form of the player's starter's line). Up next to one
+  (`FOLK_REACH`): a "talk" quest step (`quests.talk`), else a quest they give
+  (`Quest.giver`/`offer`), else a trial they send to (`Route.folk`), else
+  their chat `lines`. Starters evolve by "Coming of Age" (`evolve_<starter>`,
+  the elder in Pewter): collect 3 tokens, talk, a solo trial
+  (`instance._trial`: waves with `wave_team=1`, `wave_species`), evolve.
 - Recruitment (`docs/quests.md` → Recruitment): won route battles count
   defeated Pokémon per line (`Game.defeated`, `pokemon.line_base`); at
   `instance.RECRUITS[line].needed` its recruitment quest opens (board

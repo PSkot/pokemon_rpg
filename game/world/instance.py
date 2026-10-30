@@ -26,7 +26,7 @@ import zlib
 from dataclasses import dataclass, field, replace
 
 from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, Rarities
-from ..mechanics.pokemon import SPECIES
+from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate
 from .themes import FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_22, PoolEntry, Theme
 
@@ -109,6 +109,8 @@ class Route:
     # after another, fought by `wave_team` Pokémon the player picks.
     waves: tuple[Wave, ...] = ()
     wave_team: int = 2
+    wave_species: tuple[str, ...] = ()  # only these can be picked for the waves (() = anyone)
+    folk: str = ""                      # walked by talking to this townsfolk (a trial), not a doorway
 
     def other_end(self, town: str) -> str:
         return self.towns[1] if town == self.towns[0] else self.towns[0]
@@ -175,6 +177,31 @@ ROUTES = {r.key: r for r in [
               Trainer("mt_moon_rocket_2", "Rocket Gang", (("zubat", 12), ("ekans", 12)), 5, 30),
           )),
 ]}
+
+
+# --- trials --------------------------------------------------------------------
+# A starter's evolution trial (quest "Coming of Age"): the elder in Pewter
+# City sends it alone through waves of Pokémon its type beats, then a giant
+# of its own next form.
+
+def _trial(starter: str, name: str, theme: Theme, waves: tuple[Wave, ...], master: str) -> Route:
+    line = (starter, EVOLUTIONS[starter].into)
+    return Route(f"trial_{starter}", name, theme, maps=1, towns=("pewter", "pewter"), boss=True,
+                 boss_group=((master, 16),), boss_scale=2, trainer="Trial Master", boss_chest=False,
+                 waves=waves, wave_team=1, wave_species=line, wild=False, folk="pewter_elder", cols=30)
+
+
+ROUTES.update({r.key: r for r in [
+    _trial("bulbasaur", "Trial of Leaves", FOREST, (
+        Wave("Mud Diggers", (("diglett", 11), ("sandshrew", 11)), 0),
+        Wave("Stone Rollers", (("geodude", 12), ("geodude", 12)), 0)), "ivysaur"),
+    _trial("charmander", "Trial of Flame", MT_MOON, (
+        Wave("Crawler Nest", (("caterpie", 11), ("weedle", 11)), 0),
+        Wave("Spore Grove", (("paras", 12), ("paras", 12)), 0)), "charmeleon"),
+    _trial("squirtle", "Trial of Tides", ROUTE_22, (
+        Wave("Stone Rollers", (("geodude", 11), ("geodude", 11)), 0),
+        Wave("Rock Burrowers", (("diglett", 12), ("geodude", 12)), 0)), "wartortle"),
+]})
 
 
 # --- recruitment -------------------------------------------------------------

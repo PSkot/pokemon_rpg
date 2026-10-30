@@ -4,12 +4,14 @@ stand-in for Mom and Poké Centers).
 
 Buildings are Pixellab sprites (see tileset.building). Poké Marts can be
 entered (`Building.inside`, scenes/mart.py); going inside Poké Centers and
-gyms comes later.
+gyms comes later. Townsfolk (`Folk`, Pokémon living there) can be talked to:
+they chat, and give and move on quests (quests.talk).
 """
 
 import zlib
 from dataclasses import dataclass
 
+from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import EMPTY, ROWS, SOLID, TILE, Level
 from .themes import MEADOW, Theme
 
@@ -33,6 +35,37 @@ class Building:
         return self.col * TILE
 
 
+ELDER = "elder"  # a Folk's species: the last form of the player's starter's line
+
+
+@dataclass(frozen=True)
+class Folk:
+    """Someone living in a town: a Pokémon standing at `col`. Up next to
+    them talks: a quest step or a quest they give (quests.talk), else the
+    next of their `lines`."""
+    key: str     # unique in the game (quest steps "talk" name it; Quest.giver)
+    name: str    # shown over them when near; "{}" = their species' name ("Old {}")
+    species: str  # their look (its idle animation), or ELDER
+    col: int
+    # Chat, one line per talk in turn; "{partner}" = the player's starter's name.
+    lines: tuple[str, ...] = ()
+
+    @property
+    def x(self) -> float:
+        return self.col * TILE + TILE / 2
+
+    def species_for(self, starter: str) -> str:
+        if self.species != ELDER:
+            return self.species
+        species = starter
+        while species in EVOLUTIONS and EVOLUTIONS[species].into in SPECIES:
+            species = EVOLUTIONS[species].into
+        return species
+
+    def name_for(self, starter: str) -> str:
+        return self.name.format(SPECIES[self.species_for(starter)].name)
+
+
 def building_mid(b: Building) -> float:
     """The x of a building's middle (where its door is)."""
     from .tileset import building  # (drawing: imported only when needed)
@@ -50,6 +83,7 @@ class Town:
     board_col: int | None = None    # where its quest board stands (see quests.py)
     theme: Theme = MEADOW           # tiles and background
     mart: tuple[str, ...] = ()      # what its Poké Mart sells (medicine names)
+    folk: tuple[Folk, ...] = ()     # who lives there (between the buildings)
 
     def exit_to(self, route: str) -> str | int:
         """Where the exit onto `route` is ("left", "right" or a column)."""
@@ -67,7 +101,11 @@ TOWNS = {t.key: t for t in [
         Building("Your House", (HOUSES, 0), 7),
         Building("Rival's House", (HOUSES, 1), 18),
         Building("Professor Oak's Lab", (FUNCTIONAL, 3), 29),
-    ), exits=(("right", "route_1"),), home_col=10, board_col=15),
+    ), exits=(("right", "route_1"),), home_col=10, board_col=15,
+       folk=(Folk("pallet_pidgey", "Pidgey", "pidgey", 41, (
+           "Coo! Professor Oak's lab is just up the road.",
+           "Route 1 is to the east. The grass there is full of Pidgey like me!",
+       )),)),
     Town("viridian", "Viridian City", 72, (
         Building("", (HOUSES, 2), 8),
         Building("Pokémon Center", (FUNCTIONAL, 0), 17),
@@ -75,7 +113,11 @@ TOWNS = {t.key: t for t in [
         Building("Recruitment Center", (HOUSES, 3), 42, inside="recruit"),
         Building("Viridian Gym", (FUNCTIONAL, 1), 53),
     ), exits=(("left", "route_1"), ("right", "viridian_forest"), (39, "route_22")), home_col=21, board_col=50,
-       mart=("Potion", "Antidote", "Paralyze Heal", "Burn Heal")),
+       mart=("Potion", "Antidote", "Paralyze Heal", "Burn Heal"),
+       folk=(Folk("viridian_rattata", "Rattata", "rattata", 27, (
+           "Squeak! The Recruitment Center up the road finds you new friends.",
+           "Viridian Forest is to the east. Bugs everywhere. Yuck!",
+       )),)),
     Town("pewter", "Pewter City", 72, (
         Building("", (HOUSES, 3), 7),
         Building("Pokémon Center", (FUNCTIONAL, 0), 19),
@@ -83,7 +125,17 @@ TOWNS = {t.key: t for t in [
         Building("Pewter Gym", (FUNCTIONAL, 1), 45),
         Building("Recruitment Center", (HOUSES, 2), 58, inside="recruit"),
     ), exits=(("left", "viridian_forest"), ("right", "route_3")), home_col=23, board_col=15,
-       mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal")),
+       mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal"),
+       folk=(
+           Folk("pewter_elder", "Old {}", ELDER, 29, (
+               "I was young once, like your {partner}. Every Pokémon grows up in its own time.",
+               "When your {partner} is strong enough (Lv16), come and see me. I'll show it the way.",
+           )),
+           Folk("pewter_geodude", "Geodude", "geodude", 55, (
+               "Grr! The Boulder Gang runs the gym. Rock beats everything!",
+               "Well... except Water and Grass. Don't tell anyone.",
+           )),
+       )),
     # The Pokémon Center at the foot of Mt. Moon (Gen 1: on Route 4), where
     # Route 3 ends: the last stop before the cave.
     Town("mt_moon", "Mt. Moon Pokémon Center", 44, (

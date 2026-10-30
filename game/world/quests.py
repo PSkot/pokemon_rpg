@@ -34,14 +34,14 @@ Line = tuple[str, str]  # (speaker, text) of a dialogue page
 
 @dataclass(frozen=True)
 class Step:
-    # "visit" (a building in a town), "defeat" (a route's boss), "reach" (a
-    # town), "hunt" (defeat `count` of a species), "collect" (`count` quest
-    # items), "hand_in" (at any quest board) or "evolve" (a Pokémon, from the
-    # party screen, once it has the level)
+    # "visit" (a building in a town), "talk" (to a townsfolk), "defeat" (a
+    # route's boss), "reach" (a town), "hunt" (defeat `count` of a species),
+    # "collect" (`count` quest items), "hand_in" (at any quest board) or
+    # "evolve" (a Pokémon, from the party screen, once it has the level)
     kind: str
-    # visit: the building's name; defeat: the route key; reach: the town
-    # key; hunt: the species key; collect: the item's name; evolve: the
-    # species key that evolves
+    # visit: the building's name; talk: the townsfolk's key (towns.Folk);
+    # defeat: the route key; reach: the town key; hunt: the species key;
+    # collect: the item's name; evolve: the species key that evolves
     target: str
     text: str     # the objective, as shown on the map and in the quest log
     town: str = ""  # visit: the town the building is in
@@ -61,9 +61,11 @@ def hunt(species: str, count: int, where: str) -> Step:
     return Step("hunt", species, f"Defeat {count} {SPECIES[species].name} ({where})", count=count)
 
 
-def collect(item: str, count: int, route: str, species: tuple[str, ...], chance: int, where: str) -> Step:
-    """Collect `count` of `item`, dropped by `species` on `route`."""
-    return Step("collect", item, f"Collect {count} {item}s ({where})", count=count, route=route,
+def collect(item: str, count: int, route: str, species: tuple[str, ...], chance: int, where: str,
+            plural: str = "") -> Step:
+    """Collect `count` of `item` (`plural`: its plural, if not just + "s"),
+    dropped by `species` on `route`."""
+    return Step("collect", item, f"Collect {count} {plural or item + 's'} ({where})", count=count, route=route,
                 species=species, chance=chance)
 
 
@@ -81,6 +83,8 @@ class Quest:
     board: str = ""                  # the town whose quest board posts it ("" = starts by itself)
     requires: tuple[str, ...] = ()   # quests that must be done first
     starts_in: str = ""              # a quest that starts by itself: only on arriving in this town
+    giver: str = ""                  # starts by talking to this townsfolk (towns.Folk key) ...
+    offer: tuple[Line, ...] = ()     # ... who says this
     unlock: tuple[str, int] | None = None  # (line, n): only once n of that line are defeated (recruitment)
     # Items given too: ("medicine", name, count), ("gear", item, rarity, level)
     # or ("pokemon", species, level): it joins the party (or the reserve).
@@ -214,6 +218,63 @@ QUESTS = {q.key: q for q in [
         steps=(Step("evolve", "weedle", "Show the Kakuna Shell to a Weedle at Lv7+ (party screen: E)",
                     takes=("Kakuna Shell",)),),
         money=200, xp=100,
+    ),
+
+    # The starters' evolutions: the elder in Pewter City (the last form of
+    # the player's starter's line) gives the one for the player's starter.
+    Quest(
+        "evolve_bulbasaur", "Coming of Age",
+        "The old Venusaur in Pewter City says your Bulbasaur is ready to grow up, but first it must "
+        "prove itself.",
+        giver="pewter_elder",
+        offer=(("Old Venusaur", "Your Bulbasaur has grown strong. I remember being just like it."),
+               ("Old Venusaur", "Bring me three Sun Leaves from Route 3, and I'll test it in the Trial of Leaves.")),
+        steps=(collect("Sun Leaf", 3, "route_3", ('spearow', 'jigglypuff', 'sandshrew', 'ekans'), 25, "Route 3", "Sun Leaves"),
+               Step("talk", "pewter_elder", "Bring the Sun Leaves to the old Venusaur (Pewter City)",
+                    town="pewter",
+                    dialogue=(("Old Venusaur", "These will do. Feel the sun in them? That is where a Grass Pokémon's strength comes from."),
+                              ("Old Venusaur", "Now, the Trial of Leaves. Your Bulbasaur goes in alone. Talk to me when "
+                                              "you're ready."))),
+               Step("defeat", "trial_bulbasaur", "Pass the Trial of Leaves (talk to the old Venusaur in Pewter City)",
+                    dialogue=(("Old Venusaur", "Well done. Your Bulbasaur is ready to become a Ivysaur."),)),
+               Step("evolve", "bulbasaur", "Evolve your Bulbasaur into Ivysaur (party screen: E)")),
+        money=600, xp=400,
+    ),
+    Quest(
+        "evolve_charmander", "Coming of Age",
+        "The old Charizard in Pewter City says your Charmander is ready to grow up, but first it must "
+        "prove itself.",
+        giver="pewter_elder",
+        offer=(("Old Charizard", "Your Charmander has grown strong. I remember being just like it."),
+               ("Old Charizard", "Bring me three Moon Flints from Mt. Moon, and I'll test it in the Trial of Flame.")),
+        steps=(collect("Moon Flint", 3, "mt_moon_cave", ('geodude',), 35, "Mt. Moon"),
+               Step("talk", "pewter_elder", "Bring the Moon Flints to the old Charizard (Pewter City)",
+                    town="pewter",
+                    dialogue=(("Old Charizard", "These will do. Strike them together and they spark. A Fire Pokémon's flame must burn just as hot."),
+                              ("Old Charizard", "Now, the Trial of Flame. Your Charmander goes in alone. Talk to me when "
+                                              "you're ready."))),
+               Step("defeat", "trial_charmander", "Pass the Trial of Flame (talk to the old Charizard in Pewter City)",
+                    dialogue=(("Old Charizard", "Well done. Your Charmander is ready to become a Charmeleon."),)),
+               Step("evolve", "charmander", "Evolve your Charmander into Charmeleon (party screen: E)")),
+        money=600, xp=400,
+    ),
+    Quest(
+        "evolve_squirtle", "Coming of Age",
+        "The old Blastoise in Pewter City says your Squirtle is ready to grow up, but first it must "
+        "prove itself.",
+        giver="pewter_elder",
+        offer=(("Old Blastoise", "Your Squirtle has grown strong. I remember being just like it."),
+               ("Old Blastoise", "Bring me three Forest Dews from Viridian Forest, and I'll test it in the Trial of Tides.")),
+        steps=(collect("Forest Dew", 3, "viridian_forest", ('caterpie', 'metapod', 'weedle', 'kakuna', 'pikachu'), 20, "Viridian Forest"),
+               Step("talk", "pewter_elder", "Bring the Forest Dews to the old Blastoise (Pewter City)",
+                    town="pewter",
+                    dialogue=(("Old Blastoise", "These will do. Clear as a spring. A Water Pokémon must flow like this: never still."),
+                              ("Old Blastoise", "Now, the Trial of Tides. Your Squirtle goes in alone. Talk to me when "
+                                              "you're ready."))),
+               Step("defeat", "trial_squirtle", "Pass the Trial of Tides (talk to the old Blastoise in Pewter City)",
+                    dialogue=(("Old Blastoise", "Well done. Your Squirtle is ready to become a Wartortle."),)),
+               Step("evolve", "squirtle", "Evolve your Squirtle into Wartortle (party screen: E)")),
+        money=600, xp=400,
     ),
 
     # Pewter City: the first gym, and the road on.
@@ -354,6 +415,27 @@ def accept(game, key: str) -> Event:
     event = Event()
     _start(game, key, event)
     return event
+
+
+def talk(game, folk: str) -> Event:
+    """The player talked to townsfolk `folk`: the quest steps that wait for
+    that, or else a quest they give (its offer, and it starts)."""
+    event = _advance_where(game, lambda s: s.kind == "talk" and s.target == folk)
+    if not event:
+        for quest in QUESTS.values():
+            if quest.giver == folk and ready(game, quest):
+                event.dialogue += quest.offer
+                _start(game, quest.key, event)
+                break
+    return event
+
+
+def folk_quests(game, folk: str) -> list[Quest]:
+    """The quests townsfolk `folk` has something for: ones they give that
+    are ready, and active ones waiting to talk to them."""
+    return [q for q in QUESTS.values()
+            if (q.giver == folk and ready(game, q))
+            or (is_active(game, q.key) and current(game, q.key).kind == "talk" and current(game, q.key).target == folk)]
 
 
 def visit(game, town: str, building: str) -> Event:
@@ -566,5 +648,6 @@ def _start_automatic(game, event: Event, town: str = "") -> None:
     """Start the quests without a board that are ready (those that start in
     a town only when arriving in `town`)."""
     for quest in QUESTS.values():
-        if not quest.board and not quest.drop and ready(game, quest) and quest.starts_in in ("", town):
+        if (not quest.board and not quest.drop and not quest.giver and ready(game, quest)
+                and quest.starts_in in ("", town)):
             _start(game, quest.key, event)

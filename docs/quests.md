@@ -30,7 +30,7 @@ arrives around Lv18–19.
 | --- | --- |
 | **Name and summary** | Shown in the quest log. |
 | **Prerequisites** | Quests that must be done first. Until then it's *locked* (not shown). |
-| **Start** | Taken from a town's **quest board** (`Quest.board`), or *automatic* (as soon as its prerequisites are done, with a notice). Other givers (people, buildings) can come later. |
+| **Start** | Taken from a town's **quest board** (`Quest.board`), given by a **townsfolk** you talk to (`Quest.giver`, with `Quest.offer` as their words), dropped as an item (`Quest.drop`), or *automatic* (as soon as its prerequisites are done, with a notice). |
 | **Steps** | Objectives done in order; the quest shows the current one. |
 | **Rewards** | Given when the last step is done. **Every** quest pays Poké Dollars (`Quest.money`) and XP (`Quest.xp`, to each party member, as in battle). **Major** quests (rival and gym battles, story milestones) also give items: medicine, gear (at a rarity and item level). Key items come from steps. |
 | **Unlocks** | What changes once it's started or done: a doorway opens, a route's boss changes, the next quest becomes available. |
@@ -40,6 +40,7 @@ arrives around Lv18–19.
 | Step | Done when |
 | --- | --- |
 | **Visit** | You press Up at a building or doorway in a town (e.g. Professor Oak's Lab), or, for a Poké Mart, at the counter inside (Meowth). Shows a short dialogue. |
+| **Talk** (`Step("talk", folk)`) | You talk to that townsfolk (Up next to them). Shows a short dialogue. |
 | **Defeat** | You beat a route's boss (a boss group or a trainer). |
 | **Reach** | You arrive in a town (or on a route's last map). |
 | **Hunt** (`hunt(species, count, where)`) | You've beaten `count` of a species in won battles, anywhere (wild or a trainer's). Shown as "Defeat 6 Rattata (Route 1): 3/6". |
@@ -74,8 +75,17 @@ they can't be sold, used or dropped.
   Active / Done) with the chosen one's summary and steps; Enter takes a
   new one. An empty board says "Nothing posted right now."
 - **Dialogue box:** text at the bottom of the screen during quest moments
-  (a speaker's name, pages advanced with Enter). No character sprites for
-  now: people "speak" from their buildings.
+  (a speaker's name, pages advanced with Enter). Townsfolk speak in person;
+  others (Oak, the Nurse) "speak" from their buildings.
+- **Townsfolk** (`towns.Folk`, `Town.folk`): Pokémon living in a town,
+  standing between the buildings and turning to face you, their name over
+  them when you're near. Up next to one talks: a quest step waiting for
+  them, else a quest they give, else a trial they send you to (a route
+  with `Route.folk`), else their next chat line. A "!" over them when they
+  have something for a quest (pink for an evolution quest). For now:
+  a Pidgey in Pallet Town, a Rattata in Viridian City, a Geodude and the
+  **old Venusaur / Charizard / Blastoise** in Pewter City (the last form of
+  your starter's line: `ELDER`).
 - **Tracker:** up to 3 active quests' current steps under the location
   line on the map, e.g. "Pest Control: Defeat 6 Rattata (Route 1): 3/6".
 - **Markers:** a bouncing "!" over a quest board with something new and
@@ -214,6 +224,34 @@ line evolves by level as usual (end of a won battle).
 | --- | --- | --- | --- |
 | Cocoon of Steel | Metapod Shell: 15% per Caterpie or Metapod beaten in Viridian Forest | Evolve a Caterpie (Lv7+) into Metapod | ₽200, 100 XP |
 | Poison Cocoon | Kakuna Shell: 15% per Weedle or Kakuna beaten in Viridian Forest | Evolve a Weedle (Lv7+) into Kakuna | ₽200, 100 XP |
+
+### Coming of Age (the starters, Lv16)
+
+Given by the **old Venusaur / Charizard / Blastoise** in Pewter City (the
+one for your starter's line) once your starter is Lv16, in the party or
+the reserve (`evolve_bulbasaur` / `_charmander` / `_squirtle`):
+1. **Collect** 3 tokens of its element: Sun Leaves (25% per Spearow,
+   Jigglypuff, Sandshrew or Ekans on Route 3), Moon Flints (35% per Geodude
+   in Mt. Moon) or Forest Dew (20% per Pokémon in Viridian Forest).
+2. **Talk** to the elder with them.
+3. **Defeat** the trial: talk to the elder again and they send you to it
+   (`Route.folk`). A short map up to an arena, fought like a gym in waves
+   (see `mechanics.md`, *Gyms*), but by your starter **alone**
+   (`wave_team=1`, `wave_species`: its line, in the party and standing).
+4. **Evolve** it (party screen: E). Ivysaur, Charmeleon and Wartortle then
+   evolve on by level as usual once their own quests exist.
+
+Rewards: ₽600, 400 XP.
+
+| Trial | Wave 1 | Wave 2 | Wave 3 (Trial Master, giant) |
+| --- | --- | --- | --- |
+| Trial of Leaves (Bulbasaur; forest) | Mud Diggers: Diglett 11, Sandshrew 11 | Stone Rollers: Geodude 12, Geodude 12 | Ivysaur 16 |
+| Trial of Flame (Charmander; Mt. Moon) | Crawler Nest: Caterpie 11, Weedle 11 | Spore Grove: Paras 12, Paras 12 | Charmeleon 16 |
+| Trial of Tides (Squirtle; Route 22) | Stone Rollers: Geodude 11, Geodude 11 | Rock Burrowers: Diglett 12, Geodude 12 | Wartortle 16 |
+
+Each wave is a trainer battle (×1.5 XP, no prize money). Tuned so a Lv16
+starter gets through with a few Potions (Sandshrew's Sand-Attack is kept
+out of the Trial of Tides: Squirtle can't out-hit it alone).
 
 ---
 

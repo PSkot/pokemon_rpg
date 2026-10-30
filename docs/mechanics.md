@@ -688,6 +688,11 @@ come one battle straight after another, ending with the boss group:
 - losing any wave is losing the gym: back to the last town, as when the
   party faints.
 
+The starters' **trials** (`instance._trial`, quest *Coming of Age* in
+`quests.md`) work the same way, with one Pokémon (`wave_team=1`) that
+must be of the starter's line (`Route.wave_species`), walked by talking
+to the elder in Pewter City (`Route.folk`) and back to them.
+
 **The Pewter Gym** (`Route` "pewter_gym", walked from the gym building;
 a rock hall drawn in code, no wild Pokémon, no chests): three waves, the
 last being the **Boulder Gang** (Geodude Lv12, Onix Lv14: Brock's team in
