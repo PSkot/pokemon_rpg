@@ -765,7 +765,7 @@ TREES = {t.species[0]: t for t in [
         ("onix",),  # Steelix comes later
         _base("Tackle"),
         _base("Screech"),
-        _move("Bind", 14, "tackle"),  # (Gen 1: 15; Brock's Lv14 Onix knows it)
+        _move("Bind", 14, "tackle"),  # (Gen 1: 15; the Boulder Gang's Lv14 Onix knows it, as Brock's does in Gen 1)
         _move("Rock Throw", 19, "tackle"),
         _move("Rock Slide", 28, "rock_throw"),  # TM48
         _move("Slam", 33, "bind"),

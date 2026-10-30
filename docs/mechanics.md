@@ -525,7 +525,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 1 | Common | (no boss) |
 | Viridian Forest | Common | Common 60%, Uncommon 40% |
 | Route 22 | Common | Common 60%, Uncommon 40% (the rival: a reward roll with the battle, no chest) |
-| Pewter Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (Brock: a reward roll with the battle, no chest) |
+| Pewter Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Boulder Gang: a reward roll with the battle, no chest) |
 | Route 3 | Common | (no boss) |
 | Mt. Moon | Common | Common 60%, Uncommon 40% (Team Rocket: a reward roll with the battle, no chest) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
@@ -675,9 +675,10 @@ chests), the middle one to B1F → B2F, where the **Rocket Gang Leader**
 with the way out. Rooms are shown by floor only ("Mt. Moon B1F").
 
 **The Pewter Gym** (`Route` "pewter_gym", walked from the gym building;
-1 map in a rock hall drawn in code, no wild Pokémon, no chests): **Brock's
-Diggers** (Diglett Lv11, Sandshrew Lv11) midway, and **Brock** (Geodude
-Lv12, Onix Lv14, Gen 1's team) guarding the way out; beating him finishes
+1 map in a rock hall drawn in code, no wild Pokémon, no chests): the
+**Boulder Gang Diggers** (Diglett Lv11, Sandshrew Lv11) midway, and the
+**Boulder Gang** (Geodude Lv12, Onix Lv14: Brock's team in Gen 1; the Onix
+leads it) guarding the way out; beating it finishes
 the Boulder Badge quest. Once it's done the gym stays shut ("You already
 have the Boulder Badge").
 
@@ -708,8 +709,8 @@ always the same spot), with its team in a row.
 
 | Where | Band (Gen 1 class) | Team | Prize |
 | --- | --- | --- | --- |
-| Pewter Gym | Brock's Diggers (Jr. Trainer) | Diglett 11, Sandshrew 11 | ₽110 |
-| Pewter Gym (boss) | Brock | Geodude 12, Onix 14 | ₽693 |
+| Pewter Gym | Boulder Gang Diggers (Jr. Trainer) | Diglett 11, Sandshrew 11 | ₽110 |
+| Pewter Gym (boss) | Boulder Gang (Brock) | Geodude 12, Onix 14 | ₽693 |
 | Route 3, map 1 | Alley Gang (Youngster) | Rattata 11, Ekans 11 | ₽82 |
 | Route 3, map 1 | Crawler Swarm (Bug Catcher) | Caterpie 10, Weedle 10, Caterpie 10 | ₽50 |
 | Route 3, map 2 | Pidgey Flock (Lass) | Pidgey 9, Pidgey 9 | ₽67 |

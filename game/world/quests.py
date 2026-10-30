@@ -212,13 +212,13 @@ QUESTS = {q.key: q for q in [
     # Pewter City: the first gym, and the road on.
     Quest(
         "boulder_badge", "The Boulder Badge",
-        "Pewter City's Gym Leader, Brock, trains Rock-type Pokémon. Beat him for the Boulder Badge and the "
-        "road east opens.",
+        "The Boulder Gang, Rock-type Pokémon led by an Onix, holds the Pewter Gym. Beat them for the Boulder "
+        "Badge and the road east opens.",
         starts_in="pewter",
-        steps=(Step("defeat", "pewter_gym", "Defeat Brock at the Pewter Gym",
-                    dialogue=(("Brock", "I took you for granted. As proof of your victory, here's the Boulder Badge!"),
+        steps=(Step("defeat", "pewter_gym", "Defeat the Boulder Gang at the Pewter Gym",
+                    dialogue=(("Onix", "I took you for granted. As proof of your victory, here's the Boulder Badge!"),
                               ("", "You received the Boulder Badge!"),
-                              ("Brock", "The road east, Route 3, is open to you. Mt. Moon lies beyond it.")),
+                              ("Onix", "The road east, Route 3, is open to you. Mt. Moon lies beyond it.")),
                     gives=("Boulder Badge",)),),
         money=500, xp=400,
         rewards=(("medicine", "Super Potion", 3), ("gear", None, "Rare", 14)),

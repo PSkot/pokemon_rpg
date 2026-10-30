@@ -112,17 +112,18 @@ ROUTES = {r.key: r for r in [
           boss_group=(("pidgey", 9), (RIVAL_STARTER, 8)), trainer="Rival", boss_chest=False,
           needs=("rival_22", "started"), blocked="A guard says there's nothing to see on Route 22 for now.",
           boss_after=("rival_22", (("pidgey", 9), ("spearow", 9))), prize=35),
-    # The Pewter Gym, from its building: Brock's Diggers, then Brock (Gen 1's teams).
+    # The Pewter Gym, from its building: the Boulder Gang's Diggers, then the gang
+    # itself, led by an Onix (Gen 1's Jr. Trainer and Brock).
     Route("pewter_gym", "Pewter Gym", PEWTER_GYM, maps=1, towns=("pewter", "pewter"), boss=True,
-          boss_group=(("geodude", 12), ("onix", 14)), trainer="Brock", boss_chest=False, prize=99,
-          trainers=(Trainer("pewter_gym_jr", "Brock's Diggers", (("diglett", 11), ("sandshrew", 11)), 0, 20),),
+          boss_group=(("geodude", 12), ("onix", 14)), trainer="Boulder Gang", boss_chest=False, prize=99,
+          trainers=(Trainer("pewter_gym_jr", "Boulder Gang Diggers", (("diglett", 11), ("sandshrew", 11)), 0, 20),),
           wild=False, building="Pewter Gym",
           needs=("boulder_badge", "not_done"),
-          blocked="Brock: You already have the Boulder Badge. The road east, Route 3, is open to you!"),
+          blocked="Onix: You already have the Boulder Badge. The road east, Route 3, is open to you!"),
     # Route 3, from Pewter to the foot of Mt. Moon: Gen 1's trainer road.
     Route("route_3", "Route 3", ROUTE_3, maps=3, towns=("pewter", "mt_moon"),
           needs=("boulder_badge", "done"),
-          blocked="A Geodude blocks the way: \"Brock's looking for challengers! Beat him first!\"",
+          blocked="A Geodude blocks the way: \"The Boulder Gang holds the gym! Beat them first!\"",
           trainers=(
               Trainer("route_3_youngster_1", "Alley Gang", (("rattata", 11), ("ekans", 11)), 0, 15),
               Trainer("route_3_bug_catcher_1", "Crawler Swarm", (("caterpie", 10), ("weedle", 10), ("caterpie", 10)),

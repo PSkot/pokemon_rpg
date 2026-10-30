@@ -213,7 +213,7 @@ non-commercial project.
   `Game.trainers`; prize money = base × last level / 2, `prize_money`;
   boss trainers use `Route.prize`). Gyms are routes walked from their
   building (`Route.building`, `wild=False`: only trainers, no chests):
-  the Pewter Gym (Brock's Diggers, then Brock; shut once the Boulder Badge is
+  the Pewter Gym (the Boulder Gang Diggers, then the Boulder Gang, led by an Onix; shut once the Boulder Badge is
   won, `needs` "not_done"). Dungeons (Mt. Moon, `Route.rooms`): `Room`s
   joined by `Stair`s (ladder "up"/"down" to another room, arriving at its
   stair back; "out" doorway to a town); each room is laid out from its own

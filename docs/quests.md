@@ -14,9 +14,9 @@ change once a quest is finished. Board jobs ("defeat 6 Rattata", "collect
 XP (`WILD_XP`, see `mechanics.md`); trainer battles give ×1.5, so they
 stay worth fighting. Budget up to Pewter City: the quests before it pay
 1,800 XP in all, a full run of each route there about 1,500 in battle XP,
-so a player who does both arrives around Lv14–15 (Brock's Onix is Lv14
-in Gen 1). From Pewter to Mt. Moon: the quests pay 1,350 XP (Brock 400,
-Road to Mt. Moon 300, Route 3 jobs 650), Brock and his Diggers about
+so a player who does both arrives around Lv14–15 (the Boulder Gang's Onix is
+Lv14, as Brock's in Gen 1). From Pewter to Mt. Moon: the quests pay 1,350 XP (Boulder Badge 400,
+Road to Mt. Moon 300, Route 3 jobs 650), the Boulder Gang and its Diggers about
 950 in battle XP and Route 3's six trainers about 1,200, so a party
 arrives around Lv18–19.
 
@@ -159,13 +159,14 @@ yet.
 
 - **Starts:** automatically on first arriving in Pewter City
   (`Quest.starts_in`).
-- **Steps:** defeat **Brock** at the end of the Pewter Gym (Up at the gym
-  building; Brock's Diggers stand midway). Brock: "I took you for granted.
+- **Steps:** defeat the **Boulder Gang** (Rock types led by an Onix) at
+  the end of the Pewter Gym (Up at the gym building; the Boulder Gang
+  Diggers stand midway). Onix: "I took you for granted.
   As proof of your victory, here's the Boulder Badge!" (key item).
 - **Rewards:** ₽500, 400 XP, 3 Super Potions and a **Rare** gear piece
-  (item level 14), on top of Brock's prize money (₽693) and reward roll.
-- **Unlocks:** **Route 3** (its doorway on Pewter's east edge: "Beat
-  Brock first!"), quest 4 and Pewter's Route 3 jobs. The gym shuts once
+  (item level 14), on top of the gang's prize money (₽693) and reward roll.
+- **Unlocks:** **Route 3** (its doorway on Pewter's east edge: "The
+  Boulder Gang holds the gym! Beat them first!"), quest 4 and Pewter's Route 3 jobs. The gym shuts once
   the badge is won.
 
 ### 4. Road to Mt. Moon
