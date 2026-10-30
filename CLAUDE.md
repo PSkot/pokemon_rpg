@@ -336,8 +336,10 @@ non-commercial project.
   Party). On for touch screens in the browser (decided before the window
   is made), or with `POKEMON_TOUCH=1` (mouse = finger) on desktop.
   The player sets the layout (`touch.Layout`: button size, panel width
-  down to 0 = buttons over the game, see-through; each side's buttons
-  moved across/up) in pause menu → Controls (`scenes/controls_menu.py`,
+  down to 0 = buttons over the game, see-through, or `AUTO` (the
+  default): panels as wide as the screen's shape leaves, so the game fills
+  its height (`touch.side`; the window is remade when the page's shape
+  changes); each side's buttons moved across/up) in pause menu → Controls (`scenes/controls_menu.py`,
   only with touch on; every button shows meanwhile). Positions come from
   `touch.SPOTS` (the default layout) placed by the layout (`_placed`).
   Changing the panel width remakes the window (main loop). Saved in the

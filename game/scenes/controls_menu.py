@@ -48,12 +48,18 @@ class ControlsMenu:
 
     def _change(self, field: str, step: int) -> None:
         low, high, size = touch.RANGES[field]
-        value = max(low, min(high, getattr(touch.layout, field) + step * size))
+        value = getattr(touch.layout, field)
+        if field == "panel" and (value == touch.AUTO or value + step * size < low):  # Auto, below 0%
+            value = low if value == touch.AUTO and step > 0 else touch.AUTO
+        else:
+            value = max(low, min(high, value + step * size))
         touch.layout = replace(touch.layout, **{field: value})
 
     @staticmethod
     def _value(field: str) -> str:
         value = getattr(touch.layout, field)
+        if field == "panel" and value == touch.AUTO:
+            return "Auto"
         if field in ("size", "panel"):
             return f"{value}%"
         return f"{value:+d}" if value else "0"

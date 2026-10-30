@@ -12,7 +12,10 @@ A finger can slide from one button to another (e.g. across the D-pad).
 
 The player can resize the buttons, narrow the panels (down to none, with
 the buttons over the game, see-through) and move each side's buttons
-(`Layout`, set in the pause menu's Controls screen).
+(`Layout`, set in the pause menu's Controls screen). By default the panels
+are Auto: as wide as the screen's shape leaves beside the game, so the
+game fills the screen's height (buttons that don't fit in a panel go over
+the game's edge).
 
 The controls are on for touch screens in the browser, or with
 POKEMON_TOUCH=1 (the mouse then works as a finger) for testing. Positions
@@ -31,6 +34,7 @@ from .. import settings
 from . import ui
 
 SIDE = 300         # width of each side panel, at its widest
+AUTO = -1          # Layout.panel: fit the screen's shape (`side`)
 MOUSE_FINGER = -1  # finger id of the mouse, with POKEMON_TOUCH=1
 REACH = 1.2        # a touch counts this many radii from a button's centre
 PANEL_COLOR = (12, 12, 32)
@@ -68,15 +72,16 @@ class Spot:
 @dataclass(frozen=True)
 class Layout:
     """The player's adjustments to the default layout."""
-    size: int = 100   # % of the default button size
-    panel: int = 100  # % of the side panels' full width (SIDE)
+    size: int = 80     # % of the default button size
+    panel: int = AUTO  # % of the side panels' full width (SIDE), or AUTO
     left_x: int = 0   # left buttons moved inwards (px; negative = outwards)
     left_y: int = 0   # ... and up (negative = down)
     right_x: int = 0
     right_y: int = 0
 
 
-# Ranges of the Layout settings: (lowest, highest, step).
+# Ranges of the Layout settings: (lowest, highest, step); the panels' AUTO
+# comes before the lowest.
 RANGES = {"size": (60, 160, 10), "panel": (0, 100, 25), "left_x": (-60, 400, 20), "left_y": (-100, 400, 20),
           "right_x": (-60, 400, 20), "right_y": (-100, 400, 20)}
 
@@ -132,7 +137,23 @@ def prefs() -> dict:
 
 def side() -> int:
     """The width of each side panel."""
-    return SIDE * layout.panel // 100 if enabled else 0
+    if not enabled:
+        return 0
+    if layout.panel != AUTO:
+        return SIDE * layout.panel // 100
+    # Auto: the window takes the screen's shape (the game at full height).
+    w, h = settings.WINDOW_SIZE
+    screen_w, screen_h = _screen_size()
+    return max(0, min(SIDE, round((h * screen_w / screen_h - w) / 2)))
+
+
+def _screen_size() -> tuple[int, int]:
+    """The space the window is shown in: the page (it changes when a phone
+    turns or goes fullscreen), or the desktop."""
+    if sys.platform == "emscripten":
+        import platform  # pygbag's: gives access to the page (`window`)
+        return platform.window.innerWidth or 1, platform.window.innerHeight or 1
+    return pygame.display.get_desktop_sizes()[0]
 
 
 def window_size() -> tuple[int, int]:
@@ -148,12 +169,12 @@ def view_rect() -> pygame.Rect:
 
 
 @cache
-def _placed(lay: Layout, extra: tuple[tuple[int, str], ...]) -> list[Button]:
+def _placed(lay: Layout, side: int, extra: tuple[tuple[int, str], ...]) -> list[Button]:
     """Every button, placed by `lay`: sizes and distances from the edges
     scale with `lay.size` (towards the bottom corners; the pills towards the
     top ones), and the buttons, not the pills, move by the offsets."""
     scale = lay.size / 100
-    width, height = settings.WINDOW_SIZE[0] + 2 * SIDE * lay.panel // 100, settings.WINDOW_SIZE[1]
+    width, height = settings.WINDOW_SIZE[0] + 2 * side, settings.WINDOW_SIZE[1]
     spots = SPOTS + [Spot(key, label, True, 150, PILL_Y + PILL_STEP * (i + 1), 26, top=True, pill=True)
                      for i, (key, label) in enumerate(extra)]
     buttons = []
@@ -170,7 +191,7 @@ def _placed(lay: Layout, extra: tuple[tuple[int, str], ...]) -> list[Button]:
 def _buttons(on_map: bool, extra: tuple[tuple[int, str], ...] = ()) -> list[Button]:
     """The buttons shown: `extra` = the scene's own (key, label)s, as pills
     under Party."""
-    return [b for b in _placed(layout, extra) if on_map or not b.map_only]
+    return [b for b in _placed(layout, side(), extra) if on_map or not b.map_only]
 
 
 def _hit(b: Button, pos: tuple[float, float]) -> bool:
