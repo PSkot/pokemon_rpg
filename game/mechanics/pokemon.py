@@ -45,8 +45,8 @@ class Species:
     icon: str = ""
     base_exp: int = 64  # Gen 1 base experience yield: XP for defeating one
     # Drawn this many times its sheet's size (nearest-neighbour), so species
-    # come out roughly to scale with each other: the starters' and Pidgey
-    # line's sheets are drawn big, so they're shrunk (Pidgey 0.6).
+    # come out roughly to scale with each other: the starters' evolutions'
+    # and Pidgey line's sheets are drawn big, so they're shrunk (Pidgey 0.6).
     size: float = 1.0
 
     @property
@@ -79,28 +79,7 @@ class Species:
         return TREES.get(key) or stand_in_tree(key)
 
 
-BULBASAUR_ATTACKS = "bulbasaur attacks.png"
-
 SPECIES = {
-    "bulbasaur": Species(
-        "Bulbasaur", 45, 49, 49, 45, ("grass", "poison"),
-        fight_anim="attack",
-        anims={
-            "idle": AnimSpec("bulbasaur idle.png", 0, fps=6, loop=True),
-            "walk": AnimSpec("bulbasaur.png", 0, loop=True),
-            "run": AnimSpec("bulbasaur.png", 1, fps=12, loop=True),
-            "jump": AnimSpec("bulbasaur.png", 2, fps=1, per_frame_baseline=True),
-            "attack": AnimSpec("bulbasaur.png", 3),
-            # The aura and shield effects reach below the feet, so those rows
-            # get their feet row set by hand.
-            "growth": AnimSpec(BULBASAUR_ATTACKS, 0, baseline=59),
-            "solar_beam": AnimSpec(BULBASAUR_ATTACKS, 1),
-            "leaf_shield": AnimSpec(BULBASAUR_ATTACKS, 2, baseline=60),
-            "tackle": AnimSpec(BULBASAUR_ATTACKS, 3),
-        },
-        foot_sink=3,
-        base_exp=64,
-        size=0.75),
     "ivysaur": Species(
         "Ivysaur", 60, 62, 63, 60, ("grass", "poison"),
         fight_anim="attack",
@@ -113,7 +92,7 @@ SPECIES = {
         },
         foot_sink=3,
         base_exp=141,
-        size=0.85),
+        size=0.7),
     # The starters' evolutions (generated with PixelLab, like Pidgeotto): 88 px
     # cells, rows walk, run, jump (crouch, rise, fall, land) and attack.
     "venusaur": Species(
@@ -127,22 +106,8 @@ SPECIES = {
             "attack": AnimSpec("venusaur.png", 3, cell=88),
         },
         foot_sink=3,
-        base_exp=208),
-    "charmander": Species(
-        "Charmander", 39, 52, 43, 65, ("fire",),
-        fight_anim="attack",
-        anims={
-            "idle": AnimSpec("charmander idle.png", 0, fps=6, loop=True),
-            "walk": AnimSpec("charmander.png", 0, loop=True),
-            "run": AnimSpec("charmander.png", 1, fps=12, loop=True),
-            # The rising frame's tail flame hangs below its feet.
-            "jump": AnimSpec("charmander.png", 2, fps=1, per_frame_baseline=True,
-                             baseline=(None, 57, None, None)),
-            "attack": AnimSpec("charmander.png", 3),
-        },
-        foot_sink=2,
-        base_exp=65,
-        size=0.72),
+        base_exp=208,
+        size=0.8),
     "charmeleon": Species(
         "Charmeleon", 58, 64, 58, 80, ("fire",),
         fight_anim="attack",
@@ -155,7 +120,7 @@ SPECIES = {
         },
         foot_sink=2,
         base_exp=142,
-        size=0.8),
+        size=0.65),
     "charizard": Species(
         "Charizard", 78, 84, 78, 100, ("fire", "flying"),
         fight_anim="attack",
@@ -167,20 +132,8 @@ SPECIES = {
             "attack": AnimSpec("charizard.png", 3, cell=88),
         },
         foot_sink=2,
-        base_exp=209),
-    "squirtle": Species(
-        "Squirtle", 44, 48, 65, 43, ("water",),
-        fight_anim="attack",
-        anims={
-            "idle": AnimSpec("squirtle idle.png", 0, fps=6, loop=True),
-            "walk": AnimSpec("squirtle.png", 0, loop=True),
-            "run": AnimSpec("squirtle.png", 1, fps=12, loop=True),
-            "jump": AnimSpec("squirtle.png", 2, fps=1, per_frame_baseline=True),
-            "attack": AnimSpec("squirtle.png", 3),
-        },
-        foot_sink=2,
-        base_exp=66,
-        size=0.68),
+        base_exp=209,
+        size=0.8),
     "wartortle": Species(
         "Wartortle", 59, 63, 80, 58, ("water",),
         fight_anim="attack",
@@ -193,7 +146,7 @@ SPECIES = {
         },
         foot_sink=2,
         base_exp=143,
-        size=0.8),
+        size=0.65),
     "blastoise": Species(
         "Blastoise", 79, 83, 100, 78, ("water",),
         fight_anim="attack",
@@ -205,7 +158,8 @@ SPECIES = {
             "attack": AnimSpec("blastoise.png", 3, cell=88),
         },
         foot_sink=2,
-        base_exp=210),
+        base_exp=210,
+        size=0.8),
     "pidgey": Species(
         "Pidgey", 40, 45, 40, 56, ("normal", "flying"),
         fight_anim="tackle",
@@ -279,6 +233,11 @@ def _animated(key: str, name: str, stats: tuple[int, int, int, int], types: tupl
 # skills.TREES.) Those met up to Mt. Moon have PixelLab sheets; the rest only
 # a reference icon so far.
 SPECIES.update({
+    # The starters (redrawn small, like the species below; their evolutions
+    # still use the older, bigger sheets, drawn smaller).
+    "bulbasaur": _animated("bulbasaur", "Bulbasaur", (45, 49, 49, 45), ("grass", "poison"), exp=64, hit=4),
+    "charmander": _animated("charmander", "Charmander", (39, 52, 43, 65), ("fire",), exp=65, hit=4),
+    "squirtle": _animated("squirtle", "Squirtle", (44, 48, 65, 43), ("water",), exp=66, hit=3),
     "spearow": _animated("spearow", "Spearow", (40, 60, 30, 70), ("normal", "flying"), exp=58, hit=4),
     "fearow": _animated("fearow", "Fearow", (65, 90, 65, 100), ("normal", "flying"), exp=162, hit=3, size=1.25),
     # (The game's font has no ♀/♂ symbols.)

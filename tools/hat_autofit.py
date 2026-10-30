@@ -29,9 +29,9 @@ from hat_viewer import save_data  # noqa: E402
 
 # Head anchor on idle frame 0 (sheet pixels).
 REFS = {
-    "bulbasaur": (42, 20), "ivysaur": (42, 22), "venusaur": (56, 53),
-    "charmander": (41, 11), "charmeleon": (47, 34), "charizard": (57, 39),
-    "squirtle": (39, 5), "wartortle": (51, 36), "blastoise": (51, 31),
+    "bulbasaur": (38, 40), "ivysaur": (42, 22), "venusaur": (56, 53),
+    "charmander": (37, 32), "charmeleon": (47, 34), "charizard": (57, 39),
+    "squirtle": (39, 34), "wartortle": (51, 36), "blastoise": (51, 31),
     "pidgey": (39, 12), "pidgeotto": (59, 37), "pidgeot": (64, 37),
     "spearow": (41, 35), "fearow": (43, 24),
     "nidoran_f": (39, 44), "nidoran_m": (39, 42), "rattata": (39, 38),
@@ -43,9 +43,9 @@ REFS = {
 
 # Hat size, relative to Bulbasaur's head (about 18 px across).
 SCALES = {
-    "bulbasaur": 1.0, "ivysaur": 1.0, "venusaur": 1.1,
-    "charmander": 0.95, "charmeleon": 0.95, "charizard": 0.9,
-    "squirtle": 1.1, "wartortle": 1.0, "blastoise": 1.1,
+    "bulbasaur": 0.7, "ivysaur": 1.0, "venusaur": 1.1,
+    "charmander": 0.65, "charmeleon": 0.95, "charizard": 0.9,
+    "squirtle": 0.7, "wartortle": 1.0, "blastoise": 1.1,
     "pidgey": 0.85, "pidgeotto": 0.9, "pidgeot": 0.9, "spearow": 0.6, "fearow": 0.6,
     "nidoran_f": 0.65, "nidoran_m": 0.6, "rattata": 0.6,
     "caterpie": 0.6, "metapod": 0.65, "weedle": 0.6, "kakuna": 0.65,

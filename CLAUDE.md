@@ -350,9 +350,8 @@ non-commercial project.
 - Sprite sheets in `assets/sprites/pixellab/`: grid of 64×64 frames, one
   animation per row, sprites face right (mirror for left). Row order:
   walk, run, jump (crouch/rise/fall/land), attack.
-- `bulbasaur attacks.png` holds move animations, one per row: growth,
-  solar_beam, leaf_shield, tackle (a move's `anim`; moves without one use
-  the species' `fight_anim`).
+- A move's `anim` plays if the species has that animation; otherwise the
+  species' `fight_anim` does (no move-specific sheets for now).
 - `pidgey.png` rows: walk, fly, gust, tackle. Its frames don't all face
   right; the left-facing ones are listed in `face_left` and mirrored on load.
 - `pidgeotto.png` and `pidgeot.png` (generated through the PixelLab MCP
@@ -360,21 +359,20 @@ non-commercial project.
   room for spread wings) and 5 frames a row (the still pose, then 4
   generated frames). Each species' `Species.size` (nearest-neighbour
   `Animation.scaled`; hats follow it) brings the big early sheets roughly
-  to scale with the rest: Pidgey 0.6, Pidgeotto 0.75, Bulbasaur 0.75,
-  Charmander 0.72, Squirtle 0.68, their middle forms 0.8–0.85.
-- `ivysaur.png`, `charmander.png` and `squirtle.png` have the same rows
-  as `bulbasaur.png` (no extra-attack sheets yet: their skills use the
-  basic attack animation).
+  to scale with the rest: Pidgey 0.6, Pidgeotto 0.75; Ivysaur 0.7,
+  Charmeleon and Wartortle 0.65, the final stages 0.8.
+- `ivysaur.png` has rows walk, run, jump, attack (64×64).
 - `venusaur.png`, `charmeleon.png`, `charizard.png`, `wartortle.png` and
   `blastoise.png` (generated with PixelLab, styled after the line's
-  earlier sheets): the same rows as `bulbasaur.png` in 88×88 cells, 5
+  earlier sheets): the same rows as `ivysaur.png` in 88×88 cells, 5
   frames a row (still pose + 4), the jump row's 4 frames being crouch,
-  rise, fall, land. The final stages are drawn at their sheet size.
+  rise, fall, land.
 - Idle animations: `<species> idle.png` (one row, 8 frames, the sheet's
-  cell size) for the starter lines and the Pidgey line; the Pidgey line
+  cell size) for the starters' evolutions and the Pidgey line; the Pidgey line
   also has `<species> run.png` (same layout). Generated with PixelLab
   (pixminimax) from each sheet's still pose.
-- The species met up to Mt. Moon (Rattata ... Clefairy) have one PixelLab
+- The starters (Bulbasaur, Charmander, Squirtle: redrawn small, bases at
+  40 px) and the species met up to Mt. Moon (Rattata ... Clefairy) have one PixelLab
   sheet each, `<species>.png` (`pokemon._animated`): 64×64 cells, rows
   idle, walk, run (8 frames each, looping), attack (9 frames: still
   pose + 8) and jump (crouch, rise, fall, land: picked from 9 generated
