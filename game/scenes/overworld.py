@@ -34,6 +34,7 @@ from ..world.themes import Palette
 from ..world.towns import TOWNS
 from . import quest_ui
 from .battle import BattleScene
+from .gym import TeamPick
 from .summary import SummaryScene
 
 HELP = ("Left/Right: walk   Shift: run   Space: jump (hold = higher)   Up: open / go through"
@@ -614,25 +615,55 @@ class OverworldScene(MapScene):
             wild.facing = 1 if self.player.x > wild.x else -1
             touching = self.player.body_rect.colliderect(wild.body_rect)
             if touching and wild.armed:
-                enemies = [Monster.create(species, level) for species, level in wild.encounter]
-                for enemy, scale in zip(enemies, wild.scales):
-                    enemy.scale = scale
-                route, boss = self.instance.route, wild is self.boss
-                loot = wild_loot(route.boss_loot if boss else route.loot)
-                boss_prize = self.instance.room.prize if self.instance.room else route.prize
-                trainer, prize = (self.trainer, boss_prize) if boss else (
-                    (wild.trainer.name, wild.trainer.prize) if wild.trainer else ("", 0))
-                battle = BattleScene(self, self.party, enemies, self.bag, loot=loot,
-                                     backdrop=self.level.theme.backdrop, boss=boss, trainer=trainer,
-                                     prize=prize_money(prize, wild.encounter) if trainer else 0,
-                                     bonus=boss_loot(route.boss_loot) if boss and not route.boss_chest else None,
-                                     on_win=lambda key=route.key, defeated=[s for s, _ in wild.encounter]:
-                                         quests.won_battle(self.game, key, defeated, self.battle_event),
-                                     evolves=lambda m: quests.can_evolve(self.game, m))
-                self.battle_event = quests.Event()  # quests a battle's drops start
-                self.fighting = (wild, battle)
-                self.next_scene = Transition(self, battle)
+                if wild is self.boss and self.instance.route.waves:  # a gym's arena: pick the team first
+                    pick = TeamPick(self.instance.route, self.party)
+                    self.show(pick, after=lambda: pick.team and self._start_waves(wild, pick.team))
+                else:
+                    self._fight(wild)
             wild.armed = not touching
+
+    def _battle(self, wild: WildPokemon, party: list[Monster], encounter: list[tuple[str, int]],
+                trainer: str, prize: int, boss: bool, **extra) -> BattleScene:
+        """A battle against `encounter` (the battle `wild` is fought for)."""
+        enemies = [Monster.create(species, level) for species, level in encounter]
+        if boss:
+            for enemy, scale in zip(enemies, wild.scales):
+                enemy.scale = scale
+        route = self.instance.route
+        battle = BattleScene(self, party, enemies, self.bag, loot=wild_loot(route.boss_loot if boss else route.loot),
+                             backdrop=self.level.theme.backdrop, boss=boss, trainer=trainer,
+                             prize=prize_money(prize, encounter) if trainer else 0,
+                             bonus=boss_loot(route.boss_loot) if boss and not route.boss_chest else None,
+                             on_win=lambda key=route.key, defeated=[s for s, _ in encounter]:
+                                 quests.won_battle(self.game, key, defeated, self.battle_event),
+                             evolves=lambda m: quests.can_evolve(self.game, m), **extra)
+        self.fighting = (wild, battle)
+        return battle
+
+    def _fight(self, wild: WildPokemon) -> None:
+        """Into battle with a group on the map, the whole party."""
+        boss = wild is self.boss
+        boss_prize = self.instance.room.prize if self.instance.room else self.instance.route.prize
+        trainer, prize = (self.trainer, boss_prize) if boss else (
+            (wild.trainer.name, wild.trainer.prize) if wild.trainer else ("", 0))
+        self.battle_event = quests.Event()  # quests a battle's drops start
+        self.next_scene = Transition(self, self._battle(wild, self.party, wild.encounter, trainer, prize, boss))
+
+    def _start_waves(self, boss: WildPokemon, team: list[Monster]) -> None:
+        """A gym's arena: its waves, then the boss group, one battle straight
+        after another (no healing in between), fought by `team` alone. Losing
+        any of them is losing the gym; the last one is the boss battle."""
+        route = self.instance.route
+        waves = [(w.name, list(w.team), w.prize) for w in route.waves] + [(self.trainer, boss.encounter, route.prize)]
+
+        def battle(i: int) -> BattleScene:
+            name, encounter, prize = waves[i]
+            last = i == len(waves) - 1
+            return self._battle(boss, team, encounter, name, prize, boss=last, wave=(i + 1, len(waves)),
+                                next_battle=None if last else lambda: battle(i + 1))
+
+        self.battle_event = quests.Event()
+        self.next_scene = Transition(self, battle(0))
 
     def draw_things(self, layer: pygame.Surface) -> None:
         if self.stairs:

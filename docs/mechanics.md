@@ -674,13 +674,31 @@ chests), the middle one to B1F → B2F, where the **Rocket Gang Leader**
 (Sandshrew 12, Rattata 12, Zubat 13) blocks the ladder up to the B1F room
 with the way out. Rooms are shown by floor only ("Mt. Moon B1F").
 
+**Gyms** are fought in waves. The gym is a short walk (one map,
+`Route.cols` tiles plus the arena) up to an arena where the gym's band
+stands. Touching it opens the team pick (`scenes/gym.TeamPick`): the
+player picks **2 Pokémon** (`Route.wave_team`; fewer if fewer are
+standing) to fight every wave. The waves (`Route.waves`, `Wave`) then
+come one battle straight after another, ending with the boss group:
+- **no healing in between**: HP, status and fainted members carry over
+  (stat stages and the like reset with each battle), and only the two
+  picked fight, earn XP and can level up or evolve;
+- each wave is a trainer battle (no running, ×1.5 XP) with its own loot
+  roll and prize; the last also brings the boss loot and prize;
+- losing any wave is losing the gym: back to the last town, as when the
+  party faints.
+
 **The Pewter Gym** (`Route` "pewter_gym", walked from the gym building;
-1 map in a rock hall drawn in code, no wild Pokémon, no chests): the
-**Boulder Gang Diggers** (Diglett Lv11, Sandshrew Lv11) midway, and the
-**Boulder Gang** (Geodude Lv12, Onix Lv14: Brock's team in Gen 1; the Onix
-leads it) guarding the way out; beating it finishes
-the Boulder Badge quest. Once it's done the gym stays shut ("You already
-have the Boulder Badge").
+a rock hall drawn in code, no wild Pokémon, no chests): three waves, the
+last being the **Boulder Gang** (Geodude Lv12, Onix Lv14: Brock's team in
+Gen 1; the Onix leads it); beating it finishes the Boulder Badge quest.
+Once it's done the gym stays shut ("You already have the Boulder Badge").
+
+| Wave | Band | Team | Prize |
+| --- | --- | --- | --- |
+| 1 | Boulder Gang Diggers | Diglett 10, Sandshrew 10 | ₽100 |
+| 2 | Boulder Gang Rollers | Geodude 11, Geodude 11 | ₽110 |
+| 3 | Boulder Gang | Geodude 12, Onix 14 | ₽693 |
 
 Wild Pokémon have no gear. Their skills are filled in for their level
 (see `skill_trees.md`), and each turn they pick at random between their
@@ -709,7 +727,6 @@ always the same spot), with its team in a row.
 
 | Where | Band (Gen 1 class) | Team | Prize |
 | --- | --- | --- | --- |
-| Pewter Gym | Boulder Gang Diggers (Jr. Trainer) | Diglett 11, Sandshrew 11 | ₽110 |
 | Pewter Gym (boss) | Boulder Gang (Brock) | Geodude 12, Onix 14 | ₽693 |
 | Route 3, map 1 | Alley Gang (Youngster) | Rattata 11, Ekans 11 | ₽82 |
 | Route 3, map 1 | Crawler Swarm (Bug Catcher) | Caterpie 10, Weedle 10, Caterpie 10 | ₽50 |

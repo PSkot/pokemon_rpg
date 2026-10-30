@@ -212,9 +212,14 @@ non-commercial project.
   wild-group spots, `overworld._spread`; name over the team; fight once,
   `Game.trainers`; prize money = base × last level / 2, `prize_money`;
   boss trainers use `Route.prize`). Gyms are routes walked from their
-  building (`Route.building`, `wild=False`: only trainers, no chests):
-  the Pewter Gym (the Boulder Gang Diggers, then the Boulder Gang, led by an Onix; shut once the Boulder Badge is
-  won, `needs` "not_done"). Dungeons (Mt. Moon, `Route.rooms`): `Room`s
+  building (`Route.building`, `wild=False`: no wild Pokémon or chests): a
+  short walk (`Route.cols`) up to an arena, fought in waves: touching the
+  band opens `scenes/gym.TeamPick` (pick `Route.wave_team` = 2), then
+  `OverworldScene._start_waves` chains the battles (`Route.waves`, then
+  the boss group; `BattleScene.wave`/`next_battle`), no healing in
+  between; losing one loses the gym. The Pewter Gym: Boulder Gang
+  Diggers, Rollers, then the Boulder Gang (Geodude, Onix led by the Onix);
+  shut once the Boulder Badge is won, `needs` "not_done"). Dungeons (Mt. Moon, `Route.rooms`): `Room`s
   joined by `Stair`s (ladder "up"/"down" to another room, arriving at its
   stair back; "out" doorway to a town); each room is laid out from its own
   fixed seed (`generate(cols=, stairs=)`: flat, clear ground at each

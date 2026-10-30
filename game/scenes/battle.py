@@ -392,8 +392,13 @@ class BattleScene(Scene):
     def __init__(self, return_to: Scene, party: list[Monster], enemies: list[Monster], bag: Bag,
                  loot: LootTable | None = None, backdrop: Backdrop = MEADOW_BACKDROP, boss: bool = False,
                  trainer: str = "", bonus: LootTable | None = None, on_win=None, prize: int = 0,
-                 evolves=None):
+                 evolves=None, wave: tuple[int, int] | None = None, next_battle=None):
         self.return_to = return_to
+        # A gym's arena: (this wave, how many), and what makes the next
+        # wave's battle, which follows straight on from a win (None: back
+        # to `return_to`).
+        self.wave = wave
+        self.next_battle = next_battle
         self.backdrop = backdrop
         self.boss = boss  # the area's boss group (changes the intro)
         self.trainer = trainer  # a trainer's team ("" = wild): no running, more XP
@@ -598,12 +603,17 @@ class BattleScene(Scene):
                 for c in self.party:
                     c.monster.hp = c.monster.max_hp
                     c.monster.cure()
-            self.next_scene = Transition(self, self.return_to, flashes=0)
+            if self.won and self.next_battle:
+                self.next_scene = Transition(self, self.next_battle())
+            else:
+                self.next_scene = Transition(self, self.return_to, flashes=0)
 
     # ---------------------------------------------------------------- scripts
 
     def _intro(self):
-        if self.trainer:
+        if self.wave:
+            self.message = f"Wave {self.wave[0]} of {self.wave[1]}: {self.trainer} challenges you!"
+        elif self.trainer:
             self.message = f"{self.trainer} challenges you!"
         elif self.boss:
             first = self.enemies[0]

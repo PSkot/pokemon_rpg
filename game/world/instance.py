@@ -48,6 +48,14 @@ class Trainer:
 
 
 @dataclass(frozen=True)
+class Wave:
+    """One of the bands a gym's arena sends in before its boss group."""
+    name: str    # "Boulder Gang Diggers"
+    team: tuple[tuple[str, int], ...]  # (species, level)
+    prize: int   # base prize (as Trainer.prize)
+
+
+@dataclass(frozen=True)
 class Stair:
     """A way out of a dungeon room: a ladder "down" or "up" to the room `to`
     (it arrives at that room's stair back here), or a doorway "out" to the
@@ -96,6 +104,11 @@ class Route:
     wild: bool = True                   # wild Pokémon and chests (a gym: only its trainers)
     building: str = ""                  # walked from this building in its town (a gym), not a doorway
     rooms: tuple[Room, ...] = ()        # a dungeon's rooms (then `maps` is how many there are)
+    cols: int = 0                       # its maps' width in tiles (0: random)
+    # A gym's arena: these waves come first, then the boss group, one battle
+    # after another, fought by `wave_team` Pokémon the player picks.
+    waves: tuple[Wave, ...] = ()
+    wave_team: int = 2
 
     def other_end(self, town: str) -> str:
         return self.towns[1] if town == self.towns[0] else self.towns[0]
@@ -112,12 +125,14 @@ ROUTES = {r.key: r for r in [
           boss_group=(("pidgey", 9), (RIVAL_STARTER, 8)), trainer="Rival", boss_chest=False,
           needs=("rival_22", "started"), blocked="A guard says there's nothing to see on Route 22 for now.",
           boss_after=("rival_22", (("pidgey", 9), ("spearow", 9))), prize=35),
-    # The Pewter Gym, from its building: the Boulder Gang's Diggers, then the gang
-    # itself, led by an Onix (Gen 1's Jr. Trainer and Brock).
+    # The Pewter Gym, from its building: a short walk up to the arena, where
+    # the Boulder Gang sends in two waves, then comes itself, led by an Onix
+    # (Gen 1's Brock's team).
     Route("pewter_gym", "Pewter Gym", PEWTER_GYM, maps=1, towns=("pewter", "pewter"), boss=True,
           boss_group=(("geodude", 12), ("onix", 14)), trainer="Boulder Gang", boss_chest=False, prize=99,
-          trainers=(Trainer("pewter_gym_jr", "Boulder Gang Diggers", (("diglett", 11), ("sandshrew", 11)), 0, 20),),
-          wild=False, building="Pewter Gym",
+          waves=(Wave("Boulder Gang Diggers", (("diglett", 10), ("sandshrew", 10)), 20),
+                 Wave("Boulder Gang Rollers", (("geodude", 11), ("geodude", 11)), 20)),
+          wild=False, building="Pewter Gym", cols=44,
           needs=("boulder_badge", "not_done"),
           blocked="Onix: You already have the Boulder Badge. The road east, Route 3, is open to you!"),
     # Route 3, from Pewter to the foot of Mt. Moon: Gen 1's trainer road.
@@ -268,7 +283,8 @@ class Instance:
             if level.boss:
                 level.boss.encounter = list(room.boss_group)
             return level
-        level = generate(self.theme, self.seed * 101 + self.index, final=self.final and self.route.boss)
+        level = generate(self.theme, self.seed * 101 + self.index, final=self.final and self.route.boss,
+                         cols=self.route.cols or None)
         if level.boss and self.route.boss_group:
             level.boss.encounter = list(self.route.boss_group)
         return level

@@ -16,8 +16,8 @@ stay worth fighting. Budget up to Pewter City: the quests before it pay
 1,800 XP in all, a full run of each route there about 1,500 in battle XP,
 so a player who does both arrives around Lv14–15 (the Boulder Gang's Onix is
 Lv14, as Brock's in Gen 1). From Pewter to Mt. Moon: the quests pay 1,350 XP (Boulder Badge 400,
-Road to Mt. Moon 300, Route 3 jobs 650), the Boulder Gang and its Diggers about
-950 in battle XP and Route 3's six trainers about 1,200, so a party
+Road to Mt. Moon 300, Route 3 jobs 650), the Pewter Gym's three waves about
+1,300 in battle XP (to each of the two who fight them) and Route 3's six trainers about 1,200, so a party
 arrives around Lv18–19.
 
 ---
@@ -160,8 +160,9 @@ yet.
 - **Starts:** automatically on first arriving in Pewter City
   (`Quest.starts_in`).
 - **Steps:** defeat the **Boulder Gang** (Rock types led by an Onix) at
-  the end of the Pewter Gym (Up at the gym building; the Boulder Gang
-  Diggers stand midway). Onix: "I took you for granted.
+  the end of the Pewter Gym (Up at the gym building), the third of three
+  waves fought by two Pokémon the player picks (see `mechanics.md`,
+  *Gyms*). Onix: "I took you for granted.
   As proof of your victory, here's the Boulder Badge!" (key item).
 - **Rewards:** ₽500, 400 XP, 3 Super Potions and a **Rare** gear piece
   (item level 14), on top of the gang's prize money (₽693) and reward roll.
