@@ -15,6 +15,7 @@ web/README.md): it hands control back to the page once per frame.
 """
 
 import asyncio
+import traceback
 
 import pygame
 
@@ -64,62 +65,89 @@ async def main() -> None:
 
     running = True
     while running:
-        dt = clock.tick(settings.FPS) / 1000
-        # The map's touch buttons show on maps, and all of them while their
-        # layout is being set (pause menu -> Controls).
-        on_map = pause.editing_controls if pause else scene.touch_map
-        extra = () if pause else scene.touch_keys
-        for event in pygame.event.get():
-            if touch.handle(event, on_map, extra):
-                continue  # (touch buttons post key events)
-            if event.type == pygame.QUIT:
-                running = False
-            elif pause:
-                pause.handle_event(event)
-                if pause.done:
-                    running = not pause.quit
-                    if pause.loaded:
-                        scene = Transition(scene, pause.loaded, flashes=0)
-                    pause = None
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and scene.pausable:
-                pause = PauseMenu(scene.save_point(), scene.bag)
-            elif (event.type == pygame.KEYDOWN and event.key == pygame.K_i and scene.touch_map
-                  and scene.save_point() is not None):  # the bag, straight from a map
-                pause = PauseMenu(scene.save_point(), scene.bag)
-                pause.open_bag(only=True)
-            else:
-                scene.handle_event(event)
-        for pos, drag in touch.taps():
-            if not pause:
-                scene.tap(pos, drag)
-
-        if not pause:
-            scene.update(dt)
-        scene.draw(canvas)
-        pygame.transform.scale(canvas, settings.WINDOW_SIZE, window)
-        scene.draw_overlay(window)
-        if saves.recently_autosaved():
-            ui.text(window, "Autosaved", (settings.LOGICAL_SIZE[0] - 6, settings.LOGICAL_SIZE[1] - 14), ui.GREY,
-                    size=20, align="right")
-        if pause:
-            pause.draw_overlay(window)
-        on_map = pause.editing_controls if pause else scene.touch_map
-        touch.draw(screen, on_map, () if pause else scene.touch_keys)
-        pygame.display.flip()
-        if saves.WEB:
-            fit_canvas(screen.get_size())
-
-        if scene.next_scene:
-            previous, scene = scene, scene.next_scene
-            previous.next_scene = None
-
-        if screen.get_size() != touch.window_size():  # the touch panels' width changed
-            screen = pygame.display.set_mode(touch.window_size())
-            window = screen.subsurface(touch.view_rect())
-
+        if saves.WEB:  # a crash in the browser shows on the page instead of freezing it
+            try:
+                running, scene, pause, screen, window = _frame(clock, canvas, screen, window, scene, pause)
+            except Exception:
+                await _show_crash(screen, traceback.format_exc())
+                return
+        else:
+            running, scene, pause, screen, window = _frame(clock, canvas, screen, window, scene, pause)
         await asyncio.sleep(0)
 
     pygame.quit()
+
+
+async def _show_crash(screen: pygame.Surface, text: str) -> None:
+    """The error, on screen (for a screenshot) and in the browser's console."""
+    print(text)
+    lines = ["The game crashed. Please send a screenshot of this:", ""] + text.splitlines()[-24:]
+    font = pygame.font.Font(None, 22)
+    while True:
+        pygame.event.get()
+        screen.fill((20, 20, 40))
+        for i, line in enumerate(lines):
+            screen.blit(font.render(line, True, (255, 230, 120) if i == 0 else (230, 230, 230)), (12, 12 + i * 20))
+        pygame.display.flip()
+        await asyncio.sleep(0.2)
+
+
+def _frame(clock, canvas, screen, window, scene, pause):
+    """One frame of the game loop: returns what it changed."""
+    running = True
+    dt = clock.tick(settings.FPS) / 1000
+    # The map's touch buttons show on maps, and all of them while their
+    # layout is being set (pause menu -> Controls).
+    on_map = pause.editing_controls if pause else scene.touch_map
+    extra = () if pause else scene.touch_keys
+    for event in pygame.event.get():
+        if touch.handle(event, on_map, extra):
+            continue  # (touch buttons post key events)
+        if event.type == pygame.QUIT:
+            running = False
+        elif pause:
+            pause.handle_event(event)
+            if pause.done:
+                running = not pause.quit
+                if pause.loaded:
+                    scene = Transition(scene, pause.loaded, flashes=0)
+                pause = None
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and scene.pausable:
+            pause = PauseMenu(scene.save_point(), scene.bag)
+        elif (event.type == pygame.KEYDOWN and event.key == pygame.K_i and scene.touch_map
+              and scene.save_point() is not None):  # the bag, straight from a map
+            pause = PauseMenu(scene.save_point(), scene.bag)
+            pause.open_bag(only=True)
+        else:
+            scene.handle_event(event)
+    for pos, drag in touch.taps():
+        if not pause:
+            scene.tap(pos, drag)
+
+    if not pause:
+        scene.update(dt)
+    scene.draw(canvas)
+    pygame.transform.scale(canvas, settings.WINDOW_SIZE, window)
+    scene.draw_overlay(window)
+    if saves.recently_autosaved():
+        ui.text(window, "Autosaved", (settings.LOGICAL_SIZE[0] - 6, settings.LOGICAL_SIZE[1] - 14), ui.GREY,
+                size=20, align="right")
+    if pause:
+        pause.draw_overlay(window)
+    on_map = pause.editing_controls if pause else scene.touch_map
+    touch.draw(screen, on_map, () if pause else scene.touch_keys)
+    pygame.display.flip()
+    if saves.WEB:
+        fit_canvas(screen.get_size())
+
+    if scene.next_scene:
+        previous, scene = scene, scene.next_scene
+        previous.next_scene = None
+
+    if screen.get_size() != touch.window_size():  # the touch panels' width changed
+        screen = pygame.display.set_mode(touch.window_size())
+        window = screen.subsurface(touch.view_rect())
+    return running, scene, pause, screen, window
 
 
 if __name__ == "__main__":
