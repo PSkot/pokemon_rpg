@@ -4,7 +4,7 @@ import pygame
 
 from .. import saves, settings
 from ..dev import DEV, XP_BOOSTS
-from ..engine import touch, ui
+from ..engine import fullscreen, touch, ui
 from ..mechanics.items import money_text
 from ..saves import LoadError
 from .controls_menu import ControlsMenu
@@ -25,8 +25,8 @@ WIDTH = 216
 
 class PauseMenu:
     """Freezes the game (the main loop stops updating the scene) and offers
-    Resume, Save, Load, Dev mode or Quit. Esc again resumes, so a stray Esc
-    does no harm. Dev mode's settings (dev.py) are toggled here, with
+    Resume, Save, Load, Fullscreen (in the browser), Dev mode or Quit. Esc
+    again resumes, so a stray Esc does no harm. Dev mode's settings (dev.py) are toggled here, with
     Enter or Left/Right.
 
     `save_point` is what the scene underneath can be saved as (see
@@ -56,6 +56,9 @@ class PauseMenu:
         if touch.enabled:  # (only with touch controls)
             i = options.index("Dev mode")
             options = options[:i] + ["Controls"] + options[i:]
+        if fullscreen.available():  # (only in a browser that allows it)
+            i = options.index("Dev mode")
+            options = options[:i] + ["Fullscreen"] + options[i:]
         if not DEV.enabled:
             return options
         i = options.index("Dev mode") + 1
@@ -88,6 +91,8 @@ class PauseMenu:
     def _label(self, option: str) -> str:
         if option == "Dev mode":
             return f"Dev mode: {'On' if DEV.enabled else 'Off'}"
+        if option == "Fullscreen":
+            return f"Fullscreen: {'On' if fullscreen.is_on() else 'Off'}"
         if option == "XP boost":
             return f"XP boost: ×{DEV.xp_boost}"
         if option == "God mode":
@@ -168,13 +173,16 @@ class PauseMenu:
                     self.done = True
                 else:
                     self.message = "Not during a battle."
-            elif option in ("Dev mode", "XP boost", "God mode"):
+            elif option in ("Fullscreen", "Dev mode", "XP boost", "God mode"):
                 self._toggle(option, 1)
             else:
                 self.quit = option == "Quit game"
                 self.done = True
 
     def _toggle(self, option: str, step: int) -> None:
+        if option == "Fullscreen":
+            fullscreen.toggle()
+            return
         if option == "Dev mode":
             DEV.enabled = not DEV.enabled
         elif option == "XP boost":

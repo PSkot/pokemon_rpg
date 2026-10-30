@@ -21,7 +21,10 @@ non-commercial project.
   pygame through it). Hence the async main loop (`await asyncio.sleep(0)`
   per frame). In the browser (`saves.WEB`) save files are mirrored into
   localStorage and restored on start, and `main.fit_canvas` sizes the
-  page's canvas each frame. pygbag fetches its template and runtime
+  page's canvas each frame. Pause menu → Fullscreen (browser only, not
+  on iPhones) toggles fullscreen (`engine/fullscreen.py`: a JS helper on
+  the page, retried when the key/finger is let go, as browsers only allow
+  it during a press). pygbag fetches its template and runtime
   (and pygame, via the generated main.py's imports) from
   pygame-web.github.io.
   `.github/workflows/pages.yml` builds it on every push (main and the
