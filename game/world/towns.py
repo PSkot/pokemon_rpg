@@ -114,10 +114,22 @@ TOWNS = {t.key: t for t in [
         Building("Viridian Gym", (FUNCTIONAL, 1), 53),
     ), exits=(("left", "route_1"), ("right", "viridian_forest"), (39, "route_22")), home_col=21, board_col=50,
        mart=("Potion", "Antidote", "Paralyze Heal", "Burn Heal"),
-       folk=(Folk("viridian_rattata", "Rattata", "rattata", 27, (
-           "Squeak! The Recruitment Center up the road finds you new friends.",
-           "Viridian Forest is to the east. Bugs everywhere. Yuck!",
-       )),)),
+       folk=(
+           Folk("viridian_rattata", "Rattata", "rattata", 27, (
+               "Squeak! The Recruitment Center up the road finds you new friends.",
+               "Viridian Forest is to the east. Bugs everywhere. Yuck!",
+           )),
+           # The feud on Route 22: the Pidgey flock's leader and the Spearow's,
+           # glaring at each other (quests feud_pidgey / feud_spearow).
+           Folk("viridian_pidgeotto", "Pidgeotto", "pidgeotto", 62, (
+               "The Spearow on Route 22 peck at my flock all day. Somebody should teach them manners.",
+               "A Pidgey that stands up to those bullies grows strong. Strong enough to fly like me.",
+           )),
+           Folk("viridian_fearow", "Fearow", "fearow", 66, (
+               "Hmph. The Pidgey think the sky belongs to them. My Spearow know better.",
+               "A Spearow that wins its fights grows a long beak. Like mine.",
+           )),
+       )),
     Town("pewter", "Pewter City", 72, (
         Building("", (HOUSES, 3), 7),
         Building("Pokémon Center", (FUNCTIONAL, 0), 19),

@@ -204,6 +204,31 @@ ROUTES.update({r.key: r for r in [
 ]})
 
 
+# --- the feud on Route 22 ------------------------------------------------------
+# Quests feud_pidgey / feud_spearow: Viridian City's Pidgeotto or Fearow
+# sends the player to the other side's home ground (a map full of them),
+# where its leader waits, giant, with two of its flock.
+
+def _feud(key: str, name: str, area: Theme, species: str, leader: str, band: str, folk: str,
+          levels: tuple[int, int]) -> Route:
+    """`levels`: the leader's and its flock's (the Fearow, far stronger than a
+    Pidgeotto, comes in lower)."""
+    lead, flock = levels
+    theme = replace(area, key=key, decor=area.decor_key, pool=(PoolEntry(species, 1, (flock - 1, flock + 1)),),
+                    group_sizes=((2, 60), (3, 40)))
+    return Route(key, name, theme, maps=1, towns=("viridian", "viridian"), boss=True,
+                 boss_group=((leader, lead), (species, flock), (species, flock)), boss_scale=2, trainer=band,
+                 boss_chest=False, prize=20, folk=folk)
+
+
+ROUTES.update({r.key: r for r in [
+    _feud("feud_beak_gang", "Beak Gang Roost", ROUTE_22, "spearow", "fearow", "Beak Gang", "viridian_pidgeotto",
+          (17, 14)),
+    _feud("feud_sky_flock", "Sky Flock Meadow", MEADOW, "pidgey", "pidgeotto", "Sky Flock", "viridian_fearow",
+          (21, 17)),
+]})
+
+
 # --- recruitment -------------------------------------------------------------
 
 @dataclass(frozen=True)

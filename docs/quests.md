@@ -253,6 +253,30 @@ Each wave is a trainer battle (×1.5 XP, no prize money). Tuned so a Lv16
 starter gets through with a few Potions (Sandshrew's Sand-Attack is kept
 out of the Trial of Tides: Squirtle can't out-hit it alone).
 
+### The feud (Pidgey Lv18, Spearow Lv20)
+
+On Route 22 the Pidgey flocks and the Spearow are at war. Their leaders
+stand in Viridian City, glaring at each other: a **Pidgeotto** and a
+**Fearow** (townsfolk). Each gives its side's quest once your Pidgey
+(Lv18) or Spearow (Lv20) is at its evolution level, in the party or the
+reserve. Picking a side: while one is active, the other isn't on offer
+(`Quest.excludes`); once it's done, the other opens.
+
+| | Ruffled Feathers (`feud_pidgey`) | Sharp Beaks (`feud_spearow`) |
+| --- | --- | --- |
+| Giver | Pidgeotto, Viridian City | Fearow, Viridian City |
+| 1. Hunt | 8 Spearow (Route 22) | 8 Pidgey (Route 1) |
+| 2. Talk | Report to Pidgeotto | Report to Fearow |
+| 3. Defeat | **Beak Gang** at the Beak Gang Roost: giant Fearow 17, Spearow 14 ×2 | **Sky Flock** in the Sky Flock Meadow: giant Pidgeotto 21, Pidgey 17 ×2 |
+| 4. Evolve | Pidgey into Pidgeotto | Spearow into Fearow |
+| Rewards | ₽700, 500 XP | ₽700, 500 XP |
+
+Step 3: talk to the giver again and they send you there (`Route.folk`):
+one map (`instance._feud`) full of the other side (groups of 2–3, around
+the escorts' level), its band at the end; a trainer battle with the
+whole party, then back to the giver. The Fearow comes in lower than the
+Pidgeotto: it's far stronger (Attack 90, Speed 100).
+
 ---
 
 ## Recruitment

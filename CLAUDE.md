@@ -280,6 +280,10 @@ non-commercial project.
   their chat `lines`. Starters evolve by "Coming of Age" (`evolve_<starter>`,
   the elder in Pewter): collect 3 tokens, talk, a solo trial
   (`instance._trial`: waves with `wave_team=1`, `wave_species`), evolve.
+  Pidgey and Spearow by the feud (`feud_pidgey`/`feud_spearow`, Viridian's
+  Pidgeotto and Fearow; `Quest.excludes`: one side at a time): hunt 8 of
+  the other side, talk, beat its giant leader's band on its home ground
+  (`instance._feud`, sent by the giver), evolve.
 - Recruitment (`docs/quests.md` → Recruitment): won route battles count
   defeated Pokémon per line (`Game.defeated`, `pokemon.line_base`); at
   `instance.RECRUITS[line].needed` its recruitment quest opens (board
@@ -368,7 +372,8 @@ non-commercial project.
   roughly to scale with each other; side profiles facing right); Onix
   keeps its larger sheet, drawn 1.5×. Geodude's attack (a lunge) and jump
   are made from its base pose rather than generated. Placeholder
-  quality: likely to be redone.
+  quality: likely to be redone. Fearow (the feud quests) has the same
+  layout, its base generated at 48 px and drawn 1.25×.
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,
   row, fps, baseline, ...) and shared by the map player and battles.
 - Background art (`tileset.py`): `background.png` (64×64 cells) rows 3–4

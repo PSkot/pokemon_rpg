@@ -273,6 +273,7 @@ def _animated(key: str, name: str, stats: tuple[int, int, int, int], types: tupl
 # a reference icon so far.
 SPECIES.update({
     "spearow": _animated("spearow", "Spearow", (40, 60, 30, 70), ("normal", "flying"), exp=58, hit=4),
+    "fearow": _animated("fearow", "Fearow", (65, 90, 65, 100), ("normal", "flying"), exp=162, hit=3, size=1.25),
     # (The game's font has no ♀/♂ symbols.)
     "nidoran_f": _animated("nidoran_f", "Nidoran F", (55, 47, 52, 41), ("poison",), exp=59, hit=4),
     "nidoran_m": _animated("nidoran_m", "Nidoran M", (46, 57, 40, 50), ("poison",), exp=60, hit=4),

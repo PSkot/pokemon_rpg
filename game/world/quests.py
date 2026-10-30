@@ -85,6 +85,7 @@ class Quest:
     starts_in: str = ""              # a quest that starts by itself: only on arriving in this town
     giver: str = ""                  # starts by talking to this townsfolk (towns.Folk key) ...
     offer: tuple[Line, ...] = ()     # ... who says this
+    excludes: tuple[str, ...] = ()   # not on offer while one of these is active (picking a side)
     unlock: tuple[str, int] | None = None  # (line, n): only once n of that line are defeated (recruitment)
     # Items given too: ("medicine", name, count), ("gear", item, rarity, level)
     # or ("pokemon", species, level): it joins the party (or the reserve).
@@ -277,6 +278,44 @@ QUESTS = {q.key: q for q in [
         money=600, xp=400,
     ),
 
+    # The feud on Route 22: help the Pidgey or the Spearow (one at a time;
+    # the other side opens again once the first is done).
+    Quest(
+        "feud_pidgey", "Ruffled Feathers",
+        "Viridian City's Pidgeotto wants the Spearow on Route 22 to leave its flock alone. A Pidgey that "
+        "stands up to them could grow into a Pidgeotto.",
+        giver="viridian_pidgeotto", excludes=("feud_spearow",),
+        offer=(("Pidgeotto", "Your Pidgey is ready to spread its wings. But the Spearow won't let it."),
+               ("Pidgeotto", "Chase off 8 of those Spearow on Route 22, then come back to me.")),
+        steps=(hunt("spearow", 8, "Route 22"),
+               Step("talk", "viridian_pidgeotto", "Report to Pidgeotto (Viridian City)", town="viridian",
+                    dialogue=(("Pidgeotto", "They won't forget that. But their leader, a huge Fearow, is still "
+                                            "at their roost."),
+                              ("Pidgeotto", "Beat the Beak Gang at their roost, and my flock is safe. "
+                                            "Talk to me when you're ready."))),
+               Step("defeat", "feud_beak_gang", "Beat the Beak Gang at their roost (talk to Pidgeotto, Viridian City)",
+                    dialogue=(("Pidgeotto", "You did it! Your Pidgey fought like a true flock leader."),)),
+               Step("evolve", "pidgey", "Evolve your Pidgey into Pidgeotto (party screen: E)")),
+        money=700, xp=500,
+    ),
+    Quest(
+        "feud_spearow", "Sharp Beaks",
+        "Viridian City's Fearow says the Pidgey flocks hog the skies. A Spearow that wins its fights could "
+        "grow into a Fearow.",
+        giver="viridian_fearow", excludes=("feud_pidgey",),
+        offer=(("Fearow", "That Spearow of yours has a sharp beak. Let's see if it has the guts to match."),
+               ("Fearow", "Beat 8 Pidgey on Route 1. Show them who rules the sky.")),
+        steps=(hunt("pidgey", 8, "Route 1"),
+               Step("talk", "viridian_fearow", "Report to Fearow (Viridian City)", town="viridian",
+                    dialogue=(("Fearow", "Ha! Not bad. But their leader, a giant Pidgeotto, still sits in "
+                                         "their meadow."),
+                              ("Fearow", "Beat the Sky Flock in their meadow. Talk to me when you're ready."))),
+               Step("defeat", "feud_sky_flock", "Beat the Sky Flock in their meadow (talk to Fearow, Viridian City)",
+                    dialogue=(("Fearow", "Hah! Now that's a Spearow with a beak worth fearing."),)),
+               Step("evolve", "spearow", "Evolve your Spearow into Fearow (party screen: E)")),
+        money=700, xp=500,
+    ),
+
     # Pewter City: the first gym, and the road on.
     Quest(
         "boulder_badge", "The Boulder Badge",
@@ -392,7 +431,8 @@ def ready(game, quest: Quest) -> bool:
     of its line defeated, and (evolution) its species at its level."""
     return (step(game, quest.key) is None and all(is_done(game, r) for r in quest.requires)
             and (not quest.unlock or game.defeated[quest.unlock[0]] >= quest.unlock[1])
-            and (not quest.evolves or evolution_level(game, quest.evolves)))
+            and (not quest.evolves or evolution_level(game, quest.evolves))
+            and not any(is_active(game, k) for k in quest.excludes))
 
 
 def evolution_level(game, species: str) -> bool:
