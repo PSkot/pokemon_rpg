@@ -104,8 +104,8 @@ non-commercial project.
   rarities drop (`loot`, `boss_loot`): early on Common only, Uncommon from
   bosses; Rare and up are for later areas. A won battle rolls the
   battle's table once per enemy; Poké Balls on the map (`Level.balls`,
-  `overworld.Ball`, 0–2 a map, Up) give one item (`ball_loot`); the rarer
-  `Chest`s (`level.CHEST_CHANCE`; Up) roll their table once. Gear drops
+  `overworld.Ball`, 0–2 a map, Up) give one item (`ball_loot`). There are
+  no roadside chests (`Level.chests` spots are unused): only bosses leave one. Gear drops
   from battles only rarely (4%). After a boss, `Route.boss_chest`: "plain"
   (a chest: route bosses), "fancy" (the boss loot: gyms), "battle" (the
   boss loot with the battle: rival, trials, feud, Team Rocket) or ""

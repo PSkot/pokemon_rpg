@@ -447,8 +447,9 @@ class OverworldScene(MapScene):
         self.boss = WildPokemon(level.boss, boss=True, scale=instance.route.boss_scale) if level.boss else None
         if self.boss:
             self.wild.append(self.boss)
-        self.chests = [Chest(x, y, chest_loot(route.loot), level.theme.levels)
-                       for x, y in level.chests] if route.wild else []
+        # No roadside chests (the map still has spots for them): chests are
+        # special, only bosses leave one (`_boss_beaten`).
+        self.chests: list[Chest] = []
         self.balls = [Ball(x, y) for x, y in level.balls] if route.wild else []
         # The doorways in and out; a dungeon room has its stairs instead.
         art = level.theme.doorway

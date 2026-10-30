@@ -505,9 +505,8 @@ rarity picked by weight, at an item level: see *Item level*).
 - **Poké Ball** lying on a map (Up): the ball table once: **one item**,
   never nothing. Maps have 0–2 (on platforms or along the ground), a
   dungeon room's at the same spots every trip.
-- **Chest** on a map (Up): the chest table once (2–3 rolls). Chests are
-  rare: each of a map's 1–2 chest spots gets one 40% of the time
-  (`level.CHEST_CHANCE`), about one chest every two maps.
+- **Chests** are special: there are none by the roadside, only the one a
+  boss leaves (below). Up opens it.
 - **Boss chest** (`Route.boss_chest`): after a route's boss (e.g. the
   giant Caterpie) a **plain chest**: the chest table once, at the boss
   rarities. After a **gym**, the **fancy chest**: the boss table once
