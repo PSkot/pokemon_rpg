@@ -38,6 +38,7 @@ Controls
 
 import json
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import pygame
@@ -128,7 +129,9 @@ class Viewer:
     def __init__(self, species_key: str, sheet: str):
         self.species = pokemon.SPECIES[species_key]
         self.species_key = species_key
-        self.anims = pokemon.animations(self.species)
+        # At the sheet's own size: head anchors are in sheet pixels (the game
+        # scales them, and the hat, by Species.size).
+        self.anims = pokemon.animations(replace(self.species, size=1.0))
         self.names = [n for n in self.species.anims if n != "idle"]
         self.sheets = sorted(p.name for p in SPRITES.glob("hats*.png"))
         self.sheet_i = self.sheets.index(sheet)

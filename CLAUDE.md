@@ -93,8 +93,11 @@ non-commercial project.
   `hats_new.png`, drawn on the Pokémon wearing them (map, battle, party
   screen). The cells' reference faces are cut out on load, so the Pokémon's
   face shows through. Placement comes from `hat_anchors.json`: a head anchor
-  per animation frame (`Animation.heads`) and per-hat tweaks. Edit it with
-  `tools/hat_viewer.py`; species without head anchors don't show hats.
+  per animation frame (`Animation.heads`, in sheet pixels), a hat size per
+  species (× `Species.size`) and per-hat tweaks. Every species with a sheet
+  has them: `tools/hat_autofit.py` (a hand-set anchor on each standing pose,
+  `REFS`, tracked into every frame; `SCALES`) fills them in; fine-tune with
+  `tools/hat_viewer.py`. Placeholder species (icons) don't show hats.
 - Loot (`loot.py`): `LootTable`s of weighted entries (nothing / medicine /
   gear at weighted rarities), rolled 1+ times; built per set of rarity
   weights (`wild_loot`, `chest_loot`, `boss_loot`). Each `Route` sets which
