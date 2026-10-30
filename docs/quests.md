@@ -78,9 +78,11 @@ they can't be sold, used or dropped.
   now: people "speak" from their buildings.
 - **Tracker:** up to 3 active quests' current steps under the location
   line on the map, e.g. "Pest Control: Defeat 6 Rattata (Route 1): 3/6".
-- **Markers:** a bouncing "!" over a quest board with something new or a
-  quest to hand in, and over the building the current step needs (when
-  it's in the town you're in).
+- **Markers:** a bouncing "!" over a quest board with something new and
+  over the building the current step needs (when it's in the town you're
+  in); a "?" over a quest board when a quest is ready to hand in. An
+  evolution quest's "!" (and its line in the tracker) is pink. Several
+  marks over one place stand side by side ("! ?").
 - **Quest log:** pause menu → Quests: active quests with their steps
   (done ones ticked), and finished ones; Up/Down scrolls.
 - **Battle rewards:** a won battle's rewards panel also lists quest
@@ -199,9 +201,11 @@ without one doesn't evolve yet. These quests don't come from boards:
 they start when their key item turns up: dropped in battles
 (`Quest.drop`: item, route, species, chance; "You found a Metapod
 Shell!" and the New quest notice after the battle), and later from NPCs
-or trainer battles (gyms, the rival, Team Rocket). The item can be found
-at any time; it's only used once the player has a Pokémon of that
-species at its evolution level: the party screen shows "Evolve!" and E
+or trainer battles (gyms, the rival, Team Rocket). An evolution
+quest is only on offer, and its item only drops, once the party or the
+reserve has a Pokémon of that species at its evolution level
+(`Quest.evolves`, `quests.evolution_level`): no Metapod Shell before a
+Lv7 Caterpie. The party screen then shows "Evolve!" and E
 evolves it (or use the item from the bag's Key items on that Pokémon),
 using up the item and finishing the quest. After that the
 line evolves by level as usual (end of a won battle).

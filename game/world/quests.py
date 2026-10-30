@@ -91,6 +91,13 @@ class Quest:
     # it with that chance (until it has dropped once).
     drop: tuple[str, str, tuple[str, ...], int] | None = None
 
+    @property
+    def evolves(self) -> str:
+        """An evolution quest: the species it evolves ("" if it isn't one).
+        It's only on offer (or drops its item) once that species is in the
+        team at the level it evolves at."""
+        return next((s.target for s in self.steps if s.kind == "evolve"), "")
+
 
 QUESTS = {q.key: q for q in [
     Quest(
@@ -320,10 +327,18 @@ def active(game) -> list[Quest]:
 
 
 def ready(game, quest: Quest) -> bool:
-    """Not started yet, the quests it needs are done, and (recruitment) enough
-    of its line defeated."""
+    """Not started yet, the quests it needs are done, (recruitment) enough
+    of its line defeated, and (evolution) its species at its level."""
     return (step(game, quest.key) is None and all(is_done(game, r) for r in quest.requires)
-            and (not quest.unlock or game.defeated[quest.unlock[0]] >= quest.unlock[1]))
+            and (not quest.unlock or game.defeated[quest.unlock[0]] >= quest.unlock[1])
+            and (not quest.evolves or evolution_level(game, quest.evolves)))
+
+
+def evolution_level(game, species: str) -> bool:
+    """A `species` in the party or reserve has reached the level it evolves at."""
+    evolution = SPECIES[species].evolution
+    return bool(evolution) and any(m.species.key == species and m.level >= evolution.level
+                                   for m in game.party + game.reserve)
 
 
 def board(game, town: str) -> list[Quest]:
@@ -366,7 +381,7 @@ def won_battle(game, route: str, defeated: list[str], event: Event | None = None
     quest on (to handing it in)."""
     rows = []
     for quest in QUESTS.values():
-        if not quest.drop or step(game, quest.key) is not None:
+        if not quest.drop or not ready(game, quest):
             continue
         item, where, species, chance = quest.drop
         if where == route and any(random.random() * 100 < chance for s in defeated if s in species):

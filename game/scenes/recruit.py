@@ -25,7 +25,7 @@ from ..world.progress import MAX_PARTY, Game
 from ..world.quests import QUESTS
 from ..world.towns import Town, building_mid
 from . import quest_ui
-from .overworld import MapScene, OverworldScene
+from .overworld import QUEST_MARK, MapScene, OverworldScene
 
 COLS = 40            # one screen wide
 GROUND = 4           # tiles of floor
@@ -134,7 +134,7 @@ class RecruitScene(MapScene):
 
     def markers(self) -> list[tuple[float, float]]:
         open_ = any(quests.ready(self.game, _quest(s)) for s in RECRUITS)
-        return [(BOARD.centerx, BOARD.top - 2)] if open_ else []
+        return [(BOARD.centerx, BOARD.top - 2, QUEST_MARK)] if open_ else []
 
     def draw_things(self, layer: pygame.Surface) -> None:
         # The open (and taken) recruitments, pinned on the board.

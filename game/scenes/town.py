@@ -23,7 +23,7 @@ from ..world.towns import Building, Town, building_mid
 from . import quest_ui
 from .mart import MartScene
 from .recruit import RecruitScene
-from .overworld import Doorway, MapScene, OverworldScene
+from .overworld import HAND_IN_MARK, Doorway, MapScene, OverworldScene, quest_mark
 
 BANNER_TIME = 2.5   # seconds the town's name shows on arrival
 ARRIVE_GAP = 3 * TILE  # how far from the doorway the player arrives
@@ -153,9 +153,11 @@ class TownScene(MapScene):
 
     def markers(self) -> list[tuple[float, float]]:
         ground, marks = self.level.ground_y(0), []
-        if self.board_x is not None and (quests.can_take(self.game, self.town.key)
-                                         or quests.ready_to_hand_in(self.game)):
-            marks.append((self.board_x, ground - 60))
+        if self.board_x is not None:
+            for quest in quests.can_take(self.game, self.town.key):
+                marks.append((self.board_x, ground - 60, quest_mark(quest)))
+            if quests.ready_to_hand_in(self.game):
+                marks.append((self.board_x, ground - 60, HAND_IN_MARK))
         for quest in quests.active(self.game):
             step = quests.current(self.game, quest.key)
             route = ROUTES.get(step.target) if step.kind == "defeat" else None
@@ -165,11 +167,12 @@ class TownScene(MapScene):
                     route and (self.town.key in route.towns or not route.towns)):
                 for b in self.town.buildings:  # the building it needs (a gym: the one its route starts in)
                     if b.name == (route.building if route else step.target):
-                        marks.append((building_mid(b), ground - tileset.building(b.sprite)[1] - 20))
+                        marks.append((building_mid(b), ground - tileset.building(b.sprite)[1] - 20,
+                                      quest_mark(quest)))
         if any(quests.ready(self.game, q) for q in QUESTS.values() if q.board == quests.RECRUIT_BOARD):
             for b in self.town.buildings:  # a recruitment has opened
                 if b.inside == "recruit":
-                    marks.append((building_mid(b), ground - tileset.building(b.sprite)[1] - 20))
+                    marks.append((building_mid(b), ground - tileset.building(b.sprite)[1] - 20, QUEST_MARK))
         return list(dict.fromkeys(marks))
 
     def draw_things(self, layer: pygame.Surface) -> None:

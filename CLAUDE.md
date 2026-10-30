@@ -267,7 +267,11 @@ non-commercial project.
   rewards); map panels queue (`MapScene.show`). Routes can be gated
   (`Route.needs`/`blocked`) and change boss after a quest (`boss_after`).
   Screens in `scenes/quest_ui.py` (dialogue box, quest board, quest log in
-  the pause menu); the map shows the current step and "!" markers.
+  the pause menu); the map shows the current step and markers (`MapScene.markers`:
+  "!" a quest to take or a step's place, pink for evolution quests,
+  `quest_mark`; "?" quests to hand in). Evolution quests (`Quest.evolves`)
+  are only on offer (and only drop their item) once that species is at
+  its evolution level in the team (`quests.evolution_level`).
 - Recruitment (`docs/quests.md` → Recruitment): won route battles count
   defeated Pokémon per line (`Game.defeated`, `pokemon.line_base`); at
   `instance.RECRUITS[line].needed` its recruitment quest opens (board

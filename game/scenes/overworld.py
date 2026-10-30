@@ -46,6 +46,15 @@ OUTLINE = (48, 28, 16)
 TRACKED = 3  # active quests shown under the location
 LADDER_SEGMENT = pygame.Rect(8, 16, 16, 16)  # a repeating stretch of the ladder prop
 GROUP_SPACING = 30  # px between the members of a wild group, standing in a row
+EVOLVE_COLOR = (255, 130, 200)  # evolution quests (their marks and tracked steps)
+# Marks over what quests need: (symbol, colour).
+QUEST_MARK = ("!", ui.YELLOW)    # a quest to take, or the next step's place
+EVOLVE_MARK = ("!", EVOLVE_COLOR)  # ... an evolution quest's
+HAND_IN_MARK = ("?", ui.YELLOW)  # quests to hand in
+
+
+def quest_mark(quest: quests.Quest) -> tuple[str, tuple[int, int, int]]:
+    return EVOLVE_MARK if quest.evolves else QUEST_MARK
 
 
 def draw_prompt(surface: pygame.Surface, x: float, top: float, t: float) -> None:
@@ -285,8 +294,10 @@ class MapScene(Scene):
     def draw_things(self, layer: pygame.Surface) -> None:
         """What's on the map, behind the player (in map coordinates)."""
 
-    def markers(self) -> list[tuple[float, float]]:
-        """(x, top) in map coordinates of things the active quests need here."""
+    def markers(self) -> list[tuple[float, float, tuple]]:
+        """(x, top, mark) in map coordinates of things quests need here: a
+        quest to take or a step's place (`quest_mark`), or quests to hand in
+        (`HAND_IN_MARK`)."""
         return []
 
     # ---------------------------------------------------------------- panels
@@ -387,7 +398,7 @@ class MapScene(Scene):
         y = 26
         for quest in quests.active(self.game)[:TRACKED]:  # the active quests' next steps
             text = quests.step_text(self.game, quest, quests.step(self.game, quest.key))
-            ui.text(window, f"{quest.name}: {text}", (6, y), ui.YELLOW, size=20)
+            ui.text(window, f"{quest.name}: {text}", (6, y), quest_mark(quest)[1], size=20)
             y += 11
         if self.debug:
             p, level = self.player, self.level
@@ -395,8 +406,11 @@ class MapScene(Scene):
                             f"   fps: {self.fps:.0f}", (6, y), ui.YELLOW, size=20)
         if not self.panel:
             lift = abs((self.t * 2) % 2 - 1) * 4
-            for x, top in self.markers():
-                ui.text(window, "!", (x - self.camera, top - 14 - lift), ui.YELLOW, size=32, align="center")
+            marks = list(dict.fromkeys(self.markers()))
+            for x, top, (symbol, color) in marks:
+                here = [m for m in marks if m[:2] == (x, top)]  # several at one place: side by side
+                x += (here.index((x, top, (symbol, color))) - (len(here) - 1) / 2) * 12
+                ui.text(window, symbol, (x - self.camera, top - 14 - lift), color, size=32, align="center")
         if self.panel:
             self.panel.draw_overlay(window)
 

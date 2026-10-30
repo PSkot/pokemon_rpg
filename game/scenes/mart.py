@@ -18,7 +18,7 @@ from ..world import quests, tileset
 from ..world.level import EMPTY, ROWS, SOLID, TILE, Level
 from ..world.progress import Game
 from ..world.towns import Town, building_mid
-from .overworld import MapScene
+from .overworld import MapScene, quest_mark
 
 NAME = "Poké Mart"  # the building's name (quest steps visit it)
 COLS = 40           # one screen wide
@@ -97,7 +97,7 @@ class MartScene(MapScene):
         for quest in quests.active(self.game):
             step = quests.current(self.game, quest.key)
             if step.kind == "visit" and step.town == self.town.key and step.target == NAME:
-                return [(MEOWTH_X, self._meowth_top - 4)]
+                return [(MEOWTH_X, self._meowth_top - 4, quest_mark(quest))]
         return []
 
     def draw_things(self, layer: pygame.Surface) -> None:
