@@ -93,7 +93,10 @@ class Route:
     boss_group: tuple[tuple[str, int], ...] = ()
     boss_scale: int = 1                 # the leader is drawn this many times bigger
     trainer: str = ""                   # the boss group is this trainer's team (a trainer battle)
-    boss_chest: bool = True             # beating the boss leaves a chest (else its loot comes with the battle)
+    # What beating the boss leaves: "plain" (a chest), "fancy" (a gym's
+    # chest, with the boss loot), "battle" (the boss loot comes with the
+    # battle) or "" (nothing more: a recruitment, whose reward is the Pokémon).
+    boss_chest: str = "plain"
     # Its doorways need (quest key, "started" or "done"); `blocked` says why not.
     needs: tuple[str, str] | None = None
     blocked: str = ""
@@ -124,14 +127,14 @@ ROUTES = {r.key: r for r in [
           blocked="An old man is lying in the road. He hasn't had his coffee yet, and won't let anyone pass."),
     # A side trip from Viridian and back (Gen 1's first rival battle at its end).
     Route("route_22", "Route 22", ROUTE_22, maps=2, towns=("viridian", "viridian"), boss=True,
-          boss_group=(("pidgey", 9), (RIVAL_STARTER, 8)), trainer="Rival", boss_chest=False,
+          boss_group=(("pidgey", 9), (RIVAL_STARTER, 8)), trainer="Rival", boss_chest="battle",
           needs=("rival_22", "started"), blocked="A guard says there's nothing to see on Route 22 for now.",
           boss_after=("rival_22", (("pidgey", 9), ("spearow", 9))), prize=35),
     # The Pewter Gym, from its building: a short walk up to the arena, where
     # the Boulder Gang sends in two waves, then comes itself, led by an Onix
     # (Gen 1's Brock's team).
     Route("pewter_gym", "Pewter Gym", PEWTER_GYM, maps=1, towns=("pewter", "pewter"), boss=True,
-          boss_group=(("geodude", 12), ("onix", 14)), trainer="Boulder Gang", boss_chest=False, prize=99,
+          boss_group=(("geodude", 12), ("onix", 14)), trainer="Boulder Gang", boss_chest="fancy", prize=99,
           waves=(Wave("Boulder Gang Diggers", (("diglett", 10), ("sandshrew", 10)), 20),
                  Wave("Boulder Gang Rollers", (("geodude", 11), ("geodude", 11)), 20)),
           wild=False, building="Pewter Gym", cols=44,
@@ -154,7 +157,7 @@ ROUTES = {r.key: r for r in [
     # Mt. Moon, as in Red/Blue: three ladders down from 1F, two of them to
     # dead ends; the way on goes down to B2F, past Team Rocket, and up to
     # the B1F room with the way out to Route 4.
-    Route("mt_moon_cave", "Mt. Moon", MT_MOON, maps=7, towns=("mt_moon", "route_4"), boss_chest=False,
+    Route("mt_moon_cave", "Mt. Moon", MT_MOON, maps=7, towns=("mt_moon", "route_4"), boss_chest="battle",
           rooms=(
               Room("1f", "1F", 110, (Stair("out", "mt_moon", 0), Stair("down", "b1_west", 0.3),
                                      Stair("down", "b1_east", 0.55), Stair("down", "b1_nook", 0.85))),
@@ -187,7 +190,7 @@ ROUTES = {r.key: r for r in [
 def _trial(starter: str, name: str, theme: Theme, waves: tuple[Wave, ...], master: str) -> Route:
     line = (starter, EVOLUTIONS[starter].into)
     return Route(f"trial_{starter}", name, theme, maps=1, towns=("pewter", "pewter"), boss=True,
-                 boss_group=((master, 16),), boss_scale=2, trainer="Trial Master", boss_chest=False,
+                 boss_group=((master, 16),), boss_scale=2, trainer="Trial Master", boss_chest="battle",
                  waves=waves, wave_team=1, wave_species=line, wild=False, folk="pewter_elder", cols=30)
 
 
@@ -218,7 +221,7 @@ def _feud(key: str, name: str, area: Theme, species: str, leader: str, band: str
                     group_sizes=((2, 60), (3, 40)))
     return Route(key, name, theme, maps=1, towns=("viridian", "viridian"), boss=True,
                  boss_group=((leader, lead), (species, flock), (species, flock)), boss_scale=2, trainer=band,
-                 boss_chest=False, prize=20, folk=folk)
+                 boss_chest="battle", prize=20, folk=folk)
 
 
 ROUTES.update({r.key: r for r in [
@@ -282,7 +285,7 @@ def _recruit_route(r: Recruit) -> Route:
     # (No `towns`: walked from any Recruitment Center, and back to it.)
     return Route(r.route_key, f"{SPECIES[r.species].name} Grounds", theme, maps=1, towns=(), boss=True,
                  boss_group=((r.species, r.boss_level), (r.species, r.level), (r.species, r.level)), boss_scale=2,
-                 building=RECRUIT_BUILDING)
+                 boss_chest="", building=RECRUIT_BUILDING)
 
 
 ROUTES.update({r.route_key: _recruit_route(r) for r in RECRUITS.values()})

@@ -503,19 +503,24 @@ rarity picked by weight, at an item level: see *Item level*).
 - **Won battle:** the wild table is rolled **once per defeated enemy**, at
   that enemy's level.
 - **Poké Ball** lying on a map (Up): the ball table once: **one item**,
-  never nothing. Maps have 2–4 (on platforms or along the ground), a
+  never nothing. Maps have 0–2 (on platforms or along the ground), a
   dungeon room's at the same spots every trip.
 - **Chest** on a map (Up): the chest table once (2–3 rolls). Chests are
   rare: each of a map's 1–2 chest spots gets one 40% of the time
   (`level.CHEST_CHANCE`), about one chest every two maps.
-- **Boss chest** (areas with a boss): the boss table once (3–4 rolls).
+- **Boss chest** (`Route.boss_chest`): after a route's boss (e.g. the
+  giant Caterpie) a **plain chest**: the chest table once, at the boss
+  rarities. After a **gym**, the **fancy chest**: the boss table once
+  (3–4 rolls). The rival, the trials, the feud and Team Rocket give the
+  boss table with the battle instead ("battle"); recruitments give no
+  chest (the Pokémon is the reward).
 
 Which **rarities** can drop is set per area (`Route.loot` for wild
 Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 
 | Table | Rolls | Nothing | Medicine | Gear |
 | --- | --- | --- | --- | --- |
-| Wild (per enemy) | 1 | 55% | 33% (Potion 18%, Super Potion 4%, status cures 11%) | 12% |
+| Wild (per enemy) | 1 | 60% | 36% (Potion 20%, Super Potion 4%, status cures 12%) | 4% (rare: gear mostly comes from chests) |
 | Poké Ball | 1 | – | 100%: Potion 40%, Super Potion 14%, Antidote 8%, Revive 6%, Paralyze Heal 6%, Burn Heal 5%, Awakening 5%, **Escape Rope 4%**, Ice Heal 3%, Full Heal 3%, Hyper Potion 2% | – |
 | Chest | 2–3 | – | 67% (Potions 1–3, Revive, cures, ...) | 33% |
 | Boss | 3–4 | – | 45% (Super/Hyper Potion, Revive, Full Heal/Restore) | 55% |
@@ -525,7 +530,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 1 | Common | (no boss) |
 | Viridian Forest | Common | Common 60%, Uncommon 40% |
 | Route 22 | Common | Common 60%, Uncommon 40% (the rival: a reward roll with the battle, no chest) |
-| Pewter Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Boulder Gang: a reward roll with the battle, no chest) |
+| Pewter Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Boulder Gang: the fancy chest) |
 | Route 3 | Common | (no boss) |
 | Mt. Moon | Common | Common 60%, Uncommon 40% (Team Rocket: a reward roll with the battle, no chest) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
@@ -617,8 +622,8 @@ forest Pokémon together):
 
 **Boss:** a Lv10 Caterpie drawn at double size, escorted by a Lv8 Metapod
 and a Lv8 Kakuna (only the leader, the first of a boss group, is drawn
-bigger). Beating them opens the way to Pewter City and leaves a chest
-(item level 10).
+bigger). Beating them opens the way to Pewter City and leaves a plain
+chest (the chest table at the boss rarities, item level 10).
 
 Route 22 (2 maps, from Viridian City and back):
 

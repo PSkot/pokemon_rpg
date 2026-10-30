@@ -602,15 +602,19 @@ class OverworldScene(MapScene):
                                    (320, 140)), after=self._fainted)
 
     def _boss_beaten(self) -> None:
-        """The way out opens, and the boss leaves a reward chest (unless the
-        route's boss loot comes with the battle)."""
+        """The way out opens, and the boss leaves its chest (`Route.boss_chest`):
+        a plain one (a chest's loot, at the boss's rarities) or a gym's fancy
+        one (the boss loot); none if its loot comes with the battle, or there
+        is none."""
         self.exit.sealed = False
-        if not self.instance.route.boss_chest:
+        route = self.instance.route
+        if route.boss_chest not in ("plain", "fancy"):
             return
+        fancy = route.boss_chest == "fancy"
         x = self.level.boss_chest_x
         top = max(lv for _, lv in self.level.boss.encounter)  # the boss group's highest level
-        self.chests.append(Chest(x, self.level.ground_y(x), boss_loot(self.instance.route.boss_loot), (top, top),
-                                 fancy=True))
+        loot = boss_loot(route.boss_loot) if fancy else chest_loot(route.boss_loot)
+        self.chests.append(Chest(x, self.level.ground_y(x), loot, (top, top), fancy=fancy))
 
     def _fainted(self) -> None:
         """Back to the last town visited, where the party is healed."""
@@ -647,7 +651,7 @@ class OverworldScene(MapScene):
         battle = BattleScene(self, party, enemies, self.bag, loot=wild_loot(route.boss_loot if boss else route.loot),
                              backdrop=self.level.theme.backdrop, boss=boss, trainer=trainer,
                              prize=prize_money(prize, encounter) if trainer else 0,
-                             bonus=boss_loot(route.boss_loot) if boss and not route.boss_chest else None,
+                             bonus=boss_loot(route.boss_loot) if boss and route.boss_chest == "battle" else None,
                              on_win=lambda key=route.key, defeated=[s for s, _ in encounter]:
                                  quests.won_battle(self.game, key, defeated, self.battle_event),
                              evolves=lambda m: quests.can_evolve(self.game, m), **extra)

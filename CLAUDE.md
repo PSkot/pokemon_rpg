@@ -101,8 +101,12 @@ non-commercial project.
   rarities drop (`loot`, `boss_loot`): early on Common only, Uncommon from
   bosses; Rare and up are for later areas. A won battle rolls the
   battle's table once per enemy; Poké Balls on the map (`Level.balls`,
-  `overworld.Ball`, 2–4 a map, Up) give one item (`ball_loot`); the rarer
-  `Chest`s (`level.CHEST_CHANCE`; Up) roll their table once. Both show a `ui.ListPanel`. The starter begins
+  `overworld.Ball`, 0–2 a map, Up) give one item (`ball_loot`); the rarer
+  `Chest`s (`level.CHEST_CHANCE`; Up) roll their table once. Gear drops
+  from battles only rarely (4%). After a boss, `Route.boss_chest`: "plain"
+  (a chest: route bosses), "fancy" (the boss loot: gyms), "battle" (the
+  boss loot with the battle: rival, trials, feud, Team Rocket) or ""
+  (recruitments). Both show a `ui.ListPanel`. The starter begins
   with just a Common Oran Berry.
 - XP (`pokemon.py`): defeating a Pokémon is worth `base_exp × level / 7`
   (Gen 1; `Species.base_exp`), and reaching a level takes `level³` total XP.
@@ -351,8 +355,10 @@ non-commercial project.
 - `pidgeotto.png` and `pidgeot.png` (generated through the PixelLab MCP
   connector): the same rows as `pidgey.png`, but 88×88 cells (`AnimSpec.cell`,
   room for spread wings) and 5 frames a row (the still pose, then 4
-  generated frames). Pidgeot is drawn 1.2× (`Species.size`, nearest-neighbour
-  `Animation.scaled`) so the line grows in size.
+  generated frames). Each species' `Species.size` (nearest-neighbour
+  `Animation.scaled`; hats follow it) brings the big early sheets roughly
+  to scale with the rest: Pidgey 0.6, Pidgeotto 0.75, Bulbasaur 0.75,
+  Charmander 0.72, Squirtle 0.68, their middle forms 0.8–0.85.
 - `ivysaur.png`, `charmander.png` and `squirtle.png` have the same rows
   as `bulbasaur.png` (no extra-attack sheets yet: their skills use the
   basic attack animation).
@@ -360,7 +366,7 @@ non-commercial project.
   `blastoise.png` (generated with PixelLab, styled after the line's
   earlier sheets): the same rows as `bulbasaur.png` in 88×88 cells, 5
   frames a row (still pose + 4), the jump row's 4 frames being crouch,
-  rise, fall, land. The final stages are drawn 1.2× (`Species.size`).
+  rise, fall, land. The final stages are drawn at their sheet size.
 - Idle animations: `<species> idle.png` (one row, 8 frames, the sheet's
   cell size) for the starter lines and the Pidgey line; the Pidgey line
   also has `<species> run.png` (same layout). Generated with PixelLab
@@ -401,7 +407,7 @@ non-commercial project.
   back row; themes without one (ice cave) are drawn in code from the
   `Backdrop` colours.
 - Map props (`assets/sprites/pixellab/props/`, `tileset.draw_prop`: centred,
-  standing on the ground): chests (closed/open, plain and the boss's fancy
+  standing on the ground): chests (closed/open, plain and the gyms' fancy
   one), the Poké Ball, the quest board (its notes are drawn in code, one
   per quest on offer), doorways (`Theme.doorway`: a stone arch outside, a
   rock arch in Mt. Moon; "" = drawn in code, boards over a sealed one in

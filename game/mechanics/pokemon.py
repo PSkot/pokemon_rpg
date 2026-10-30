@@ -44,7 +44,10 @@ class Species:
     # as a still sprite until the species gets a Pixellab sheet.
     icon: str = ""
     base_exp: int = 64  # Gen 1 base experience yield: XP for defeating one
-    size: float = 1.0   # drawn this many times bigger than its sheet (e.g. Pidgeot)
+    # Drawn this many times its sheet's size (nearest-neighbour), so species
+    # come out roughly to scale with each other: the starters' and Pidgey
+    # line's sheets are drawn big, so they're shrunk (Pidgey 0.6).
+    size: float = 1.0
 
     @property
     def key(self) -> str:
@@ -96,7 +99,8 @@ SPECIES = {
             "tackle": AnimSpec(BULBASAUR_ATTACKS, 3),
         },
         foot_sink=3,
-        base_exp=64),
+        base_exp=64,
+        size=0.75),
     "ivysaur": Species(
         "Ivysaur", 60, 62, 63, 60, ("grass", "poison"),
         fight_anim="attack",
@@ -108,7 +112,8 @@ SPECIES = {
             "attack": AnimSpec("ivysaur.png", 3),
         },
         foot_sink=3,
-        base_exp=141),
+        base_exp=141,
+        size=0.85),
     # The starters' evolutions (generated with PixelLab, like Pidgeotto): 88 px
     # cells, rows walk, run, jump (crouch, rise, fall, land) and attack.
     "venusaur": Species(
@@ -122,8 +127,7 @@ SPECIES = {
             "attack": AnimSpec("venusaur.png", 3, cell=88),
         },
         foot_sink=3,
-        base_exp=208,
-        size=1.2),
+        base_exp=208),
     "charmander": Species(
         "Charmander", 39, 52, 43, 65, ("fire",),
         fight_anim="attack",
@@ -137,7 +141,8 @@ SPECIES = {
             "attack": AnimSpec("charmander.png", 3),
         },
         foot_sink=2,
-        base_exp=65),
+        base_exp=65,
+        size=0.72),
     "charmeleon": Species(
         "Charmeleon", 58, 64, 58, 80, ("fire",),
         fight_anim="attack",
@@ -149,7 +154,8 @@ SPECIES = {
             "attack": AnimSpec("charmeleon.png", 3, cell=88),
         },
         foot_sink=2,
-        base_exp=142),
+        base_exp=142,
+        size=0.8),
     "charizard": Species(
         "Charizard", 78, 84, 78, 100, ("fire", "flying"),
         fight_anim="attack",
@@ -161,8 +167,7 @@ SPECIES = {
             "attack": AnimSpec("charizard.png", 3, cell=88),
         },
         foot_sink=2,
-        base_exp=209,
-        size=1.2),
+        base_exp=209),
     "squirtle": Species(
         "Squirtle", 44, 48, 65, 43, ("water",),
         fight_anim="attack",
@@ -174,7 +179,8 @@ SPECIES = {
             "attack": AnimSpec("squirtle.png", 3),
         },
         foot_sink=2,
-        base_exp=66),
+        base_exp=66,
+        size=0.68),
     "wartortle": Species(
         "Wartortle", 59, 63, 80, 58, ("water",),
         fight_anim="attack",
@@ -186,7 +192,8 @@ SPECIES = {
             "attack": AnimSpec("wartortle.png", 3, cell=88),
         },
         foot_sink=2,
-        base_exp=143),
+        base_exp=143,
+        size=0.8),
     "blastoise": Species(
         "Blastoise", 79, 83, 100, 78, ("water",),
         fight_anim="attack",
@@ -198,8 +205,7 @@ SPECIES = {
             "attack": AnimSpec("blastoise.png", 3, cell=88),
         },
         foot_sink=2,
-        base_exp=210,
-        size=1.2),
+        base_exp=210),
     "pidgey": Species(
         "Pidgey", 40, 45, 40, 56, ("normal", "flying"),
         fight_anim="tackle",
@@ -212,7 +218,8 @@ SPECIES = {
             "tackle": AnimSpec("pidgey.png", 3, face_left=(0,)),
         },
         foot_sink=1,
-        base_exp=55),
+        base_exp=55,
+        size=0.6),
     # Pidgeotto's and Pidgeot's sheets have 88 px cells (room for the wings)
     # and 5 frames a row: the still pose, then 4 generated frames.
     "pidgeotto": Species(
@@ -227,7 +234,8 @@ SPECIES = {
             "tackle": AnimSpec("pidgeotto.png", 3, cell=88),
         },
         foot_sink=1,
-        base_exp=113),
+        base_exp=113,
+        size=0.75),
     "pidgeot": Species(
         "Pidgeot", 83, 80, 75, 91, ("normal", "flying"),
         fight_anim="tackle",
@@ -240,8 +248,7 @@ SPECIES = {
             "tackle": AnimSpec("pidgeot.png", 3, cell=88),
         },
         foot_sink=1,
-        base_exp=172,
-        size=1.2),  # (its sprite is drawn about as big as Pidgeotto's)
+        base_exp=172),
 }
 
 

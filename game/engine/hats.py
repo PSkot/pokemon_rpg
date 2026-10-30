@@ -173,10 +173,11 @@ def head_anchors(sheet: str, row: int, count: int) -> list[tuple[int, int]] | No
 
 
 @cache
-def _image(index: int, species: str, flip: bool) -> tuple[pygame.Surface, tuple[int, int]]:
-    """Hat `index` as drawn on `species`, and the point that goes on the head."""
+def _image(index: int, species: str, flip: bool, size: float = 1.0) -> tuple[pygame.Surface, tuple[int, int]]:
+    """Hat `index` as drawn on `species` (drawn `size` times its sheet's size,
+    `Species.size`), and the point that goes on the head."""
     sheet, conf = _sheet(), _data()["sheets"].get(SHEET, {})
-    scale = conf.get("scale", {}).get(species, sheet.default_scale)
+    scale = conf.get("scale", {}).get(species, sheet.default_scale) * size
     info = conf.get("hats", {}).get(str(index), {})
     image = (sheet.originals if info.get("keep_face") else sheet.stripped)[index]
     ax, ay = info.get("anchor", sheet.default_anchor(index, scale))
@@ -192,15 +193,16 @@ def _image(index: int, species: str, flip: bool) -> tuple[pygame.Surface, tuple[
 
 
 def draw(surface: pygame.Surface, index: int, species: str, anim, frame: int, frame_rect: pygame.Rect,
-         flip: bool, alpha: int = 255) -> None:
+         flip: bool, alpha: int = 255, size: float = 1.0) -> None:
     """Draw hat `index` on the head of `species` (its key, e.g. "bulbasaur"),
-    showing frame `frame` of `anim` at `frame_rect` (mirrored if `flip`)."""
+    showing frame `frame` of `anim` at `frame_rect` (mirrored if `flip`);
+    `size`: the species' `Species.size`."""
     if index < 0 or not anim.heads:
         return
     hx, hy = anim.heads[frame]
     if flip:
         hx = frame_rect.width - 1 - hx
-    image, (ax, ay) = _image(index, species, flip)
+    image, (ax, ay) = _image(index, species, flip, size)
     if alpha < 255:
         image = image.copy()
         image.set_alpha(alpha)
@@ -212,4 +214,5 @@ def draw_worn(surface: pygame.Surface, monster, anim, frame: int, frame_rect: py
     """Draw the hat `monster` wears (if any) on frame `frame` of `anim`."""
     gear = monster.gear.get("head")
     if gear:
-        draw(surface, gear.item.sprite, monster.species.name.lower(), anim, frame, frame_rect, flip, alpha)
+        draw(surface, gear.item.sprite, monster.species.name.lower(), anim, frame, frame_rect, flip, alpha,
+             monster.species.size)

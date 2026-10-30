@@ -28,7 +28,7 @@ CLEARANCE = 10             # rows kept free between a cave's ceiling and the gro
 STAIR_FLAT = 2             # tiles of flat ground each side of a stair
 STAIR_ROOM = 4             # tiles kept clear of Pokémon, chests and platforms each side of a stair
 CHEST_CHANCE = 0.4         # each chest spot gets a chest this often (chests are rare)
-BALLS = (2, 4)             # Poké Balls lying around a map (one item each)
+BALLS = (0, 2)             # Poké Balls lying around a map (one item each)
 
 
 @dataclass

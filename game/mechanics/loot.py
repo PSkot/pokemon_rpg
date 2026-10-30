@@ -118,7 +118,7 @@ def wild_loot(rarity: Rarities = COMMON_ONLY) -> LootTable:
         (2, MedicineDrop("Burn Heal")),
         (2, MedicineDrop("Awakening")),
         (2, MedicineDrop("Ice Heal")),
-        (12, GearDrop(rarity)),
+        (4, GearDrop(rarity)),  # rare: gear mostly comes from chests
     ))
 
 
