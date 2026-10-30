@@ -23,7 +23,7 @@ from ..world.towns import Building, Town, building_mid
 from . import quest_ui
 from .mart import MartScene
 from .recruit import RecruitScene
-from .overworld import HAND_IN_MARK, Doorway, MapScene, OverworldScene, quest_mark
+from .overworld import HAND_IN_MARK, QUEST_MARK, Doorway, MapScene, OverworldScene, quest_mark
 
 BANNER_TIME = 2.5   # seconds the town's name shows on arrival
 ARRIVE_GAP = 3 * TILE  # how far from the doorway the player arrives
