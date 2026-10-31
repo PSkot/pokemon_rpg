@@ -112,7 +112,7 @@ SPECIES.update({
     "charmander": _animated("charmander", "Charmander", (39, 52, 43, 65), ("fire",), exp=65, hit=4),
     "charmeleon": _animated("charmeleon", "Charmeleon", (58, 64, 58, 80), ("fire",), exp=142, hit=3),
     "charizard": _animated("charizard", "Charizard", (78, 84, 78, 100), ("fire", "flying"), exp=209, hit=4),
-    "squirtle": _animated("squirtle", "Squirtle", (44, 48, 65, 43), ("water",), exp=66, hit=3),
+    "squirtle": _animated("squirtle", "Squirtle", (44, 48, 65, 43), ("water",), exp=66, hit=5),
     "wartortle": _animated("wartortle", "Wartortle", (59, 63, 80, 58), ("water",), exp=143, hit=3),
     "blastoise": _animated("blastoise", "Blastoise", (79, 83, 100, 78), ("water",), exp=210, hit=4),
     "pidgey": _animated("pidgey", "Pidgey", (40, 45, 40, 56), ("normal", "flying"), exp=55, hit=5),

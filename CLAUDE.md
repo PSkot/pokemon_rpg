@@ -367,7 +367,10 @@ non-commercial project.
   Charizard, Blastoise, Pidgeot), 64 px for Venusaur. Onix keeps its larger
   sheet, drawn 1.5× (`Species.size`, nearest-neighbour; hats follow it).
   Geodude's attack and jump and Venusaur's jump are made from the base pose
-  (a lunge, squash and stretch). Placeholder quality: likely to be redone.
+  (a lunge, squash and stretch); so are Squirtle's and Pidgey's idles (the
+  base with 1 px breathing, as the generated ones changed the face every
+  frame) and Squirtle's jump crouch. Their bases were generated with the
+  species' icon as a design reference and Charmander as a style reference. Placeholder quality: likely to be redone.
 - A move's `anim` plays if the species has that animation; otherwise the
   species' `fight_anim` does (no move-specific sheets for now).
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,

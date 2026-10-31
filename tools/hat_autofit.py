@@ -31,7 +31,7 @@ from hat_viewer import save_data  # noqa: E402
 REFS = {
     "bulbasaur": (38, 40), "ivysaur": (43, 36), "venusaur": (42, 27),
     "charmander": (37, 32), "charmeleon": (40, 29), "charizard": (49, 23),
-    "squirtle": (39, 34), "wartortle": (36, 29), "blastoise": (40, 21),
+    "squirtle": (38, 35), "wartortle": (36, 29), "blastoise": (40, 21),
     "pidgey": (36, 34), "pidgeotto": (48, 25), "pidgeot": (47, 18),
     "spearow": (41, 35), "fearow": (43, 24),
     "nidoran_f": (39, 44), "nidoran_m": (39, 42), "rattata": (39, 38),
