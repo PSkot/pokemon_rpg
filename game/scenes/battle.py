@@ -59,6 +59,8 @@ BLEED_ROUNDS = 3  # rounds a wound hurts (buffs that wound, Move.bleed)
 REST_ROUNDS = 2
 HEAL_COLOR = (120, 230, 120)
 XP_COLOR = (88, 168, 248)
+ENEMY_BAR = (30, 5)  # an enemy's HP bar under its feet (w, h)
+ENEMY_BAR_GAP = 5    # feet to the bar's top
 QUEST_COLOR = (120, 200, 255)  # quest progress in the rewards
 
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
@@ -1312,6 +1314,13 @@ class BattleScene(Scene):
         """Rows in the enemy window squeeze together for big groups."""
         return ROW_H if len(self.enemies) <= 4 else 15
 
+    @staticmethod
+    def _enemy_bar(c: Combatant) -> pygame.Rect:
+        """Where an enemy's HP bar goes: under its place in line."""
+        bar = pygame.Rect((0, 0), ENEMY_BAR)
+        bar.midtop = (round(c.x), c.feet_y + ENEMY_BAR_GAP)
+        return bar
+
     def _enemy_rows(self) -> list[Combatant]:
         """The enemies listed in the enemy window (fainted ones until faded out)."""
         return [c for c in self.enemies if c.opacity > 0]
@@ -1331,6 +1340,9 @@ class BattleScene(Scene):
         canvas.blit(_background(self.backdrop), (0, 0))
         for c in sorted(self.everyone, key=lambda c: c.feet_y):
             c.draw(canvas, self.backdrop.shadow)
+        for c in self.enemies:  # HP bars under the enemies (gone with the fade once fainted)
+            if c.opacity >= 1 or c.shown_hp > 0:
+                ui.hp_bar(canvas, self._enemy_bar(c), c.shown_hp / c.monster.max_hp)
 
         for rect in (ENEMY_WINDOW, COMMAND_WINDOW, PARTY_WINDOW):
             ui.window_box(canvas, rect)
@@ -1397,8 +1409,9 @@ class BattleScene(Scene):
                     aiming.setdefault(target, []).append(a.user.label)
             for c, users in aiming.items():
                 body = c.body_rect
+                top = max(body.bottom, self._enemy_bar(c).bottom) if c.enemy else body.bottom  # under the HP bar
                 for i, label in enumerate(users):
-                    ui.text(window, label, (body.centerx, body.bottom + 4 + 11 * i), TARGETED_COLOR, size=20,
+                    ui.text(window, label, (body.centerx, top + 4 + 11 * i), TARGETED_COLOR, size=20,
                             align="center")
 
         if self.rewards:
