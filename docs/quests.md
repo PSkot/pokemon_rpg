@@ -93,7 +93,7 @@ they can't be sold, used or dropped.
   in); a "?" over a quest board when a quest is ready to hand in. An
   evolution quest's "!" (and its line in the tracker) is pink. Several
   marks over one place stand side by side ("! ?").
-- **Quest log:** pause menu → Quests: active quests with their steps
+- **Quest log:** Q (or the Quests touch button) on a map: active quests with their steps
   (done ones ticked), and finished ones; Up/Down scrolls.
 - **Battle rewards:** a won battle's rewards panel also lists quest
   progress in light blue: "Rattata defeated — Pest Control 4/6",

@@ -36,7 +36,7 @@ class Dialogue:
         self.page = 0
 
     def handle_key(self, key: int) -> bool:
-        if key in CONFIRM_KEYS:
+        if key in CONFIRM_KEYS or key in BACK_KEYS:
             self.page += 1
         return self.page >= len(self.pages)
 
@@ -161,7 +161,7 @@ class QuestBoard:
 
 
 class QuestLog:
-    """Pause menu → Quests: active quests with their steps, then done ones;
+    """Q / the Quests touch button on a map: active quests with their steps, then done ones;
     Up/Down scrolls when they don't fit."""
 
     RECT = pygame.Rect(0, 0, 480, 290)

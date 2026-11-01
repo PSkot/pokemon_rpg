@@ -165,12 +165,13 @@ non-commercial project.
   instance map → `TownScene` of `Game.town`). An item is only used up
   when it has an effect (`Medicine.has_effect`: Revive only on the
   fainted, the rest only on the standing).
-- The bag (`scenes/bag.py`, `BagScreen`; pause menu → Bag, or I / the
-  Bag touch pill on maps): pockets Items (medicine on a party member,
+- The bag (`scenes/bag.py`, `BagScreen`; I / the Bag touch pill on
+  maps): pockets Items (medicine on a party member,
   `Medicine.use_on`; Escape Rope), Gear (equip on a party member) and
   Key items (`items.KEY_ITEMS` descriptions; an evolution item on an
   eligible member, `quests.item_evolves`, opens the party screen
-  evolving it). Hosted by the pause menu like its other screens;
+  evolving it). Hosted by the pause menu (`PauseMenu.open_bag`, closing
+  resumes; the pause menu itself only has out-of-game options);
   `loaded` switches scene.
 - Status conditions (`status.py`): burn, poison, paralysis, sleep, freeze;
   one per Pokémon, stored on `Monster` and kept after battle; cleared on
@@ -280,8 +281,8 @@ non-commercial project.
   (`MapScene.show_event`: dialogue, "New quest", "Quest complete" with
   rewards); map panels queue (`MapScene.show`). Routes can be gated
   (`Route.needs`/`blocked`) and change boss after a quest (`boss_after`).
-  Screens in `scenes/quest_ui.py` (dialogue box, quest board, quest log in
-  the pause menu); the map shows the current step and markers (`MapScene.markers`:
+  Screens in `scenes/quest_ui.py` (dialogue box, quest board, quest log: Q
+  on a map, `PauseMenu.open_quests`); the map shows the current step and markers (`MapScene.markers`:
   "!" a quest to take or a step's place, pink for evolution quests,
   `quest_mark`; "?" quests to hand in). Evolution quests (`Quest.evolves`)
   are only on offer (and only drop their item) once that species is at
@@ -319,7 +320,9 @@ non-commercial project.
   `Scene.bag`) and Teleport (Left/Right picks a town; Enter goes there,
   as a fresh arrival: healed, it becomes the respawn town; from map scenes
   only). Active settings show in the window title and on the map.
-- Controls: arrows move, Up opens chests, Shift runs, Space jumps. (There are
+- Controls: arrows move, Up opens chests, Shift runs, Space jumps, I bag,
+  Q quest log, Tab party, Esc pause menu. X (B on touch) goes back / closes
+  in every menu and panel (the pause menu too). (There are
   no attacks on the map: fights happen in battles.)
 - Touch controls (`engine/touch.py`, for phones): a virtual gamepad in
   side panels: with them on, the window is wider (`touch.window_size()`,

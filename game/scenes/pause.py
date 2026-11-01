@@ -17,16 +17,19 @@ from .save_menu import DELETE_PILL, NEW_SAVE, SaveList
 
 PAD = 9
 ROW_H = 19
-OPTIONS = ["Resume", "Bag", "Quests", "Save game", "Load game", "Dev mode", "Quit game"]
+OPTIONS = ["Resume", "Save game", "Load game", "Dev mode", "Quit game"]
 DEV_OPTIONS = ["XP boost", "God mode", "Add item", "Teleport"]  # shown under "Dev mode" while it's on
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
+BACK_KEYS = (pygame.K_ESCAPE, pygame.K_x, pygame.K_BACKSPACE)  # resume (B on touch screens)
 WIDTH = 216
 
 
 class PauseMenu:
     """Freezes the game (the main loop stops updating the scene) and offers
     Resume, Save, Load, Fullscreen (in the browser), Dev mode or Quit. Esc
-    again resumes, so a stray Esc does no harm. Dev mode's settings (dev.py) are toggled here, with
+    (or X / B) again resumes, so a stray Esc does no harm. It also hosts the
+    in-game screens opened straight from a map (the bag: I, the quest log:
+    Q), which close back to the game. Dev mode's settings (dev.py) are toggled here, with
     Enter or Left/Right.
 
     `save_point` is what the scene underneath can be saved as (see
@@ -46,7 +49,7 @@ class PauseMenu:
         self.log: QuestLog | None = None     # the quest log, when open
         self.controls: ControlsMenu | None = None  # the touch controls' layout, when open
         self.bag_screen: BagScreen | None = None   # the bag, when open
-        self.bag_only = False  # opened straight from the map (I): closing the bag resumes
+        self.only = False  # opened straight from the map for one screen (bag, quest log): closing it resumes
         self.teleport_to = list(TOWNS)[0]    # dev mode: the town Teleport goes to
         self.message = ""
 
@@ -80,13 +83,16 @@ class PauseMenu:
         return rect
 
     def _available(self, option: str) -> bool:
-        return {"Save game": self.save_point is not None, "Quests": self.save_point is not None,
-                "Bag": self.save_point is not None and self.bag is not None,
+        return {"Save game": self.save_point is not None,
                 "Teleport": self.save_point is not None, "Add item": self.bag is not None}.get(option, True)
 
-    def open_bag(self, only: bool = False) -> None:
-        """Open the bag (`only`: straight from the map, closing it resumes)."""
-        self.bag_screen, self.bag_only = BagScreen(self.save_point, self.bag), only
+    def open_bag(self) -> None:
+        """Just the bag (I on a map): closing it resumes."""
+        self.bag_screen, self.only = BagScreen(self.save_point, self.bag), True
+
+    def open_quests(self) -> None:
+        """Just the quest log (Q on a map): closing it resumes."""
+        self.log, self.only = QuestLog(self.save_point.game), True
 
     def _label(self, option: str) -> str:
         if option == "Dev mode":
@@ -113,7 +119,7 @@ class PauseMenu:
                 self.done = True
             elif self.bag_screen.closed:
                 self.bag_screen = None
-                self.done = self.bag_only
+                self.done = self.only
             return
         if self.saves:
             self._handle_saves(event)
@@ -126,6 +132,7 @@ class PauseMenu:
         if self.log:
             if event.type == pygame.KEYDOWN and self.log.handle_key(event.key):
                 self.log = None
+                self.done = self.only
             return
         if self.controls:
             self.controls.handle_event(event)
@@ -135,7 +142,7 @@ class PauseMenu:
         if event.type != pygame.KEYDOWN:
             return
         option = self.options[self.choice]
-        if event.key == pygame.K_ESCAPE:
+        if event.key in BACK_KEYS:
             self.done = True
         elif event.key in (pygame.K_UP, pygame.K_DOWN):
             self.choice = (self.choice + (1 if event.key == pygame.K_DOWN else -1)) % len(self.options)
@@ -152,16 +159,6 @@ class PauseMenu:
                 self.saves = SaveList("load")
             elif option == "Controls":
                 self.controls = ControlsMenu()
-            elif option == "Quests":
-                if self.save_point:
-                    self.log = QuestLog(self.save_point.game)
-                else:
-                    self.message = "Not during a battle."
-            elif option == "Bag":
-                if self._available("Bag"):
-                    self.open_bag()
-                else:
-                    self.message = "Not during a battle."
             elif option == "Add item":
                 if self.bag is not None:
                     self.items = ItemMaker(self.bag)

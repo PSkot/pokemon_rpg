@@ -1,7 +1,6 @@
 """The bag: everything the player carries, and using it outside battle.
 
-Opened from the pause menu (Bag), or with I / the Bag touch button on a
-map. Three pockets (Left/Right):
+Opened with I / the Bag touch button on a map. Three pockets (Left/Right):
   Items      medicine: Enter, then a party member, to heal or cure it; the
              Escape Rope leads back to the last town or Pokémon Center
              (on a route or in a dungeon)

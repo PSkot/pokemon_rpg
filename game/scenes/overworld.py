@@ -38,8 +38,9 @@ from .gym import TeamPick
 from .summary import SummaryScene
 
 HELP = ("Left/Right: walk   Shift: run   Space: jump (hold = higher)   Up: open / go through"
-        "   Tab: party   I: bag   Esc: menu")
+        "   Tab: party   I: bag   Q: quests   Esc: menu")
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z, pygame.K_UP)
+BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE)  # also close a panel (B on touch screens)
 
 WOOD = (150, 96, 48)
 OUTLINE = (48, 28, 16)
@@ -246,7 +247,7 @@ class MapScene(Scene):
     Subclasses put things on it."""
 
     touch_map = True
-    touch_keys = ((pygame.K_i, "Bag"),)
+    touch_keys = ((pygame.K_i, "Bag"), (pygame.K_q, "Quests"))
 
     def __init__(self, game: Game, level: Level):
         self.game = game
@@ -335,7 +336,7 @@ class MapScene(Scene):
             return
         if self.panel:
             closed = (self.panel.handle_key(event.key) if hasattr(self.panel, "handle_key")
-                      else event.key in CONFIRM_KEYS)
+                      else event.key in CONFIRM_KEYS + BACK_KEYS)
             if closed:
                 self._close_panel()
             return

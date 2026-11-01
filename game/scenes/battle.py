@@ -598,7 +598,7 @@ class BattleScene(Scene):
                 self.menu = self.aim_from
         elif self.menu == "evolving" and key in CANCEL_KEYS:
             self.stop_evolving = True
-        elif self.menu == "end" and key in CONFIRM_KEYS:
+        elif self.menu == "end" and (key in CONFIRM_KEYS or key in CANCEL_KEYS):
             if not self.won:
                 # Until defeat is handled properly: heal up so the next
                 # battle doesn't start with a fainted party.

@@ -368,7 +368,7 @@ party members skip the menu.
   Mt. Moon is the Pokémon Center stop at the end of Route 3.
 - **Medicine** (`game/mechanics/items.py`, `MEDICINE`) is used from the
   battle's Item menu (it takes the user's turn) or from the **bag**
-  outside battle (pause menu → Bag, or I on a map: pick the item, then
+  outside battle (I on a map: pick the item, then
   the party member). It's only used up if it has an effect: Revive only
   works on a fainted Pokémon, everything else only on one still standing.
 
