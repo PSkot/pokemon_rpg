@@ -292,9 +292,14 @@ for the rest of the battle (Gen 1's multipliers):
 Growl lowers Attack, Growth raises Attack (and Defense at R3), Poison
 Powder R2/R3 lowers Speed, a Liechi Berry raises Attack.
 
-**Accuracy** is only ever lowered (Sand-Attack, Smokescreen): a Pokémon
-with lowered accuracy hits with a chance of its multiplier (−1: 2/3, −6:
-1/4), whatever move it uses. Swift and Aerial Ace ignore it.
+**Accuracy** is only ever lowered (Sand-Attack, Smokescreen) and doesn't
+use the multipliers above: a Pokémon with lowered accuracy hits with a
+chance of 1/12 less per stage, whatever move it uses (gentler than Gen 1,
+where −6 hit only 1/4 of the time). Swift and Aerial Ace ignore it.
+
+| Accuracy stage | −1 | −2 | −3 | −4 | −5 | −6 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Hit chance | 92% | 83% | 75% | 67% | 58% | 50% |
 
 ### Turn order
 

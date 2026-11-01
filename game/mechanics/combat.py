@@ -30,6 +30,12 @@ def stage_factor(stage: int) -> float:
     return (2 + stage) / 2 if stage >= 0 else 2 / (2 - stage)
 
 
+def hit_chance(accuracy_stage: int) -> float:
+    """The chance a move hits at a lowered accuracy stage: 1/12 less per
+    stage, down to 1/2 at -6 (gentler than the stat multipliers' 1/4)."""
+    return 1 + min(0, accuracy_stage) / (2 * MAX_STAGE)
+
+
 @dataclass
 class Hit:
     """The outcome of one damaging move."""

@@ -18,7 +18,7 @@ from ..dev import DEV
 from ..engine import hats, ui
 from ..engine.animation import Animation
 from ..engine.scene import Scene, Transition
-from ..mechanics.combat import MAX_STAGE, STAGE_STATS, Hit, damage, stage_factor
+from ..mechanics.combat import MAX_STAGE, STAGE_STATS, Hit, damage, hit_chance, stage_factor
 from ..mechanics.items import MEDICINE, Bag, Medicine
 from ..mechanics.loot import LootTable, Reward, merge, wild_loot
 from ..mechanics.moves import Move
@@ -1017,7 +1017,7 @@ class BattleScene(Scene):
     def _misses(user: Combatant, move: Move) -> bool:
         """Moves only miss when the user's accuracy has been lowered (Sand-Attack)."""
         accuracy = user.stages["accuracy"]
-        return accuracy < 0 and not move.sure_hit and random.random() >= stage_factor(accuracy)
+        return accuracy < 0 and not move.sure_hit and random.random() >= hit_chance(accuracy)
 
     def _faint(self, c: Combatant):
         """A script: `c` has just fainted (which clears its status and seed)."""
