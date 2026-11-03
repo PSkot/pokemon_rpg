@@ -646,6 +646,36 @@ TREES = {t.species[0]: t for t in [
         Link("Pollen Dance", "Petal Dance", "Sleep Powder", 35, (15, 30), stage=1),
     ),
     _tree(
+        ("abra", "kadabra", "alakazam"),  # Kadabra evolves by trade (not in yet)
+        _base("Confusion"),  # (Gen 1's Abra only knows Teleport, which does nothing in battle here)
+        _base("Kinesis"),
+        _move("Thunder Wave", 12, "kinesis"),  # TM45
+        _move("Reflect", 18, "kinesis"),  # TM33
+        _move("Psybeam", 21, "confusion", stage=1),
+        _move("Body Slam", 24, "confusion"),  # TM08
+        _move("Recover", 27, "reflect", stage=1),
+        _move("Psychic", 38, "psybeam", stage=1),
+        _move("Hyper Beam", 50, "psychic", stage=2),  # TM15
+        Link("Mind Lock", "Confusion", "Kinesis", 10, (20, 40)),
+        Link("Static Mind", "Psybeam", "Thunder Wave", 24, (15, 30), stage=1),
+        Link("Mending Wall", "Recover", "Reflect", 30, (50, 100), stage=1),
+    ),
+    _tree(
+        ("venonat", "venomoth"),
+        _base("Tackle"),
+        _base("Supersonic"),
+        _move("Leech Life", 12, "tackle"),
+        _move("Confusion", 16, "tackle"),
+        _move("Poison Powder", 18, "supersonic"),
+        _move("Stun Spore", 22, "poison_powder"),
+        _move("Psybeam", 30, "confusion"),
+        _move("Sleep Powder", 34, "stun_spore"),
+        _move("Double-Edge", 36, "leech_life", stage=1),  # TM10
+        _move("Psychic", 45, "psybeam", stage=1),
+        Link("Dizzy Spores", "Supersonic", "Poison Powder", 20, (15, 30)),
+        Link("Mind Drain", "Leech Life", "Confusion", 18, (15, 30)),
+    ),
+    _tree(
         ("bellsprout", "weepinbell", "victreebel"),
         _base("Vine Whip"),
         _base("Growth"),

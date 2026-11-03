@@ -165,6 +165,9 @@ handing them in at any board.
 | Pewter | Soft as Fluff | Boulder Badge | Collect 5 Jigglypuff Fluff (Jigglypuff, Route 3) | 40% | ₽600, 350 XP |
 | Cerulean | Hilltop Raiders | Cerulean City | Defeat 6 Spearow (Route 4) | – | ₽600, 400 XP |
 | Cerulean | Shed Skins | Cerulean City | Collect 5 Ekans Skins (Ekans, Route 4) | 40% | ₽700, 450 XP |
+| Cerulean | Bent Spoons | Cerulean City | Defeat 3 Abra (Route 24) | – | ₽800, 550 XP |
+| Cerulean | Sweet Nectar | Rival at Nugget Bridge | Collect 5 Sweet Nectar (Oddish, Bellsprout; Route 25) | 40% | ₽900, 600 XP |
+| Cerulean | Night Swarm | Rival at Nugget Bridge | Defeat 6 Venonat (Route 25) | – | ₽900, 600 XP |
 
 Each takes about one or two runs of its route. They can't be repeated
 yet.
@@ -211,6 +214,28 @@ yet.
 - **Unlocks:** Cerulean's board jobs. Cerulean City has a Pokémon Center,
   a Poké Mart (adds Ice Heal), a Recruitment Center, the Cerulean Gym
   (closed for now), the Bike Shop and the burgled house (scenery for now).
+
+### 7. Rival at Nugget Bridge
+
+- **Starts:** automatically when quest 6 is done.
+- **Steps:** cross **Nugget Bridge** (Route 24, north of Cerulean: five
+  trainer bands on the bridge, a Rocket beyond) and beat the **rival** at
+  its end: Pidgeotto 17, Abra 16, Rattata 15 and his starter's next form
+  (Charmeleon, Wartortle or Ivysaur) at 18.
+- **Rewards:** ₽900, 700 XP, 3 Super Potions and an Uncommon gear piece
+  (item level 16).
+- **Unlocks:** quest 8, Route 25 (from the Route 24 stop at the bridge's
+  far end) and Cerulean's Route 25 jobs.
+
+### 8. Bill's Sea Cottage
+
+- **Starts:** automatically when quest 7 is done.
+- **Steps:** walk Route 25 to Bill's Sea Cottage and talk to the Clefairy
+  outside (Bill, mixed up with it by his teleporter), then go in and run
+  the Cell Separator (Up at the cottage).
+- **Rewards:** ₽1,000, 800 XP, the **S.S. Ticket** (a key item, for the
+  S.S. Anne at Vermilion City later), 2 Revives and an Uncommon gear piece
+  (item level 17).
 
 ---
 
@@ -301,7 +326,7 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
   10 for most, fewer for rare ones), its **recruitment quest** opens. The
   battle's rewards say so ("Pidgey can be recruited!"), and a "!" shows
   over the Recruitment Centers.
-- **Recruitment Centers** (in Viridian and Pewter, for now in one of the
+- **Recruitment Centers** (in Viridian, Pewter and Cerulean, for now in one of the
   town's houses): inside, a **recruitment board** with the open
   recruitments' Pokémon pinned on it, and **Mr. Mime** beside it.
   - Up at the board: every recruitable line, locked (with its count),
@@ -336,11 +361,13 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | Zubat | 10 | Mt. Moon | 10–12 | Lv15 |
 | Paras | 8 | Mt. Moon | 10–12 | Lv15 |
 | Clefairy | 4 | Mt. Moon | 10–12 | Lv15 |
+| Oddish | 10 | Route 24 | 11–13 | Lv16 |
+| Bellsprout | 10 | Route 24 | 11–13 | Lv16 |
+| Abra | 4 | Route 24 | 11–13 | Lv16 |
+| Venonat | 10 | Route 25 | 12–14 | Lv17 |
 
 Not every Pokémon comes this way: the starters, and those only met with
-trainers (Geodude, Onix, Diglett), will have special quests. Oddish and
-Bellsprout are hidden until Routes 24/25 (where they live in Red/Blue)
-exist.
+trainers (Geodude, Onix, Diglett), will have special quests.
 
 ---
 

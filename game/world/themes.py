@@ -187,6 +187,38 @@ ROUTE_4 = Theme(
     far="route_3.png",
 )
 
+# Route 24 (Nugget Bridge, north of Cerulean) and Route 25 (east to Bill's
+# Sea Cottage): their Red/Blue grass Pokémon (Oddish from Red, Bellsprout
+# from Blue), Abra, and Venonat on Route 25.
+ROUTE_24 = Theme(
+    "route_24", "Route 24",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("oddish", 25, (12, 15)),
+        PoolEntry("bellsprout", 25, (12, 15)),
+        PoolEntry("pidgey", 20, (13, 16)),
+        PoolEntry("abra", 10, (11, 14)),
+        PoolEntry("caterpie", 10, (10, 12)),
+        PoolEntry("weedle", 10, (10, 12)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+)
+
+ROUTE_25 = Theme(
+    "route_25", "Route 25",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("oddish", 20, (13, 16)),
+        PoolEntry("bellsprout", 20, (13, 16)),
+        PoolEntry("venonat", 20, (13, 16)),
+        PoolEntry("pidgey", 15, (14, 17)),
+        PoolEntry("abra", 10, (12, 15)),
+        PoolEntry("metapod", 8, (12, 14)),
+        PoolEntry("kakuna", 7, (12, 14)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+)
+
 # The Pewter Gym: an indoor rock hall (drawn in code). Its pool is never
 # met: gyms have only their trainers (`Route.wild`).
 PEWTER_GYM = Theme(

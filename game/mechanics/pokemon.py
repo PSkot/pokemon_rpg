@@ -128,8 +128,12 @@ SPECIES.update({
     "metapod": _animated("metapod", "Metapod", (50, 20, 55, 30), ("bug",), exp=72, hit=2),
     "weedle": _animated("weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"), exp=52, hit=4),
     "kakuna": _animated("kakuna", "Kakuna", (45, 25, 50, 35), ("bug", "poison"), exp=71, hit=5),
-    "oddish": _placeholder("043_oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"), exp=78),
-    "bellsprout": _placeholder("069_bellsprout", "Bellsprout", (50, 75, 35, 40), ("grass", "poison"), exp=84),
+    "oddish": _animated("oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"), exp=78, hit=4),
+    "bellsprout": _animated("bellsprout", "Bellsprout", (50, 75, 35, 40), ("grass", "poison"), exp=84, hit=4),
+    # Psychic Pokémon hit with Gen 1's Special, so Abra's Attack is its
+    # Special (105) rather than its Attack (20).
+    "abra": _animated("abra", "Abra", (25, 105, 15, 90), ("psychic",), exp=73, hit=5),
+    "venonat": _animated("venonat", "Venonat", (60, 55, 50, 45), ("bug", "poison"), exp=75, hit=5),
     "pikachu": _animated("pikachu", "Pikachu", (35, 55, 30, 90), ("electric",), exp=82, hit=5),
     "seel": _placeholder("086_seel", "Seel", (65, 45, 55, 45), ("water",), exp=100),
     "shellder": _placeholder("090_shellder", "Shellder", (30, 65, 100, 40), ("water",), exp=97),

@@ -178,4 +178,20 @@ TOWNS = {t.key: t for t in [
                "Someone broke into the house at the end of the street last night. Psyduck...",
            )),
        )),
+    # The top of Route 24, past Nugget Bridge: a stop where Route 25 turns
+    # east to Bill's Sea Cottage.
+    Town("route_24", "Route 24", 40, (), exits=(("left", "nugget_bridge"), ("right", "route_25")), home_col=10,
+         folk=(Folk("route_24_pidgey", "Pidgey", "pidgey", 22, (
+             "Coo! You crossed Nugget Bridge? Route 25 runs east from here, to the sea.",
+             "A Pokémaniac called Bill lives by the sea. Strange noises come from his cottage.",
+         )),)),
+    # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a
+    # Clefairy in his teleporter (quest "bill").
+    Town("sea_cottage", "Sea Cottage", 40, (
+        Building("Bill's Sea Cottage", (HOUSES, 2), 16),
+    ), exits=(("left", "route_25"),), home_col=8,
+       folk=(Folk("bill_clefairy", "Clefairy", "clefairy", 28, (
+           "Clefairy! (It seems happy to be a plain Clefairy again.)",
+           "Clefai...? (It keeps an eye on the cottage door.)",
+       )),)),
 ]}

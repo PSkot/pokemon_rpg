@@ -170,6 +170,11 @@ MOVES = {m.name: m for m in [
     Move("Psybeam", 65, "enemy", type="psychic", confuse=10),
     # Gen 1's Psychic lowered Special (not in this game); here it's Defense.
     Move("Psychic", 90, "enemy", type="psychic", stages=(("defense", -1),), stage_chance=33),
+    Move("Kinesis", 0, "enemy", type="psychic", stages=(("accuracy", -1),)),
+    Move("Recover", 0, "self", type="normal", heal=0.5),
+    # Gen 1's Reflect halved physical damage on the user's side; here it
+    # works like Leaf Shield.
+    Move("Reflect", 0, "ally", type="psychic", shield=2),
     Move("Lick", 20, "enemy", type="ghost", **_status("paralysis", 30)),
     Move("Confuse Ray", 0, "enemy", type="ghost", confuse=100),
 ]}

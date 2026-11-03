@@ -245,7 +245,11 @@ non-commercial project.
   Up at any Pokémon Center heals and sets the respawn town. Route 4 is a
   stop at the cave's far exit (town "route_4"); the road on, route
   "route_4_east" (2 maps), leads down to Cerulean City (Center, Mart,
-  Recruitment Center; its gym is closed for now). Code-drawn caves take their colours from
+  Recruitment Center; its gym is closed for now). North of Cerulean:
+  route "nugget_bridge" (Route 24: five bands on the bridge, a Rocket,
+  the rival's second battle, `RIVAL_STARTER_EVOLVED`) → stop town
+  "route_24" → route "route_25" → town "sea_cottage" (quest "bill":
+  talk to the Clefairy, i.e. Bill, then Up at the cottage → S.S. Ticket). Code-drawn caves take their colours from
   `Theme.cave` (`CaveLook`) and ceiling decor from `tileset.CEILING_DECOR`.
   Themes (`themes.py`) pick their map art with `Theme.art` ("woods":
   Pixellab ground and background; "cave": drawn in code). `tileset.py` draws the meadow's ground
@@ -383,7 +387,8 @@ non-commercial project.
   (a lunge, squash and stretch); so are Squirtle's and Pidgey's idles (the
   base with 1 px breathing, as the generated ones changed the face every
   frame) and Squirtle's jump crouch. Their bases were generated with the
-  species' icon as a design reference and Charmander as a style reference. Placeholder quality: likely to be redone.
+  species' icon as a design reference and Charmander as a style reference
+  (Oddish, Bellsprout, Abra and Venonat too, made the same way). Placeholder quality: likely to be redone.
 - A move's `anim` plays if the species has that animation; otherwise the
   species' `fight_anim` does (no move-specific sheets for now).
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,

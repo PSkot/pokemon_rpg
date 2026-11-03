@@ -23,9 +23,9 @@ from ..engine import touch, ui
 from ..engine.scene import Scene, Transition
 from ..mechanics.items import Range
 from ..mechanics.loot import BOSS_GEAR, TRAINER_GEAR, LootTable, ball_loot, boss_loot, chest_loot, dress, wild_loot
-from ..mechanics.pokemon import SPECIES, Monster, animations
+from ..mechanics.pokemon import EVOLUTIONS, SPECIES, Monster, animations
 from ..world import tileset
-from ..world.instance import RIVAL_STARTER, Instance, Stair, Trainer
+from ..world.instance import RIVAL_STARTER, RIVAL_STARTER_EVOLVED, Instance, Stair, Trainer
 from ..world.level import SOLID, TILE, Level, Spawn
 from ..world.player import Controls, Player
 from ..world import quests
@@ -443,8 +443,9 @@ class OverworldScene(MapScene):
         if level.boss and route.boss_after and quests.is_done(game, route.boss_after[0]):
             level.boss.encounter, self.trainer = list(route.boss_after[1]), ""  # the quest's boss is beaten
         if level.boss:  # the rival's starter depends on the player's
-            level.boss.encounter = [(game.rival_starter if species == RIVAL_STARTER else species, lv)
-                                    for species, lv in level.boss.encounter]
+            rival = {RIVAL_STARTER: game.rival_starter,
+                     RIVAL_STARTER_EVOLVED: EVOLUTIONS[game.rival_starter].into}
+            level.boss.encounter = [(rival.get(species, species), lv) for species, lv in level.boss.encounter]
         self.boss = WildPokemon(level.boss, boss=True, scale=instance.route.boss_scale) if level.boss else None
         if self.boss:
             self.wild.append(self.boss)

@@ -14,7 +14,8 @@ the game deliberately differs from Gen 1, that's called out.
 `game/mechanics/pokemon.py` (`Monster`)
 
 Each species has four Gen 1 base stats: HP, Attack, Defense and Speed.
-There's no Special stat, no IVs/EVs and no natures. Its stats at level
+There's no Special stat, no IVs/EVs and no natures (Abra, a pure
+Special attacker, uses its Special, 105, as its Attack). Its stats at level
 `L` are worked out using whole-number division (`//`, rounding down):
 
 | Stat | Formula |
@@ -263,7 +264,10 @@ stats; only type immunity stops it (Ghost).
   doesn't affect Ground types.
 - **Stat stages** (Growl, Growth, Sand-Attack, ...): see *Stat stages*.
 - **Leech Seed:** the target is seeded; see *End of round*.
-- **Leaf Shield:** the target takes half damage for its rounds.
+- **Leaf Shield** and **Reflect** (the same effect): the target takes
+  half damage for its rounds.
+- **Recover:** the user heals half its max HP.
+- **Kinesis:** lowers the target's accuracy 1 stage, like Sand-Attack.
 - **Focus Energy:** the user's crit chance ×4 for the rest of the battle
   (Gen 1's intended effect; its real one was a bug).
 - **Rest:** the user's status is cured, it heals fully, and it falls
@@ -539,6 +543,8 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 3 | Common | (no boss) |
 | Mt. Moon | Common | Common 60%, Uncommon 40% (Team Rocket: a reward roll with the battle, no chest) |
 | Route 4 | Common | (no boss) |
+| Nugget Bridge (Route 24) | Common | Common 60%, Uncommon 40% (the rival: a reward roll with the battle) |
+| Route 25 | Common | (no boss) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -702,6 +708,36 @@ Moon's exit down to Cerulean City; the stop is a town, "route_4"; Route
 | Ekans | 20 | 9–13 |
 | Sandshrew | 20 | 9–13 |
 
+**Nugget Bridge** (`Route` "nugget_bridge", Route 24: 2 maps from Cerulean
+City up to the Route 24 stop, a town; map 1 is the bridge with five
+trainer bands, map 2 has a Rocket and ends in the **rival** (Pidgeotto 17,
+Abra 16, Rattata 15 and his starter's next form at 18,
+`RIVAL_STARTER_EVOLVED`; a reward roll with the battle). Once quest
+"rival_cerulean" is done the arena holds Oddish 16, Bellsprout 16 and
+Abra 15 instead (wild). Oddish from Red, Bellsprout from Blue:
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Oddish | 25 | 12–15 |
+| Bellsprout | 25 | 12–15 |
+| Pidgey | 20 | 13–16 |
+| Abra | 10 | 11–14 |
+| Caterpie | 10 | 10–12 |
+| Weedle | 10 | 10–12 |
+
+**Route 25** (`Route` "route_25", 2 maps from the Route 24 stop east to
+Bill's Sea Cottage, a town; no boss, four trainers):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Oddish | 20 | 13–16 |
+| Bellsprout | 20 | 13–16 |
+| Venonat | 20 | 13–16 |
+| Pidgey | 15 | 14–17 |
+| Abra | 10 | 12–15 |
+| Metapod | 8 | 12–14 |
+| Kakuna | 7 | 12–14 |
+
 **Gyms** are fought in waves. The gym is a short walk (one map,
 `Route.cols` tiles plus the arena) up to an arena where the gym's band
 stands. Touching it opens the team pick (`scenes/gym.TeamPick`): the
@@ -783,6 +819,17 @@ always the same spot), with its team in a row.
 | Mt. Moon B2F (boss) | Rocket Gang Leader (Team Rocket Grunt) | Sandshrew 12, Rattata 12, Zubat 13 | ₽195 |
 | Route 4, map 1 | Hillside Pack (Lass) | Spearow 12, Rattata 12, Ekans 12 | ₽90 |
 | Route 4, map 2 | Dune Diggers (Hiker) | Sandshrew 13, Sandshrew 13 | ₽130 |
+| Nugget Bridge, map 1 | Bridge Crawlers (Bug Catcher) | Caterpie 14, Weedle 14, Metapod 14 | ₽70 |
+| Nugget Bridge, map 1 | Bridge Flock (Lass) | Pidgey 14, Nidoran F 14 | ₽105 |
+| Nugget Bridge, map 1 | Bridge Rats (Youngster) | Rattata 14, Ekans 14, Zubat 14 | ₽105 |
+| Nugget Bridge, map 1 | Bridge Thorns (Lass) | Nidoran F 15, Nidoran M 15 | ₽112 |
+| Nugget Bridge, map 1 | Bridge Champs (Camper) | Sandshrew 16, Spearow 16 | ₽160 |
+| Nugget Bridge, map 2 | Rocket Gang (Team Rocket Grunt) | Ekans 16, Zubat 16 | ₽240 |
+| Nugget Bridge (boss) | Rival | Pidgeotto 17, Abra 16, Rattata 15, starter's next form 18 | ₽450 |
+| Route 25, map 1 | Hill Hikers (Hiker) | Geodude 15, Geodude 15, Onix 15 | ₽262 |
+| Route 25, map 1 | Picnic Party (Picnicker) | Pidgey 15, Nidoran F 15, Nidoran M 15 | ₽112 |
+| Route 25, map 2 | Camping Crew (Camper) | Rattata 16, Ekans 16, Spearow 16 | ₽120 |
+| Route 25, map 2 | Garden Club (Lass) | Oddish 16, Bellsprout 16 | ₽120 |
 | Route 22 (boss) | the rival | Pidgey 9, starter 8 | ₽140 |
 
 ---

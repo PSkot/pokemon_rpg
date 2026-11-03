@@ -28,11 +28,13 @@ from dataclasses import dataclass, field, replace
 from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate
-from .themes import FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_4, ROUTE_22, PoolEntry, Theme
+from .themes import (FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_4, ROUTE_22, ROUTE_24, ROUTE_25, PoolEntry,
+                     Theme)
 
 # Stands in a boss group for the rival's starter, which depends on the
 # player's (`progress.Game.rival_starter`).
 RIVAL_STARTER = "rival_starter"
+RIVAL_STARTER_EVOLVED = "rival_starter_evolved"  # ... its next form (Charmander → Charmeleon)
 
 
 @dataclass(frozen=True)
@@ -186,6 +188,30 @@ ROUTES = {r.key: r for r in [
               Trainer("route_4_lass", "Hillside Pack", (("spearow", 12), ("rattata", 12), ("ekans", 12)), 0, 15),
               Trainer("route_4_hiker", "Dune Diggers", (("sandshrew", 13), ("sandshrew", 13)), 1, 20),
           )),
+    # Route 24 north of Cerulean: Nugget Bridge's five bands in a row, then
+    # a Rocket on the far bank, and the rival waiting at the end (Gen 1's
+    # second rival battle, with Abra and an evolved starter).
+    Route("nugget_bridge", "Nugget Bridge", ROUTE_24, maps=2, towns=("cerulean", "route_24"), boss=True,
+          boss_group=(("pidgeotto", 17), ("abra", 16), ("rattata", 15), (RIVAL_STARTER_EVOLVED, 18)),
+          trainer="Rival", boss_chest="battle", prize=50,
+          boss_after=("rival_cerulean", (("oddish", 16), ("bellsprout", 16), ("abra", 15))),
+          trainers=(
+              Trainer("nugget_1", "Bridge Crawlers", (("caterpie", 14), ("weedle", 14), ("metapod", 14)), 0, 10),
+              Trainer("nugget_2", "Bridge Flock", (("pidgey", 14), ("nidoran_f", 14)), 0, 15),
+              Trainer("nugget_3", "Bridge Rats", (("rattata", 14), ("ekans", 14), ("zubat", 14)), 0, 15),
+              Trainer("nugget_4", "Bridge Thorns", (("nidoran_f", 15), ("nidoran_m", 15)), 0, 15),
+              Trainer("nugget_5", "Bridge Champs", (("sandshrew", 16), ("spearow", 16)), 0, 20),
+              Trainer("nugget_rocket", "Rocket Gang", (("ekans", 16), ("zubat", 16)), 1, 30),
+          )),
+    # Route 25, from the top of Route 24 east to Bill's Sea Cottage.
+    Route("route_25", "Route 25", ROUTE_25, maps=2, towns=("route_24", "sea_cottage"),
+          trainers=(
+              Trainer("route_25_hiker", "Hill Hikers", (("geodude", 15), ("geodude", 15), ("onix", 15)), 0, 35),
+              Trainer("route_25_picnicker", "Picnic Party", (("pidgey", 15), ("nidoran_f", 15), ("nidoran_m", 15)),
+                      0, 15),
+              Trainer("route_25_camper", "Camping Crew", (("rattata", 16), ("ekans", 16), ("spearow", 16)), 1, 15),
+              Trainer("route_25_lass", "Garden Club", (("oddish", 16), ("bellsprout", 16)), 1, 15),
+          )),
 ]}
 
 
@@ -263,10 +289,9 @@ class Recruit:
 
 RECRUIT_BUILDING = "Recruitment Center"
 
-# Every line met up to Pewter City, on Route 3 and in Mt. Moon (rare ones need fewer
-# defeats). Starters and others come by their own quests later; Oddish and
-# Bellsprout (Recruit(..., 6, MEADOW, 8)) come back with Routes 24/25,
-# where they live in Red/Blue.
+# Every line met up to Pewter City, on Route 3, in Mt. Moon and on Routes
+# 24 and 25 (rare ones need fewer defeats). Starters and others come by
+# their own quests later.
 RECRUITS = {r.species: r for r in [
     Recruit("pidgey", 10, MEADOW, 6),
     Recruit("rattata", 10, MEADOW, 6),
@@ -282,6 +307,10 @@ RECRUITS = {r.species: r for r in [
     Recruit("zubat", 10, MT_MOON, 12),
     Recruit("paras", 8, MT_MOON, 12),
     Recruit("clefairy", 4, MT_MOON, 12),
+    Recruit("oddish", 10, ROUTE_24, 13),
+    Recruit("bellsprout", 10, ROUTE_24, 13),
+    Recruit("abra", 4, ROUTE_24, 13),
+    Recruit("venonat", 10, ROUTE_25, 14),
 ]}
 
 

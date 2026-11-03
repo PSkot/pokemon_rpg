@@ -355,6 +355,38 @@ QUESTS = {q.key: q for q in [
         money=500, xp=400,
     ),
     Quest(
+        "rival_cerulean", "Rival at Nugget Bridge",
+        "Your rival went north from Cerulean City, over Nugget Bridge, to see a Pokémaniac called Bill.",
+        requires=("to_cerulean",),
+        steps=(Step("defeat", "nugget_bridge", "Cross Nugget Bridge (Route 24, north of Cerulean) and beat your rival"),),
+        money=900, xp=700,
+        rewards=(("medicine", "Super Potion", 3), ("gear", None, "Uncommon", 16)),
+        done_dialogue=(("Rival", "What? Again?! I was just warming up."),
+                       ("Rival", "I already went to see Bill. He's got loads of rare Pokémon. Go see for "
+                                 "yourself, then. Smell ya!"),),
+    ),
+    Quest(
+        "bill", "Bill's Sea Cottage",
+        "Bill the Pokémaniac lives at the end of Route 25. Something has gone very wrong at his cottage.",
+        requires=("rival_cerulean",),
+        steps=(Step("talk", "bill_clefairy", "Find Bill at his Sea Cottage (Routes 24 and 25, north of Cerulean)",
+                    town="sea_cottage",
+                    dialogue=(("Clefairy", "Hiya! I'm a Pokémon... No wait! I'm Bill, a Pokémaniac!"),
+                              ("Bill", "My teleporter mixed me up with this Clefairy! Please help me out."),
+                              ("Bill", "I'll step back into the teleporter. Then go into the cottage and run the "
+                                       "Cell Separator!"))),
+               Step("visit", "Bill's Sea Cottage", "Run the Cell Separator in Bill's Sea Cottage",
+                    town="sea_cottage",
+                    dialogue=(("", "You switch on the Cell Separator. The teleporter whirs..."),
+                              ("Bill", "Yeehah! Thanks, pal! I was stuck like that for days."),
+                              ("Bill", "Here, take this. It's a ticket for the S.S. Anne. It's docked at "
+                                       "Vermilion City, and I can't go anyway."),
+                              ("", "You received the S.S. Ticket!")),
+                    gives=("S.S. Ticket",))),
+        money=1000, xp=800,
+        rewards=(("medicine", "Revive", 2), ("gear", None, "Uncommon", 17)),
+    ),
+    Quest(
         "snake_charmer", "Snake Charmer",
         "Ekans on Route 3 keep frightening travelers. Drive a few of them off.",
         board="pewter", requires=("boulder_badge",),
@@ -383,6 +415,28 @@ QUESTS = {q.key: q for q in [
         board="cerulean", requires=("to_cerulean",),
         steps=(collect("Ekans Skin", 5, "route_4_east", ("ekans",), 40, "Ekans on Route 4"), HAND_IN),
         money=700, xp=450,
+    ),
+    Quest(
+        "bent_spoons", "Bent Spoons",
+        "Spoons all over Cerulean keep bending by themselves. Someone saw Abra near Nugget Bridge.",
+        board="cerulean", requires=("to_cerulean",),
+        steps=(hunt("abra", 3, "Route 24"), HAND_IN),
+        money=800, xp=550,
+    ),
+    Quest(
+        "sweet_nectar", "Sweet Nectar",
+        "The Cerulean bakery wants the nectar of Oddish and Bellsprout on Route 25.",
+        board="cerulean", requires=("rival_cerulean",),
+        steps=(collect("Sweet Nectar", 5, "route_25", ("oddish", "bellsprout"), 40, "Oddish and Bellsprout on Route 25",
+                       "Sweet Nectar"), HAND_IN),
+        money=900, xp=600,
+    ),
+    Quest(
+        "venonat_swarm", "Night Swarm",
+        "Venonat swarm the lights on Route 25 every night, and Bill can't sleep. Thin them out.",
+        board="cerulean", requires=("rival_cerulean",),
+        steps=(hunt("venonat", 6, "Route 25"), HAND_IN),
+        money=900, xp=600,
     ),
 ]}
 

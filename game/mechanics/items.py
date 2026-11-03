@@ -404,6 +404,7 @@ KEY_ITEMS = {
     "Oak's Parcel": "A parcel for Professor Oak, from the Viridian Poké Mart.",
     "Pokédex": "Professor Oak's high-tech encyclopedia of Pokémon.",
     "Boulder Badge": "The Boulder Gang's badge, from the Pewter Gym.",
+    "S.S. Ticket": "A ticket for the S.S. Anne, from Bill. The ship docks at Vermilion City.",
     "Metapod Shell": "An empty Metapod shell, hard as steel. Use it on a Caterpie at Lv7 or higher: it evolves "
                      "into Metapod.",
     "Kakuna Shell": "An empty Kakuna shell, still smelling of poison. Use it on a Weedle at Lv7 or higher: it "

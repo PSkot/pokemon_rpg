@@ -442,6 +442,54 @@ Stages: Oddish → Gloom (Lv21, not in the game yet) → Vileplume (by stone, no
 
 ---
 
+## The Abra line
+
+Stages: Abra → Kadabra (Lv16, not in the game yet) → Alakazam (by stone, not in the game yet). Whole tree: 122 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Confusion | free | – | Abra | Psychic, 50 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Sweeping, Twin (16) |
+| Kinesis | free | – | Abra | Lowers an enemy's accuracy 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
+| Thunder Wave | 12 | Kinesis | Abra | Paralyzes an enemy. Doesn't affect Ground types. | Wide, Lingering, Numbing, Quick (6) |
+| Reflect | 18 | Kinesis | Abra | Halves the damage an ally takes for 2 rounds. | Thick, Shared, Renewing, Quick (7) |
+| Psybeam | 21 | Confusion | Kadabra | Psychic, 65 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Sweeping, Twin (16) |
+| Body Slam | 24 | Confusion | Abra | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Recover | 27 | Reflect | Kadabra | Heals the user 1/2 of its max HP. | Renewing, Quick (4) |
+| Psychic | 38 | Psybeam | Kadabra | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Sweeping, Swift (16) |
+| Hyper Beam | 50 | Psychic | Alakazam | Normal, 150 power. The user must rest the next round. | Potent, Staggering, Wounding, Keen, Sweeping, Tireless, Swift (17) |
+
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Mind Lock | Confusion → Kinesis | 10 / 15 | Abra | 20% / 40% |
+| Static Mind | Psybeam → Thunder Wave | 24 / 29 | Kadabra | 15% / 30% |
+| Mending Wall | Recover → Reflect | 30 / 35 | Kadabra | 50% / 100% |
+
+---
+
+## The Venonat line
+
+Stages: Venonat → Venomoth (Lv31, not in the game yet). Whole tree: 145 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Tackle | free | – | Venonat | Normal, 35 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Supersonic | free | – | Venonat | 55% chance to confuse. | Sure, Wide, Lingering, Dizzying, Quick (9) |
+| Leech Life | 12 | Tackle | Venonat | Bug, 20 power. Heals the user 1/2 of the damage dealt. | Potent, Venomous, Wounding, Keen, Sweeping, Twin (16) |
+| Confusion | 16 | Tackle | Venonat | Psychic, 50 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Sweeping, Twin (16) |
+| Poison Powder | 18 | Supersonic | Venonat | Poisons an enemy (75% chance). | Sure, Wide, Lingering, Toxic, Quick (8) |
+| Stun Spore | 22 | Poison Powder | Venonat | Paralyzes an enemy (75% chance). | Sure, Wide, Lingering, Numbing, Quick (9) |
+| Psybeam | 30 | Confusion | Venonat | Psychic, 65 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Sweeping, Twin (16) |
+| Sleep Powder | 34 | Stun Spore | Venonat | Puts an enemy to sleep (75% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
+| Double-Edge | 36 | Leech Life | Venomoth | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (18) |
+| Psychic | 45 | Psybeam | Venomoth | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Sweeping, Swift (16) |
+
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Dizzy Spores | Supersonic → Poison Powder | 20 / 25 | Venonat | 15% / 30% |
+| Mind Drain | Leech Life → Confusion | 18 / 23 | Venonat | 15% / 30% |
+
+---
+
 ## The Bellsprout line
 
 Stages: Bellsprout → Weepinbell (Lv21, not in the game yet) → Victreebel (by stone, not in the game yet). Whole tree: 135 points.
