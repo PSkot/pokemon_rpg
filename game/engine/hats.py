@@ -215,4 +215,4 @@ def draw_worn(surface: pygame.Surface, monster, anim, frame: int, frame_rect: py
     gear = monster.gear.get("head")
     if gear:
         draw(surface, gear.item.sprite, monster.species.name.lower(), anim, frame, frame_rect, flip, alpha,
-             monster.species.size)
+             monster.species.size * monster.scale)  # (bosses are drawn bigger)
