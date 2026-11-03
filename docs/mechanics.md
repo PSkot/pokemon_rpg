@@ -506,7 +506,8 @@ weight: nothing, some medicine, or a piece of gear (a random item, at a
 rarity picked by weight, at an item level: see *Item level*).
 
 - **Won battle:** the wild table is rolled **once per defeated enemy**, at
-  that enemy's level.
+  that enemy's level. Each piece of gear a defeated enemy wore (bosses and
+  trainers, below) also drops with a **25%** chance (`WORN_DROP_CHANCE`).
 - **Poké Ball** lying on a map (Up): the ball table once: **one item**,
   never nothing. Maps have 0–2 (on platforms or along the ground), a
   dungeon room's at the same spots every trip.
@@ -720,7 +721,14 @@ Once it's done the gym stays shut ("You already have the Boulder Badge").
 | 2 | Boulder Gang Rollers | Geodude 11, Geodude 11 | ₽110 |
 | 3 | Boulder Gang | Geodude 12, Onix 14 | ₽693 |
 
-Wild Pokémon have no gear. Their skills are filled in for their level
+Wild Pokémon have no gear. **Bosses and trainers' Pokémon wear gear**
+(`loot.dress`, set up in `OverworldScene._battle`): a boss (the leader of
+a boss group) **2 pieces**, its escorts and every trainer's Pokémon
+(map trainers, gym waves, the rival) **1**, each in a different slot, a
+random item at the enemy's level, at the area's rarities (`Route.boss_loot`
+for boss battles, `Route.loot` for map trainers and gym waves). It works
+as on the player's Pokémon (stats, effects, hats drawn, berries eaten),
+and each piece can drop when it's beaten (see Loot). Their skills are filled in for their level
 (see `skill_trees.md`), and each turn they pick at random between their
 basic attack and their equipped moves, at a random target.
 

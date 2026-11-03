@@ -20,7 +20,7 @@ from ..engine.animation import Animation
 from ..engine.scene import Scene, Transition
 from ..mechanics.combat import MAX_STAGE, STAGE_STATS, Hit, damage, hit_chance, stage_factor
 from ..mechanics.items import MEDICINE, Bag, Medicine
-from ..mechanics.loot import LootTable, Reward, merge, wild_loot
+from ..mechanics.loot import LootTable, Reward, merge, wild_loot, worn_drops
 from ..mechanics.moves import Move
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, animations
 from ..mechanics.status import FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES, THAW_CHANCE
@@ -769,6 +769,7 @@ class BattleScene(Scene):
 
     def _give_rewards(self) -> None:
         rewards = [r for e in self.enemies for r in self.loot.roll(level=e.monster.level)]
+        rewards += [r for e in self.enemies for r in worn_drops(e.monster)]  # bosses' and trainers' gear
         if self.bonus:
             rewards += self.bonus.roll(level=max(e.monster.level for e in self.enemies))
         rewards = merge(rewards)

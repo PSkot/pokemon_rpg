@@ -100,6 +100,31 @@ def merge(rewards: list[Reward]) -> list[Reward]:
     return merged
 
 
+# --- gear enemies wear ----------------------------------------------------
+
+BOSS_GEAR = 2      # pieces a boss (the leader of a boss group) wears
+TRAINER_GEAR = 1   # ... each of a trainer's Pokémon, and a boss's escorts
+WORN_DROP_CHANCE = 25  # % chance each piece a beaten enemy wore drops
+
+
+def dress(monster, rarity: Rarities, pieces: int, rng: random.Random | None = None) -> None:
+    """Put `pieces` random pieces of gear on `monster` (a boss's or a
+    trainer's Pokémon), each in a different slot, at its level and at
+    `rarity`'s weights."""
+    rng = rng or random.Random()
+    slots = rng.sample(sorted({i.slot for i in ITEMS.values()}), pieces)
+    for slot in slots:
+        item = rng.choice([name for name, i in ITEMS.items() if i.slot == slot])
+        name = rng.choices([r for r, _ in rarity], weights=[w for _, w in rarity])[0]
+        monster.equip(Gear.roll(item, name, rng, level=monster.level))
+
+
+def worn_drops(monster, rng: random.Random | None = None) -> list[Reward]:
+    """What a beaten enemy's gear leaves behind (`WORN_DROP_CHANCE` each)."""
+    rng = rng or random.Random()
+    return [Reward(gear=g) for g in monster.gear.values() if rng.random() * 100 < WORN_DROP_CHANCE]
+
+
 # Rarity weights for areas. Early on only Common gear drops; bosses can
 # also drop Uncommon. Rare, Epic and Legendary are for later areas.
 COMMON_ONLY: Rarities = (("Common", 1),)

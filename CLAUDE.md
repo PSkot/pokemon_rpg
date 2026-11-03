@@ -110,7 +110,10 @@ non-commercial project.
   battle's table once per enemy; Poké Balls on the map (`Level.balls`,
   `overworld.Ball`, 0–2 a map, Up) give one item (`ball_loot`). There are
   no roadside chests (`Level.chests` spots are unused): only bosses leave one. Gear drops
-  from battles only rarely (4%). After a boss, `Route.boss_chest`: "plain"
+  from battles only rarely (4%). Bosses and trainers' Pokémon wear gear
+  (`loot.dress`: the boss 2 pieces, the rest 1, at the enemy's level and
+  the area's rarities), each piece dropping 25% of the time
+  (`worn_drops`). After a boss, `Route.boss_chest`: "plain"
   (a chest: route bosses), "fancy" (the boss loot: gyms), "battle" (the
   boss loot with the battle: rival, trials, feud, Team Rocket) or ""
   (recruitments). Both show a `ui.ListPanel`. The starter begins

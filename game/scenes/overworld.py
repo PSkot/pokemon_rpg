@@ -22,7 +22,7 @@ from ..dev import DEV
 from ..engine import touch, ui
 from ..engine.scene import Scene, Transition
 from ..mechanics.items import Range
-from ..mechanics.loot import LootTable, ball_loot, boss_loot, chest_loot, wild_loot
+from ..mechanics.loot import BOSS_GEAR, TRAINER_GEAR, LootTable, ball_loot, boss_loot, chest_loot, dress, wild_loot
 from ..mechanics.pokemon import SPECIES, Monster, animations
 from ..world import tileset
 from ..world.instance import RIVAL_STARTER, Instance, Stair, Trainer
@@ -650,6 +650,9 @@ class OverworldScene(MapScene):
             for enemy, scale in zip(enemies, wild.scales):
                 enemy.scale = scale
         route = self.instance.route
+        if boss or trainer:  # they wear gear (the boss itself 2 pieces), which can drop
+            for i, enemy in enumerate(enemies):
+                dress(enemy, route.boss_loot if boss else route.loot, BOSS_GEAR if boss and i == 0 else TRAINER_GEAR)
         battle = BattleScene(self, party, enemies, self.bag, loot=wild_loot(route.boss_loot if boss else route.loot),
                              backdrop=self.level.theme.backdrop, boss=boss, trainer=trainer,
                              prize=prize_money(prize, encounter) if trainer else 0,
