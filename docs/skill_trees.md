@@ -442,6 +442,56 @@ Stages: Oddish → Gloom (Lv21, not in the game yet) → Vileplume (by stone, no
 
 ---
 
+## The Goldeen line
+
+Stages: Goldeen → Seaking (Lv33, not in the game yet). Whole tree: 157 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Peck | free | – | Goldeen | Flying, 35 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Tail Whip | free | – | Goldeen | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
+| Water Gun | 10 | Peck | Goldeen | Water, 40 power. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (16) |
+| Supersonic | 15 | Tail Whip | Goldeen | 55% chance to confuse. | Sure, Wide, Lingering, Dizzying, Quick (9) |
+| Horn Attack | 19 | Peck | Goldeen | Normal, 65 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Bubble Beam | 24 | Water Gun | Goldeen | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (16) |
+| Fury Attack | 30 | Horn Attack | Goldeen | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Wounding, Keen, Sweeping, Relentless (16) |
+| Agility | 36 | Supersonic | Goldeen | Raises its Speed 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
+| Ice Beam | 40 | Bubble Beam | Seaking | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (16) |
+| Double-Edge | 42 | Fury Attack | Seaking | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (18) |
+
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Splash Peck | Peck → Water Gun | 12 / 17 / 22 | Goldeen | 15% / 30% / 45% |
+| Dizzy Dive | Horn Attack → Supersonic | 21 / 26 | Goldeen | 15% / 30% |
+
+---
+
+## The Staryu line
+
+Stages: Staryu → Starmie (by stone). Whole tree: 164 points.
+
+| Move | Lv | Opened by | Stage | Effect | Buffs (points) |
+| --- | --- | --- | --- | --- | --- |
+| Tackle | free | – | Staryu | Normal, 35 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Harden | free | – | Staryu | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
+| Water Gun | 10 | Tackle | Staryu | Water, 40 power. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (16) |
+| Recover | 18 | Harden | Staryu | Heals the user 1/2 of its max HP. | Renewing, Quick (4) |
+| Swift | 22 | Tackle | Staryu | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Bubble Beam | 24 | Water Gun | Staryu | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (16) |
+| Thunder Wave | 26 | Harden | Staryu | Paralyzes an enemy. Doesn't affect Ground types. | Wide, Lingering, Numbing, Quick (6) |
+| Psychic | 36 | Swift | Starmie | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Sweeping, Swift (16) |
+| Thunderbolt | 38 | Thunder Wave | Starmie | Electric, 95 power. 10% chance to paralyze. | Potent, Crackling, Wounding, Keen, Sweeping, Swift (16) |
+| Ice Beam | 40 | Bubble Beam | Staryu | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (16) |
+| Hydro Pump | 47 | Bubble Beam | Staryu | Water, 120 power. | Potent, Rippling, Wounding, Keen, Sweeping, Swift (16) |
+
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
+| --- | --- | --- | --- | --- |
+| Star Spin | Tackle → Water Gun | 12 / 17 / 22 | Staryu | 15% / 30% / 45% |
+| Shining Core | Recover → Harden | 20 / 25 | Staryu | 50% / 100% |
+| Static Tide | Bubble Beam → Thunder Wave | 28 / 33 | Staryu | 15% / 30% |
+
+---
+
 ## The Abra line
 
 Stages: Abra → Kadabra (Lv16, not in the game yet) → Alakazam (by stone, not in the game yet). Whole tree: 122 points.

@@ -156,8 +156,8 @@ TOWNS = {t.key: t for t in [
     # Route 4, out of Mt. Moon's far side: a stop at the cave's exit, where
     # the road on (route_4_east) runs down to Cerulean City.
     Town("route_4", "Route 4", 40, (), exits=(("left", "mt_moon_cave"), ("right", "route_4_east")), home_col=8),
-    # Cerulean City: the water gym (later), Bill's road north over Nugget
-    # Bridge (later) and the burgled house.
+    # Cerulean City: the water gym, Bill's road north over Nugget Bridge and
+    # the burgled house.
     Town("cerulean", "Cerulean City", 84, (
         Building("Bike Shop", (HOUSES, 1), 6),
         Building("Pokémon Center", (FUNCTIONAL, 0), 18),

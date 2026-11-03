@@ -355,6 +355,18 @@ QUESTS = {q.key: q for q in [
         money=500, xp=400,
     ),
     Quest(
+        "cascade_badge", "The Cascade Badge",
+        "The Cascade Crew, Water Pokémon led by a Starmie, holds the Cerulean Gym. Beat them for the Cascade "
+        "Badge.",
+        starts_in="cerulean", requires=("to_cerulean",),
+        steps=(Step("defeat", "cerulean_gym", "Defeat the Cascade Crew at the Cerulean Gym",
+                    dialogue=(("Starmie", "Hyah... Hyah! You really are strong. Here, the Cascade Badge!"),
+                              ("", "You received the Cascade Badge!")),
+                    gives=("Cascade Badge",)),),
+        money=900, xp=800,
+        rewards=(("medicine", "Hyper Potion", 2), ("gear", None, "Rare", 21)),
+    ),
+    Quest(
         "rival_cerulean", "Rival at Nugget Bridge",
         "Your rival went north from Cerulean City, over Nugget Bridge, to see a Pokémaniac called Bill.",
         requires=("to_cerulean",),

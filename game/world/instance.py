@@ -28,7 +28,7 @@ from dataclasses import dataclass, field, replace
 from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate
-from .themes import (FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_4, ROUTE_22, ROUTE_24, ROUTE_25, PoolEntry,
+from .themes import (CERULEAN_GYM, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_4, ROUTE_22, ROUTE_24, ROUTE_25, PoolEntry,
                      Theme)
 
 # Stands in a boss group for the rival's starter, which depends on the
@@ -203,6 +203,16 @@ ROUTES = {r.key: r for r in [
               Trainer("nugget_5", "Bridge Champs", (("sandshrew", 16), ("spearow", 16)), 0, 20),
               Trainer("nugget_rocket", "Rocket Gang", (("ekans", 16), ("zubat", 16)), 1, 30),
           )),
+    # The Cerulean Gym, from its building, as the Pewter Gym: the Cascade
+    # Crew's two waves of Water Pokémon, then the crew itself, led by a
+    # Starmie (Gen 1's Misty's team, Staryu and Starmie).
+    Route("cerulean_gym", "Cerulean Gym", CERULEAN_GYM, maps=1, towns=("cerulean", "cerulean"), boss=True,
+          boss_group=(("starmie", 21), ("staryu", 18)), trainer="Cascade Crew", boss_chest="fancy", prize=99,
+          waves=(Wave("Cascade Crew Swimmers", (("goldeen", 17), ("psyduck", 17)), 30),
+                 Wave("Cascade Crew Divers", (("horsea", 18), ("shellder", 18)), 30)),
+          wild=False, building="Cerulean Gym", cols=44,
+          needs=("cascade_badge", "not_done"),
+          blocked="Starmie: Hyah! You already have the Cascade Badge. Show it off somewhere else!"),
     # Route 25, from the top of Route 24 east to Bill's Sea Cottage.
     Route("route_25", "Route 25", ROUTE_25, maps=2, towns=("route_24", "sea_cottage"),
           trainers=(

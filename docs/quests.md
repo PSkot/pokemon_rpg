@@ -213,7 +213,22 @@ yet.
 - **Rewards:** ₽500, 400 XP.
 - **Unlocks:** Cerulean's board jobs. Cerulean City has a Pokémon Center,
   a Poké Mart (adds Ice Heal), a Recruitment Center, the Cerulean Gym
-  (closed for now), the Bike Shop and the burgled house (scenery for now).
+  (quest 6b), the Bike Shop and the burgled house (scenery for now).
+
+### 6b. The Cascade Badge
+
+- **Starts:** on arriving in Cerulean City once quest 6 is done
+  (`Quest.starts_in`); it can be done before or after quests 7–8.
+- **Steps:** defeat the **Cascade Crew** (Water types led by a Starmie)
+  at the end of the Cerulean Gym (Up at the gym building), the third of
+  three waves (Goldeen 17 and Psyduck 17; Horsea 18 and Shellder 18;
+  Starmie 21 and Staryu 18), fought by the Pokémon the player picks.
+  Starmie: "Hyah... Hyah! You really are strong. Here, the Cascade
+  Badge!" (key item).
+- **Rewards:** ₽900, 800 XP, 2 Hyper Potions and a **Rare** gear piece
+  (item level 21), on top of the crew's prize money (₽891) and the gym's
+  fancy chest.
+- **Unlocks:** nothing yet (in Red/Blue the badge lets you use Cut).
 
 ### 7. Rival at Nugget Bridge
 

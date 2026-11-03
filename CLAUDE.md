@@ -245,7 +245,9 @@ non-commercial project.
   Up at any Pokémon Center heals and sets the respawn town. Route 4 is a
   stop at the cave's far exit (town "route_4"); the road on, route
   "route_4_east" (2 maps), leads down to Cerulean City (Center, Mart,
-  Recruitment Center; its gym is closed for now). North of Cerulean:
+  Recruitment Center, and the Cerulean Gym: the Cascade Crew's waves of
+  Water Pokémon, then Starmie and Staryu, for the Cascade Badge; Starmie
+  takes Staryu's tree via `pokemon.LATER_FORMS`). North of Cerulean:
   route "nugget_bridge" (Route 24: five bands on the bridge, a Rocket,
   the rival's second battle, `RIVAL_STARTER_EVOLVED`) → stop town
   "route_24" → route "route_25" → town "sea_cottage" (quest "bill":
@@ -388,7 +390,9 @@ non-commercial project.
   base with 1 px breathing, as the generated ones changed the face every
   frame) and Squirtle's jump crouch. Their bases were generated with the
   species' icon as a design reference and Charmander as a style reference
-  (Oddish, Bellsprout, Abra and Venonat too, made the same way). Placeholder quality: likely to be redone.
+  (Oddish, Bellsprout, Abra, Venonat, Goldeen, Staryu, Starmie, Horsea,
+  Shellder and Psyduck too, made the same way; Goldeen's base was
+  mirrored, as every candidate faced left). Placeholder quality: likely to be redone.
 - A move's `anim` plays if the species has that animation; otherwise the
   species' `fight_anim` does (no move-specific sheets for now).
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,
@@ -411,7 +415,7 @@ non-commercial project.
   slopes/islands/roots aren't used yet.
 - Battle backdrops (`assets/sprites/pixellab/backdrops/`, `Backdrop.art`):
   320×132 Pixellab paintings drawn 2× over the battle area (meadow, forest,
-  route_3, pewter_gym, mt_moon), their ground starting high enough for the
+  route_3, pewter_gym, mt_moon, cerulean_gym), their ground starting high enough for the
   back row; themes without one (ice cave) are drawn in code from the
   `Backdrop` colours.
 - Map props (`assets/sprites/pixellab/props/`, `tileset.draw_prop`: centred,
@@ -427,7 +431,7 @@ non-commercial project.
 - The title screen's background: `backdrops/title.png` (dark bands keep
   the title and save line readable).
 - Cave walls (`assets/sprites/pixellab/walls/`, `CaveLook.wall`): 320×180
-  paintings of Mt. Moon's and the Pewter Gym's far wall, drawn 2×,
+  paintings of Mt. Moon's, the Pewter Gym's and the Cerulean Gym's far wall, drawn 2×,
   mirrored every other copy, dimmed (`dim`); the code-drawn rock in front
   stays (`near_rocks`, off in the gym).
 - `assets/sprites/pokemon_icons/` holds reference icons. Species without a

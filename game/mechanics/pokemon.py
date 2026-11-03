@@ -136,9 +136,12 @@ SPECIES.update({
     "venonat": _animated("venonat", "Venonat", (60, 55, 50, 45), ("bug", "poison"), exp=75, hit=5),
     "pikachu": _animated("pikachu", "Pikachu", (35, 55, 30, 90), ("electric",), exp=82, hit=5),
     "seel": _placeholder("086_seel", "Seel", (65, 45, 55, 45), ("water",), exp=100),
-    "shellder": _placeholder("090_shellder", "Shellder", (30, 65, 100, 40), ("water",), exp=97),
-    "psyduck": _placeholder("054_psyduck", "Psyduck", (50, 52, 48, 55), ("water",), exp=80),
-    "horsea": _placeholder("116_horsea", "Horsea", (30, 40, 70, 60), ("water",), exp=83),
+    "shellder": _animated("shellder", "Shellder", (30, 65, 100, 40), ("water",), exp=97, hit=4),
+    "psyduck": _animated("psyduck", "Psyduck", (50, 52, 48, 55), ("water",), exp=80, hit=3),
+    "goldeen": _animated("goldeen", "Goldeen", (45, 67, 60, 63), ("water",), exp=111, hit=4),
+    "staryu": _animated("staryu", "Staryu", (30, 45, 55, 85), ("water",), exp=106, hit=5),
+    "starmie": _animated("starmie", "Starmie", (60, 75, 85, 115), ("water", "psychic"), exp=207, hit=6),
+    "horsea": _animated("horsea", "Horsea", (30, 40, 70, 60), ("water",), exp=83, hit=3),
     "jynx": _placeholder("124_jynx", "Jynx", (65, 50, 35, 95), ("ice", "psychic"), exp=137),
     "dewgong": _placeholder("087_dewgong", "Dewgong", (90, 70, 80, 70), ("water", "ice"), exp=176),
     "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60), ("water", "ice"), exp=219),
@@ -215,7 +218,12 @@ EVOLUTIONS = {key: Evolution(into, level) for key, into, level in [
     ("dratini", "dragonair", 30), ("dragonair", "dragonite", 55),
 ]}
 
-_EVOLVES_FROM = {e.into: key for key, e in EVOLUTIONS.items()}
+# Stone and trade evolutions aren't in yet, but some later forms already
+# appear (Starmie leads the Cerulean Gym): this gives them their line's
+# skill tree and stage (they don't evolve from it).
+LATER_FORMS = {"starmie": "staryu"}
+
+_EVOLVES_FROM = {e.into: key for key, e in EVOLUTIONS.items()} | LATER_FORMS
 
 ICON_SCALE = 0.75  # icons share one scale, so species keep their relative sizes
 
@@ -261,7 +269,7 @@ MAX_LEVEL = 100
 
 def line_base(species: str) -> str:
     """The first species of `species`'s evolution line (Metapod → Caterpie)."""
-    earlier = {e.into: key for key, e in EVOLUTIONS.items()}
+    earlier = _EVOLVES_FROM
     while species in earlier:
         species = earlier[species]
     return species

@@ -540,6 +540,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Viridian Forest | Common | Common 60%, Uncommon 40% |
 | Route 22 | Common | Common 60%, Uncommon 40% (the rival: a reward roll with the battle, no chest) |
 | Pewter Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Boulder Gang: the fancy chest) |
+| Cerulean Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Cascade Crew: the fancy chest) |
 | Route 3 | Common | (no boss) |
 | Mt. Moon | Common | Common 60%, Uncommon 40% (Team Rocket: a reward roll with the battle, no chest) |
 | Route 4 | Common | (no boss) |
@@ -769,6 +770,20 @@ Once it's done the gym stays shut ("You already have the Boulder Badge").
 | 2 | Boulder Gang Rollers | Geodude 11, Geodude 11 | ₽110 |
 | 3 | Boulder Gang | Geodude 12, Onix 14 | ₽693 |
 
+**The Cerulean Gym** (`Route` "cerulean_gym", the same way: an indoor pool
+hall, drawn in code with a painted far wall; puddles on the tiles): the
+**Cascade Crew**'s two waves, then the crew itself (Starmie Lv21, Staryu
+Lv18: Misty's team in Gen 1; the Starmie leads it); beating it finishes
+the Cascade Badge quest, and the gym then stays shut. Starmie evolves by
+Water Stone (not in yet); `pokemon.LATER_FORMS` gives it Staryu's skill
+tree, at stage 1.
+
+| Wave | Band | Team | Prize |
+| --- | --- | --- | --- |
+| 1 | Cascade Crew Swimmers | Goldeen 17, Psyduck 17 | ₽255 |
+| 2 | Cascade Crew Divers | Horsea 18, Shellder 18 | ₽270 |
+| 3 | Cascade Crew | Starmie 21, Staryu 18 | ₽891 |
+
 Wild Pokémon have no gear. **Bosses and trainers' Pokémon wear gear**
 (`loot.dress`, set up in `OverworldScene._battle`): a boss (the leader of
 a boss group) **2 pieces**, its escorts and every trainer's Pokémon
@@ -804,6 +819,7 @@ always the same spot), with its team in a row.
 | Where | Band (Gen 1 class) | Team | Prize |
 | --- | --- | --- | --- |
 | Pewter Gym (boss) | Boulder Gang (Brock) | Geodude 12, Onix 14 | ₽693 |
+| Cerulean Gym (boss) | Cascade Crew (Misty) | Starmie 21, Staryu 18 | ₽891 |
 | Route 3, map 1 | Alley Gang (Youngster) | Rattata 11, Ekans 11 | ₽82 |
 | Route 3, map 1 | Crawler Swarm (Bug Catcher) | Caterpie 10, Weedle 10, Caterpie 10 | ₽50 |
 | Route 3, map 2 | Pidgey Flock (Lass) | Pidgey 9, Pidgey 9 | ₽67 |

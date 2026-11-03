@@ -646,6 +646,38 @@ TREES = {t.species[0]: t for t in [
         Link("Pollen Dance", "Petal Dance", "Sleep Powder", 35, (15, 30), stage=1),
     ),
     _tree(
+        ("goldeen", "seaking"),
+        _base("Peck"),
+        _base("Tail Whip"),
+        _move("Water Gun", 10, "peck"),  # TM12
+        _move("Supersonic", 15, "tail_whip"),
+        _move("Horn Attack", 19, "peck"),
+        _move("Bubble Beam", 24, "water_gun"),  # TM11
+        _move("Fury Attack", 30, "horn_attack"),
+        _move("Agility", 36, "supersonic"),
+        _move("Ice Beam", 40, "bubble_beam", stage=1),  # TM13
+        _move("Double-Edge", 42, "fury_attack", stage=1),  # TM10
+        Link("Splash Peck", "Peck", "Water Gun", 12, (15, 30, 45)),
+        Link("Dizzy Dive", "Horn Attack", "Supersonic", 21, (15, 30)),
+    ),
+    _tree(
+        ("staryu", "starmie"),  # Starmie evolves by Water Stone (not in yet)
+        _base("Tackle"),
+        _base("Harden"),
+        _move("Water Gun", 10, "tackle"),
+        _move("Recover", 18, "harden"),
+        _move("Swift", 22, "tackle"),  # TM39
+        _move("Bubble Beam", 24, "water_gun"),  # TM11
+        _move("Thunder Wave", 26, "harden"),  # TM45
+        _move("Psychic", 36, "swift", stage=1),  # TM29
+        _move("Thunderbolt", 38, "thunder_wave", stage=1),  # TM24
+        _move("Ice Beam", 40, "bubble_beam"),  # TM13
+        _move("Hydro Pump", 47, "bubble_beam"),
+        Link("Star Spin", "Tackle", "Water Gun", 12, (15, 30, 45)),
+        Link("Shining Core", "Recover", "Harden", 20, (50, 100)),
+        Link("Static Tide", "Bubble Beam", "Thunder Wave", 28, (15, 30)),
+    ),
+    _tree(
         ("abra", "kadabra", "alakazam"),  # Kadabra evolves by trade (not in yet)
         _base("Confusion"),  # (Gen 1's Abra only knows Teleport, which does nothing in battle here)
         _base("Kinesis"),

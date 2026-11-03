@@ -238,6 +238,25 @@ PEWTER_GYM = Theme(
     doorway="",
 )
 
+# The Cerulean Gym: an indoor pool hall (drawn in code, with a painted
+# far wall). Like the Pewter Gym, its pool is never met.
+CERULEAN_GYM = Theme(
+    "cerulean_gym", "Cerulean Gym",
+    Palette(fill=(70, 96, 140), fill_dark=(50, 70, 108), fill_light=(110, 140, 184),
+            top=(206, 222, 236), top_dark=(160, 184, 210), top_light=(240, 248, 255),
+            platform=(96, 150, 200), platform_dark=(60, 100, 150), platform_light=(160, 200, 236)),
+    pool=(PoolEntry("goldeen", 1, (17, 19)),),
+    backdrop=Backdrop(art="cerulean_gym.png", sky_top=(60, 110, 170), sky_bottom=(120, 170, 220),
+                      hills=((90, 140, 190), (80, 128, 176)),
+                      field_far=(200, 216, 232), field_near=(176, 196, 218), stripe=(188, 206, 226),
+                      shadow=(110, 130, 160)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(30, 50, 80), sky_bottom=(60, 96, 140), far_rock=(50, 76, 110), near_rock=(70, 100, 140),
+                  glow=None, wall="cerulean_gym.png", near_rocks=False, dim=70),
+    doorway="",
+)
+
 # Mt. Moon: a grey-violet cave with faint moonstone glints; its Red/Blue
 # Pokémon, a few levels up (the party comes in around Lv18).
 MT_MOON = Theme(

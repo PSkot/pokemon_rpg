@@ -137,6 +137,13 @@ def _stalactite(s, x, y, rng, p):
     pygame.draw.line(s, p.fill_light, (x - 1, y), (x, y + h - 2))
 
 
+def _puddle(s, x, y, rng, p):
+    """A splash of pool water on the tiles (the Cerulean Gym)."""
+    w = rng.randint(6, 11)
+    pygame.draw.ellipse(s, (70, 140, 210), (x - w // 2, y - 2, w, 3))
+    s.set_at((x - w // 4, y - 1), (190, 230, 255))
+
+
 def _moonstone(s, x, y, rng, p):
     """A faint violet glint (Mt. Moon)."""
     pygame.draw.polygon(s, (150, 130, 210), [(x - 2, y), (x + 2, y), (x + 1, y - 5), (x - 1, y - 5)])
@@ -149,6 +156,7 @@ DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the m
     "ice_cave": [(0.07, _crystal), (0.10, _snow_mound), (0.05, _rock)],
     "pewter_gym": [(0.12, _rock)],
     "mt_moon": [(0.10, _rock), (0.03, _moonstone)],
+    "cerulean_gym": [(0.08, _puddle)],
 }
 
 

@@ -40,6 +40,7 @@ REFS = {
     "sandshrew": (39, 29), "ekans": (39, 26), "jigglypuff": (41, 38), "zubat": (40, 38),
     "paras": (36, 41), "clefairy": (39, 34),
     "oddish": (38, 44), "bellsprout": (36, 31), "abra": (37, 35), "venonat": (36, 35),
+    "goldeen": (38, 42), "staryu": (33, 36), "starmie": (32, 29), "horsea": (34, 33), "shellder": (33, 37), "psyduck": (33, 33),
 }
 
 # Hat size, relative to Bulbasaur's head (about 18 px across).
@@ -53,6 +54,7 @@ SCALES = {
     "pikachu": 0.7, "geodude": 0.8, "onix": 0.9, "diglett": 0.65, "sandshrew": 0.7,
     "ekans": 0.6, "jigglypuff": 0.85, "zubat": 0.6, "paras": 0.6, "clefairy": 0.8,
     "oddish": 0.6, "bellsprout": 0.6, "abra": 0.65, "venonat": 0.7,
+    "goldeen": 0.6, "staryu": 0.6, "starmie": 0.7, "horsea": 0.6, "shellder": 0.65, "psyduck": 0.65,
 }
 
 
