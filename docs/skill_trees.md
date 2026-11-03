@@ -186,7 +186,7 @@ Stages: Bulbasaur → Ivysaur (Lv16) → Venusaur (Lv32). Whole tree: 207 points
 | Tackle | free | – | Bulbasaur | Normal, 35 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
 | Growl | free | – | Bulbasaur | Lowers an enemy's Attack 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Leech Seed | 7 | Growl | Bulbasaur | Seeds an enemy: drains 1/16 of its max HP each round. Doesn't affect Grass types. | Deep-Rooted, Wide, Lingering, Quick (7) |
-| Vine Whip | 13 | Tackle | Bulbasaur | Grass, 35 power. | Potent, Draining, Wounding, Keen, Sweeping, Twin (16) |
+| Vine Whip | 9 | Tackle | Bulbasaur | Grass, 35 power. | Potent, Draining, Wounding, Keen, Sweeping, Twin (16) |
 | Poison Powder | 20 | Growl | Bulbasaur | Poisons an enemy (75% chance). | Sure, Wide, Lingering, Toxic, Quick (8) |
 | Take Down | 20 | Tackle | Bulbasaur | Normal, 90 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (18) |
 | Leaf Shield | 22 | Leech Seed | Ivysaur | Halves the damage an ally takes for 2 rounds. | Thick, Shared, Renewing, Quick (7) |
@@ -242,7 +242,7 @@ Stages: Squirtle → Wartortle (Lv16) → Blastoise (Lv36). Whole tree: 167 poin
 | --- | --- | --- | --- | --- | --- |
 | Tackle | free | – | Squirtle | Normal, 35 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
 | Tail Whip | free | – | Squirtle | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Bubble | 8 | Tackle | Squirtle | Water, 20 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (16) |
+| Bubble | 8 | Tackle | Squirtle | Water, 30 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (16) |
 | Water Gun | 15 | Bubble | Squirtle | Water, 40 power. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (16) |
 | Bite | 22 | Tackle | Squirtle | Normal, 60 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
 | Withdraw | 28 | Tail Whip | Squirtle | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
@@ -334,7 +334,7 @@ Stages: Pidgey → Pidgeotto (Lv18) → Pidgeot (Lv36). Whole tree: 121 points.
 
 | Move | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- |
-| Gust | free | – | Pidgey | Flying, 40 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
+| Gust | free | – | Pidgey | Normal, 40 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
 | Sand-Attack | free | – | Pidgey | Lowers an enemy's accuracy 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Quick Attack | 12 | Gust | Pidgey | Normal, 40 power. Always goes first. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
 | Whirlwind | 19 | Sand-Attack | Pidgey | Lowers every enemy's Speed 1 stage. | Deep, Lingering, Hexing, Emboldening, Quick (10) |
@@ -611,7 +611,7 @@ Stages: Horsea → Seadra (Lv32, not in the game yet). Whole tree: 123 points.
 
 | Move | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- |
-| Bubble | free | – | Horsea | Water, 20 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (16) |
+| Bubble | free | – | Horsea | Water, 30 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (16) |
 | Smokescreen | 19 | Bubble | Horsea | Lowers an enemy's accuracy 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Bubble Beam | 20 | Bubble | Horsea | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (16) |
 | Leer | 24 | Smokescreen | Horsea | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |

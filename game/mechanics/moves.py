@@ -110,7 +110,7 @@ MOVES = {m.name: m for m in [
     Move("Glare", 0, "enemy", type="normal", **_status("paralysis", 75)),
     Move("Sing", 0, "enemy", type="normal", **_status("sleep", 55)),
     # Flying
-    Move("Gust", 40, "enemy", "gust", type="flying"),  # Normal in Gen 1, Flying since Gen 2
+    Move("Gust", 40, "enemy", "gust", type="normal"),  # Normal, as in Gen 1 (Flying since Gen 2)
     Move("Peck", 35, "enemy", type="flying"),
     Move("Drill Peck", 80, "enemy", type="flying"),
     Move("Wing Attack", 35, "enemy", type="flying"),
@@ -154,7 +154,8 @@ MOVES = {m.name: m for m in [
     Move("Thunder Wave", 0, "enemy", type="electric", **_status("paralysis"), immune=("ground",)),
     # Water
     Move("Water Gun", 40, "enemy", type="water"),
-    Move("Bubble", 20, "enemy", type="water", stages=(("speed", -1),), stage_chance=33),
+    # Bubble: 30 power (Gen 1: 20), so Squirtle's first Water move beats Tackle.
+    Move("Bubble", 30, "enemy", type="water", stages=(("speed", -1),), stage_chance=33),
     Move("Bubble Beam", 65, "enemy", type="water", stages=(("speed", -1),), stage_chance=33),
     Move("Clamp", 35, "enemy", type="water", bind=1 / 16),
     Move("Surf", 95, "enemy", type="water"),

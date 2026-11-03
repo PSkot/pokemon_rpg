@@ -484,7 +484,7 @@ TREES = {t.species[0]: t for t in [
         _base("Tackle"),
         _base("Growl"),
         _move("Leech Seed", 7, "growl"),
-        _move("Vine Whip", 13, "tackle"),
+        _move("Vine Whip", 9, "tackle"),  # (Gen 1: Lv13; here as early as Ember and Bubble)
         _move("Poison Powder", 20, "growl"),
         _move("Take Down", 20, "tackle"),  # TM09
         _move("Leaf Shield", 22, "leech_seed", stage=1),  # Gen 1's Reflect (TM33)
