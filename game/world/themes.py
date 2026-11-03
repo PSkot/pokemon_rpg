@@ -172,6 +172,21 @@ ROUTE_3 = Theme(
     far="route_3.png",
 )
 
+# Route 4, from Mt. Moon's far side down to Cerulean City: the same dry
+# hills as Route 3, with its Red/Blue Pokémon a little stronger.
+ROUTE_4 = Theme(
+    "route_4", "Route 4",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("rattata", 30, (9, 12)),
+        PoolEntry("spearow", 30, (9, 12)),
+        PoolEntry("ekans", 20, (9, 13)),
+        PoolEntry("sandshrew", 20, (9, 13)),
+    ),
+    backdrop=ROUTE_3.backdrop,
+    far="route_3.png",
+)
+
 # The Pewter Gym: an indoor rock hall (drawn in code). Its pool is never
 # met: gyms have only their trainers (`Route.wild`).
 PEWTER_GYM = Theme(

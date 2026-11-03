@@ -153,6 +153,29 @@ TOWNS = {t.key: t for t in [
     Town("mt_moon", "Mt. Moon Pokémon Center", 44, (
         Building("Pokémon Center", (FUNCTIONAL, 0), 18),
     ), exits=(("left", "route_3"), ("right", "mt_moon_cave")), home_col=14),
-    # Route 4, out of Mt. Moon's far side. Cerulean City comes later.
-    Town("route_4", "Route 4", 40, (), exits=(("left", "mt_moon_cave"),), home_col=8),
+    # Route 4, out of Mt. Moon's far side: a stop at the cave's exit, where
+    # the road on (route_4_east) runs down to Cerulean City.
+    Town("route_4", "Route 4", 40, (), exits=(("left", "mt_moon_cave"), ("right", "route_4_east")), home_col=8),
+    # Cerulean City: the water gym (later), Bill's road north over Nugget
+    # Bridge (later) and the burgled house.
+    Town("cerulean", "Cerulean City", 84, (
+        Building("Bike Shop", (HOUSES, 1), 6),
+        Building("Pokémon Center", (FUNCTIONAL, 0), 18),
+        Building("Poké Mart", (FUNCTIONAL, 2), 30, inside="mart"),
+        Building("Cerulean Gym", (FUNCTIONAL, 1), 44),
+        Building("Recruitment Center", (HOUSES, 3), 57, inside="recruit"),
+        Building("", (HOUSES, 0), 70),
+    ), exits=(("left", "route_4_east"),), home_col=22, board_col=41,
+       mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal",
+             "Ice Heal"),
+       folk=(
+           Folk("cerulean_sandshrew", "Sandshrew", "sandshrew", 15, (
+               "Phew, you made it through Mt. Moon! Route 4 is all downhill from there.",
+               "The Bike Shop sells bicycles. Nobody can afford one, though.",
+           )),
+           Folk("cerulean_psyduck", "Psyduck", "psyduck", 54, (
+               "Psy...? The gym is full of water. And Water Pokémon. My head hurts.",
+               "Someone broke into the house at the end of the street last night. Psyduck...",
+           )),
+       )),
 ]}

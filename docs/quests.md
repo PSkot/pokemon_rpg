@@ -163,6 +163,8 @@ handing them in at any board.
 | Pewter | Sparks in the Forest | – | Defeat 3 Pikachu (Viridian Forest) | – | ₽800, 600 XP |
 | Pewter | Snake Charmer | Boulder Badge | Defeat 5 Ekans (Route 3) | – | ₽500, 300 XP |
 | Pewter | Soft as Fluff | Boulder Badge | Collect 5 Jigglypuff Fluff (Jigglypuff, Route 3) | 40% | ₽600, 350 XP |
+| Cerulean | Hilltop Raiders | Cerulean City | Defeat 6 Spearow (Route 4) | – | ₽600, 400 XP |
+| Cerulean | Shed Skins | Cerulean City | Collect 5 Ekans Skins (Ekans, Route 4) | 40% | ₽700, 450 XP |
 
 Each takes about one or two runs of its route. They can't be repeated
 yet.
@@ -199,8 +201,16 @@ yet.
   guards the ladder to the way out.
 - **Rewards:** ₽800, 600 XP, 3 Super Potions and an Uncommon gear piece
   (item level 14).
-- **Unlocks:** nothing yet: Route 4 is a stop for now; Cerulean City
-  comes next.
+- **Unlocks:** quest 6 (Route 4's road on is on the stop's right edge).
+
+### 6. Cerulean City
+
+- **Starts:** automatically when quest 5 is done.
+- **Steps:** reach **Cerulean City** down Route 4 (2 maps, two trainers).
+- **Rewards:** ₽500, 400 XP.
+- **Unlocks:** Cerulean's board jobs. Cerulean City has a Pokémon Center,
+  a Poké Mart (adds Ice Heal), a Recruitment Center, the Cerulean Gym
+  (closed for now), the Bike Shop and the burgled house (scenery for now).
 
 ---
 

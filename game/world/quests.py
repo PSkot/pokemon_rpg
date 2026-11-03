@@ -348,6 +348,13 @@ QUESTS = {q.key: q for q in [
         rewards=(("medicine", "Super Potion", 3), ("gear", None, "Uncommon", 14)),
     ),
     Quest(
+        "to_cerulean", "Cerulean City",
+        "Route 4 runs down from Mt. Moon to Cerulean City, home of the second gym.",
+        requires=("through_mt_moon",),
+        steps=(Step("reach", "cerulean", "Follow Route 4 down to Cerulean City"),),
+        money=500, xp=400,
+    ),
+    Quest(
         "snake_charmer", "Snake Charmer",
         "Ekans on Route 3 keep frightening travelers. Drive a few of them off.",
         board="pewter", requires=("boulder_badge",),
@@ -360,6 +367,22 @@ QUESTS = {q.key: q for q in [
         board="pewter", requires=("boulder_badge",),
         steps=(collect("Jigglypuff Fluff", 5, "route_3", ("jigglypuff",), 40, "Jigglypuff on Route 3"), HAND_IN),
         money=600, xp=350,
+    ),
+
+    # Cerulean City's board: jobs on Route 4.
+    Quest(
+        "hill_spearow", "Hilltop Raiders",
+        "Spearow swoop on travellers coming down Route 4 from Mt. Moon. Scare them off.",
+        board="cerulean", requires=("to_cerulean",),
+        steps=(hunt("spearow", 6, "Route 4"), HAND_IN),
+        money=600, xp=400,
+    ),
+    Quest(
+        "shed_skins", "Shed Skins",
+        "A Cerulean pharmacist brews medicine from the skins Ekans shed on Route 4.",
+        board="cerulean", requires=("to_cerulean",),
+        steps=(collect("Ekans Skin", 5, "route_4_east", ("ekans",), 40, "Ekans on Route 4"), HAND_IN),
+        money=700, xp=450,
     ),
 ]}
 

@@ -538,6 +538,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Pewter Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Boulder Gang: the fancy chest) |
 | Route 3 | Common | (no boss) |
 | Mt. Moon | Common | Common 60%, Uncommon 40% (Team Rocket: a reward roll with the battle, no chest) |
+| Route 4 | Common | (no boss) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -690,6 +691,17 @@ chests), the middle one to B1F → B2F, where the **Rocket Gang Leader**
 (Sandshrew 12, Rattata 12, Zubat 13) blocks the ladder up to the B1F room
 with the way out. Rooms are shown by floor only ("Mt. Moon B1F").
 
+**Route 4** (`Route` "route_4_east", 2 maps, from the Route 4 stop at Mt.
+Moon's exit down to Cerulean City; the stop is a town, "route_4"; Route
+3's dry look; no boss, two trainers, see below):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Rattata | 30 | 9–12 |
+| Spearow | 30 | 9–12 |
+| Ekans | 20 | 9–13 |
+| Sandshrew | 20 | 9–13 |
+
 **Gyms** are fought in waves. The gym is a short walk (one map,
 `Route.cols` tiles plus the arena) up to an arena where the gym's band
 stands. Touching it opens the team pick (`scenes/gym.TeamPick`): the
@@ -769,6 +781,8 @@ always the same spot), with its team in a row.
 | Mt. Moon B2F west (dead end) | Rocket Gang (Team Rocket Grunt) | Rattata 13, Zubat 13 | ₽195 |
 | Mt. Moon B2F | Rocket Gang (Team Rocket Grunt) | Zubat 12, Ekans 12 | ₽180 |
 | Mt. Moon B2F (boss) | Rocket Gang Leader (Team Rocket Grunt) | Sandshrew 12, Rattata 12, Zubat 13 | ₽195 |
+| Route 4, map 1 | Hillside Pack (Lass) | Spearow 12, Rattata 12, Ekans 12 | ₽90 |
+| Route 4, map 2 | Dune Diggers (Hiker) | Sandshrew 13, Sandshrew 13 | ₽130 |
 | Route 22 (boss) | the rival | Pidgey 9, starter 8 | ₽140 |
 
 ---

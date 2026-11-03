@@ -28,7 +28,7 @@ from dataclasses import dataclass, field, replace
 from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate
-from .themes import FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_22, PoolEntry, Theme
+from .themes import FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_4, ROUTE_22, PoolEntry, Theme
 
 # Stands in a boss group for the rival's starter, which depends on the
 # player's (`progress.Game.rival_starter`).
@@ -178,6 +178,13 @@ ROUTES = {r.key: r for r in [
                       3, 35),
               Trainer("mt_moon_rocket_1", "Rocket Gang", (("rattata", 13), ("zubat", 13)), 4, 30),
               Trainer("mt_moon_rocket_2", "Rocket Gang", (("zubat", 12), ("ekans", 12)), 5, 30),
+          )),
+    # Route 4's way down from the stop at Mt. Moon's exit to Cerulean City
+    # (its key isn't "route_4": that's the stop, a town).
+    Route("route_4_east", "Route 4", ROUTE_4, maps=2, towns=("route_4", "cerulean"),
+          trainers=(
+              Trainer("route_4_lass", "Hillside Pack", (("spearow", 12), ("rattata", 12), ("ekans", 12)), 0, 15),
+              Trainer("route_4_hiker", "Dune Diggers", (("sandshrew", 13), ("sandshrew", 13)), 1, 20),
           )),
 ]}
 

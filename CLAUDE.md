@@ -243,7 +243,9 @@ non-commercial project.
   its last stair (`overworld.Ladder`, sealed with rocks). The Mt. Moon
   Pokémon Center stop (town "mt_moon") is the checkpoint before the cave;
   Up at any Pokémon Center heals and sets the respawn town. Route 4 is a
-  stop on the far side for now. Code-drawn caves take their colours from
+  stop at the cave's far exit (town "route_4"); the road on, route
+  "route_4_east" (2 maps), leads down to Cerulean City (Center, Mart,
+  Recruitment Center; its gym is closed for now). Code-drawn caves take their colours from
   `Theme.cave` (`CaveLook`) and ceiling decor from `tileset.CEILING_DECOR`.
   Themes (`themes.py`) pick their map art with `Theme.art` ("woods":
   Pixellab ground and background; "cave": drawn in code). `tileset.py` draws the meadow's ground
