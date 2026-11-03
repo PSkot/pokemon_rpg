@@ -636,7 +636,7 @@ class OverworldScene(MapScene):
             touching = self.player.body_rect.colliderect(wild.body_rect)
             if touching and wild.armed:
                 if wild is self.boss and self.instance.route.waves:  # a gym's arena: pick the team first
-                    pick = TeamPick(self.instance.route, self.party)
+                    pick = TeamPick(self.instance.route, self.party, quests.active_limit(self.game))
                     self.show(pick, after=lambda: pick.team and self._start_waves(wild, pick.team))
                 else:
                     self._fight(wild)
@@ -661,13 +661,15 @@ class OverworldScene(MapScene):
         return battle
 
     def _fight(self, wild: WildPokemon) -> None:
-        """Into battle with a group on the map, the whole party."""
+        """Into battle with a group on the map, the active party members
+        (`quests.fighters`)."""
         boss = wild is self.boss
         boss_prize = self.instance.room.prize if self.instance.room else self.instance.route.prize
         trainer, prize = (self.trainer, boss_prize) if boss else (
             (wild.trainer.name, wild.trainer.prize) if wild.trainer else ("", 0))
         self.battle_event = quests.Event()  # quests a battle's drops start
-        self.next_scene = Transition(self, self._battle(wild, self.party, wild.encounter, trainer, prize, boss))
+        self.next_scene = Transition(self, self._battle(wild, quests.fighters(self.game), wild.encounter, trainer, prize,
+                                                        boss))
 
     def _start_waves(self, boss: WildPokemon, team: list[Monster]) -> None:
         """A gym's arena: its waves, then the boss group, one battle straight

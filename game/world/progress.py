@@ -8,7 +8,8 @@ from ..mechanics.items import Bag, Gear
 from ..mechanics.pokemon import Monster
 
 START_TOWN = "pallet"
-MAX_PARTY = 4  # Pokémon in the party (the battle screen's rows); the rest wait in the reserve
+MAX_PARTY = 6  # Pokémon in the party; the rest wait in the reserve
+MAX_ACTIVE = 2  # party members who fight in a battle (1 until the rival on Route 22 is beaten: quests.active_limit)
 STARTERS = ("bulbasaur", "charmander", "squirtle")  # what Professor Oak offers
 # The rival picks the starter that beats the player's.
 RIVAL_STARTERS = {"bulbasaur": "charmander", "charmander": "squirtle", "squirtle": "bulbasaur"}

@@ -333,7 +333,10 @@ class TeamPanel:
             if i == MAX_PARTY and self.top <= MAX_PARTY:
                 ui.text(window, f"Reserve ({len(self.game.reserve)})", (r.x + 12, y - 16), ui.GREY, size=20)
             if i == 0:
-                ui.text(window, f"Party ({len(self.game.party)}/{MAX_PARTY})", (r.x + 12, y - 16), ui.GREY, size=20)
+                n = quests.active_limit(self.game)
+                fights = "the first fights" if n == 1 else f"the first {n} fight"
+                ui.text(window, f"Party ({len(self.game.party)}/{MAX_PARTY}): {fights}", (r.x + 12, y - 16), ui.GREY,
+                        size=20)
             m = self._get(slot)
             color = (ui.YELLOW if slot == self.picked else ui.WHITE if m else ui.GREY)
             if m:

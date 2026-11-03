@@ -23,8 +23,9 @@ class TeamPick:
     ROW_H = 18
     PAD = 9
 
-    def __init__(self, route: Route, party: list[Monster]):
+    def __init__(self, route: Route, party: list[Monster], limit: int):
         self.route = route
+        self.limit = limit  # at most this many (quests.active_limit)
         self.party = party
         self.picked: list[Monster] = []
         self.choice = 0
@@ -36,7 +37,7 @@ class TeamPick:
 
     @property
     def needed(self) -> int:
-        return min(self.route.wave_team, sum(1 for m in self.party if self.can_pick(m)))
+        return min(self.route.wave_team, self.limit, sum(1 for m in self.party if self.can_pick(m)))
 
     def _rows(self) -> list[Monster | None]:
         return list(self.party) + [None]  # None: Fight!
@@ -75,7 +76,7 @@ class TeamPick:
         ui.text(window, f"{waves} waves in a row, no healing in between.", (r.x + 12, r.y + self.PAD + 18),
                 ui.GREY, size=20)
         if self.needed:
-            alone = " alone" if route.wave_team == 1 else ""
+            alone = " alone" if self.needed == 1 else ""
             ui.text(window, f"Pick {self.needed} Pokémon to fight them all{alone}: {len(self.picked)}/{self.needed}",
                     (r.x + 12, r.y + self.PAD + 32), ui.GREY, size=20)
         else:

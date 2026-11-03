@@ -28,6 +28,7 @@ from ..mechanics.items import ITEMS, Gear, money_text
 from ..mechanics.loot import Reward
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, line_base
 from .instance import RECRUITS, Recruit
+from .progress import MAX_ACTIVE
 
 Line = tuple[str, str]  # (speaker, text) of a dialogue page
 
@@ -410,6 +411,18 @@ def step(game, key: str) -> int | None:
 
 def is_done(game, key: str) -> bool:
     return step(game, key) == len(QUESTS[key].steps)
+
+
+def active_limit(game) -> int:
+    """How many party members fight in a battle: 1 until the rival on
+    Route 22 is beaten, then `MAX_ACTIVE`."""
+    return MAX_ACTIVE if is_done(game, "rival_22") else 1
+
+
+def fighters(game) -> list[Monster]:
+    """Who fights the next battle: the first `active_limit` party members
+    still standing (the rest are on the bench)."""
+    return [m for m in game.party if m.alive][:active_limit(game)]
 
 
 def is_active(game, key: str) -> bool:

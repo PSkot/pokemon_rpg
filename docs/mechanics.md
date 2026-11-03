@@ -543,14 +543,20 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 
 ## Party and reserve
 
-`game/world/progress.py` (`MAX_PARTY`, `Game.reserve`, `Game.add_member`)
+`game/world/progress.py` (`MAX_PARTY`, `MAX_ACTIVE`, `Game.reserve`,
+`Game.add_member`), `game/world/quests.py` (`active_limit`, `fighters`)
 
-- The **party** has at most **4** Pokémon (the battle screen's rows); the
-  first is the **lead** (the one on the map). Recruits beyond that wait in
-  the **reserve** (saved), and are swapped in at a Recruitment Center (Mr.
-  Mime → team).
-- Arriving in a town heals the reserve too. Quest XP goes to the party
-  only; battle XP to the party members still standing.
+- The **party** has at most **6** Pokémon; the first is the **lead** (the
+  one on the map). Recruits beyond that wait in the **reserve** (saved),
+  and are swapped in at a Recruitment Center (Mr. Mime → team).
+- **Only the first 1 fights** (the first party members still standing):
+  **2** once the rival on Route 22 is beaten (`MAX_ACTIVE`). The rest sit
+  on the bench: they don't fight or step in during a battle, but a fainted
+  fighter's place goes to the next one standing in the next battle. The
+  party screen (T: to the front) or Mr. Mime changes the order. Gyms and
+  trials pick at most that many too.
+- Arriving in a town heals the reserve too. Quest XP goes to the whole
+  party; battle XP to the members who fought and are still standing.
 
 ---
 

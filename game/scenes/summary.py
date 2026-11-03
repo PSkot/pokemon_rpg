@@ -28,6 +28,7 @@ from .skill_tree import SkillTreeScene
 
 ROW_H = 19
 PAD = 9
+PARTY_ROW = 35  # a party member's two lines in the party window
 
 PARTY_WINDOW = pygame.Rect(6, 6, 150, 348)
 STATS_WINDOW = pygame.Rect(162, 6, 472, PAD * 2 + ROW_H * 8 - 4)
@@ -47,7 +48,8 @@ CLOSE_KEYS = (pygame.K_TAB, pygame.K_x, pygame.K_BACKSPACE)
 BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE)
 
 HINTS = {
-    "slots": ("Left/Right: Pokémon", "Up/Down: gear slot", "Enter: change gear", "S: skills", "Tab: close"),
+    "slots": ("Left/Right: Pokémon", "Up/Down: gear slot", "Enter: change gear", "S: skills", "T: to the front",
+              "Tab: close"),
     "choose": ("Up/Down: choose gear", "Enter: equip", "X: back"),
     "evolving": (),
 }
@@ -84,7 +86,13 @@ class SummaryScene(Scene):
 
     @property
     def touch_keys(self):
-        return ((pygame.K_s, "Skills"),) + (((pygame.K_e, "Evolve"),) if self._can_evolve else ())
+        return ((pygame.K_s, "Skills"), (pygame.K_t, "Front")) + (((pygame.K_e, "Evolve"),) if self._can_evolve else ())
+
+    @property
+    def _active(self) -> int:
+        """How many party members fight (the first ones standing)."""
+        game = getattr(self.return_to, "game", None)
+        return quests.active_limit(game) if game else len(self.party)
 
     @property
     def _can_evolve(self) -> bool:
@@ -136,6 +144,10 @@ class SummaryScene(Scene):
                 self.slot = (self.slot + (1 if key == pygame.K_DOWN else -1)) % len(SLOTS)
             elif key in CONFIRM_KEYS and self._options():
                 self.mode, self.choice, self.top = "choose", 0, 0
+            elif key == pygame.K_t and self.member:  # to the front: it fights first (and leads on the map)
+                self.party.insert(0, self.party.pop(self.member))
+                self.member = 0
+                self.note = f"{self.monster.name} now leads the party."
             elif key == pygame.K_s:
                 self.next_scene = SkillTreeScene(self, self.party, self.member, self.return_to.in_town)
             elif key in CLOSE_KEYS:
@@ -187,11 +199,16 @@ class SummaryScene(Scene):
         canvas.blit(sprite, sprite.get_rect(center=SPRITE_BOX.center))
         for t, pos in _type_badges(self.monster):
             ui.badge(canvas, pos, COLORS[t])
-        ui.cursor(canvas, PARTY_WINDOW.x + 16, PARTY_WINDOW.y + PAD + 5 + self.member * ROW_H * 2)
+        ui.cursor(canvas, PARTY_WINDOW.x + 16, PARTY_WINDOW.y + PAD + 5 + self.member * PARTY_ROW)
         for i, m in enumerate(self.party):
             done, needed = m.xp_progress
-            bar = pygame.Rect(PARTY_WINDOW.x + 22, PARTY_WINDOW.y + PAD + i * ROW_H * 2 + 29, 110, 4)
+            bar = pygame.Rect(PARTY_WINDOW.x + 22, PARTY_WINDOW.y + PAD + i * PARTY_ROW + 29, 110, 4)
             ui.bar(canvas, bar, done / needed if needed else 0.0, XP_COLOR)
+        fighting = self._fighting()
+        if len(self.party) > len(fighting):  # a line under the last one who fights
+            last = max(self.party.index(m) for m in fighting) if fighting else -1
+            y = PARTY_WINDOW.y + PAD + (last + 1) * PARTY_ROW - 2
+            pygame.draw.line(canvas, ui.GREY, (PARTY_WINDOW.x + 10, y), (PARTY_WINDOW.right - 10, y))
         row = self.slot if self.mode == "slots" else self.choice - self.top
         ui.cursor(canvas, GEAR_WINDOW.x + 16, GEAR_WINDOW.y + PAD + 5 + row * ROW_H)
         if self.mode == "choose":  # scroll arrows
@@ -226,10 +243,15 @@ class SummaryScene(Scene):
                 ui.text(window, f"Take off the {worn.name}.", (x, y))
                 self._draw_mods(window, None, worn, y + 31)
 
+    def _fighting(self) -> list[Monster]:
+        """The party members who fight the next battle (the rest: the bench)."""
+        return [m for m in self.party if m.alive][:self._active]
+
     def _draw_party(self, window: pygame.Surface) -> None:
+        fighting = self._fighting()
         for i, m in enumerate(self.party):
-            y = PARTY_WINDOW.y + PAD + i * ROW_H * 2
-            color = ui.YELLOW if i == self.member else ui.WHITE
+            y = PARTY_WINDOW.y + PAD + i * PARTY_ROW
+            color = ui.YELLOW if i == self.member else ui.WHITE if m in fighting else ui.GREY
             ui.text(window, m.name, (PARTY_WINDOW.x + 22, y), color)
             game = getattr(self.return_to, "game", None)
             if game and quests.can_evolve(game, m):
