@@ -2,7 +2,8 @@
 
 Each evolution line has a tree of skills, bought with skill points (1 per
 level from Lv6). A skill opens once the Pokémon has its level, all its
-parent skills and its evolution stage. Kinds:
+parent skills and its evolution stage; each further rank of a buff or link
+needs `RANK_LEVELS` more levels. Kinds:
 
 - moves: every move of the line's Gen 1 learnset (and TMs) is one skill
   (1 point), linked by paths (Vine Whip opens Razor Leaf). The first free
@@ -26,6 +27,7 @@ from functools import cache
 from .moves import MOVES, STAT_WORDS, Move
 
 FIRST_POINT_LEVEL = 5   # skill points = level − this
+RANK_LEVELS = 5         # each rank after the first opens this many levels later
 MAX_EQUIPPED = 4
 
 
@@ -36,7 +38,7 @@ class Skill:
     kind: str      # "move", "buff" or "link"
     move: str      # move: its move (in MOVES); buff/link: the skill key of the move it changes
     max_rank: int = 1
-    level: int = 0     # opens at this level
+    level: int = 0     # rank 1 opens at this level (later ranks: `rank_level`)
     parents: tuple[str, ...] = ()  # skill keys: needs all of these first
     stage: int = 0     # evolution stage needed (0 = the line's first species)
     # What each rank changes (rank 1 first). A rank's entry is the full set
@@ -49,6 +51,10 @@ class Skill:
     @property
     def label(self) -> str:
         return self.short or self.name
+
+    def rank_level(self, rank: int) -> int:
+        """The level rank `rank` (1 = learning it) opens at."""
+        return max(1, self.level) + RANK_LEVELS * (rank - 1)
 
     def changes(self, rank: int) -> dict:
         return self.ranks[min(rank, len(self.ranks)) - 1] if self.ranks and rank else {}
@@ -97,8 +103,9 @@ class SkillTree:
             return "Max rank" if skill.max_rank > 1 else "Learned"
         if stage < skill.stage:
             return f"Needs {self.species[skill.stage].capitalize()}"
-        if level < skill.level:
-            return f"Opens at Lv{skill.level}"
+        need = skill.rank_level(rank + 1)
+        if level < need:
+            return f"Opens at Lv{need}" if not rank else f"Rank {rank + 1} opens at Lv{need}"
         missing = [self.skills[p].name for p in skill.parents if not ranks.get(p)]
         if missing:
             return f"Needs {' and '.join(missing)}"

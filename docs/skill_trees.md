@@ -71,7 +71,9 @@ A skill can be learned when **all** of these are true:
 
 1. the Pokémon's **level** is at least the skill's level (Gen 1's learn
    level for moves; buffs open a few levels after their move, deep ones
-   up to 24 levels later);
+   up to 24 levels later), and for each further rank of a buff or link
+   **5 more levels** (`skills.RANK_LEVELS`): a Lv10 buff's ranks open at
+   Lv10, 15, 20, 25, 30;
 2. it has **every parent** skill (a move's path; a buff's place in its
    branch; both moves of a link);
 3. the Pokémon is at least the **evolution stage** the skill needs (every
@@ -196,13 +198,13 @@ Stages: Bulbasaur → Ivysaur (Lv16) → Venusaur (Lv32). Whole tree: 207 points
 | Double-Edge | 50 | Body Slam | Venusaur | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (18) |
 | Hyper Beam | 55 | Solar Beam | Venusaur | Normal, 150 power. The user must rest the next round. | Potent, Staggering, Wounding, Keen, Sweeping, Tireless, Swift (17) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Seeding Lash | Vine Whip → Leech Seed | 15 | Bulbasaur | 15% / 30% / 45% |
-| Rough Play | Tackle → Growl | 8 | Bulbasaur | 20% / 40% |
-| Spore Storm | Razor Leaf → Poison Powder | 30 | Bulbasaur | 10% / 20% / 30% |
-| Photosynthesis | Growth → Leaf Shield | 36 | Ivysaur | 50% / 100% |
-| Drowsy Sun | Solar Beam → Sleep Powder | 50 | Venusaur | 20% / 40% |
+| Seeding Lash | Vine Whip → Leech Seed | 15 / 20 / 25 | Bulbasaur | 15% / 30% / 45% |
+| Rough Play | Tackle → Growl | 8 / 13 | Bulbasaur | 20% / 40% |
+| Spore Storm | Razor Leaf → Poison Powder | 30 / 35 / 40 | Bulbasaur | 10% / 20% / 30% |
+| Photosynthesis | Growth → Leaf Shield | 36 / 41 | Ivysaur | 50% / 100% |
+| Drowsy Sun | Solar Beam → Sleep Powder | 50 / 55 | Venusaur | 20% / 40% |
 
 ---
 
@@ -223,12 +225,12 @@ Stages: Charmander → Charmeleon (Lv16) → Charizard (Lv36). Whole tree: 158 p
 | Fire Blast | 50 | Flamethrower | Charizard | Fire, 120 power. 30% chance to burn. | Potent, Searing, Wounding, Keen, Sweeping, Swift (16) |
 | Earthquake | 55 | Slash | Charizard | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Smoldering Claws | Scratch → Ember | 11 | Charmander | 15% / 30% / 45% |
-| Menace | Leer → Growl | 17 | Charmander | 50% / 100% |
-| Melting Heat | Flamethrower → Leer | 40 | Charmander | 30% / 60% |
-| Blazing Slash | Slash → Fire Spin | 48 | Charmeleon | 20% / 40% |
+| Smoldering Claws | Scratch → Ember | 11 / 16 / 21 | Charmander | 15% / 30% / 45% |
+| Menace | Leer → Growl | 17 / 22 | Charmander | 50% / 100% |
+| Melting Heat | Flamethrower → Leer | 40 / 45 | Charmander | 30% / 60% |
+| Blazing Slash | Slash → Fire Spin | 48 / 53 | Charmeleon | 20% / 40% |
 
 ---
 
@@ -249,18 +251,18 @@ Stages: Squirtle → Wartortle (Lv16) → Blastoise (Lv36). Whole tree: 167 poin
 | Hydro Pump | 42 | Water Gun | Squirtle | Water, 120 power. | Potent, Rippling, Wounding, Keen, Sweeping, Swift (16) |
 | Blizzard | 55 | Ice Beam | Blastoise | Ice, 120 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Splash Tackle | Tackle → Bubble | 10 | Squirtle | 15% / 30% / 45% |
-| Snapping Jaws | Bite → Tail Whip | 24 | Squirtle | 30% / 60% |
-| Shell Counter | Withdraw → Tail Whip | 30 | Squirtle | 50% / 100% |
-| Frost Spray | Hydro Pump → Ice Beam | 46 | Blastoise | 10% / 20% |
+| Splash Tackle | Tackle → Bubble | 10 / 15 / 20 | Squirtle | 15% / 30% / 45% |
+| Snapping Jaws | Bite → Tail Whip | 24 / 29 | Squirtle | 30% / 60% |
+| Shell Counter | Withdraw → Tail Whip | 30 / 35 | Squirtle | 50% / 100% |
+| Frost Spray | Hydro Pump → Ice Beam | 46 / 51 | Blastoise | 10% / 20% |
 
 ---
 
 ## The Spearow line
 
-Stages: Spearow → Fearow (Lv20, not in the game yet). Whole tree: 134 points.
+Stages: Spearow → Fearow (Lv20). Whole tree: 134 points.
 
 | Move | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- |
@@ -274,10 +276,10 @@ Stages: Spearow → Fearow (Lv20, not in the game yet). Whole tree: 134 points.
 | Agility | 36 | Leer | Spearow | Raises its Speed 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
 | Hyper Beam | 45 | Drill Peck | Fearow | Normal, 150 power. The user must rest the next round. | Potent, Staggering, Wounding, Keen, Sweeping, Tireless, Swift (17) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Harrying Pecks | Fury Attack → Leer | 17 | Spearow | 20% / 40% |
-| Tailwind | Whirlwind → Agility | 38 | Spearow | 50% / 100% |
+| Harrying Pecks | Fury Attack → Leer | 17 / 22 | Spearow | 20% / 40% |
+| Tailwind | Whirlwind → Agility | 38 / 43 | Spearow | 50% / 100% |
 
 ---
 
@@ -297,10 +299,10 @@ Stages: Nidoran F → Nidorina (Lv16, not in the game yet). Whole tree: 145 poin
 | Fury Swipes | 36 | Scratch | Nidoran F | Normal, 18 power, hits 2-5 times. | Potent, Staggering, Wounding, Keen, Sweeping, Relentless (16) |
 | Double Kick | 43 | Bite | Nidoran F | Fighting, 30 power, hits twice. | Potent, Staggering, Wounding, Keen, Sweeping, Relentless (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Toxic Claws | Scratch → Poison Sting | 16 | Nidoran F | 15% / 30% |
-| Taunting Bite | Bite → Growl | 31 | Nidoran F | 30% / 60% |
+| Toxic Claws | Scratch → Poison Sting | 16 / 21 | Nidoran F | 15% / 30% |
+| Taunting Bite | Bite → Growl | 31 / 36 | Nidoran F | 30% / 60% |
 
 ---
 
@@ -319,10 +321,10 @@ Stages: Nidoran M → Nidorino (Lv16, not in the game yet). Whole tree: 123 poin
 | Fury Attack | 29 | Horn Attack | Nidoran M | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Wounding, Keen, Sweeping, Relentless (16) |
 | Double Kick | 43 | Horn Attack | Nidoran M | Fighting, 30 power, hits twice. | Potent, Staggering, Wounding, Keen, Sweeping, Relentless (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Poison Horn | Horn Attack → Poison Sting | 16 | Nidoran M | 15% / 30% |
-| Battle Cry | Focus Energy → Leer | 23 | Nidoran M | 50% / 100% |
+| Poison Horn | Horn Attack → Poison Sting | 16 / 21 | Nidoran M | 15% / 30% |
+| Battle Cry | Focus Energy → Leer | 23 / 28 | Nidoran M | 50% / 100% |
 
 ---
 
@@ -341,10 +343,10 @@ Stages: Pidgey → Pidgeotto (Lv18) → Pidgeot (Lv36). Whole tree: 121 points.
 | Agility | 36 | Whirlwind | Pidgey | Raises its Speed 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
 | Sky Attack | 44 | Wing Attack | Pidgeot | Flying, 140 power. Charges for a round first. High critical-hit ratio. | Potent, Staggering, Wounding, Sweeping, Instant, Swift (14) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Dust Devil | Gust → Sand-Attack | 10 | Pidgey | 20% / 40% |
-| Slipstream | Quick Attack → Agility | 38 | Pidgeotto | 15% / 30% |
+| Dust Devil | Gust → Sand-Attack | 10 / 15 | Pidgey | 20% / 40% |
+| Slipstream | Quick Attack → Agility | 38 / 43 | Pidgeotto | 15% / 30% |
 
 ---
 
@@ -363,10 +365,10 @@ Stages: Rattata → Raticate (Lv20, not in the game yet). Whole tree: 115 points
 | Super Fang | 34 | Hyper Fang | Rattata | Normal. Takes half the target's HP. | Staggering, Wounding, Sweeping (7) |
 | Hyper Beam | 45 | Super Fang | Raticate | Normal, 150 power. The user must rest the next round. | Potent, Staggering, Wounding, Keen, Sweeping, Tireless, Swift (17) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Nip and Tuck | Quick Attack → Tail Whip | 9 | Rattata | 20% / 40% |
-| Gnashing Fangs | Hyper Fang → Super Fang | 36 | Rattata | 10% / 20% |
+| Nip and Tuck | Quick Attack → Tail Whip | 9 / 14 | Rattata | 20% / 40% |
+| Gnashing Fangs | Hyper Fang → Super Fang | 36 / 41 | Rattata | 10% / 20% |
 
 ---
 
@@ -388,10 +390,10 @@ Stages: Caterpie → Metapod (Lv7) → Butterfree (Lv10, not in the game yet). W
 | Whirlwind | 26 | Supersonic | Butterfree | Lowers every enemy's Speed 1 stage. | Deep, Lingering, Hexing, Emboldening, Quick (10) |
 | Psybeam | 32 | Confusion | Butterfree | Psychic, 65 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Sweeping, Twin (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Silk Shell | Harden → String Shot | 9 | Metapod | 50% / 100% |
-| Scale Dust | Psybeam → Stun Spore | 34 | Butterfree | 15% / 30% |
+| Silk Shell | Harden → String Shot | 9 / 14 | Metapod | 50% / 100% |
+| Scale Dust | Psybeam → Stun Spore | 34 / 39 | Butterfree | 15% / 30% |
 
 ---
 
@@ -411,10 +413,10 @@ Stages: Weedle → Kakuna (Lv7) → Beedrill (Lv10, not in the game yet). Whole 
 | Pin Missile | 30 | Twineedle | Beedrill | Bug, 14 power, hits 2-5 times. | Potent, Venomous, Wounding, Keen, Sweeping, Relentless (16) |
 | Agility | 35 | Focus Energy | Beedrill | Raises its Speed 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Webbed Sting | Poison Sting → String Shot | 5 | Weedle | 20% / 40% |
-| Stinger Volley | Pin Missile → Poison Sting | 32 | Beedrill | 20% / 40% |
+| Webbed Sting | Poison Sting → String Shot | 5 / 10 | Weedle | 20% / 40% |
+| Stinger Volley | Pin Missile → Poison Sting | 32 / 37 | Beedrill | 20% / 40% |
 
 ---
 
@@ -433,10 +435,10 @@ Stages: Oddish → Gloom (Lv21, not in the game yet) → Vileplume (by stone, no
 | Petal Dance | 33 | Acid | Oddish | Grass, 70 power. Hits every enemy. The user becomes confused afterwards. | Potent, Draining, Wounding, Keen, Calm, Twin (15) |
 | Solar Beam | 46 | Petal Dance | Oddish | Grass, 120 power. Charges for a round first. | Potent, Draining, Wounding, Keen, Sweeping, Instant, Swift (17) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Spore Sap | Absorb → Poison Powder | 16 | Oddish | 15% / 30% |
-| Pollen Dance | Petal Dance → Sleep Powder | 35 | Gloom | 15% / 30% |
+| Spore Sap | Absorb → Poison Powder | 16 / 21 | Oddish | 15% / 30% |
+| Pollen Dance | Petal Dance → Sleep Powder | 35 / 40 | Gloom | 15% / 30% |
 
 ---
 
@@ -457,10 +459,10 @@ Stages: Bellsprout → Weepinbell (Lv21, not in the game yet) → Victreebel (by
 | Razor Leaf | 33 | Vine Whip | Bellsprout | Grass, 55 power. High critical-hit ratio. | Potent, Draining, Wounding, Sweeping, Twin (13) |
 | Slam | 42 | Wrap | Bellsprout | Normal, 80 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Snaring Vines | Vine Whip → Wrap | 15 | Bellsprout | 15% / 30% |
-| Corroding Grip | Wrap → Acid | 28 | Bellsprout | 20% / 40% |
+| Snaring Vines | Vine Whip → Wrap | 15 / 20 | Bellsprout | 15% / 30% |
+| Corroding Grip | Wrap → Acid | 28 / 33 | Bellsprout | 20% / 40% |
 
 ---
 
@@ -479,10 +481,10 @@ Stages: Pikachu. Whole tree: 117 points.
 | Agility | 33 | Thunder Wave | Pikachu | Raises its Speed 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
 | Thunder | 43 | Thunderbolt | Pikachu | Electric, 120 power. 10% chance to paralyze. | Potent, Crackling, Wounding, Keen, Sweeping, Swift (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Static Charge | Quick Attack → Thunder Wave | 18 | Pikachu | 15% / 30% |
-| Overcharge | Agility → Thunder Shock | 35 | Pikachu | 50% / 100% |
+| Static Charge | Quick Attack → Thunder Wave | 18 / 23 | Pikachu | 15% / 30% |
+| Overcharge | Agility → Thunder Shock | 35 / 40 | Pikachu | 50% / 100% |
 
 ---
 
@@ -503,10 +505,10 @@ Stages: Seel → Dewgong (Lv34). Whole tree: 158 points.
 | Ice Beam | 50 | Aurora Beam | Seel | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (16) |
 | Blizzard | 55 | Ice Beam | Dewgong | Ice, 120 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Bellow | Headbutt → Growl | 32 | Seel | 20% / 40% |
-| Polar Spray | Water Gun → Aurora Beam | 37 | Seel | 10% / 20% |
+| Bellow | Headbutt → Growl | 32 / 37 | Seel | 20% / 40% |
+| Polar Spray | Water Gun → Aurora Beam | 37 / 42 | Seel | 10% / 20% |
 
 ---
 
@@ -526,10 +528,10 @@ Stages: Shellder. Whole tree: 137 points.
 | Leer | 39 | Supersonic | Shellder | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Ice Beam | 50 | Aurora Beam | Shellder | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Clam Shell | Withdraw → Clamp | 25 | Shellder | 25% / 50% |
-| Icy Grip | Clamp → Aurora Beam | 32 | Shellder | 15% / 30% |
+| Clam Shell | Withdraw → Clamp | 25 / 30 | Shellder | 25% / 50% |
+| Icy Grip | Clamp → Aurora Beam | 32 / 37 | Shellder | 15% / 30% |
 
 ---
 
@@ -548,10 +550,10 @@ Stages: Psyduck → Golduck (Lv33, not in the game yet). Whole tree: 134 points.
 | Ice Beam | 45 | Bubble Beam | Golduck | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (16) |
 | Hydro Pump | 52 | Bubble Beam | Psyduck | Water, 120 power. | Potent, Rippling, Wounding, Keen, Sweeping, Swift (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Headache | Water Gun → Confusion | 38 | Psyduck | 10% / 20% |
-| Flailing | Fury Swipes → Tail Whip | 45 | Psyduck | 20% / 40% |
+| Headache | Water Gun → Confusion | 38 / 43 | Psyduck | 10% / 20% |
+| Flailing | Fury Swipes → Tail Whip | 45 / 50 | Psyduck | 20% / 40% |
 
 ---
 
@@ -570,10 +572,10 @@ Stages: Horsea → Seadra (Lv32, not in the game yet). Whole tree: 123 points.
 | Ice Beam | 40 | Bubble Beam | Seadra | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (16) |
 | Hydro Pump | 45 | Water Gun | Horsea | Water, 120 power. | Potent, Rippling, Wounding, Keen, Sweeping, Swift (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Ink Jet | Water Gun → Smokescreen | 32 | Horsea | 20% / 40% |
-| Riptide | Agility → Bubble Beam | 39 | Horsea | 25% / 50% |
+| Ink Jet | Water Gun → Smokescreen | 32 / 37 | Horsea | 20% / 40% |
+| Riptide | Agility → Bubble Beam | 39 / 44 | Horsea | 25% / 50% |
 
 ---
 
@@ -593,10 +595,10 @@ Stages: Jynx. Whole tree: 149 points.
 | Thrash | 47 | Body Slam | Jynx | Normal, 90 power. The user becomes confused afterwards. | Potent, Staggering, Wounding, Keen, Sweeping, Calm, Swift (17) |
 | Blizzard | 58 | Ice Punch | Jynx | Ice, 120 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Blown Kiss | Double Slap → Lovely Kiss | 25 | Jynx | 10% / 20% |
-| Mind Freeze | Psychic → Ice Punch | 37 | Jynx | 15% / 30% |
+| Blown Kiss | Double Slap → Lovely Kiss | 25 / 30 | Jynx | 10% / 20% |
+| Mind Freeze | Psychic → Ice Punch | 37 / 42 | Jynx | 15% / 30% |
 
 ---
 
@@ -615,10 +617,10 @@ Stages: Lapras. Whole tree: 116 points.
 | Hydro Pump | 46 | Ice Beam | Lapras | Water, 120 power. | Potent, Rippling, Wounding, Keen, Sweeping, Swift (16) |
 | Blizzard | 50 | Ice Beam | Lapras | Ice, 120 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Lullaby | Water Gun → Sing | 18 | Lapras | 10% / 20% |
-| Haunting Song | Sing → Confuse Ray | 33 | Lapras | 25% / 50% |
+| Lullaby | Water Gun → Sing | 18 / 23 | Lapras | 10% / 20% |
+| Haunting Song | Sing → Confuse Ray | 33 / 38 | Lapras | 25% / 50% |
 
 ---
 
@@ -637,10 +639,10 @@ Stages: Geodude → Graveler (Lv25, not in the game yet) → Golem (by stone, no
 | Body Slam | 30 | Tackle | Graveler | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
 | Dig | 34 | Earthquake | Graveler | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Sweeping, Instant, Swift (17) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Rolling Stone | Tackle → Rock Throw | 13 | Geodude | 15% / 30% |
-| Avalanche | Rock Slide → Earthquake | 28 | Graveler | 10% / 20% |
+| Rolling Stone | Tackle → Rock Throw | 13 / 18 | Geodude | 15% / 30% |
+| Avalanche | Rock Slide → Earthquake | 28 / 33 | Graveler | 10% / 20% |
 
 ---
 
@@ -659,10 +661,10 @@ Stages: Onix. Whole tree: 127 points.
 | Earthquake | 38 | Rock Throw | Onix | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (16) |
 | Harden | 43 | Screech | Onix | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Crushing Coils | Bind → Screech | 16 | Onix | 25% / 50% |
-| Rumbling Rocks | Rock Slide → Screech | 30 | Onix | 15% / 30% |
+| Crushing Coils | Bind → Screech | 16 / 21 | Onix | 25% / 50% |
+| Rumbling Rocks | Rock Slide → Screech | 30 / 35 | Onix | 15% / 30% |
 
 ---
 
@@ -680,10 +682,10 @@ Stages: Diglett → Dugtrio (Lv26, not in the game yet). Whole tree: 110 points.
 | Rock Slide | 35 | Dig | Diglett | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
 | Earthquake | 40 | Dig | Diglett | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Dust Cloud | Dig → Sand-Attack | 21 | Diglett | 20% / 40% |
-| Tunneling Claws | Scratch → Dig | 26 | Diglett | 5% / 10% |
+| Dust Cloud | Dig → Sand-Attack | 21 / 26 | Diglett | 20% / 40% |
+| Tunneling Claws | Scratch → Dig | 26 / 31 | Diglett | 5% / 10% |
 
 ---
 
@@ -703,10 +705,10 @@ Stages: Sandshrew → Sandslash (Lv22, not in the game yet). Whole tree: 149 poi
 | Rock Slide | 40 | Dig | Sandshrew | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
 | Earthquake | 45 | Dig | Sandslash | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Sandstorm | Slash → Sand-Attack | 19 | Sandshrew | 20% / 40% |
-| Barbed Claws | Fury Swipes → Poison Sting | 40 | Sandshrew | 15% / 30% |
+| Sandstorm | Slash → Sand-Attack | 19 / 24 | Sandshrew | 20% / 40% |
+| Barbed Claws | Fury Swipes → Poison Sting | 40 / 45 | Sandshrew | 15% / 30% |
 
 ---
 
@@ -725,10 +727,10 @@ Stages: Ekans → Arbok (Lv22, not in the game yet). Whole tree: 122 points.
 | Dig | 33 | Bite | Arbok | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Sweeping, Instant, Swift (17) |
 | Acid | 38 | Poison Sting | Ekans | Poison, 40 power. 33% chance to lower its Defense. | Potent, Venomous, Wounding, Keen, Sweeping, Twin (16) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Venom Coils | Wrap → Poison Sting | 12 | Ekans | 15% / 30% |
-| Paralyzing Gaze | Bite → Glare | 26 | Ekans | 15% / 30% |
+| Venom Coils | Wrap → Poison Sting | 12 / 17 | Ekans | 15% / 30% |
+| Paralyzing Gaze | Bite → Glare | 26 / 31 | Ekans | 15% / 30% |
 
 ---
 
@@ -746,10 +748,10 @@ Stages: Jigglypuff. Whole tree: 98 points.
 | Body Slam | 34 | Double Slap | Jigglypuff | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
 | Double-Edge | 39 | Body Slam | Jigglypuff | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (18) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Lullaby Slaps | Double Slap → Sing | 26 | Jigglypuff | 10% / 20% |
-| Heavy Sleeper | Body Slam → Sing | 36 | Jigglypuff | 10% / 20% |
+| Lullaby Slaps | Double Slap → Sing | 26 / 31 | Jigglypuff | 10% / 20% |
+| Heavy Sleeper | Body Slam → Sing | 36 / 41 | Jigglypuff | 10% / 20% |
 
 ---
 
@@ -767,10 +769,10 @@ Stages: Zubat → Golbat (Lv22, not in the game yet). Whole tree: 107 points.
 | Swift | 32 | Wing Attack | Zubat | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (16) |
 | Double-Edge | 38 | Wing Attack | Golbat | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (18) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Dizzying Bite | Bite → Supersonic | 17 | Zubat | 15% / 30% |
-| Draining Swoop | Wing Attack → Leech Life | 30 | Zubat | 15% / 30% |
+| Dizzying Bite | Bite → Supersonic | 17 / 22 | Zubat | 15% / 30% |
+| Draining Swoop | Wing Attack → Leech Life | 30 / 35 | Zubat | 15% / 30% |
 
 ---
 
@@ -789,10 +791,10 @@ Stages: Paras → Parasect (Lv24, not in the game yet). Whole tree: 114 points.
 | Growth | 41 | Spore | Paras | Raises its Attack 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
 | Solar Beam | 44 | Mega Drain | Parasect | Grass, 120 power. Charges for a round first. | Potent, Draining, Wounding, Keen, Sweeping, Instant, Swift (17) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Spore Claws | Scratch → Stun Spore | 15 | Paras | 10% / 20% |
-| Fungal Feast | Leech Life → Spore | 29 | Paras | 10% / 20% |
+| Spore Claws | Scratch → Stun Spore | 15 / 20 | Paras | 10% / 20% |
+| Fungal Feast | Leech Life → Spore | 29 / 34 | Paras | 10% / 20% |
 
 ---
 
@@ -812,9 +814,9 @@ Stages: Clefairy → Clefable (by stone, not in the game yet). Whole tree: 115 p
 | Psychic | 40 | Thunder Wave | Clefairy | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Sweeping, Swift (16) |
 | Rest | 44 | Defense Curl | Clefairy | The user heals fully, is cured, and sleeps for 2 rounds. | Renewing, Quick (4) |
 
-| Link | Sets off | Lv | Stage | Chance per rank |
+| Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Moonlit Song | Double Slap → Sing | 20 | Clefairy | 10% / 20% |
-| Static Slam | Body Slam → Thunder Wave | 36 | Clefairy | 15% / 30% |
+| Moonlit Song | Double Slap → Sing | 20 / 25 | Clefairy | 10% / 20% |
+| Static Slam | Body Slam → Thunder Wave | 36 / 41 | Clefairy | 15% / 30% |
 
 <!-- trees:end -->

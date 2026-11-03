@@ -53,11 +53,12 @@ def _section(tree: SkillTree) -> str:
                      f"{names} ({sum(b.max_rank for b in buffs)}) |")
     links = [s for s in tree.skills.values() if s.kind == "link"]
     if links:
-        lines += ["", "| Link | Sets off | Lv | Stage | Chance per rank |", "| --- | --- | --- | --- | --- |"]
+        lines += ["", "| Link | Sets off | Lv per rank | Stage | Chance per rank |", "| --- | --- | --- | --- | --- |"]
         for s in links:
             chances = " / ".join(f"{r['triggers'][0][2]}%" for r in s.ranks)
             lines.append(f"| {s.name} | {tree.skills[s.parents[0]].name} → {tree.skills[s.parents[1]].name} | "
-                         f"{s.level} | {stage_name(s.stage)} | {chances} |")
+                         f"{' / '.join(str(s.rank_level(r)) for r in range(1, s.max_rank + 1))} | "
+                         f"{stage_name(s.stage)} | {chances} |")
     return "\n".join(lines)
 
 

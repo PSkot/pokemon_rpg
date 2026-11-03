@@ -405,7 +405,7 @@ class SkillTreeScene(Scene):
             for r in range(1, skill.max_rank + 1):  # what each rank does
                 color = GREEN if r <= rank else ui.WHITE if r == rank + 1 else ui.GREY
                 ui.text(window, f"R{r}", (x, y), color, size=18)
-                parts = _wrap(skill.text[r - 1], WRAP - 5)
+                parts = _wrap(f"Lv{skill.rank_level(r)}: {skill.text[r - 1]}", WRAP - 5)
                 for i, part in enumerate(parts):
                     ui.text(window, part, (x + 18, y + i * 11), color, size=18)
                 y += 11 * len(parts) + 1
@@ -419,8 +419,9 @@ class SkillTreeScene(Scene):
         y += 4
         # Requirements.
         checks = []
-        if skill.level:
-            checks.append((f"Lv{skill.level}", m.level >= skill.level))
+        need = skill.rank_level(min(rank + 1, skill.max_rank))
+        if need > 1:
+            checks.append((f"Lv{need}", m.level >= need))
         checks += [(tree.skills[p].name, bool(m.skills.get(p))) for p in skill.parents]
         if skill.stage:
             checks.append((tree.species[skill.stage].capitalize(), m.species.stage >= skill.stage))
