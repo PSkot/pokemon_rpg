@@ -361,7 +361,13 @@ non-commercial project.
   changes); each side's buttons moved across/up) in pause menu → Controls (`scenes/controls_menu.py`,
   only with touch on; every button shows meanwhile). Positions come from
   `touch.SPOTS` (the default layout) placed by the layout (`_placed`).
-  Changing the panel width remakes the window (main loop). Saved in the
+  Changing the panel width remakes the window (main loop). The game is
+  landscape only: a touch screen showing the page upright
+  (`touch.portrait`, e.g. rotation locked) gets a portrait window with the
+  landscape frame drawn into it a quarter turn clockwise (`main._show`,
+  `touch.rotated`; played with the phone's top to the left), touches
+  turned back (`touch._unturn`); `POKEMON_PORTRAIT=1` forces it on the
+  desktop. Turning the phone remakes the window. Saved in the
   player's settings (`saves.load_prefs`/`save_prefs`: `saves/settings.json`,
   mirrored to localStorage like saves; key "touch").
 - `tools/` holds standalone helper scripts. `tools/anim_viewer.py` uses only

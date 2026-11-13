@@ -53,8 +53,7 @@ async def main() -> None:
     touch.configure(saves.load_prefs().get("touch", {}))
     # With touch controls, the window has side panels for them; the game is
     # drawn in the middle (`window`).
-    screen = pygame.display.set_mode(touch.window_size())
-    window = screen.subsurface(touch.view_rect())
+    screen, window = _make_window()
     pygame.display.set_caption(settings.TITLE)
     canvas = pygame.Surface(settings.LOGICAL_SIZE)
     clock = pygame.time.Clock()
@@ -78,9 +77,29 @@ async def main() -> None:
     pygame.quit()
 
 
+def _make_window() -> tuple[pygame.Surface, pygame.Surface]:
+    """The window (`screen`: the game and its touch panels, landscape) and
+    where in it the game is drawn (`window`). On a phone held upright the
+    real window is portrait and `screen` a surface of its own, drawn into
+    it turned (`_show`; touch.portrait)."""
+    touch.rotated = touch.portrait()
+    display = pygame.display.set_mode(touch.display_size())
+    screen = pygame.Surface(touch.window_size()) if touch.rotated else display
+    return screen, screen.subsurface(touch.view_rect())
+
+
+def _show(screen: pygame.Surface) -> None:
+    """Put the frame on the real window (turned a quarter turn clockwise on
+    a phone held upright) and show it."""
+    if touch.rotated:
+        pygame.display.get_surface().blit(pygame.transform.rotate(screen, -90), (0, 0))
+    pygame.display.flip()
+
+
 async def _show_crash(screen: pygame.Surface, text: str) -> None:
     """The error, on screen (for a screenshot) and in the browser's console."""
     print(text)
+    screen = pygame.display.get_surface()
     lines = ["The game crashed. Please send a screenshot of this:", ""] + text.splitlines()[-24:]
     font = pygame.font.Font(None, 22)
     while True:
@@ -139,17 +158,17 @@ def _frame(clock, canvas, screen, window, scene, pause):
         pause.draw_overlay(window)
     on_map = pause.editing_controls if pause else scene.touch_map
     touch.draw(screen, on_map, pause.touch_keys if pause else scene.touch_keys)
-    pygame.display.flip()
+    _show(screen)
     if saves.WEB:
-        fit_canvas(screen.get_size())
+        fit_canvas(pygame.display.get_surface().get_size())
 
     if scene.next_scene:
         previous, scene = scene, scene.next_scene
         previous.next_scene = None
 
-    if screen.get_size() != touch.window_size():  # the touch panels' width changed
-        screen = pygame.display.set_mode(touch.window_size())
-        window = screen.subsurface(touch.view_rect())
+    # The touch panels' width changed, or the phone turned upright or back.
+    if screen.get_size() != touch.window_size() or touch.rotated != touch.portrait():
+        screen, window = _make_window()
     return running, scene, pause, screen, window
 
 

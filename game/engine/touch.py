@@ -20,6 +20,13 @@ the game's edge).
 The controls are on for touch screens in the browser, or with
 POKEMON_TOUCH=1 (the mouse then works as a finger) for testing. Positions
 here are in window pixels.
+
+The game is landscape only. A phone showing the page upright (`portrait`:
+its rotation locked, or the page simply held upright) gets a portrait
+window with the game drawn into it turned a quarter turn clockwise
+(`rotated`, set by the main loop), so it's played with the phone held
+sideways, its top to the left; touches are turned back (`_unturn`).
+POKEMON_PORTRAIT=1 forces this on the desktop, for testing.
 """
 
 import os
@@ -103,6 +110,7 @@ SPOTS = [
 
 layout = Layout()
 enabled = os.environ.get("POKEMON_TOUCH") == "1"
+rotated = False  # the window is portrait, with the game turned into it (set by the main loop)
 _mouse = enabled  # the mouse acts as a finger (desktop testing)
 _fingers: dict[int, Button | None] = {}  # finger id -> the button it's on
 _held: Counter = Counter()               # key -> fingers holding it
@@ -147,13 +155,45 @@ def side() -> int:
     return max(0, min(SIDE, round((h * screen_w / screen_h - w) / 2)))
 
 
-def _screen_size() -> tuple[int, int]:
+def _page_size() -> tuple[int, int]:
     """The space the window is shown in: the page (it changes when a phone
     turns or goes fullscreen), or the desktop."""
     if sys.platform == "emscripten":
         import platform  # pygbag's: gives access to the page (`window`)
         return platform.window.innerWidth or 1, platform.window.innerHeight or 1
     return pygame.display.get_desktop_sizes()[0]
+
+
+def portrait() -> bool:
+    """A touch screen showing the page upright: the game is turned to fit
+    it sideways (see the module's notes)."""
+    if os.environ.get("POKEMON_PORTRAIT") == "1":
+        return True
+    if not enabled or sys.platform != "emscripten":
+        return False
+    w, h = _page_size()
+    return h > w
+
+
+def _screen_size() -> tuple[int, int]:
+    """The space the game is shown in, the way it's played: landscape (a
+    page shown upright is played sideways)."""
+    w, h = _page_size()
+    return (max(w, h), min(w, h)) if portrait() else (w, h)
+
+
+def display_size() -> tuple[int, int]:
+    """The real window: `window_size`, turned upright when `portrait`."""
+    w, h = window_size()
+    return (h, w) if portrait() else (w, h)
+
+
+def _unturn(pos: tuple[float, float]) -> tuple[float, float]:
+    """A position in the real window, in the game's (landscape) window: the
+    game is drawn turned a quarter turn clockwise when `rotated`."""
+    if not rotated:
+        return pos
+    return pos[1], window_size()[1] - 1 - pos[0]
 
 
 def window_size() -> tuple[int, int]:
@@ -251,8 +291,8 @@ def handle(event: pygame.event.Event, on_map: bool, extra: tuple[tuple[int, str]
     global _mouse_down
     if event.type in (pygame.FINGERDOWN, pygame.FINGERMOTION, pygame.FINGERUP):
         if enabled:
-            w, h = window_size()
-            pos = (event.x * w, event.y * h)
+            w, h = (window_size()[::-1]) if rotated else window_size()  # (the real window)
+            pos = _unturn((event.x * w, event.y * h))
             if event.type == pygame.FINGERDOWN:
                 _fingers.pop(event.finger_id, None)
             _finger(event.finger_id, None if event.type == pygame.FINGERUP else pos, on_map, extra,
@@ -261,22 +301,23 @@ def handle(event: pygame.event.Event, on_map: bool, extra: tuple[tuple[int, str]
     if event.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP):
         if getattr(event, "touch", False):
             return True  # the mouse events a touch also makes
+        mouse_pos = _unturn(event.pos)
         if not _mouse:  # a plain mouse: only taps on the game (left button)
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 _mouse_down = True
-                _tap(event.pos, drag=False)
+                _tap(mouse_pos, drag=False)
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 _mouse_down = False
             elif event.type == pygame.MOUSEMOTION and _mouse_down:
-                _tap(event.pos, drag=True)
+                _tap(mouse_pos, drag=True)
             return True
         if event.type == pygame.MOUSEBUTTONDOWN:
             _fingers.pop(MOUSE_FINGER, None)
-            _finger(MOUSE_FINGER, event.pos, on_map, extra, drag=False)
+            _finger(MOUSE_FINGER, mouse_pos, on_map, extra, drag=False)
         elif event.type == pygame.MOUSEBUTTONUP:
             _finger(MOUSE_FINGER, None, on_map, extra, drag=False)
         elif MOUSE_FINGER in _fingers:
-            _finger(MOUSE_FINGER, event.pos, on_map, extra, drag=True)
+            _finger(MOUSE_FINGER, mouse_pos, on_map, extra, drag=True)
         return True
     return False
 
