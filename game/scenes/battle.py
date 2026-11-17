@@ -141,6 +141,8 @@ class Combatant:
         self.bleed_share = 0.0  # ... losing this share of max HP each round
         self.berry_used = False  # its berry can be eaten once per battle
         self.last_target: Combatant | None = None  # who it aimed at last (the target menu starts there)
+        self.last_command = 0  # what it chose last (its menus open there): the command ...
+        self.last_skill = 0    # ... and the skill
         self.evolving: Animation | None = None  # the new form's idle pose, while evolving
         self.evolve_time = 0.0
         self.shown_xp = self.xp_goal = self.xp_fraction  # the XP bar fills towards its goal
@@ -419,6 +421,7 @@ class BattleScene(Scene):
         self.rewards: ui.ListPanel | None = None
         self.command = 0        # cursor positions
         self.skill = 0
+        self.ordering = False   # the Skills list's highlighted move is being moved (O)
         self.item = 0
         self.item_top = 0   # first item shown, when the list scrolls
         self.target = 0
@@ -474,13 +477,22 @@ class BattleScene(Scene):
             self._run_round()
         else:
             self.actor_index, self.menu = i, "command"
-            self.skill = self.item = self.item_top = 0
+            self._restore_cursor()
+
+    def _restore_cursor(self) -> None:
+        """The menus open where the current member chose last time."""
+        c = self.actor
+        self.command = c.last_command
+        self.skill = min(c.last_skill, max(0, len(c.monster.moves) - 1))
+        self.item = self.item_top = 0
+        self.ordering = False
 
     def _previous_actor(self) -> None:
         """Undo the last chosen action and let that party member choose again."""
         if self.actions:
             self.actor_index = self.party.index(self.actions.pop().user)
             self.menu = "command"
+            self._restore_cursor()
 
     def _candidates(self, user: Combatant, choice: Choice) -> list[Combatant]:
         """Who `user` can aim `choice` at."""
@@ -535,6 +547,7 @@ class BattleScene(Scene):
         if c is None:
             return
         if self.menu == "command" and c.enemy and c.alive:
+            self.actor.last_command = 0  # (Fight)
             self._choose(self.actor.monster.basic_attack)  # (aims, unless it hits everyone)
             if self.menu == "target" and c in self._targets():
                 self._commit(self.aim, c)
@@ -557,6 +570,8 @@ class BattleScene(Scene):
                 self.command = (self.command + (1 if key == pygame.K_DOWN else -1)) % len(COMMANDS)
             elif key in CONFIRM_KEYS:
                 command = COMMANDS[self.command]
+                if command != "Run":
+                    self.actor.last_command = self.command
                 if command == "Fight":
                     self._choose(self.actor.monster.basic_attack)
                 elif command == "Skills" and self.actor.monster.moves:
@@ -571,9 +586,17 @@ class BattleScene(Scene):
                 self._previous_actor()
         elif self.menu == "skills":
             moves = self.actor.monster.moves
-            if key in (pygame.K_UP, pygame.K_DOWN):
+            if self.ordering:  # carrying the highlighted move up or down the list
+                if key in (pygame.K_UP, pygame.K_DOWN):
+                    self.skill = self._move_skill(self.skill, 1 if key == pygame.K_DOWN else -1)
+                elif key in CONFIRM_KEYS or key in CANCEL_KEYS or key == pygame.K_o:
+                    self.ordering = False
+            elif key in (pygame.K_UP, pygame.K_DOWN):
                 self.skill = (self.skill + (1 if key == pygame.K_DOWN else -1)) % len(moves)
+            elif key == pygame.K_o and len(moves) > 1:
+                self.ordering = True
             elif key in CONFIRM_KEYS:
+                self.actor.last_skill = self.skill
                 self._choose(moves[self.skill])
             elif key in CANCEL_KEYS:
                 self.menu = "command"
@@ -1326,12 +1349,30 @@ class BattleScene(Scene):
         """The enemies listed in the enemy window (fainted ones until faded out)."""
         return [c for c in self.enemies if c.opacity > 0]
 
+    def _move_skill(self, index: int, step: int) -> int:
+        """Swap the Skills list's move `index` with the one `step` (±1) away
+        (the equipped moves' order, kept after the battle); its new index."""
+        m = self.actor.monster
+        keys = [k for k in m.equipped if k in m.skills]  # (as `Monster.moves` lists them)
+        other = index + step
+        if not 0 <= other < len(keys):
+            return index
+        a, b = m.equipped.index(keys[index]), m.equipped.index(keys[other])
+        m.equipped[a], m.equipped[b] = m.equipped[b], m.equipped[a]
+        return other
+
+    @property
+    def touch_keys(self):
+        return ((pygame.K_o, "Order"),) if self.menu == "skills" else ()
+
     def _hint(self) -> str:
+        if self.menu == "skills" and self.ordering:
+            return "Up/Down: move the skill   Enter / O: put it down"
         if self.menu == "target" and self._spread_aim:
             return "Hits all of them   Enter / tap: confirm   X: back"
         return {
             "command": "Up/Down: choose   Enter: confirm   X: back",
-            "skills": "Up/Down: choose skill   Enter: confirm   X: back",
+            "skills": "Up/Down: choose skill   Enter: confirm   O: reorder   X: back",
             "items": "Up/Down: choose item   Enter: confirm   X: back",
             "target": "Arrows or tap: choose target   Enter / tap again: confirm   X: back",
         }.get(self.menu, "")
@@ -1431,7 +1472,8 @@ class BattleScene(Scene):
         elif self._list_open == "skills":
             for i, move in enumerate(self.actor.monster.moves):
                 y = SKILL_WINDOW.y + PAD + i * ROW_H
-                ui.text(window, move.name, (SKILL_WINDOW.x + 22, y))
+                carried = self.ordering and i == self.skill
+                ui.text(window, move.name, (SKILL_WINDOW.x + 22, y), ui.YELLOW if carried else ui.WHITE)
                 if move.type:
                     ui.badge_text(window, type_name(move.type), self._badge_pos(i))
                 power = "1/2" if move.halve else str(round(move.power * move.scale)) if move.damaging else "-"

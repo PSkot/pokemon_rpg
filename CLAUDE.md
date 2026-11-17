@@ -70,7 +70,11 @@ non-commercial project.
   members who already aimed show under their targets. A spread move (e.g.
   Fight with Sweeping) goes through the target menu too, with an arrow
   over every one it hits (`_aimed`, `_spread_aim`): confirm, or tap any;
-  its user's name then shows under all of them. Enemies show an HP bar
+  its user's name then shows under all of them. Each party member's
+  menus open on what it chose last (`Combatant.last_command`/`last_skill`).
+  In the Skills list, O (touch: Order) carries the highlighted move up or
+  down: the equipped moves' order, kept after the battle (`_move_skill`);
+  which moves are equipped only changes outside battles. Enemies show an HP bar
   (no numbers) under their feet (`_enemy_bar`); those names go under it. Battle sequences are generator "scripts"
   that yield seconds to wait (`BattleScene._round` / `_perform`).
 - Each `Animation` aligns its own baseline (lowest opaque row) to the feet
@@ -141,7 +145,9 @@ non-commercial project.
   tree screen (`scenes/skill_tree.py`, party screen → S: a panning node
   map, `layout`, with a mini-map (M; tap/drag on it to jump); arrows go
   to the nearest node that way, taps pick a node, Q/W switch Pokémon) spends points,
-  equips moves and resets points (towns only, `Scene.in_town`). A species
+  equips moves (E; with all 4 slots full it asks which one the move
+  replaces), orders them (O; both in `scenes/moves_panel.MovesPanel`)
+  and resets points (towns only, `Scene.in_town`). A species
   without a tree gets Tackle (`stand_in_tree`). Battle: stat stages
   incl. accuracy (`Combatant.stages`; misses only come from lowered
   accuracy), priority, multi-hit, flinch, confusion, bind, Leech Seed,

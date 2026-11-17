@@ -24,6 +24,7 @@ from ..mechanics.pokemon import Monster
 from ..mechanics.skills import MAX_EQUIPPED, Skill, SkillTree
 from ..mechanics.type_chart import COLORS
 from ..mechanics.type_chart import name as type_name
+from .moves_panel import MovesPanel
 
 PAD = 9
 HEADER = pygame.Rect(6, 6, 628, 40)
@@ -86,7 +87,7 @@ def layout(tree: SkillTree) -> dict[str, tuple[float, float]]:
 
 
 class SkillTreeScene(Scene):
-    touch_keys = ((pygame.K_e, "Equip"), (pygame.K_r, "Reset"), (pygame.K_w, "Next"))
+    touch_keys = ((pygame.K_e, "Equip"), (pygame.K_o, "Order"), (pygame.K_r, "Reset"), (pygame.K_w, "Next"))
 
     def __init__(self, return_to: Scene, party: list[Monster], member: int, can_reset: bool):
         self.return_to = return_to
@@ -94,6 +95,7 @@ class SkillTreeScene(Scene):
         self.member = member
         self.can_reset = can_reset
         self.asking = False  # "reset all points?"
+        self.panel: MovesPanel | None = None  # the equipped moves' panel (O, or E with every slot full)
         self.message = ""
         self.t = 0.0
         self.show_map = True  # the mini-map (M)
@@ -123,6 +125,10 @@ class SkillTreeScene(Scene):
         if event.type != pygame.KEYDOWN:
             return
         key, m = event.key, self.monster
+        if self.panel:
+            if self.panel.handle_key(key):
+                self.message, self.panel = self.panel.message, None
+            return
         if self.asking:
             if key in CONFIRM_KEYS:
                 m.reset_skills()
@@ -147,6 +153,11 @@ class SkillTreeScene(Scene):
                 self.message = f"Learned {skill.name}!" if rank == 1 else f"{skill.name} is now rank {rank}."
         elif key == pygame.K_e:
             self.message = self._toggle_equip()
+        elif key == pygame.K_o:
+            if m.equipped:
+                self.panel = MovesPanel(m)
+            else:
+                self.message = "No moves equipped besides Fight."
         elif key == pygame.K_r:
             if self.can_reset:
                 self.asking = True
@@ -174,7 +185,7 @@ class SkillTreeScene(Scene):
     def tap(self, pos: tuple[float, float], drag: bool) -> None:
         """On the mini-map: go to the skill nearest that spot (dragging
         scrubs along). On the tree: pick the node tapped."""
-        if self.asking:
+        if self.asking or self.panel:
             return
         rect, scale, bounds = self._minimap()
         if self.show_map and rect.collidepoint(pos):
@@ -197,8 +208,9 @@ class SkillTreeScene(Scene):
         if skill.key in m.equipped:
             m.equipped.remove(skill.key)
             return f"{skill.name} unequipped."
-        if len(m.equipped) >= MAX_EQUIPPED:
-            return f"All {MAX_EQUIPPED} slots are full: unequip a move first."
+        if len(m.equipped) >= MAX_EQUIPPED:  # pick the one it replaces
+            self.panel = MovesPanel(m, replace_with=skill.key)
+            return ""
         m.equipped.append(skill.key)
         return f"{skill.name} equipped."
 
@@ -293,6 +305,8 @@ class SkillTreeScene(Scene):
         move = tree.effective_move(m.skills, tree.owner(self.cursor))
         if move.type:
             ui.badge(canvas, BADGE_POS, COLORS[move.type])
+        if self.panel:
+            self.panel.draw(canvas)
 
     def draw_overlay(self, window: pygame.Surface) -> None:
         m, tree = self.monster, self.monster.tree
@@ -308,7 +322,7 @@ class SkillTreeScene(Scene):
         # Labels, right of their nodes, clipped to the view.
         s = settings.SCALE
         window.set_clip(pygame.Rect(VIEW.x * s, VIEW.y * s, VIEW.w * s, VIEW.h * s))
-        for skill in tree.skills.values():
+        for skill in tree.skills.values() if not self.panel else ():  # (the panel covers the tree)
             x, y = self._screen(skill.key)
             if not (VIEW.left - COL < x < VIEW.right and VIEW.top - 10 < y < VIEW.bottom + 10):
                 continue
@@ -326,10 +340,12 @@ class SkillTreeScene(Scene):
             r = MOVE_R if skill.kind == "move" else BUFF_R
             ui.text(window, label, (x + r + 2, y - (13 if skill.kind == "move" else 11)), color, size=size)
         window.set_clip(None)
-        if self.show_map:
+        if self.show_map and not self.panel:
             self._draw_minimap(window)
         self._draw_info(window)
-        ui.text(window, f"Arrows: move   Enter: learn   E: equip   R: reset{'' if self.can_reset else ' (towns)'}"
+        if self.panel:
+            self.panel.draw_overlay(window)
+        ui.text(window, f"Arrows: move   Enter: learn   E: equip   O: order   R: reset{'' if self.can_reset else ' (towns)'}"
                         f"   Q/W: Pokémon   M: map   S: back",
                 (TREE_WINDOW.x + 10, TREE_WINDOW.bottom - PAD - 6), ui.GREY, size=16)
 
