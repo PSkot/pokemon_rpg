@@ -442,6 +442,11 @@ half HP, once per battle); the bag starts without gear.
   (`Item.min_rarity`): 9…12% at Epic, 12…16% at Legendary. Loot, enemies'
   gear and quest rewards pick the rarity first, then an item that drops
   at it.
+- **Older saves** (gear saved before these rules, `items.GEAR_VERSION`)
+  are brought up to them once, on loading (`items.updated_gear`): an
+  Endure item below Epic becomes another item for the same slot (same
+  rarity, level and affixes), and special effects are rescaled to the
+  special ladder.
 - So newer gear of a lower rarity can beat older gear of a higher one.
   Muscle Band (Attack +8…12%) at its highest roll: Common Lv5 +14%, Rare
   Lv10 +24%, Common Lv25 +24%, Uncommon Lv35 +35%, Epic Lv10 +33%.

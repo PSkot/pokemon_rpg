@@ -452,6 +452,27 @@ def money_text(amount: int) -> str:
     return f"₽{amount:,}"
 
 
+GEAR_VERSION = 2  # saved gear from before version 2 had special effects at full strength on any rarity
+
+
+def updated_gear(gear: Gear, rng: random.Random | None = None) -> Gear:
+    """Gear rolled before version 2, brought up to its rules: an item that
+    can't drop at its rarity any more (Endure below Epic) becomes another of
+    the same slot (same rarity, level and affixes), and special effects are
+    scaled to SPECIAL_FACTOR instead of the rarity's factor."""
+    rng = rng or random.Random()
+    item, rolls = gear.item, list(gear.rolls)
+    if not item.drops_at(gear.rarity.name):
+        item = ITEMS[rng.choice([n for n, i in ITEMS.items()
+                                 if i.slot == item.slot and i.drops_at(gear.rarity.name)])]
+        own = [Roll(None, _roll(item.mods, gear.rarity, gear.level, rng))] if item.mods else []
+        rolls = own + [r for r in rolls if r.affix]
+    special = SPECIAL_FACTOR[gear.rarity.name] / gear.rarity.factor
+    rolls = [Roll(r.affix, {m: max(1, round(v * special)) if _special(m) and v > 0 else v for m, v in r.mods.items()})
+             for r in rolls]
+    return Gear(item, gear.rarity, rolls, gear.level)
+
+
 @dataclass
 class Bag:
     """Everything the player carries that isn't equipped."""
