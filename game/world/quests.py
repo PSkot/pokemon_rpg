@@ -224,6 +224,56 @@ QUESTS = {q.key: q for q in [
         money=200, xp=100,
     ),
 
+    # Their next forms, and Rattata's: each from a townsfolk of that species.
+    Quest(
+        "evolve_butterfree", "Spread Your Wings",
+        "The Butterfree in Pewter City says your Metapod is ready to hatch, once the skies are safe for it.",
+        giver="pewter_butterfree",
+        offer=(("Butterfree", "Your Metapod is ready to hatch. I can feel it. But a cocoon only opens when it's "
+                              "safe."),
+               ("Butterfree", "Pidgey hunt Caterpie and Metapod. Chase off 6 of them, then come back to me.")),
+        steps=(hunt("pidgey", 6, "Route 1, Routes 24 and 25"),
+               Step("talk", "pewter_butterfree", "Tell Butterfree the skies are safe (Pewter City)", town="pewter",
+                    dialogue=(("Butterfree", "The Pidgey keep their distance now. Your Metapod can feel it too."),
+                              ("Butterfree", "Go on. Spread your wings!"))),
+               Step("evolve", "metapod", "Evolve your Metapod into Butterfree (party screen: E)")),
+        money=400, xp=300,
+    ),
+    Quest(
+        "evolve_beedrill", "The Hive",
+        "The Beedrill in Pewter City says a Kakuna earns its stingers by serving the hive, and facing its "
+        "Queen.",
+        giver="pewter_beedrill",
+        offer=(("Beedrill", "Bzzz. Your Kakuna is ready to break out. But only one that has served the hive gets its "
+                            "stingers."),
+               ("Beedrill", "Bring 4 Royal Jelly from the Weedle and Kakuna of Viridian Forest.")),
+        steps=(collect("Royal Jelly", 4, "viridian_forest", ("weedle", "kakuna"), 30,
+                       "Weedle and Kakuna in Viridian Forest", "Royal Jelly"),
+               Step("talk", "pewter_beedrill", "Bring the Royal Jelly to Beedrill (Pewter City)", town="pewter",
+                    dialogue=(("Beedrill", "Good jelly. The hive will remember."),
+                              ("Beedrill", "Now face the Hive Queen in her thicket. Talk to me when you're ready."))),
+               Step("defeat", "hive_queen", "Beat the Hive Queen in her thicket (talk to Beedrill, Pewter City)",
+                    dialogue=(("Beedrill", "The Queen bows to your Kakuna. It has earned its stingers. Bzzz!"),)),
+               Step("evolve", "kakuna", "Evolve your Kakuna into Beedrill (party screen: E)")),
+        money=600, xp=450,
+    ),
+    Quest(
+        "evolve_raticate", "Rat King",
+        "Viridian City's Rattata says the Rat King rules the burrows by Route 1. A Rattata that beats him could "
+        "grow into a Raticate.",
+        giver="viridian_rattata",
+        offer=(("Rattata", "Squeak! Your Rattata has big teeth now. Big enough to take on the Rat King?"),
+               ("Rattata", "First show the snakes who's boss: beat 5 Ekans on Routes 3 and 4. Then come back.")),
+        steps=(hunt("ekans", 5, "Routes 3 and 4"),
+               Step("talk", "viridian_rattata", "Report to Rattata (Viridian City)", town="viridian",
+                    dialogue=(("Rattata", "Snakes beaten! Squeak!"),
+                              ("Rattata", "The Rat King's gang lives in the burrows. Talk to me when you're ready."))),
+               Step("defeat", "rat_den", "Beat the Rat King in his burrows (talk to Rattata, Viridian City)",
+                    dialogue=(("Rattata", "The Rat King is beaten! Your Rattata is the king now!"),)),
+               Step("evolve", "rattata", "Evolve your Rattata into Raticate (party screen: E)")),
+        money=700, xp=500,
+    ),
+
     # The starters' evolutions: the elder in Pewter City (the last form of
     # the player's starter's line) gives the one for the player's starter.
     Quest(

@@ -130,7 +130,7 @@ TOWNS = {t.key: t for t in [
                "A Spearow that wins its fights grows a long beak. Like mine.",
            )),
        )),
-    Town("pewter", "Pewter City", 72, (
+    Town("pewter", "Pewter City", 80, (
         Building("", (HOUSES, 3), 7),
         Building("Pokémon Center", (FUNCTIONAL, 0), 19),
         Building("Poké Mart", (FUNCTIONAL, 2), 32, inside="mart"),
@@ -146,6 +146,15 @@ TOWNS = {t.key: t for t in [
            Folk("pewter_geodude", "Geodude", "geodude", 55, (
                "Grr! The Boulder Gang runs the gym. Rock beats everything!",
                "Well... except Water and Grass. Don't tell anyone.",
+           )),
+           # Evolution quests: Metapod -> Butterfree, Kakuna -> Beedrill.
+           Folk("pewter_butterfree", "Butterfree", "butterfree", 42, (
+               "Flutter... The flowers here grow on rocks. Tough flowers, for a tough town.",
+               "Every Metapod dreams of flying. When yours is ready (Lv10), come and see me.",
+           )),
+           Folk("pewter_beedrill", "Beedrill", "beedrill", 70, (
+               "Bzzz. The hive is deep in Viridian Forest. Keep away, unless you're one of us.",
+               "A Kakuna that serves the hive (Lv10) earns its stingers. Bzzz.",
            )),
        )),
     # The Pokémon Center at the foot of Mt. Moon (Gen 1: on Route 4), where

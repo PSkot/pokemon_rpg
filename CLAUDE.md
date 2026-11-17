@@ -318,7 +318,11 @@ non-commercial project.
   Pidgey and Spearow by the feud (`feud_pidgey`/`feud_spearow`, Viridian's
   Pidgeotto and Fearow; `Quest.excludes`: one side at a time): hunt 8 of
   the other side, talk, beat its giant leader's band on its home ground
-  (`instance._feud`, sent by the giver), evolve.
+  (`instance._feud`, sent by the giver), evolve. Metapod → Butterfree,
+  Kakuna → Beedrill (Pewter's Butterfree and Beedrill) and Rattata →
+  Raticate (Viridian's Rattata) the same way (`evolve_butterfree`: hunt,
+  talk, evolve; `evolve_beedrill`: collect Royal Jelly, the Hive Queen's
+  thicket; `evolve_raticate`: hunt Ekans, the Rat King's burrows).
 - Recruitment (`docs/quests.md` → Recruitment): won route battles count
   defeated Pokémon per line (`Game.defeated`, `pokemon.line_base`); at
   `instance.RECRUITS[line].needed` its recruitment quest opens (board
@@ -407,8 +411,9 @@ non-commercial project.
   frame) and Squirtle's jump crouch. Their bases were generated with the
   species' icon as a design reference and Charmander as a style reference
   (Oddish, Bellsprout, Abra, Venonat, Goldeen, Staryu, Starmie, Horsea,
-  Shellder and Psyduck too, made the same way; Goldeen's base was
-  mirrored, as every candidate faced left). Placeholder quality: likely to be redone.
+  Shellder, Psyduck, Butterfree, Beedrill and Raticate too, made the same
+  way; Goldeen's, Butterfree's and Raticate's bases were mirrored, as
+  their candidates faced left). Placeholder quality: likely to be redone.
 - A move's `anim` plays if the species has that animation; otherwise the
   species' `fight_anim` does (no move-specific sheets for now).
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,

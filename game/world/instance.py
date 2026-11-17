@@ -256,13 +256,15 @@ ROUTES.update({r.key: r for r in [
 # where its leader waits, giant, with two of its flock.
 
 def _feud(key: str, name: str, area: Theme, species: str, leader: str, band: str, folk: str,
-          levels: tuple[int, int]) -> Route:
-    """`levels`: the leader's and its flock's (the Fearow, far stronger than a
-    Pidgeotto, comes in lower)."""
+          levels: tuple[int, int], town: str = "viridian") -> Route:
+    """A home ground: a map full of `species`, its giant `leader` waiting with
+    two of them; walked by talking to `folk` in `town`. `levels`: the
+    leader's and its flock's (the Fearow, far stronger than a Pidgeotto,
+    comes in lower)."""
     lead, flock = levels
     theme = replace(area, key=key, decor=area.decor_key, pool=(PoolEntry(species, 1, (flock - 1, flock + 1)),),
                     group_sizes=((2, 60), (3, 40)))
-    return Route(key, name, theme, maps=1, towns=("viridian", "viridian"), boss=True,
+    return Route(key, name, theme, maps=1, towns=(town, town), boss=True,
                  boss_group=((leader, lead), (species, flock), (species, flock)), boss_scale=2, trainer=band,
                  boss_chest="battle", prize=20, folk=folk)
 
@@ -272,6 +274,11 @@ ROUTES.update({r.key: r for r in [
           (17, 14)),
     _feud("feud_sky_flock", "Sky Flock Meadow", MEADOW, "pidgey", "pidgeotto", "Sky Flock", "viridian_fearow",
           (21, 17)),
+    # Evolution quests' home grounds (quests evolve_beedrill, evolve_raticate).
+    _feud("hive_queen", "Beedrill Thicket", FOREST, "kakuna", "beedrill", "Hive Queen", "pewter_beedrill",
+          (13, 11), town="pewter"),
+    _feud("rat_den", "Rat King's Burrows", MEADOW, "rattata", "raticate", "Rat King's Gang", "viridian_rattata",
+          (23, 19)),
 ]})
 
 

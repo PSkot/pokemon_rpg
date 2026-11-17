@@ -352,7 +352,7 @@ Stages: Pidgey → Pidgeotto (Lv18) → Pidgeot (Lv36). Whole tree: 121 points.
 
 ## The Rattata line
 
-Stages: Rattata → Raticate (Lv20, not in the game yet). Whole tree: 115 points.
+Stages: Rattata → Raticate (Lv20). Whole tree: 115 points.
 
 | Move | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- |
@@ -374,7 +374,7 @@ Stages: Rattata → Raticate (Lv20, not in the game yet). Whole tree: 115 points
 
 ## The Caterpie line
 
-Stages: Caterpie → Metapod (Lv7) → Butterfree (Lv10, not in the game yet). Whole tree: 143 points.
+Stages: Caterpie → Metapod (Lv7) → Butterfree (Lv10). Whole tree: 143 points.
 
 | Move | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- |
@@ -399,7 +399,7 @@ Stages: Caterpie → Metapod (Lv7) → Butterfree (Lv10, not in the game yet). W
 
 ## The Weedle line
 
-Stages: Weedle → Kakuna (Lv7) → Beedrill (Lv10, not in the game yet). Whole tree: 122 points.
+Stages: Weedle → Kakuna (Lv7) → Beedrill (Lv10). Whole tree: 122 points.
 
 | Move | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- |

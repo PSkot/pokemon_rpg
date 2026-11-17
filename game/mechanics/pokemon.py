@@ -126,8 +126,12 @@ SPECIES.update({
     "rattata": _animated("rattata", "Rattata", (30, 56, 35, 72), ("normal",), exp=57, hit=5),
     "caterpie": _animated("caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), exp=53, hit=5),
     "metapod": _animated("metapod", "Metapod", (50, 20, 55, 30), ("bug",), exp=72, hit=2),
+    # Butterfree hits with its Special (80), as Abra does: its moves are Confusion and powders.
+    "butterfree": _animated("butterfree", "Butterfree", (60, 80, 50, 70), ("bug", "flying"), exp=160, hit=3),
     "weedle": _animated("weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"), exp=52, hit=4),
     "kakuna": _animated("kakuna", "Kakuna", (45, 25, 50, 35), ("bug", "poison"), exp=71, hit=5),
+    "beedrill": _animated("beedrill", "Beedrill", (65, 80, 40, 75), ("bug", "poison"), exp=159, hit=5),
+    "raticate": _animated("raticate", "Raticate", (55, 81, 60, 97), ("normal",), exp=116, hit=5),
     "oddish": _animated("oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"), exp=78, hit=4),
     "bellsprout": _animated("bellsprout", "Bellsprout", (50, 75, 35, 40), ("grass", "poison"), exp=84, hit=4),
     # Psychic Pokémon hit with Gen 1's Special, so Abra's Attack is its

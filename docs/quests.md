@@ -327,6 +327,22 @@ the escorts' level), its band at the end; a trainer battle with the
 whole party, then back to the giver. The Fearow comes in lower than the
 Pidgeotto: it's far stronger (Attack 90, Speed 100).
 
+### Butterfree, Beedrill and Raticate (Lv10, Lv10, Lv20)
+
+Each from a townsfolk of the species it evolves into, on offer once your
+Metapod / Kakuna (Lv10) or Rattata (Lv20) is at its evolution level, in
+the party or the reserve. A home ground is a map like the feud's
+(`instance._feud`, with its town): talk to the giver again to go there.
+
+| | Spread Your Wings (`evolve_butterfree`) | The Hive (`evolve_beedrill`) | Rat King (`evolve_raticate`) |
+| --- | --- | --- | --- |
+| Giver | Butterfree, Pewter City | Beedrill, Pewter City | Rattata, Viridian City |
+| 1. | Hunt 6 Pidgey (Route 1, Routes 24–25): they prey on Metapod | Collect 4 Royal Jelly (30% per Weedle or Kakuna in Viridian Forest) | Hunt 5 Ekans (Routes 3 and 4) |
+| 2. Talk | Tell Butterfree the skies are safe | Bring the jelly to Beedrill | Report to Rattata |
+| 3. | – | Defeat the **Hive Queen** in the Beedrill Thicket (forest): giant Beedrill 13, Kakuna 11 ×2 | Defeat the **Rat King's Gang** in the Rat King's Burrows (meadow): giant Raticate 23, Rattata 19 ×2 |
+| Last | Evolve Metapod into Butterfree | Evolve Kakuna into Beedrill | Evolve Rattata into Raticate |
+| Rewards | ₽400, 300 XP | ₽600, 450 XP | ₽700, 500 XP |
+
 ---
 
 ## Recruitment
