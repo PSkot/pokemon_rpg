@@ -626,7 +626,10 @@ class OverworldScene(MapScene):
         self.next_scene = Transition(self, town, flashes=0)
 
     def update(self, dt: float) -> None:
-        if self.fighting:  # back from a battle
+        # Back from a battle. (Not while still heading into it: a gym's waves
+        # start from the team pick, closed by a key press, and the map is
+        # updated once more in that frame.)
+        if self.fighting and not self.next_scene:
             self._after_battle(*self.fighting)
             self.fighting = None
         super().update(dt)
