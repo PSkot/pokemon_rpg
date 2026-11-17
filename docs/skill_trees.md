@@ -90,12 +90,18 @@ On top of each skill's own level and stage, tree-wide rules
 | --- | --- | --- |
 | Move of power 71–99 | Lv25 | the line's first evolution |
 | Move of power 100+ (or Super Fang) | Lv35 | the line's last stage |
-| Sweeping, Wide (hitting every enemy) | Lv25 (Lv30 for a line that doesn't evolve) | the first evolution |
-| Link | Lv20 | the first evolution |
+| Sweeping, Wide (hitting every enemy) | Lv25 | the first evolution |
+| Wide on a move that disables (sleep, paralysis, freeze, confusion: Sleep Powder, Stun Spore, Sing, Supersonic, Thunder Wave, Glare, ...) | Lv30 | the first evolution |
+| Link setting off a status or stat move (Growl, Leer, Leech Seed, Poison Powder, ...) | Lv20 | the first evolution |
+| *Strong* link: setting off a damaging move, or one that disables or binds | Lv25, at most 2 ranks | the first evolution |
+
+A line that doesn't evolve gets each of these 5 levels later. A move set
+off by a link only hits the one aimed at: its Sweeping or Wide doesn't
+carry over (`BattleScene._apply`).
 
 (A stage the game doesn't have yet, e.g. Kadabra, can't be reached: those
 skills wait for it.) Older saves get every point back once
-(`saves.SKILLS_VERSION`), to spend again under these costs.
+(`saves.SKILLS_VERSION`), to spend again under these rules.
 
 ### The buffs of each move
 
@@ -109,7 +115,7 @@ Every move gets its branches from its kind (`skills._buffs`); per rank:
 | *Rider* | 3 | by type: Searing (fire, +10% burn), Crackling (electric, +10% paralysis), Chilling (ice, +5% freeze), Venomous (poison/bug, +10% poison), Draining (grass, heals 15% of the damage), Rippling (water, 10% Speed down), Dusting (ground, 10% accuracy down), Bewildering/Haunting (psychic/ghost, +10% confusion), Staggering (others, +10% flinch) | +3 | the move |
 | Wounding | 2 | wounds: 1/16, then 1/12 of max HP per round for 3 rounds (not on weak moves) | +16 | the rider |
 | Keen | 2 | crits ×3/×4 as likely (not on high-crit or weak moves) | +6 | Potent |
-| Sweeping | 2 | hits every enemy: the one aimed at at full damage, the others at 50%, then 75% (not on spread moves) | +12, Lv25 and the first evolution at least | Potent |
+| Sweeping | 2 | hits every enemy: the one aimed at at full damage, the others at 50%, then 75% (not on spread moves) | +12, Lv25 and the first evolution at least (see above) | Potent |
 | Instant / Tireless / Cushioned / Calm | 1–2 | take away a drawback: the charge round, the recharge round, recoil (half, then none), the user's confusion | +10 to +20 | Potent |
 | *Capstone* | 1 | Swift (power ≥ 90: always goes first), Relentless (multi-hit: 1 more hit) or Twin (hits twice at −30% power) | +24 (Lv30 at least), last stage | Keen |
 
@@ -148,7 +154,8 @@ Rest; each with Wide/Shared, Lingering or Renewing, and Quick.
 - **Skills:** up to **4 equipped moves**, like Gen 1's four move slots.
   Learned moves that aren't equipped can be swapped in outside battle.
 - Buffs and links work on their move automatically. A link's set-off move
-  shows its name over the user and "Vine Whip set off Leech Seed!".
+  shows its name over the user and "Vine Whip set off Leech Seed!". It
+  only hits the one aimed at (not every enemy, even with Sweeping or Wide).
 - **Wounds** (Wounding, Lingering): the target loses its share of max HP
   at the end of each round for 3 rounds; a new wound restarts the count
   (the bigger share stays).
@@ -185,7 +192,7 @@ A species added without a tree gets Tackle as its only skill
   ended wild battles); Psychic lowers Defense (Gen 1: Special, not in this
   game); Wrap and Clamp hurt for 2–5 rounds instead of locking the target;
   Thrash and Petal Dance hit once and confuse the user (Petal Dance hits
-  every enemy); Focus Energy works as intended (Gen 1's was bugged).
+  every enemy, the others at 50%); Focus Energy works as intended (Gen 1's was bugged).
   Mirror Move, Disable, Mist and other moves that don't fit are left out.
 - **Status moves** that inflict a status or confusion have their Gen 1
   hit chance (Sleep Powder 75%, Sing 55%, ...); everything else always
@@ -232,7 +239,7 @@ Links cost 2 points a rank.
 
 ## The Charmander line
 
-Stages: Charmander → Charmeleon (Lv16) → Charizard (Lv36). Whole tree: 144 points.
+Stages: Charmander → Charmeleon (Lv16) → Charizard (Lv36). Whole tree: 142 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -251,7 +258,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Smoldering Claws | Scratch → Ember | 20 / 25 / 30 | Charmeleon | 15% / 30% / 45% |
+| Smoldering Claws | Scratch → Ember | 25 / 30 | Charmeleon | 15% / 30% |
 | Menace | Leer → Growl | 20 / 25 | Charmeleon | 50% / 100% |
 | Melting Heat | Flamethrower → Leer | 40 / 45 | Charmeleon | 30% / 60% |
 | Blazing Slash | Slash → Fire Spin | 48 / 53 | Charmeleon | 20% / 40% |
@@ -260,7 +267,7 @@ Links cost 2 points a rank.
 
 ## The Squirtle line
 
-Stages: Squirtle → Wartortle (Lv16) → Blastoise (Lv36). Whole tree: 152 points.
+Stages: Squirtle → Wartortle (Lv16) → Blastoise (Lv36). Whole tree: 150 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -279,7 +286,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Splash Tackle | Tackle → Bubble | 20 / 25 / 30 | Wartortle | 15% / 30% / 45% |
+| Splash Tackle | Tackle → Bubble | 25 / 30 | Wartortle | 15% / 30% |
 | Snapping Jaws | Bite → Tail Whip | 24 / 29 | Wartortle | 30% / 60% |
 | Shell Counter | Withdraw → Tail Whip | 30 / 35 | Wartortle | 50% / 100% |
 | Frost Spray | Hydro Pump → Ice Beam | 46 / 51 | Blastoise | 10% / 20% |
@@ -331,7 +338,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Toxic Claws | Scratch → Poison Sting | 20 / 25 | Nidorina | 15% / 30% |
+| Toxic Claws | Scratch → Poison Sting | 25 / 30 | Nidorina | 15% / 30% |
 | Taunting Bite | Bite → Growl | 31 / 36 | Nidorina | 30% / 60% |
 
 ---
@@ -355,7 +362,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Poison Horn | Horn Attack → Poison Sting | 20 / 25 | Nidorino | 15% / 30% |
+| Poison Horn | Horn Attack → Poison Sting | 25 / 30 | Nidorino | 15% / 30% |
 | Battle Cry | Focus Energy → Leer | 23 / 28 | Nidorino | 50% / 100% |
 
 ---
@@ -472,7 +479,7 @@ Stages: Oddish → Gloom (Lv21, not in the game yet) → Vileplume (by stone, no
 | Sleep Powder | 1 | 19 | Stun Spore | Oddish | Puts an enemy to sleep (75% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
 | Acid | 1 | 24 | Absorb | Oddish | Poison, 40 power. 33% chance to lower its Defense. | Potent, Venomous, Sweeping, Twin (9) |
 | Mega Drain | 1 | 25 | Absorb | Gloom | Grass, 40 power. Heals the user 1/2 of the damage dealt. | Potent, Draining, Sweeping, Twin (9) |
-| Petal Dance | 2 | 33 | Acid | Oddish | Grass, 70 power. Hits every enemy. The user becomes confused afterwards. | Potent, Draining, Wounding, Keen, Calm, Twin (12) |
+| Petal Dance | 2 | 33 | Acid | Oddish | Grass, 70 power. Hits every enemy at 50% damage. The user becomes confused afterwards. | Potent, Draining, Wounding, Keen, Calm, Twin (12) |
 | Solar Beam | 4 | 46 | Petal Dance | Vileplume | Grass, 120 power. Charges for a round first. | Potent, Draining, Wounding, Keen, Sweeping, Instant, Swift (14) |
 
 Links cost 2 points a rank.
@@ -486,7 +493,7 @@ Links cost 2 points a rank.
 
 ## The Goldeen line
 
-Stages: Goldeen → Seaking (Lv33, not in the game yet). Whole tree: 136 points.
+Stages: Goldeen → Seaking (Lv33, not in the game yet). Whole tree: 134 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -505,14 +512,14 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Splash Peck | Peck → Water Gun | 20 / 25 / 30 | Seaking | 15% / 30% / 45% |
-| Dizzy Dive | Horn Attack → Supersonic | 21 / 26 | Seaking | 15% / 30% |
+| Splash Peck | Peck → Water Gun | 25 / 30 | Seaking | 15% / 30% |
+| Dizzy Dive | Horn Attack → Supersonic | 25 / 30 | Seaking | 15% / 30% |
 
 ---
 
 ## The Staryu line
 
-Stages: Staryu → Starmie (by stone). Whole tree: 150 points.
+Stages: Staryu → Starmie (by stone). Whole tree: 148 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -532,7 +539,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Star Spin | Tackle → Water Gun | 20 / 25 / 30 | Starmie | 15% / 30% / 45% |
+| Star Spin | Tackle → Water Gun | 25 / 30 | Starmie | 15% / 30% |
 | Shining Core | Recover → Harden | 20 / 25 | Starmie | 50% / 100% |
 | Static Tide | Bubble Beam → Thunder Wave | 28 / 33 | Starmie | 15% / 30% |
 
@@ -559,7 +566,7 @@ Links cost 2 points a rank.
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
 | Mind Lock | Confusion → Kinesis | 20 / 25 | Kadabra | 20% / 40% |
-| Static Mind | Psybeam → Thunder Wave | 24 / 29 | Kadabra | 15% / 30% |
+| Static Mind | Psybeam → Thunder Wave | 25 / 30 | Kadabra | 15% / 30% |
 | Mending Wall | Recover → Reflect | 30 / 35 | Kadabra | 50% / 100% |
 
 ---
@@ -586,7 +593,7 @@ Links cost 2 points a rank.
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
 | Dizzy Spores | Supersonic → Poison Powder | 20 / 25 | Venomoth | 15% / 30% |
-| Mind Drain | Leech Life → Confusion | 20 / 25 | Venomoth | 15% / 30% |
+| Mind Drain | Leech Life → Confusion | 25 / 30 | Venomoth | 15% / 30% |
 
 ---
 
@@ -611,7 +618,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Snaring Vines | Vine Whip → Wrap | 20 / 25 | Weepinbell | 15% / 30% |
+| Snaring Vines | Vine Whip → Wrap | 25 / 30 | Weepinbell | 15% / 30% |
 | Corroding Grip | Wrap → Acid | 28 / 33 | Weepinbell | 20% / 40% |
 
 ---
@@ -635,7 +642,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Static Charge | Quick Attack → Thunder Wave | 20 / 25 | Pikachu | 15% / 30% |
+| Static Charge | Quick Attack → Thunder Wave | 30 / 35 | Pikachu | 15% / 30% |
 | Overcharge | Agility → Thunder Shock | 35 / 40 | Pikachu | 50% / 100% |
 
 ---
@@ -686,7 +693,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Clam Shell | Withdraw → Clamp | 25 / 30 | Shellder | 25% / 50% |
+| Clam Shell | Withdraw → Clamp | 30 / 35 | Shellder | 25% / 50% |
 | Icy Grip | Clamp → Aurora Beam | 32 / 37 | Shellder | 15% / 30% |
 
 ---
@@ -759,7 +766,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Blown Kiss | Double Slap → Lovely Kiss | 25 / 30 | Jynx | 10% / 20% |
+| Blown Kiss | Double Slap → Lovely Kiss | 30 / 35 | Jynx | 10% / 20% |
 | Mind Freeze | Psychic → Ice Punch | 37 / 42 | Jynx | 15% / 30% |
 
 ---
@@ -783,7 +790,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Lullaby | Water Gun → Sing | 20 / 25 | Lapras | 10% / 20% |
+| Lullaby | Water Gun → Sing | 30 / 35 | Lapras | 10% / 20% |
 | Haunting Song | Sing → Confuse Ray | 33 / 38 | Lapras | 25% / 50% |
 
 ---
@@ -807,7 +814,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Rolling Stone | Tackle → Rock Throw | 20 / 25 | Graveler | 15% / 30% |
+| Rolling Stone | Tackle → Rock Throw | 25 / 30 | Graveler | 15% / 30% |
 | Avalanche | Rock Slide → Earthquake | 28 / 33 | Graveler | 10% / 20% |
 
 ---
@@ -831,7 +838,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Crushing Coils | Bind → Screech | 20 / 25 | Onix | 25% / 50% |
+| Crushing Coils | Bind → Screech | 25 / 30 | Onix | 25% / 50% |
 | Rumbling Rocks | Rock Slide → Screech | 30 / 35 | Onix | 15% / 30% |
 
 ---
@@ -903,7 +910,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Venom Coils | Wrap → Poison Sting | 20 / 25 | Arbok | 15% / 30% |
+| Venom Coils | Wrap → Poison Sting | 25 / 30 | Arbok | 15% / 30% |
 | Paralyzing Gaze | Bite → Glare | 26 / 31 | Arbok | 15% / 30% |
 
 ---
@@ -926,7 +933,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Lullaby Slaps | Double Slap → Sing | 26 / 31 | Jigglypuff | 10% / 20% |
+| Lullaby Slaps | Double Slap → Sing | 30 / 35 | Jigglypuff | 10% / 20% |
 | Heavy Sleeper | Body Slam → Sing | 36 / 41 | Jigglypuff | 10% / 20% |
 
 ---
@@ -949,7 +956,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Dizzying Bite | Bite → Supersonic | 20 / 25 | Golbat | 15% / 30% |
+| Dizzying Bite | Bite → Supersonic | 25 / 30 | Golbat | 15% / 30% |
 | Draining Swoop | Wing Attack → Leech Life | 30 / 35 | Golbat | 15% / 30% |
 
 ---
@@ -973,7 +980,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Spore Claws | Scratch → Stun Spore | 20 / 25 | Parasect | 10% / 20% |
+| Spore Claws | Scratch → Stun Spore | 25 / 30 | Parasect | 10% / 20% |
 | Fungal Feast | Leech Life → Spore | 29 / 34 | Parasect | 10% / 20% |
 
 ---
@@ -998,7 +1005,7 @@ Links cost 2 points a rank.
 
 | Link | Sets off | Lv per rank | Stage | Chance per rank |
 | --- | --- | --- | --- | --- |
-| Moonlit Song | Double Slap → Sing | 20 / 25 | Clefable | 10% / 20% |
+| Moonlit Song | Double Slap → Sing | 25 / 30 | Clefable | 10% / 20% |
 | Static Slam | Body Slam → Thunder Wave | 36 / 41 | Clefable | 15% / 30% |
 
 <!-- trees:end -->

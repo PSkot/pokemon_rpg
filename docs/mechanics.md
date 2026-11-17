@@ -277,7 +277,8 @@ stats; only type immunity stops it (Ghost).
 - Moves that **hit every target** (Sweeping, Wide, Growl R2, ...): one on
   the enemies is still aimed at one of them (big arrow; the others get
   small ones), which takes full damage, the others the move's share; a
-  move it sets off (a link) goes to that one too. One on the own side
+  move it sets off (a link) goes to that one only (a set-off move never
+  hits every target, whatever its buffs). One on the own side
   ("Shared") needs no target choice and works on each Pokémon there.
   Enemies using one aim at a random target.
 

@@ -34,7 +34,16 @@ POWER_TIERS = ((100, 4, 35, 2), (71, 3, 25, 1), (41, 2, 0, 0), (0, 1, 0, 0))
 WEAK_POWER = 40          # damaging moves this weak get fewer buffs (no Wounding or Keen)
 SPREAD_LEVEL = 25        # Sweeping and Wide (hitting every enemy) open from here, at the first evolution ...
 SPREAD_LEVEL_SINGLE = 30  # ... or here for a line that doesn't evolve
-LINK_LEVEL = 20          # links open from here (at the first evolution, if the line has one)
+LINK_LEVEL = 20          # links open from here (at the first evolution, if the line has one) ...
+LINK_LEVEL_SINGLE = 25   # ... or here for a line that doesn't evolve
+# Strong links (setting off a damaging move, or one that puts the target to
+# sleep, paralyzes, freezes, confuses or binds it) open with Sweeping
+# (`SPREAD_LEVEL`) and have at most this many ranks.
+STRONG_LINK_RANKS = 2
+# Wide on a move that disables (sleep, paralysis, freeze, confusion) opens
+# from here, at the first evolution (or 5 levels later for a line that doesn't evolve).
+DISABLE_WIDE_LEVEL = 30
+DISABLING = {"sleep", "paralysis", "freeze"}
 LINK_COST = 2            # points per rank of a link
 RANK_LEVELS = 5         # each rank after the first opens this many levels later
 MAX_EQUIPPED = 4
@@ -474,10 +483,11 @@ def _link(link: Link) -> Skill:
     return Skill(_key(link.name), link.name, "link", src, len(ranks), link.level, (src, dst), link.stage, ranks, text)
 
 
-def _gated(skill: Skill, last_stage: int) -> Skill:
+def _gated(skill: Skill, skills: dict[str, Skill], last_stage: int) -> Skill:
     """`skill` with the tree-wide rules: strong moves cost more and open
     later (`POWER_TIERS`), hitting every enemy (Sweeping, Wide) and links
-    come in mid-game."""
+    come in mid-game, the strongest of them later still. `skills`: the
+    tree's (for a buff's move)."""
     first = min(1, last_stage)  # the first evolution (or none)
     if skill.kind == "move" and not skill.free:
         move = MOVES[skill.move]
@@ -485,12 +495,30 @@ def _gated(skill: Skill, last_stage: int) -> Skill:
         _, cost, level, stage = next(t for t in POWER_TIERS if power >= t[0])
         stage = {0: 0, 1: first, 2: last_stage}[stage]
         return replace(skill, cost=cost, level=max(skill.level, level), stage=max(skill.stage, stage))
+    single = 0 if last_stage else 5  # a line that doesn't evolve: these come 5 levels later
     if skill.kind == "buff" and skill.short in ("Sweeping", "Wide"):
-        level = SPREAD_LEVEL if last_stage else SPREAD_LEVEL_SINGLE
+        level = (DISABLE_WIDE_LEVEL if _disables(MOVES[skills[skill.move].move]) else SPREAD_LEVEL) + single
         return replace(skill, level=max(skill.level, level), stage=max(skill.stage, first))
     if skill.kind == "link":
-        return replace(skill, cost=LINK_COST, level=max(skill.level, LINK_LEVEL), stage=max(skill.stage, first))
+        if _strong(MOVES[skill.ranks[0]["triggers"][0][1]]):
+            n = STRONG_LINK_RANKS
+            return replace(skill, cost=LINK_COST, level=max(skill.level, SPREAD_LEVEL + single),
+                           stage=max(skill.stage, first), max_rank=min(skill.max_rank, n),
+                           ranks=skill.ranks[:n], text=skill.text[:n])
+        return replace(skill, cost=LINK_COST, level=max(skill.level, LINK_LEVEL + single), stage=max(skill.stage, first))
     return skill
+
+
+def _disables(move: Move) -> bool:
+    """`move` can take a target out of the fight for a while: sleep,
+    paralysis, freeze, confusion or binding."""
+    return move.status in DISABLING or bool(move.confuse) or bool(move.bind)
+
+
+def _strong(move: Move) -> bool:
+    """A move a link sets off that makes the link strong: one that deals
+    damage, or disables (`_disables`)."""
+    return move.damaging or _disables(move)
 
 
 def _tree(species: tuple[str, ...], *items: Skill | Link) -> SkillTree:
@@ -506,7 +534,7 @@ def _tree(species: tuple[str, ...], *items: Skill | Link) -> SkillTree:
         if isinstance(item, Link):
             skill = _link(item)
             skills[skill.key] = skill
-    return SkillTree(species, {key: _gated(s, last_stage) for key, s in skills.items()})
+    return SkillTree(species, {key: _gated(s, skills, last_stage) for key, s in skills.items()})
 
 
 TREES = {t.species[0]: t for t in [

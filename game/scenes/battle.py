@@ -1086,8 +1086,9 @@ class BattleScene(Scene):
         for key, name, chance in move.triggers:
             if not user.alive or random.random() * 100 >= chance or key not in user.monster.skills:
                 continue
-            # A set-off move fires at once and sets off nothing more.
-            extra = replace(user.monster.move(key), charge="", recharge=False, triggers=())
+            # A set-off move fires at once, sets off nothing more and only hits
+            # the one aimed at (Sweeping or Wide don't carry over).
+            extra = replace(user.monster.move(key), charge="", recharge=False, triggers=(), spread=False)
             if extra.target == "enemy":
                 first = [t for t in targets if t.alive and t.enemy != user.enemy][:1]  # (the one aimed at)
                 foes = first + [t for t in self._candidates(user, extra) if t.alive and t not in first]

@@ -121,7 +121,7 @@ MOVES = {m.name: m for m in [
     Move("Leech Life", 20, "enemy", type="bug", drain=0.5),
     Move("Vine Whip", 35, "enemy", type="grass"),
     Move("Razor Leaf", 55, "enemy", type="grass", crit_ratio=8),
-    Move("Petal Dance", 70, "enemy", type="grass", spread=True, self_confuse=True),
+    Move("Petal Dance", 70, "enemy", type="grass", spread=True, spread_share=0.5, self_confuse=True),
     Move("Solar Beam", 120, "enemy", "solar_beam", type="grass", charge="{user} took in sunlight!"),
     Move("Leech Seed", 0, "enemy", type="grass", seed=1 / 16, immune=("grass",)),
     Move("Leaf Shield", 0, "ally", "leaf_shield", type="grass", shield=2),

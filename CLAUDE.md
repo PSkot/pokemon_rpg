@@ -144,7 +144,11 @@ non-commercial project.
   (`Monster.move(key)`). Moves cost points by power (`POWER_TIERS`: 1–4;
   71+ power also needs Lv25 and the first evolution, 100+ Lv35 and the last
   stage), links 2 a rank and open from Lv20 at the first evolution,
-  Sweeping/Wide from Lv25 at the first evolution (`skills._gated`); Potent
+  Sweeping/Wide from Lv25 at the first evolution; strong links (setting
+  off damage, sleep, paralysis, freeze, confusion or binding) from Lv25
+  with at most 2 ranks, Wide on such disabling moves from Lv30; lines
+  that don't evolve 5 levels later (`skills._gated`). A set-off move only
+  hits the target aimed at (no Sweeping/Wide); Potent
   has 3 ranks, Keen 2, weak moves (≤ 40) no Wounding/Keen. Trees cost
   87–202 points (97 at Lv100): builds choose. Saves from before these
   costs refund every point once (`saves.SKILLS_VERSION`). Every line in the game has a tree (`docs/skill_trees.md`'s

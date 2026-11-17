@@ -72,7 +72,7 @@ def _load_gear(d: dict) -> Gear:
     return gear if d.get("v", 1) >= GEAR_VERSION else updated_gear(gear)  # (older saves: today's rules)
 
 
-SKILLS_VERSION = 2  # skills saved before version 2 were bought at the old costs (each point is given back)
+SKILLS_VERSION = 3  # skills saved before this were bought under older rules (each point is given back)
 
 
 def _monster(m: Monster) -> dict:
