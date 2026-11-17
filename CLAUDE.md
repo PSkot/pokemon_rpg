@@ -142,6 +142,9 @@ non-commercial project.
 - Skills (`skills.py`, `docs/skill_trees.md`): moves come from skill trees
   (one per evolution line, `TREES`), not learn levels. Skill points =
   level − 3; a skill opens by level + all its parents + evolution stage.
+  No move in a line's Red/Blue level-up learnset opens before the earliest
+  level that line learns it at (`skills.GEN1_LEVELS`, enforced in
+  `_tree`; TM-only moves keep their tree level).
   Kinds: moves (each Gen 1 move one 1-point skill, linked by paths; the
   free ones are base attacks, the first = Fight; 4 equipped,
   `Monster.equipped`), buffs (1–5 ranks, branches off one move, generated
@@ -177,8 +180,9 @@ non-commercial project.
   replaces), orders them (O; both in `scenes/moves_panel.MovesPanel`)
   and resets points (towns only, `Scene.in_town`). A species
   without a tree gets Tackle (`stand_in_tree`). Battle: stat stages
-  incl. accuracy (`Combatant.stages`; misses only come from lowered
-  accuracy), priority, multi-hit, flinch, confusion, bind, Leech Seed,
+  incl. accuracy (`Combatant.stages`; moves miss by their Gen 1 accuracy,
+  `Move.accuracy`/`moves.GEN1_ACCURACY`, × lowered accuracy's
+  `hit_chance`; `BattleScene._misses`), priority, multi-hit, flinch, confusion, bind, Leech Seed,
   spread moves, recoil, recharge, drain, Rest, Focus Energy, Toxic,
   wounds (`Move.bleed`), stages on the user (`self_stages`), set-off
   moves (`BattleScene._apply`).

@@ -50,7 +50,8 @@ class Hit:
 
 
 def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.0) -> Hit:
-    """The Gen 1 damage formula, simplified (no misses), plus skill ranks
+    """The Gen 1 damage formula, simplified (misses are rolled first, by
+    BattleScene._misses), plus skill ranks
     and gear. `share`: the part of the damage each target takes (a move
     that hits every enemy)."""
     m, types = user.monster, target.monster.species.types

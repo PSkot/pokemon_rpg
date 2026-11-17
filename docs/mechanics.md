@@ -155,8 +155,17 @@ party (Dewgong exists as a placeholder species).
 `game/mechanics/combat.py` (`damage`), applied in
 `game/scenes/battle.py` (`_apply`)
 
-Moves only miss when the user's **accuracy** has been lowered (see *Stat
-stages*). A hit is worked out in these steps:
+**Misses:** a move hits with its **Gen 1 accuracy** (`Move.accuracy`,
+`moves.GEN1_ACCURACY`): Tackle and Razor Leaf 95%; Hyper Fang, Super Fang,
+Hyper Beam, Sky Attack, Rock Slide and Blizzard 90%; Take Down, Fury
+Attack, Double Slap, Wrap, Pin Missile and Fire Blast 85%; Fury Swipes and
+Hydro Pump 80%; Slam, Bind and Clamp 75%; Fire Spin and Thunder 70%; Rock
+Throw 65%; of the status moves, Screech, Whirlwind 85%, String Shot 95%,
+Kinesis 80%, Leech Seed 90% (the others' chance to work is their status or
+confusion chance). Everything else always hits. Lowered **accuracy**
+stages multiply that (see *Stat stages*); Swift never misses. One roll
+per use (a multi-hit or spread move hits all or nothing). A hit is worked
+out in these steps:
 
 1. **Attack:** the user's Attack (with gear) × its **Attack stage**
    multiplier (see *Stat stages*). Halved if the user is **burned**.

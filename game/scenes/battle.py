@@ -1072,9 +1072,12 @@ class BattleScene(Scene):
 
     @staticmethod
     def _misses(user: Combatant, move: Move) -> bool:
-        """Moves only miss when the user's accuracy has been lowered (Sand-Attack)."""
-        accuracy = user.stages["accuracy"]
-        return accuracy < 0 and not move.sure_hit and random.random() >= hit_chance(accuracy)
+        """A move misses by its own accuracy (Gen 1's, `Move.accuracy`),
+        made worse by the user's lowered accuracy (Sand-Attack); Swift never
+        misses."""
+        if move.sure_hit:
+            return False
+        return random.random() >= move.accuracy / 100 * hit_chance(user.stages["accuracy"])
 
     def _faint(self, c: Combatant):
         """A script: `c` has just fainted (which clears its status and seed)."""

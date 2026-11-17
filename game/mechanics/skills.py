@@ -658,6 +658,10 @@ def _tree(species: tuple[str, ...], *items: Skill | Link) -> SkillTree:
         if isinstance(item, Link):
             skill = _link(item)
             skills[skill.key] = skill
+    gen1 = GEN1_LEVELS.get(species[0], {})
+    for key, skill in skills.items():
+        if skill.kind == "move" and not skill.free and skill.move in gen1:
+            skills[key] = replace(skill, level=max(skill.level, gen1[skill.move]))
     gated = {key: _gated(s, skills, last_stage) for key, s in skills.items()}
     # No two area buffs open together: each at least AREA_STEP levels after
     # the one before.
@@ -671,13 +675,60 @@ def _tree(species: tuple[str, ...], *items: Skill | Link) -> SkillTree:
     return SkillTree(species, gated)
 
 
+# Red/Blue level-up learnsets, for the moves in the trees: the earliest
+# level any stage of the line learns it at. No move opens sooner (`_tree`);
+# moves the line only gets from TMs keep their tree level. (The basic
+# attacks and a few other moves known from the start stay free: Abra's
+# Confusion and Kinesis, Jigglypuff's Pound.)
+GEN1_LEVELS = {
+    "bulbasaur": {"Leech Seed": 7, "Vine Whip": 13, "Poison Powder": 20, "Razor Leaf": 27, "Growth": 34,
+                  "Sleep Powder": 41, "Solar Beam": 48},
+    "charmander": {"Ember": 9, "Leer": 15, "Slash": 30, "Flamethrower": 38, "Fire Spin": 46},
+    "squirtle": {"Bubble": 8, "Water Gun": 15, "Bite": 22, "Withdraw": 28, "Skull Bash": 35, "Hydro Pump": 42},
+    "spearow": {"Leer": 9, "Fury Attack": 15, "Drill Peck": 29, "Agility": 36},
+    "nidoran_f": {"Scratch": 8, "Poison Sting": 14, "Tail Whip": 21, "Bite": 29, "Fury Swipes": 36,
+                  "Double Kick": 43},
+    "nidoran_m": {"Horn Attack": 8, "Poison Sting": 14, "Focus Energy": 21, "Fury Attack": 29, "Double Kick": 43},
+    "pidgey": {"Sand-Attack": 5, "Quick Attack": 12, "Whirlwind": 19, "Wing Attack": 28, "Agility": 36},
+    "rattata": {"Quick Attack": 7, "Hyper Fang": 14, "Focus Energy": 23, "Super Fang": 34},
+    "caterpie": {"Harden": 7, "Confusion": 12, "Poison Powder": 15, "Stun Spore": 16, "Sleep Powder": 17,
+                 "Supersonic": 21, "Whirlwind": 26, "Psybeam": 32},
+    "weedle": {"Harden": 7, "Fury Attack": 12, "Focus Energy": 16, "Twineedle": 20, "Pin Missile": 30, "Agility": 35},
+    "oddish": {"Poison Powder": 15, "Stun Spore": 17, "Sleep Powder": 19, "Acid": 24, "Petal Dance": 33,
+               "Solar Beam": 46},
+    "goldeen": {"Supersonic": 19, "Horn Attack": 24, "Fury Attack": 30, "Agility": 54},
+    "staryu": {"Water Gun": 17, "Harden": 22, "Recover": 27, "Swift": 32, "Hydro Pump": 47},
+    "abra": {"Psybeam": 27, "Recover": 31, "Psychic": 38, "Reflect": 42},
+    "venonat": {"Supersonic": 24, "Confusion": 27, "Poison Powder": 30, "Leech Life": 35, "Stun Spore": 38,
+                "Psybeam": 43, "Sleep Powder": 46, "Psychic": 51},
+    "bellsprout": {"Wrap": 13, "Poison Powder": 15, "Sleep Powder": 18, "Stun Spore": 21, "Acid": 26,
+                   "Razor Leaf": 33, "Slam": 42},
+    "pikachu": {"Thunder Wave": 9, "Quick Attack": 16, "Swift": 26, "Agility": 33, "Thunder": 43},
+    "seel": {"Growl": 30, "Aurora Beam": 35, "Rest": 40, "Take Down": 45, "Ice Beam": 50},
+    "shellder": {"Supersonic": 18, "Clamp": 23, "Aurora Beam": 30, "Leer": 39, "Ice Beam": 50},
+    "psyduck": {"Tail Whip": 28, "Confusion": 36, "Fury Swipes": 43, "Hydro Pump": 52},
+    "horsea": {"Smokescreen": 19, "Leer": 24, "Water Gun": 30, "Agility": 37, "Hydro Pump": 45},
+    "jynx": {"Lick": 18, "Double Slap": 23, "Ice Punch": 31, "Body Slam": 39, "Thrash": 47, "Blizzard": 58},
+    "lapras": {"Sing": 16, "Body Slam": 25, "Confuse Ray": 31, "Ice Beam": 38, "Hydro Pump": 46},
+    "geodude": {"Defense Curl": 11, "Rock Throw": 16, "Harden": 26, "Earthquake": 31},
+    "onix": {"Bind": 15, "Rock Throw": 19, "Slam": 33, "Harden": 43},
+    "diglett": {"Growl": 15, "Dig": 19, "Sand-Attack": 24, "Slash": 31, "Earthquake": 40},
+    "sandshrew": {"Sand-Attack": 10, "Slash": 17, "Poison Sting": 24, "Swift": 31, "Fury Swipes": 38},
+    "ekans": {"Poison Sting": 10, "Bite": 17, "Glare": 24, "Screech": 31, "Acid": 38},
+    "jigglypuff": {"Defense Curl": 19, "Double Slap": 24, "Rest": 29, "Body Slam": 34, "Double-Edge": 39},
+    "zubat": {"Supersonic": 10, "Bite": 15, "Confuse Ray": 21, "Wing Attack": 28},
+    "paras": {"Stun Spore": 13, "Leech Life": 20, "Spore": 27, "Slash": 34, "Growth": 41},
+    "clefairy": {"Sing": 13, "Double Slap": 18, "Defense Curl": 39},
+}
+
+
 TREES = {t.species[0]: t for t in [
     _tree(
         ("bulbasaur", "ivysaur", "venusaur"),
         _base("Tackle"),
         _base("Growl"),
         _move("Leech Seed", 7, "growl"),
-        _move("Vine Whip", 9, "tackle"),  # (Gen 1: Lv13; here as early as Ember and Bubble)
+        _move("Vine Whip", 13, "tackle"),
         _move("Poison Powder", 20, "growl"),
         _move("Take Down", 20, "tackle"),  # TM09
         _move("Leaf Shield", 22, "leech_seed", stage=1),  # Gen 1's Reflect (TM33)
@@ -772,7 +823,7 @@ TREES = {t.species[0]: t for t in [
     _tree(
         ("pidgey", "pidgeotto", "pidgeot"),
         _base("Gust"),
-        _base("Sand-Attack"),
+        _move("Sand-Attack", 5, "gust"),
         _move("Quick Attack", 12, "gust"),
         _move("Whirlwind", 19, "sand_attack"),
         _move("Wing Attack", 28, "gust"),
@@ -856,9 +907,9 @@ TREES = {t.species[0]: t for t in [
     _tree(
         ("staryu", "starmie"),  # Starmie evolves by Water Stone (not in yet)
         _base("Tackle"),
-        _base("Harden"),
-        _move("Water Gun", 10, "tackle"),
-        _move("Recover", 18, "harden"),
+        _move("Water Gun", 17, "tackle"),
+        _move("Harden", 22, "tackle"),
+        _move("Recover", 27, "harden"),
         _move("Swift", 22, "tackle"),  # TM39
         _move("Bubble Beam", 24, "water_gun"),  # TM11
         _move("Thunder Wave", 26, "harden"),  # TM45
@@ -888,7 +939,7 @@ TREES = {t.species[0]: t for t in [
     _tree(
         ("venonat", "venomoth"),
         _base("Tackle"),
-        _base("Supersonic"),
+        _move("Supersonic", 24, "tackle"),
         _move("Leech Life", 12, "tackle"),
         _move("Confusion", 16, "tackle"),
         _move("Poison Powder", 18, "supersonic"),
@@ -1013,8 +1064,8 @@ TREES = {t.species[0]: t for t in [
     _tree(
         ("geodude", "graveler", "golem"),  # Golem evolves by trade (not in yet)
         _base("Tackle"),
-        _base("Defense Curl"),
-        _move("Rock Throw", 11, "tackle"),
+        _move("Defense Curl", 11, "tackle"),
+        _move("Rock Throw", 16, "tackle"),
         _move("Harden", 21, "defense_curl"),
         _move("Rock Slide", 24, "rock_throw"),  # TM48
         _move("Earthquake", 26, "rock_throw"),
@@ -1027,7 +1078,7 @@ TREES = {t.species[0]: t for t in [
         ("onix",),  # Steelix comes later
         _base("Tackle"),
         _base("Screech"),
-        _move("Bind", 14, "tackle"),  # (Gen 1: 15; the Boulder Gang's Lv14 Onix knows it, as Brock's does in Gen 1)
+        _move("Bind", 15, "tackle"),
         _move("Rock Throw", 19, "tackle"),
         _move("Rock Slide", 28, "rock_throw"),  # TM48
         _move("Slam", 33, "bind"),

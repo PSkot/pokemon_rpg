@@ -6,7 +6,7 @@ Pokémon (`skills.apply_changes`), so every effect is a field.
 `describe` puts a move into words for the skill tree screen.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from fractions import Fraction
 
 from .type_chart import name as type_name
@@ -31,6 +31,7 @@ class Move:
     seed: float = 0.0   # Leech Seed: share of the target's max HP drained each round
     bind: float = 0.0   # Wrap: share of the target's max HP lost each round, for 2-5 rounds
     shield: int = 0     # Leaf Shield: rounds the target takes half damage
+    accuracy: int = 100  # % chance to hit (Gen 1's; `GEN1_ACCURACY`), lowered further by accuracy stages
     spread: bool = False      # hits every target on that side
     spread_share: float = 1.0  # damage share of each hit when it spreads
     reach: float = 0.0  # also hits one enemy next to the target, at this share (an area buff)
@@ -184,6 +185,17 @@ MOVES = {m.name: m for m in [
     Move("Confuse Ray", 0, "enemy", type="ghost", confuse=100),
 ]}
 
+# Red/Blue accuracy of the moves that could miss (status moves' chance to
+# work is their status_chance or confuse instead).
+GEN1_ACCURACY = {
+    "Tackle": 95, "Hyper Fang": 90, "Super Fang": 90, "Slam": 75, "Take Down": 85, "Hyper Beam": 90,
+    "Fury Attack": 85, "Fury Swipes": 80, "Double Slap": 85, "Wrap": 85, "Bind": 75, "Sky Attack": 90,
+    "Razor Leaf": 95, "Pin Missile": 85, "Fire Spin": 70, "Fire Blast": 85, "Rock Throw": 65, "Rock Slide": 90,
+    "Thunder": 70, "Clamp": 75, "Hydro Pump": 80, "Blizzard": 90,
+    "Screech": 85, "String Shot": 95, "Kinesis": 80, "Leech Seed": 90, "Whirlwind": 85,
+}
+MOVES = {name: replace(m, accuracy=GEN1_ACCURACY.get(name, 100)) for name, m in MOVES.items()}
+
 STAT_WORDS = {"attack": "Attack", "defense": "Defense", "speed": "Speed", "accuracy": "accuracy"}
 STATUS_VERBS = {"poison": "poison", "burn": "burn", "paralysis": "paralyze", "sleep": "put to sleep",
                 "freeze": "freeze"}
@@ -210,6 +222,8 @@ def describe(m: Move) -> str:
         if m.spread:
             share = "" if m.spread_share == 1 else f", the others at {round(m.spread_share * 100)}% damage"
             parts.append(f"Hits every enemy{share}.")
+    if m.accuracy < 100 and not m.sure_hit:
+        parts.append(f"{m.accuracy}% accurate.")
     if m.priority:
         parts.append("Always goes first.")
     if m.charge:
