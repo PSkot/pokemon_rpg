@@ -151,6 +151,9 @@ class SkillTreeScene(Scene):
                 m.rank_up(skill.key)
                 rank = m.skills[skill.key]
                 self.message = f"Learned {skill.name}!" if rank == 1 else f"{skill.name} is now rank {rank}."
+                if rank == 1 and skill.kind == "move" and skill.key not in m.equipped:
+                    # Every slot is full: as in Gen 1, ask which move it replaces (X: none).
+                    self.panel = MovesPanel(m, replace_with=skill.key)
         elif key == pygame.K_e:
             self.message = self._toggle_equip()
         elif key == pygame.K_o:

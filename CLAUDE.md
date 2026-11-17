@@ -177,7 +177,7 @@ non-commercial project.
   map, `layout`, with a mini-map (M; tap/drag on it to jump); arrows go
   to the nearest node that way, taps pick a node, Q/W switch Pokémon) spends points,
   equips moves (E; with all 4 slots full it asks which one the move
-  replaces), orders them (O; both in `scenes/moves_panel.MovesPanel`)
+  replaces, as does learning a move then, X: leave it unequipped), orders them (O; both in `scenes/moves_panel.MovesPanel`)
   and resets points (towns only, `Scene.in_town`). A species
   without a tree gets Tackle (`stand_in_tree`). Battle: stat stages
   incl. accuracy (`Combatant.stages`; moves miss by their Gen 1 accuracy,

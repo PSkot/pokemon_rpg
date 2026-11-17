@@ -66,6 +66,9 @@ class MovesPanel:
             if self.carrying:
                 self.carrying = False
             else:
+                if self.replace_with:
+                    name = m.tree.skills[self.replace_with].name
+                    self.message = f"{name} isn't equipped (E: equip it later)."
                 return True
         return False
 
@@ -88,7 +91,7 @@ class MovesPanel:
             if carried:
                 ui.text(window, "moving", (r.right - 12, self._row_y(i) + 2), ui.YELLOW, size=18, align="right")
         if self.replace_with:
-            hint = "Up/Down: choose   Enter: replace   X: cancel"
+            hint = "Up/Down: choose   Enter: replace   X: don't equip it"
         elif self.carrying:
             hint = "Up/Down: move it   Enter: put down"
         else:

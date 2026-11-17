@@ -216,7 +216,10 @@ Rest; each with Wide/Shared, Lingering or Renewing, and Quick.
 
 - **Fight** uses the basic attack (Tackle for Bulbasaur), with its buffs.
 - **Skills:** up to **4 equipped moves**, like Gen 1's four move slots.
-  Learned moves that aren't equipped can be swapped in outside battle.
+  Learned moves that aren't equipped can be swapped in outside battle
+  (skill tree: **E** on the move; with all 4 slots full it asks which one
+  it replaces). Learning a move with all 4 slots full asks the same right
+  away, as Gen 1 did ("forget a move?"); X leaves it unequipped.
 - Buffs and links work on their move automatically. A link's set-off move
   shows its name over the user and "Vine Whip set off Leech Seed!". It
   only hits the one aimed at (no area buff carries over).
