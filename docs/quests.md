@@ -15,10 +15,18 @@ XP (`WILD_XP`, see `mechanics.md`); trainer battles give ×1.5, so they
 stay worth fighting. Budget up to Pewter City: the quests before it pay
 1,800 XP in all, a full run of each route there about 1,500 in battle XP,
 so a player who does both arrives around Lv14–15 (the Boulder Gang's Onix is
-Lv14, as Brock's in Gen 1). From Pewter to Mt. Moon: the quests pay 1,350 XP (Boulder Badge 400,
+Lv16, two levels above Brock's in Gen 1). From Pewter to Mt. Moon: the quests pay 1,350 XP (Boulder Badge 400,
 Road to Mt. Moon 300, Route 3 jobs 650), the Pewter Gym's three waves about
 1,300 in battle XP (to each of the two who fight them) and Route 3's six trainers about 1,200, so a party
 arrives around Lv18–19.
+
+**Levels track the party.** From Viridian Forest on, the areas' levels
+sit around where the party is expected to be (raised well above Red/Blue's
+from Route 3 on, as quests give far more XP than Red/Blue did): wild
+Pokémon a few levels under the party, trainers about level with it,
+bosses and gyms a few above. Route 1, where the starter is alone, is kept
+low (Lv2–4, mostly one at a time). With two fighting, about half the
+wild groups have one more Pokémon (see `mechanics.md`, *Wild Pokémon*).
 
 ---
 
@@ -182,7 +190,7 @@ yet.
   *Gyms*). Onix: "I took you for granted.
   As proof of your victory, here's the Boulder Badge!" (key item).
 - **Rewards:** ₽500, 400 XP, 3 Super Potions and a **Rare** gear piece
-  (item level 14), on top of the gang's prize money (₽693) and reward roll.
+  (item level 14), on top of the gang's prize money (₽792) and reward roll.
 - **Unlocks:** **Route 3** (its doorway on Pewter's east edge: "The
   Boulder Gang holds the gym! Beat them first!"), quest 4 and Pewter's Route 3 jobs. The gym shuts once
   the badge is won.
@@ -221,12 +229,12 @@ yet.
   (`Quest.starts_in`); it can be done before or after quests 7–8.
 - **Steps:** defeat the **Cascade Crew** (Water types led by a Starmie)
   at the end of the Cerulean Gym (Up at the gym building), the third of
-  three waves (Goldeen 17 and Psyduck 17; Horsea 18 and Shellder 18;
-  Starmie 21 and Staryu 18), fought by the Pokémon the player picks.
+  three waves (Goldeen 21 and Psyduck 21; Horsea 22 and Shellder 22;
+  Starmie 25 and Staryu 22), fought by the Pokémon the player picks.
   Starmie: "Hyah... Hyah! You really are strong. Here, the Cascade
   Badge!" (key item).
 - **Rewards:** ₽900, 800 XP, 2 Hyper Potions and a **Rare** gear piece
-  (item level 21), on top of the crew's prize money (₽891) and the gym's
+  (item level 21), on top of the crew's prize money (₽1,089) and the gym's
   fancy chest.
 - **Unlocks:** nothing yet (in Red/Blue the badge lets you use Cut).
 
@@ -235,8 +243,8 @@ yet.
 - **Starts:** automatically when quest 6 is done.
 - **Steps:** cross **Nugget Bridge** (Route 24, north of Cerulean: five
   trainer bands on the bridge, a Rocket beyond) and beat the **rival** at
-  its end: Pidgeotto 17, Abra 16, Rattata 15 and his starter's next form
-  (Charmeleon, Wartortle or Ivysaur) at 18.
+  its end: Pidgeotto 21, Abra 20, Rattata 19 and his starter's next form
+  (Charmeleon, Wartortle or Ivysaur) at 22.
 - **Rewards:** ₽900, 700 XP, 3 Super Potions and an Uncommon gear piece
   (item level 16).
 - **Unlocks:** quest 8, Route 25 (from the Route 24 stop at the bridge's
@@ -380,22 +388,22 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | --- | --- | --- | --- | --- |
 | Pidgey | 10 | Route 1 | 4–6 | Lv9 |
 | Rattata | 10 | Route 1 | 4–6 | Lv9 |
-| Caterpie | 10 | Viridian Forest | 4–6 | Lv9 |
-| Weedle | 10 | Viridian Forest | 4–6 | Lv9 |
-| Pikachu | 4 | Viridian Forest | 6–8 | Lv11 |
-| Spearow | 10 | Route 22 | 6–8 | Lv11 |
-| Nidoran F | 10 | Route 22 | 6–8 | Lv11 |
-| Nidoran M | 10 | Route 22 | 6–8 | Lv11 |
-| Sandshrew | 10 | Route 3 | 8–10 | Lv13 |
-| Ekans | 10 | Route 3 | 8–10 | Lv13 |
-| Jigglypuff | 8 | Route 3 | 8–10 | Lv13 |
-| Zubat | 10 | Mt. Moon | 10–12 | Lv15 |
-| Paras | 8 | Mt. Moon | 10–12 | Lv15 |
-| Clefairy | 4 | Mt. Moon | 10–12 | Lv15 |
-| Oddish | 10 | Route 24 | 11–13 | Lv16 |
-| Bellsprout | 10 | Route 24 | 11–13 | Lv16 |
-| Abra | 4 | Route 24 | 11–13 | Lv16 |
-| Venonat | 10 | Route 25 | 12–14 | Lv17 |
+| Caterpie | 10 | Viridian Forest | 6–8 | Lv11 |
+| Weedle | 10 | Viridian Forest | 6–8 | Lv11 |
+| Pikachu | 4 | Viridian Forest | 8–10 | Lv13 |
+| Spearow | 10 | Route 22 | 7–9 | Lv12 |
+| Nidoran F | 10 | Route 22 | 7–9 | Lv12 |
+| Nidoran M | 10 | Route 22 | 7–9 | Lv12 |
+| Sandshrew | 10 | Route 3 | 12–14 | Lv17 |
+| Ekans | 10 | Route 3 | 12–14 | Lv17 |
+| Jigglypuff | 8 | Route 3 | 12–14 | Lv17 |
+| Zubat | 10 | Mt. Moon | 15–17 | Lv20 |
+| Paras | 8 | Mt. Moon | 15–17 | Lv20 |
+| Clefairy | 4 | Mt. Moon | 15–17 | Lv20 |
+| Oddish | 10 | Route 24 | 17–19 | Lv22 |
+| Bellsprout | 10 | Route 24 | 17–19 | Lv22 |
+| Abra | 4 | Route 24 | 17–19 | Lv22 |
+| Venonat | 10 | Route 25 | 18–20 | Lv23 |
 
 Not every Pokémon comes this way: the starters, and those only met with
 trainers (Geodude, Onix, Diglett), will have special quests.

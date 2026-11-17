@@ -1,7 +1,7 @@
 """Skill trees: how Pokémon get and improve their moves (docs/skill_trees.md).
 
 Each evolution line has a tree of skills, bought with skill points (1 per
-level from Lv6). A skill opens once the Pokémon has its level, all its
+level from Lv4). A skill opens once the Pokémon has its level, all its
 parent skills and its evolution stage; each further rank of a buff or link
 needs `RANK_LEVELS` more levels. Kinds:
 
@@ -16,7 +16,7 @@ needs `RANK_LEVELS` more levels. Kinds:
 
 A buff's or link's rank is a set of changes to its move's fields (see
 moves.Move); `effective_move` adds up every learned one (`apply_changes`).
-A tree holds far more than the 95 points a Lv100 Pokémon has: builds
+A tree holds far more than the 97 points a Lv100 Pokémon has: builds
 choose.
 """
 
@@ -26,7 +26,7 @@ from functools import cache
 
 from .moves import MOVES, STAT_WORDS, Move
 
-FIRST_POINT_LEVEL = 5   # skill points = level − this
+FIRST_POINT_LEVEL = 3   # skill points = level − this (2 for a Lv5 starter)
 RANK_LEVELS = 5         # each rank after the first opens this many levels later
 MAX_EQUIPPED = 4
 

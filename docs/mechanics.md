@@ -621,8 +621,12 @@ the game doesn't have yet: Poké Balls, Repel):
 `game/world/themes.py`, `game/world/level.py`
 
 Each map theme has a weighted pool of species with level ranges. A wild
-group has 1, 2 or 3 Pokémon (weights 60 / 30 / 10), each picked from the
-pool, each at a random level in its entry's range. A **boss** (areas with
+group has 1, 2 or 3 Pokémon (weights 60 / 30 / 10; Route 1: 1 or 2, 80 /
+20), each picked from the pool, each at a random level in its entry's
+range. **With two Pokémon fighting** (once the Route 22 rival is beaten),
+each wild group has a 50% chance (`overworld.EXTRA_FOE_CHANCE`) of one
+more Pokémon from the pool, rolled from the map's seed so it's the same
+each time the map is shown. A **boss** (areas with
 one) guards the last map's exit: the group the area names (`Route.boss_group`),
 or else 4–5 Pokémon from the pool at the same levels; its leader (the
 first) can be drawn bigger (`Route.boss_scale`).
@@ -631,19 +635,19 @@ Route 1 (Meadow pool; Red/Blue's Route 1: only Pidgey and Rattata):
 
 | Species | Weight | Levels |
 | --- | --- | --- |
-| Pidgey | 55 | 2–5 |
-| Rattata | 45 | 2–4 |
+| Pidgey | 55 | 2–4 |
+| Rattata | 45 | 2–3 |
 
 Viridian Forest (3 maps, Viridian City → Pewter City; Red's and Blue's
 forest Pokémon together):
 
 | Species | Weight | Levels |
 | --- | --- | --- |
-| Caterpie | 25 | 3–5 |
-| Metapod | 20 | 4–6 |
-| Weedle | 25 | 3–5 |
-| Kakuna | 20 | 4–6 |
-| Pikachu | 5 | 3–5 |
+| Caterpie | 25 | 4–6 |
+| Metapod | 20 | 5–7 |
+| Weedle | 25 | 4–6 |
+| Kakuna | 20 | 5–7 |
+| Pikachu | 5 | 4–6 |
 
 **Boss:** a Lv10 Caterpie drawn at double size, escorted by a Lv8 Metapod
 and a Lv8 Kakuna (only the leader, the first of a boss group, is drawn
@@ -654,10 +658,10 @@ Route 22 (2 maps, from Viridian City and back):
 
 | Species | Weight | Levels |
 | --- | --- | --- |
-| Rattata | 40 | 2–5 |
-| Nidoran M | 25 | 2–4 |
-| Nidoran F | 20 | 2–4 |
-| Spearow | 15 | 3–5 |
+| Rattata | 40 | 3–6 |
+| Nidoran M | 25 | 3–5 |
+| Nidoran F | 20 | 3–5 |
+| Spearow | 15 | 4–6 |
 
 Route 22 opens once the quest "Rival on Route 22" starts, and Viridian
 Forest once "Oak's Parcel" is done (see `quests.md`).
@@ -676,10 +680,10 @@ below):
 
 | Species | Weight | Levels |
 | --- | --- | --- |
-| Spearow | 35 | 6–8 |
-| Sandshrew | 25 | 6–8 |
-| Jigglypuff | 20 | 3–7 |
-| Ekans | 20 | 6–8 |
+| Spearow | 35 | 11–13 |
+| Sandshrew | 25 | 11–13 |
+| Jigglypuff | 20 | 8–12 |
+| Ekans | 20 | 11–13 |
 
 **Mt. Moon** (`Route` "mt_moon_cave", a dungeon, see below; entered from
 the Pokémon Center stop at the end of Route 3, out to Route 4; Gen 1's
@@ -687,10 +691,10 @@ Pokémon a few levels up):
 
 | Species | Weight | Levels |
 | --- | --- | --- |
-| Zubat | 45 | 8–12 |
-| Geodude | 30 | 8–11 |
-| Paras | 18 | 9–13 |
-| Clefairy | 7 | 9–13 |
+| Zubat | 45 | 14–18 |
+| Geodude | 30 | 14–17 |
+| Paras | 18 | 15–19 |
+| Clefairy | 7 | 15–19 |
 
 **Dungeons** (`Route.rooms`, `Room`, `Stair`): instead of a row of maps, a
 set of rooms joined by **ladders** (Up to climb; Up or Down to go down a
@@ -701,7 +705,7 @@ remember what's been beaten and opened (`Instance.rooms`, saved too).
 Mt. Moon: 1F has the entrance and three ladders down: two lead to dead
 ends (one B1F room with loot, or B1F → B2F west with trainers and
 chests), the middle one to B1F → B2F, where the **Rocket Gang Leader**
-(Sandshrew 12, Rattata 12, Zubat 13) blocks the ladder up to the B1F room
+(Sandshrew 18, Rattata 18, Zubat 19) blocks the ladder up to the B1F room
 with the way out. Rooms are shown by floor only ("Mt. Moon B1F").
 
 **Route 4** (`Route` "route_4_east", 2 maps, from the Route 4 stop at Mt.
@@ -710,40 +714,40 @@ Moon's exit down to Cerulean City; the stop is a town, "route_4"; Route
 
 | Species | Weight | Levels |
 | --- | --- | --- |
-| Rattata | 30 | 9–12 |
-| Spearow | 30 | 9–12 |
-| Ekans | 20 | 9–13 |
-| Sandshrew | 20 | 9–13 |
+| Rattata | 30 | 16–19 |
+| Spearow | 30 | 16–19 |
+| Ekans | 20 | 16–20 |
+| Sandshrew | 20 | 16–20 |
 
 **Nugget Bridge** (`Route` "nugget_bridge", Route 24: 2 maps from Cerulean
 City up to the Route 24 stop, a town; map 1 is the bridge with five
-trainer bands, map 2 has a Rocket and ends in the **rival** (Pidgeotto 17,
-Abra 16, Rattata 15 and his starter's next form at 18,
+trainer bands, map 2 has a Rocket and ends in the **rival** (Pidgeotto 21,
+Abra 20, Rattata 19 and his starter's next form at 22,
 `RIVAL_STARTER_EVOLVED`; a reward roll with the battle). Once quest
-"rival_cerulean" is done the arena holds Oddish 16, Bellsprout 16 and
-Abra 15 instead (wild). Oddish from Red, Bellsprout from Blue:
+"rival_cerulean" is done the arena holds Oddish 22, Bellsprout 22 and
+Abra 21 instead (wild). Oddish from Red, Bellsprout from Blue:
 
 | Species | Weight | Levels |
 | --- | --- | --- |
-| Oddish | 25 | 12–15 |
-| Bellsprout | 25 | 12–15 |
-| Pidgey | 20 | 13–16 |
-| Abra | 10 | 11–14 |
-| Caterpie | 10 | 10–12 |
-| Weedle | 10 | 10–12 |
+| Oddish | 25 | 18–21 |
+| Bellsprout | 25 | 18–21 |
+| Pidgey | 20 | 19–22 |
+| Abra | 10 | 17–20 |
+| Caterpie | 10 | 16–18 |
+| Weedle | 10 | 16–18 |
 
 **Route 25** (`Route` "route_25", 2 maps from the Route 24 stop east to
 Bill's Sea Cottage, a town; no boss, four trainers):
 
 | Species | Weight | Levels |
 | --- | --- | --- |
-| Oddish | 20 | 13–16 |
-| Bellsprout | 20 | 13–16 |
-| Venonat | 20 | 13–16 |
-| Pidgey | 15 | 14–17 |
-| Abra | 10 | 12–15 |
-| Metapod | 8 | 12–14 |
-| Kakuna | 7 | 12–14 |
+| Oddish | 20 | 19–22 |
+| Bellsprout | 20 | 19–22 |
+| Venonat | 20 | 19–22 |
+| Pidgey | 15 | 20–23 |
+| Abra | 10 | 18–21 |
+| Metapod | 8 | 18–20 |
+| Kakuna | 7 | 18–20 |
 
 **Gyms** are fought in waves. The gym is a short walk (one map,
 `Route.cols` tiles plus the arena) up to an arena where the gym's band
@@ -766,29 +770,29 @@ to the elder in Pewter City (`Route.folk`) and back to them.
 
 **The Pewter Gym** (`Route` "pewter_gym", walked from the gym building;
 a rock hall drawn in code, no wild Pokémon, no chests): three waves, the
-last being the **Boulder Gang** (Geodude Lv12, Onix Lv14: Brock's team in
-Gen 1; the Onix leads it); beating it finishes the Boulder Badge quest.
+last being the **Boulder Gang** (Geodude Lv14, Onix Lv16: Brock's team in
+Gen 1, two levels up; the Onix leads it); beating it finishes the Boulder Badge quest.
 Once it's done the gym stays shut ("You already have the Boulder Badge").
 
 | Wave | Band | Team | Prize |
 | --- | --- | --- | --- |
-| 1 | Boulder Gang Diggers | Diglett 10, Sandshrew 10 | ₽100 |
-| 2 | Boulder Gang Rollers | Geodude 11, Geodude 11 | ₽110 |
-| 3 | Boulder Gang | Geodude 12, Onix 14 | ₽693 |
+| 1 | Boulder Gang Diggers | Diglett 12, Sandshrew 12 | ₽120 |
+| 2 | Boulder Gang Rollers | Geodude 13, Geodude 13 | ₽130 |
+| 3 | Boulder Gang | Geodude 14, Onix 16 | ₽792 |
 
 **The Cerulean Gym** (`Route` "cerulean_gym", the same way: an indoor pool
 hall, drawn in code with a painted far wall; puddles on the tiles): the
-**Cascade Crew**'s two waves, then the crew itself (Starmie Lv21, Staryu
-Lv18: Misty's team in Gen 1; the Starmie leads it); beating it finishes
+**Cascade Crew**'s two waves, then the crew itself (Starmie Lv25, Staryu
+Lv22: Misty's team in Gen 1, four levels up; the Starmie leads it); beating it finishes
 the Cascade Badge quest, and the gym then stays shut. Starmie evolves by
 Water Stone (not in yet); `pokemon.LATER_FORMS` gives it Staryu's skill
 tree, at stage 1.
 
 | Wave | Band | Team | Prize |
 | --- | --- | --- | --- |
-| 1 | Cascade Crew Swimmers | Goldeen 17, Psyduck 17 | ₽255 |
-| 2 | Cascade Crew Divers | Horsea 18, Shellder 18 | ₽270 |
-| 3 | Cascade Crew | Starmie 21, Staryu 18 | ₽891 |
+| 1 | Cascade Crew Swimmers | Goldeen 21, Psyduck 21 | ₽315 |
+| 2 | Cascade Crew Divers | Horsea 22, Shellder 22 | ₽330 |
+| 3 | Cascade Crew | Starmie 25, Staryu 22 | ₽1089 |
 
 Wild Pokémon have no gear. **Bosses and trainers' Pokémon wear gear**
 (`loot.dress`, set up in `OverworldScene._battle`): a boss (the leader of
@@ -818,40 +822,40 @@ always the same spot), with its team in a row.
   for × the level of its last Pokémon, **halved** like the shop's prices
   (`overworld.prize_money`): Bug Catcher 10, Youngster 15, Lass 15, Jr.
   Trainer 20, Team Rocket Grunt 30, the rival 35, Hiker 35, Brock 99
-  (Lv14 Onix → ₽693);
+  (Lv16 Onix → ₽792);
 - map trainers fight **once**: beaten ones are saved (`Game.trainers`) and
   don't come back on later trips.
 
 | Where | Band (Gen 1 class) | Team | Prize |
 | --- | --- | --- | --- |
-| Pewter Gym (boss) | Boulder Gang (Brock) | Geodude 12, Onix 14 | ₽693 |
-| Cerulean Gym (boss) | Cascade Crew (Misty) | Starmie 21, Staryu 18 | ₽891 |
-| Route 3, map 1 | Alley Gang (Youngster) | Rattata 11, Ekans 11 | ₽82 |
-| Route 3, map 1 | Crawler Swarm (Bug Catcher) | Caterpie 10, Weedle 10, Caterpie 10 | ₽50 |
-| Route 3, map 2 | Pidgey Flock (Lass) | Pidgey 9, Pidgey 9 | ₽67 |
-| Route 3, map 2 | Bug Brood (Bug Catcher) | Weedle 9, Kakuna 9, Caterpie 9, Metapod 9 | ₽45 |
-| Route 3, map 3 | Lone Spearow (Youngster) | Spearow 14 | ₽105 |
-| Route 3, map 3 | Singing Jigglypuff (Lass) | Jigglypuff 14 | ₽105 |
-| Mt. Moon 1F | Stinger Nest (Bug Catcher) | Weedle 11, Kakuna 11 | ₽55 |
-| Mt. Moon 1F | Moon Clefairy (Lass) | Clefairy 14 | ₽105 |
-| Mt. Moon 1F | Cave Rats (Youngster) | Rattata 10, Rattata 10, Zubat 10 | ₽75 |
-| Mt. Moon B1F (on the way) | Rockslide Clan (Hiker) | Geodude 10 ×3, Onix 11 | ₽192 |
-| Mt. Moon B2F west (dead end) | Rocket Gang (Team Rocket Grunt) | Rattata 13, Zubat 13 | ₽195 |
-| Mt. Moon B2F | Rocket Gang (Team Rocket Grunt) | Zubat 12, Ekans 12 | ₽180 |
-| Mt. Moon B2F (boss) | Rocket Gang Leader (Team Rocket Grunt) | Sandshrew 12, Rattata 12, Zubat 13 | ₽195 |
-| Route 4, map 1 | Hillside Pack (Lass) | Spearow 12, Rattata 12, Ekans 12 | ₽90 |
-| Route 4, map 2 | Dune Diggers (Hiker) | Sandshrew 13, Sandshrew 13 | ₽130 |
-| Nugget Bridge, map 1 | Bridge Crawlers (Bug Catcher) | Caterpie 14, Weedle 14, Metapod 14 | ₽70 |
-| Nugget Bridge, map 1 | Bridge Flock (Lass) | Pidgey 14, Nidoran F 14 | ₽105 |
-| Nugget Bridge, map 1 | Bridge Rats (Youngster) | Rattata 14, Ekans 14, Zubat 14 | ₽105 |
-| Nugget Bridge, map 1 | Bridge Thorns (Lass) | Nidoran F 15, Nidoran M 15 | ₽112 |
-| Nugget Bridge, map 1 | Bridge Champs (Camper) | Sandshrew 16, Spearow 16 | ₽160 |
-| Nugget Bridge, map 2 | Rocket Gang (Team Rocket Grunt) | Ekans 16, Zubat 16 | ₽240 |
-| Nugget Bridge (boss) | Rival | Pidgeotto 17, Abra 16, Rattata 15, starter's next form 18 | ₽450 |
-| Route 25, map 1 | Hill Hikers (Hiker) | Geodude 15, Geodude 15, Onix 15 | ₽262 |
-| Route 25, map 1 | Picnic Party (Picnicker) | Pidgey 15, Nidoran F 15, Nidoran M 15 | ₽112 |
-| Route 25, map 2 | Camping Crew (Camper) | Rattata 16, Ekans 16, Spearow 16 | ₽120 |
-| Route 25, map 2 | Garden Club (Lass) | Oddish 16, Bellsprout 16 | ₽120 |
+| Pewter Gym (boss) | Boulder Gang (Brock) | Geodude 14, Onix 16 | ₽792 |
+| Cerulean Gym (boss) | Cascade Crew (Misty) | Starmie 25, Staryu 22 | ₽1089 |
+| Route 3, map 1 | Alley Gang (Youngster) | Rattata 15, Ekans 15 | ₽112 |
+| Route 3, map 1 | Crawler Swarm (Bug Catcher) | Caterpie 14, Weedle 14, Caterpie 14 | ₽70 |
+| Route 3, map 2 | Pidgey Flock (Lass) | Pidgey 13, Pidgey 13 | ₽97 |
+| Route 3, map 2 | Bug Brood (Bug Catcher) | Weedle 13, Kakuna 13, Caterpie 13, Metapod 13 | ₽65 |
+| Route 3, map 3 | Lone Spearow (Youngster) | Spearow 18 | ₽135 |
+| Route 3, map 3 | Singing Jigglypuff (Lass) | Jigglypuff 18 | ₽135 |
+| Mt. Moon 1F | Stinger Nest (Bug Catcher) | Weedle 17, Kakuna 17 | ₽85 |
+| Mt. Moon 1F | Moon Clefairy (Lass) | Clefairy 20 | ₽150 |
+| Mt. Moon 1F | Cave Rats (Youngster) | Rattata 16, Rattata 16, Zubat 16 | ₽120 |
+| Mt. Moon B1F (on the way) | Rockslide Clan (Hiker) | Geodude 16, Geodude 16, Geodude 16, Onix 17 | ₽297 |
+| Mt. Moon B2F west (dead end) | Rocket Gang (Team Rocket Grunt) | Rattata 19, Zubat 19 | ₽285 |
+| Mt. Moon B2F | Rocket Gang (Team Rocket Grunt) | Zubat 18, Ekans 18 | ₽270 |
+| Mt. Moon B2F (boss) | Rocket Gang Leader (Team Rocket Grunt) | Sandshrew 18, Rattata 18, Zubat 19 | ₽285 |
+| Route 4, map 1 | Hillside Pack (Lass) | Spearow 19, Rattata 19, Ekans 19 | ₽142 |
+| Route 4, map 2 | Dune Diggers (Hiker) | Sandshrew 20, Sandshrew 20 | ₽200 |
+| Nugget Bridge, map 1 | Bridge Crawlers (Bug Catcher) | Caterpie 20, Weedle 20, Metapod 20 | ₽100 |
+| Nugget Bridge, map 1 | Bridge Flock (Lass) | Pidgey 20, Nidoran F 20 | ₽150 |
+| Nugget Bridge, map 1 | Bridge Rats (Youngster) | Rattata 20, Ekans 20, Zubat 20 | ₽150 |
+| Nugget Bridge, map 1 | Bridge Thorns (Lass) | Nidoran F 21, Nidoran M 21 | ₽157 |
+| Nugget Bridge, map 1 | Bridge Champs (Camper) | Sandshrew 22, Spearow 22 | ₽220 |
+| Nugget Bridge, map 2 | Rocket Gang (Team Rocket Grunt) | Ekans 22, Zubat 22 | ₽330 |
+| Nugget Bridge (boss) | Rival | Pidgeotto 21, Abra 20, Rattata 19, starter's next form 22 | ₽550 |
+| Route 25, map 1 | Hill Hikers (Hiker) | Geodude 21, Geodude 21, Onix 21 | ₽367 |
+| Route 25, map 1 | Picnic Party (Picnicker) | Pidgey 21, Nidoran F 21, Nidoran M 21 | ₽157 |
+| Route 25, map 2 | Camping Crew (Camper) | Rattata 22, Ekans 22, Spearow 22 | ₽165 |
+| Route 25, map 2 | Garden Club (Lass) | Oddish 22, Bellsprout 22 | ₽165 |
 | Route 22 (boss) | the rival | Pidgey 9, starter 8 | ₽140 |
 
 ---

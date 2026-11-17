@@ -26,7 +26,7 @@ from ..mechanics.loot import BOSS_GEAR, TRAINER_GEAR, LootTable, ball_loot, boss
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES, Monster, animations
 from ..world import tileset
 from ..world.instance import RIVAL_STARTER, RIVAL_STARTER_EVOLVED, Instance, Stair, Trainer
-from ..world.level import SOLID, TILE, Level, Spawn
+from ..world.level import SOLID, TILE, Level, Spawn, extra_member
 from ..world.player import Controls, Player
 from ..world import quests
 from ..world.progress import Game
@@ -45,6 +45,7 @@ BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE)  # also close a panel (B on touch s
 WOOD = (150, 96, 48)
 OUTLINE = (48, 28, 16)
 TRACKED = 3  # active quests shown under the location
+EXTRA_FOE_CHANCE = 0.5  # with two fighting: a wild group's chance of one more Pokémon
 LADDER_SEGMENT = pygame.Rect(8, 16, 16, 16)  # a repeating stretch of the ladder prop
 GROUP_SPACING = 30  # px between the members of a wild group, standing in a row
 EVOLVE_COLOR = (255, 130, 200)  # evolution quests (their marks and tracked steps)
@@ -433,6 +434,13 @@ class OverworldScene(MapScene):
         placed = dict(zip(_spread(len(level.spawns), len(trainers)), trainers))
         for i, trainer in placed.items():
             level.spawns[i].encounter = list(trainer.team)
+        # With two fighting, about half the wild groups have one more Pokémon
+        # (the same ones each time this map is shown).
+        if route.wild and quests.active_limit(game) >= 2:
+            rng = random.Random(instance.seed * 7919 + instance.index)
+            for i, spawn in enumerate(level.spawns):
+                if i not in placed and rng.random() < EXTRA_FOE_CHANCE:
+                    spawn.encounter = list(spawn.encounter) + [extra_member(level.theme, rng)]
         self.wild = []
         for i, spawn in enumerate(level.spawns):
             trainer = placed.get(i)

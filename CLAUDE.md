@@ -133,7 +133,7 @@ non-commercial project.
   XP source.
 - Skills (`skills.py`, `docs/skill_trees.md`): moves come from skill trees
   (one per evolution line, `TREES`), not learn levels. Skill points =
-  level − 5; a skill opens by level + all its parents + evolution stage.
+  level − 3; a skill opens by level + all its parents + evolution stage.
   Kinds: moves (each Gen 1 move one 1-point skill, linked by paths; the
   free ones are base attacks, the first = Fight; 4 equipped,
   `Monster.equipped`), buffs (1–5 ranks, branches off one move, generated
@@ -141,7 +141,7 @@ non-commercial project.
   capstones, ...) and links (`Link`: two moves; the first sets off the
   second, `Move.triggers`). A rank is a dict of `Move` field changes,
   added up by `apply_changes`; `SkillTree.effective_move` applies them
-  (`Monster.move(key)`). Trees cost 115–207 points (95 at Lv100): builds
+  (`Monster.move(key)`). Trees cost 115–207 points (97 at Lv100): builds
   choose. Every line in the game has a tree (`docs/skill_trees.md`'s
   tables are generated: `python tools/skill_docs.py`). `Monster.create` auto-builds skills (wild Pokémon,
   starter). The skill
@@ -194,7 +194,10 @@ non-commercial project.
   platform) generated from a seed and a theme (`themes.py`: tile palette,
   weighted encounter pool with level ranges, group sizes, battle backdrop,
   cave ceiling). Maps scroll sideways and end at a doorway (Up) to the next
-  map. Wild groups are shown in full and stay gone once beaten.
+  map. Wild groups are shown in full and stay gone once beaten. With two
+  fighting, about half the wild groups get one more Pokémon
+  (`overworld.EXTRA_FOE_CHANCE`, `level.extra_member`; seeded by the map).
+  Area levels track the party's expected level (`docs/quests.md`).
 - World: the game follows the Kanto map. Towns (`towns.py` data,
   `town.py` scene) are flat maps with Pixellab buildings (scenery, except Poké Marts;
   `Building.sprite` = (sheet, cell) of `houses.png` /

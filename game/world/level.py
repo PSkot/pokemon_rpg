@@ -163,6 +163,12 @@ def encounter(theme: Theme, rng: random.Random) -> list[tuple[str, int]]:
     return [(e.species, rng.randint(*e.levels)) for e in entries]
 
 
+def extra_member(theme: Theme, rng: random.Random) -> tuple[str, int]:
+    """One more wild Pokémon from the theme's pool (a bigger group)."""
+    e = _pick(rng, [(e, e.weight) for e in theme.pool])
+    return e.species, rng.randint(*e.levels)
+
+
 def boss_encounter(theme: Theme, rng: random.Random) -> list[tuple[str, int]]:
     """A big group from the theme's pool, at the pool's usual levels."""
     entries = [_pick(rng, [(e, e.weight) for e in theme.pool]) for _ in range(rng.randint(*BOSS_SIZE))]

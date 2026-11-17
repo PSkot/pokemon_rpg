@@ -47,8 +47,8 @@ mini-map.
 
 ### Skill points
 
-- **1 point per level-up.** A Pokémon has `level − 5` points in total (none
-  below Lv5): 0 for a new Lv5 starter, 95 at Lv100.
+- **1 point per level-up.** A Pokémon has `level − 3` points in total (none
+  below Lv3): 2 for a new Lv5 starter, 97 at Lv100.
 - **A move costs 1 point; each rank of a buff or link costs 1 point.** The
   first moves (the base attacks) are free.
 - Points can be reset for free in towns, to try a different build.
