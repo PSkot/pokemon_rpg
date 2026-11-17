@@ -251,6 +251,7 @@ class MapScene(Scene):
 
     def __init__(self, game: Game, level: Level):
         self.game = game
+        quests.fit_party(game)  # (the party's size can change with the story)
         self.party, self.bag = game.party, game.bag
         self.level = level
         self.tiles = tileset.render(level)

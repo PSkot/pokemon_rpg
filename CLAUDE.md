@@ -317,12 +317,13 @@ non-commercial project.
   (`Building.inside = "recruit"`, a house for now; `scenes/recruit.py`:
   a painted room (`tileset.room("recruit")`) with the cork board and Mr. Mime (`props/mr_mime.png`), `RecruitBoard`, `TeamPanel`) send the
   player to the line's map (a generated route: only that species, a giant
-  boss); beating it adds it (`Game.add_member`: party of at most
-  `MAX_PARTY` = 6, else `Game.reserve`). Mr. Mime swaps party and reserve.
-  Only the first standing party members fight (`quests.fighters`): 1 until
-  the Route 22 rival is beaten, then `MAX_ACTIVE` = 2
-  (`quests.active_limit`; gyms' `TeamPick` too); the rest are a bench
-  (party screen T moves one to the front).
+  boss); beating it adds it (`Game.add_member`: to the party if it has
+  room, else `Game.reserve`). Mr. Mime swaps party and reserve. The
+  party's size is how many fight (`quests.active_limit`: 1 until the
+  Route 22 rival is beaten, then `MAX_ACTIVE` = 2; `MAX_PARTY` = 6 later;
+  gyms' `TeamPick` too); `quests.fit_party` (every map scene) moves extras
+  to the reserve and fills new places from it. Party screen T moves a
+  member to the front (the lead).
 - Tab on the map opens the party screen (`summary.py`): stats and gear;
   Enter on a slot lists the bag's gear for it (or Remove), previewing the
   stat changes (Now / Gear / New / Change) and each mod's difference from

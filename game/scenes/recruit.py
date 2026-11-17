@@ -21,7 +21,7 @@ from ..mechanics.pokemon import SPECIES, animations
 from ..world import quests, tileset
 from ..world.instance import RECRUIT_BUILDING, RECRUITS, ROUTES, Instance
 from ..world.level import EMPTY, ROWS, SOLID, Level
-from ..world.progress import MAX_PARTY, Game
+from ..world.progress import Game
 from ..world.quests import QUESTS
 from ..world.towns import Town, building_mid
 from . import quest_ui
@@ -269,14 +269,19 @@ class TeamPanel:
     def _slots(self) -> list[tuple[str, int]]:
         """("party", i) for each party slot, then ("reserve", j) for each
         reserve Pokémon and one empty spot after them."""
-        return [("party", i) for i in range(MAX_PARTY)] + [("reserve", j) for j in range(len(self.game.reserve) + 1)]
+        return [("party", i) for i in range(self.size)] + [("reserve", j) for j in range(len(self.game.reserve) + 1)]
+
+    @property
+    def size(self) -> int:
+        """The party's places (quests.active_limit)."""
+        return quests.active_limit(self.game)
 
     def _get(self, slot: tuple[str, int]):
         group = self.game.party if slot[0] == "party" else self.game.reserve
         return group[slot[1]] if slot[1] < len(group) else None
 
     def _swap(self, a: tuple[str, int], b: tuple[str, int]) -> str:
-        party = list(self.game.party) + [None] * (MAX_PARTY - len(self.game.party))
+        party = list(self.game.party) + [None] * (self.size - len(self.game.party))
         reserve = list(self.game.reserve) + [None]
         groups = {"party": party, "reserve": reserve}
         groups[a[0]][a[1]], groups[b[0]][b[1]] = groups[b[0]][b[1]], groups[a[0]][a[1]]
@@ -313,7 +318,7 @@ class TeamPanel:
 
     def _row_y(self, i: int) -> int:
         """A row's y (the reserve's rows sit under its heading)."""
-        gap = 18 if i >= MAX_PARTY else 0
+        gap = 18 if i >= self.size else 0
         return self.RECT.y + self.PAD + 54 + (i - self.top) * self.ROW_H + gap
 
     def draw(self, canvas: pygame.Surface) -> None:
@@ -330,12 +335,10 @@ class TeamPanel:
             if not self.top <= i < self.top + self.VISIBLE:
                 continue
             y = self._row_y(i)
-            if i == MAX_PARTY and self.top <= MAX_PARTY:
+            if i == self.size and self.top <= self.size:
                 ui.text(window, f"Reserve ({len(self.game.reserve)})", (r.x + 12, y - 16), ui.GREY, size=20)
             if i == 0:
-                n = quests.active_limit(self.game)
-                fights = "the first fights" if n == 1 else f"the first {n} fight"
-                ui.text(window, f"Party ({len(self.game.party)}/{MAX_PARTY}): {fights}", (r.x + 12, y - 16), ui.GREY,
+                ui.text(window, f"Party ({len(self.game.party)}/{self.size})", (r.x + 12, y - 16), ui.GREY,
                         size=20)
             m = self._get(slot)
             color = (ui.YELLOW if slot == self.picked else ui.WHITE if m else ui.GREY)

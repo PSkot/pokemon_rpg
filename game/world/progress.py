@@ -8,8 +8,10 @@ from ..mechanics.items import Bag, Gear
 from ..mechanics.pokemon import Monster
 
 START_TOWN = "pallet"
-MAX_PARTY = 6  # Pokémon in the party; the rest wait in the reserve
-MAX_ACTIVE = 2  # party members who fight in a battle (1 until the rival on Route 22 is beaten: quests.active_limit)
+MAX_PARTY = 6  # the party's size at its biggest; the rest wait in the reserve
+# The party's size for now: everyone in it fights. 1 until the rival on
+# Route 22 is beaten, then this (quests.active_limit; later MAX_PARTY).
+MAX_ACTIVE = 2
 STARTERS = ("bulbasaur", "charmander", "squirtle")  # what Professor Oak offers
 # The rival picks the starter that beats the player's.
 RIVAL_STARTERS = {"bulbasaur": "charmander", "charmander": "squirtle", "squirtle": "bulbasaur"}
@@ -54,10 +56,10 @@ class Game:
             m.cure()
         return needed
 
-    def add_member(self, monster: Monster) -> str:
-        """A new Pokémon joins: the party if there's room, else the reserve.
-        Returns which ("party" or "reserve")."""
-        if len(self.party) < MAX_PARTY:
+    def add_member(self, monster: Monster, room: int) -> str:
+        """A new Pokémon joins: the party if it has fewer than `room`, else
+        the reserve. Returns which ("party" or "reserve")."""
+        if len(self.party) < room:
             self.party.append(monster)
             return "party"
         self.reserve.append(monster)

@@ -88,11 +88,6 @@ class SummaryScene(Scene):
     def touch_keys(self):
         return ((pygame.K_s, "Skills"), (pygame.K_t, "Front")) + (((pygame.K_e, "Evolve"),) if self._can_evolve else ())
 
-    @property
-    def _active(self) -> int:
-        """How many party members fight (the first ones standing)."""
-        game = getattr(self.return_to, "game", None)
-        return quests.active_limit(game) if game else len(self.party)
 
     @property
     def _can_evolve(self) -> bool:
@@ -204,11 +199,6 @@ class SummaryScene(Scene):
             done, needed = m.xp_progress
             bar = pygame.Rect(PARTY_WINDOW.x + 22, PARTY_WINDOW.y + PAD + i * PARTY_ROW + 29, 110, 4)
             ui.bar(canvas, bar, done / needed if needed else 0.0, XP_COLOR)
-        fighting = self._fighting()
-        if len(self.party) > len(fighting):  # a line under the last one who fights
-            last = max(self.party.index(m) for m in fighting) if fighting else -1
-            y = PARTY_WINDOW.y + PAD + (last + 1) * PARTY_ROW - 2
-            pygame.draw.line(canvas, ui.GREY, (PARTY_WINDOW.x + 10, y), (PARTY_WINDOW.right - 10, y))
         row = self.slot if self.mode == "slots" else self.choice - self.top
         ui.cursor(canvas, GEAR_WINDOW.x + 16, GEAR_WINDOW.y + PAD + 5 + row * ROW_H)
         if self.mode == "choose":  # scroll arrows
@@ -243,15 +233,10 @@ class SummaryScene(Scene):
                 ui.text(window, f"Take off the {worn.name}.", (x, y))
                 self._draw_mods(window, None, worn, y + 31)
 
-    def _fighting(self) -> list[Monster]:
-        """The party members who fight the next battle (the rest: the bench)."""
-        return [m for m in self.party if m.alive][:self._active]
-
     def _draw_party(self, window: pygame.Surface) -> None:
-        fighting = self._fighting()
         for i, m in enumerate(self.party):
             y = PARTY_WINDOW.y + PAD + i * PARTY_ROW
-            color = ui.YELLOW if i == self.member else ui.WHITE if m in fighting else ui.GREY
+            color = ui.YELLOW if i == self.member else ui.WHITE if m.alive else ui.GREY
             ui.text(window, m.name, (PARTY_WINDOW.x + 22, y), color)
             game = getattr(self.return_to, "game", None)
             if game and quests.can_evolve(game, m):

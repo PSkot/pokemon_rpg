@@ -135,7 +135,9 @@ QUESTS = {q.key: q for q in [
         steps=(Step("defeat", "route_22", "Defeat your rival on Route 22 (west of Viridian City)"),),
         money=600, xp=300,
         rewards=(("medicine", "Super Potion", 2), ("gear", None, "Uncommon", 9)),
-        done_dialogue=(("Rival", "What? I can't believe I lost! I'm off to Pewter City. Smell ya later!"),),
+        done_dialogue=(("Rival", "What? I can't believe I lost! I'm off to Pewter City. Smell ya later!"),
+                       ("", "Your team has grown: two Pokémon can now go with you into battle. Recruits from "
+                            "the reserve fill the new place.")),
     ),
     Quest(
         "forest_bugs", "Bugs in the Forest",
@@ -503,14 +505,24 @@ def is_done(game, key: str) -> bool:
 
 
 def active_limit(game) -> int:
-    """How many party members fight in a battle: 1 until the rival on
-    Route 22 is beaten, then `MAX_ACTIVE`."""
+    """The party's size, all of whom fight: 1 until the rival on Route 22
+    is beaten, then `MAX_ACTIVE`."""
     return MAX_ACTIVE if is_done(game, "rival_22") else 1
 
 
+def fit_party(game) -> None:
+    """Keep the party at `active_limit`: extra members wait in the reserve
+    (e.g. from an older save), and once it grows the reserve's first fill
+    the new places."""
+    limit = active_limit(game)
+    while len(game.party) > limit:
+        game.reserve.insert(0, game.party.pop())
+    while len(game.party) < limit and game.reserve:
+        game.party.append(game.reserve.pop(0))
+
+
 def fighters(game) -> list[Monster]:
-    """Who fights the next battle: the first `active_limit` party members
-    still standing (the rest are on the bench)."""
+    """Who fights the next battle: the party members still standing."""
     return [m for m in game.party if m.alive][:active_limit(game)]
 
 
@@ -739,7 +751,7 @@ def _advance(game, quest: Quest, event: Event) -> None:
                         quest.xp * DEV.xp_multiplier)
         for r in done.rewards:
             if r.pokemon:
-                r.joined = game.add_member(r.pokemon)
+                r.joined = game.add_member(r.pokemon, active_limit(game))
             else:
                 r.give(game.bag)
         _give_xp(game, done)

@@ -349,7 +349,7 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
     rewards. **Enter** on an open (or taken) one takes its quest and
     walks straight to its map.
   - Up at Mr. Mime: a few words, then the **team**: swap Pokémon between
-    the party (at most 6; only the first 1–2 fight, see `mechanics.md` →
+    the party (1, or 2 once the Route 22 rival is beaten; see `mechanics.md` →
     Party and reserve) and the reserve, and choose the lead.
 - **A recruitment map** ("Pidgey Grounds"): one map that looks like the
   Pokémon's home area, full of groups of 2–3 of it (Lv `level` − 2 to
