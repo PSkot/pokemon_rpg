@@ -87,7 +87,8 @@ def layout(tree: SkillTree) -> dict[str, tuple[float, float]]:
 
 
 class SkillTreeScene(Scene):
-    touch_keys = ((pygame.K_e, "Equip"), (pygame.K_o, "Order"), (pygame.K_r, "Reset"), (pygame.K_w, "Next"))
+    touch_keys = ((pygame.K_e, "Equip move"), (pygame.K_o, "Reorder moves"), (pygame.K_r, "Reset"),
+                  (pygame.K_w, "Next"))
 
     def __init__(self, return_to: Scene, party: list[Monster], member: int, can_reset: bool):
         self.return_to = return_to
@@ -210,12 +211,12 @@ class SkillTreeScene(Scene):
             return f"Learn {skill.name} first."
         if skill.key in m.equipped:
             m.equipped.remove(skill.key)
-            return f"{skill.name} unequipped."
+            return f"{skill.name} unequipped: no longer used in battle."
         if len(m.equipped) >= MAX_EQUIPPED:  # pick the one it replaces
             self.panel = MovesPanel(m, replace_with=skill.key)
             return ""
         m.equipped.append(skill.key)
-        return f"{skill.name} equipped."
+        return f"{skill.name} equipped: used in battle (key {len(m.equipped) + 1})."
 
     # ---------------------------------------------------------------- camera
 
@@ -320,7 +321,7 @@ class SkillTreeScene(Scene):
                 (HEADER.right - 12, HEADER.y + 6), GREEN if points else ui.GREY, align="right", size=24)
         slots = [f"{i + 2} {tree.skills[k].name}" for i, k in enumerate(m.equipped)]
         slots += [f"{i + 2} -" for i in range(len(m.equipped), MAX_EQUIPPED)]
-        ui.text(window, "   ".join([f"Fight: {tree.basic.name}"] + slots), (HEADER.x + 12, HEADER.y + 24),
+        ui.text(window, "   ".join([f"In battle:  Fight: {tree.basic.name}"] + slots), (HEADER.x + 12, HEADER.y + 24),
                 ui.GREY, size=20)
         # Labels, right of their nodes, clipped to the view.
         s = settings.SCALE
@@ -348,7 +349,7 @@ class SkillTreeScene(Scene):
         self._draw_info(window)
         if self.panel:
             self.panel.draw_overlay(window)
-        ui.text(window, f"Arrows: move   Enter: learn   E: equip   O: order   R: reset{'' if self.can_reset else ' (towns)'}"
+        ui.text(window, f"Arrows: move   Enter: learn   E: equip move   O: reorder moves   R: reset{'' if self.can_reset else ' (towns)'}"
                         f"   Q/W: Pokémon   M: map   S: back",
                 (TREE_WINDOW.x + 10, TREE_WINDOW.bottom - PAD - 6), ui.GREY, size=16)
 
@@ -470,11 +471,13 @@ class SkillTreeScene(Scene):
         if skill.kind != "move":
             equip = "Works on its move by itself."
         elif skill.key == tree.basic.key:
-            equip = "The basic attack: used by Fight."
+            equip = "The basic attack: always used by Fight."
         elif skill.key in m.equipped:
-            equip = f"Equipped (key {m.equipped.index(skill.key) + 2}).  E: unequip"
+            equip = f"In battle (key {m.equipped.index(skill.key) + 2}).  E: unequip"
+        elif rank and len(m.equipped) >= MAX_EQUIPPED:
+            equip = "Not in battle.  E: equip move (replaces one)"
         elif rank:
-            equip = "Not equipped.  E: equip"
+            equip = "Not in battle.  E: equip move"
         else:
             equip = ""
         ui.text(window, equip, (x, INFO_WINDOW.bottom - PAD - 11), ui.GREY, size=18)

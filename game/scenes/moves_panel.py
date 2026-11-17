@@ -43,8 +43,8 @@ class MovesPanel:
     @property
     def title(self) -> str:
         if self.replace_with:
-            return f"Replace which move with {self.monster.tree.skills[self.replace_with].name}?"
-        return "Equipped moves: their order"
+            return f"Equip {self.monster.tree.skills[self.replace_with].name}: which move does it replace?"
+        return "Reorder moves (keys 2-5 in battle)"
 
     def handle_key(self, key: int) -> bool:
         """True when the panel closes."""
@@ -59,7 +59,8 @@ class MovesPanel:
             if self.replace_with:
                 old = m.tree.skills[m.equipped[self.choice]].name
                 m.equipped[self.choice] = self.replace_with
-                self.message = f"{m.tree.skills[self.replace_with].name} replaces {old}."
+                self.message = (f"{m.tree.skills[self.replace_with].name} equipped in place of {old} "
+                                f"(key {self.choice + 2}). {old} is still learned.")
                 return True
             self.carrying = not self.carrying
         elif key in BACK_KEYS:
@@ -68,7 +69,7 @@ class MovesPanel:
             else:
                 if self.replace_with:
                     name = m.tree.skills[self.replace_with].name
-                    self.message = f"{name} isn't equipped (E: equip it later)."
+                    self.message = f"{name} is learned but not used in battle (E: equip move, later)."
                 return True
         return False
 
@@ -91,7 +92,7 @@ class MovesPanel:
             if carried:
                 ui.text(window, "moving", (r.right - 12, self._row_y(i) + 2), ui.YELLOW, size=18, align="right")
         if self.replace_with:
-            hint = "Up/Down: choose   Enter: replace   X: don't equip it"
+            hint = "Up/Down: choose   Enter: replace it   X: don't equip"
         elif self.carrying:
             hint = "Up/Down: move it   Enter: put down"
         else:

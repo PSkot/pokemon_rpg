@@ -1446,7 +1446,7 @@ class BattleScene(Scene):
 
     @property
     def touch_keys(self):
-        return ((pygame.K_o, "Order"),) if self.menu == "skills" else ()
+        return ((pygame.K_o, "Reorder moves"),) if self.menu == "skills" else ()
 
     def _hint(self) -> str:
         if self.menu == "skills" and self.ordering:

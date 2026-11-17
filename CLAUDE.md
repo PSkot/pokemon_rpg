@@ -74,7 +74,7 @@ non-commercial project.
   own side just hits them all (`_spread_aim`: confirm, or tap any). Its
   user's name shows under everyone it hits. Each party member's
   menus open on what it chose last (`Combatant.last_command`/`last_skill`).
-  In the Skills list, O (touch: Order) carries the highlighted move up or
+  In the Skills list, O (touch: Reorder moves) carries the highlighted move up or
   down: the equipped moves' order, kept after the battle (`_move_skill`);
   which moves are equipped only changes outside battles. Enemies show an HP bar
   under their feet (`_enemy_bar`; those names go under it) and their HP
@@ -402,7 +402,7 @@ non-commercial project.
   D-pad (arrows), A = Space (jump/confirm),
   B = X (back), Menu = Esc, Party = Tab; on maps (`Scene.touch_map`) also
   Run (a toggle); scenes add their own keys as pills
-  (`Scene.touch_keys`: party screen S, skill tree E/R; pills under
+  (`Scene.touch_keys`: party screen S, skill tree Equip move / Reorder moves / Reset; pills under
   Party). On for touch screens in the browser (decided before the window
   is made), or with `POKEMON_TOUCH=1` (mouse = finger) on desktop.
   The player sets the layout (`touch.Layout`: button size, panel width
@@ -413,7 +413,8 @@ non-commercial project.
   buttons are fitted into them (`touch._fit`: round ones moved in,
   closer and smaller, down to `MIN_FIT`; pills narrowed and stacked down
   the panel, the scene's pills spilling over under Menu when they'd reach
-  A/B), so they don't cover the game or each other) in pause menu → Controls (`scenes/controls_menu.py`,
+  A/B), so they don't cover the game or each other; pills with long
+  labels grow wider, `Button.wide`, as the panel allows) in pause menu → Controls (`scenes/controls_menu.py`,
   only with touch on; every button shows meanwhile). Positions come from
   `touch.SPOTS` (the default layout) placed by the layout (`_placed`).
   Changing the panel width remakes the window (main loop). The game is

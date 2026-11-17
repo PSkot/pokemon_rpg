@@ -61,7 +61,8 @@ class Button:
     radius: int
     map_only: bool = False  # only on maps (Run)
     toggle: bool = False    # tap on / tap off instead of hold
-    pill: bool = False      # a rounded rectangle (menu buttons), twice as wide as tall
+    pill: bool = False      # a rounded rectangle (menu buttons), twice as wide as tall ...
+    wide: float = 1.0       # ... times this, for a long label
     scale: float = 1.0      # its label's (or arrow's) size: the Layout's size, shrunk to fit a panel
 
 
@@ -97,6 +98,7 @@ RANGES = {"size": (60, 160, 10), "panel": (0, 100, 25), "left_x": (-60, 400, 20)
           "right_x": (-60, 400, 20), "right_y": (-100, 400, 20)}
 
 PILL_Y, PILL_STEP = 56, 68  # first pill's centre, pill to pill
+PILL_TEXT = 26              # a pill label's size (at button size 100)
 DPAD_STEP = 88              # D-pad centre to button (at size 100)
 SPOTS = [
     # Left: menu, D-pad, Run.
@@ -229,9 +231,18 @@ def _placed(lay: Layout, side: int, extra: tuple[tuple[int, str], ...]) -> list[
         x = width - edge if spot.right else edge
         buttons.append(Button(spot.key, spot.label, (round(x), round(y)), round(spot.radius * scale),
                               spot.map_only, spot.toggle, spot.pill, scale))
-    if side <= 0:
-        return buttons  # no panels: the buttons go over the game, as placed
-    return _fit(buttons, [s.right for s in spots], side, width, height)
+    if side > 0:
+        buttons = _fit(buttons, [s.right for s in spots], side, width, height)
+    # Pills with long labels ("Reorder moves") grow wider, as far as the
+    # panel (or, over the game, twice their width) allows.
+    room = side - 2 * FIT_MARGIN if side > 0 else 0
+    return [_widened(b, room) if b.pill else b for b in buttons]
+
+
+def _widened(b: Button, room: int) -> Button:
+    need = ui.unscaled_font(round(PILL_TEXT * b.scale)).size(b.label)[0] + 2 * b.radius
+    most = room / (4 * b.radius) if room else 2.0
+    return replace(b, wide=max(1.0, min(most, need / (4 * b.radius))))
 
 
 FIT_MARGIN = 6   # px kept between the buttons and the panel's edges
@@ -320,7 +331,7 @@ def _hit(b: Button, pos: tuple[float, float]) -> bool:
     reach = b.radius * REACH
     dx, dy = abs(pos[0] - b.pos[0]), abs(pos[1] - b.pos[1])
     if b.pill:
-        return dx <= reach * 2 and dy <= reach
+        return dx <= reach * 2 * b.wide and dy <= reach
     return dx * dx + dy * dy <= reach * reach
 
 
@@ -448,10 +459,10 @@ def pressed() -> _Pressed:
 # ------------------------------------------------------------------ drawing
 
 @cache
-def _face(radius: int, pill: bool, lit: bool, see_through: bool) -> pygame.Surface:
+def _face(radius: int, pill: bool, lit: bool, see_through: bool, wide: float = 1.0) -> pygame.Surface:
     """A button's background (`see_through`: over the game)."""
     r = radius
-    surface = pygame.Surface((r * 4, r * 2) if pill else (r * 2, r * 2), pygame.SRCALPHA)
+    surface = pygame.Surface((round(r * 4 * wide), r * 2) if pill else (r * 2, r * 2), pygame.SRCALPHA)
     rect = surface.get_rect()
     fill = ui.TOP_COLOR if lit else FACE_COLOR
     pygame.draw.rect(surface, fill, rect, border_radius=r)
@@ -471,21 +482,33 @@ def draw(window: pygame.Surface, on_map: bool, extra: tuple[tuple[int, str], ...
     window.fill(PANEL_COLOR, (view.right, 0, w - view.right, h))
     for b in _buttons(on_map, extra):
         lit = _held[b.key] > 0 or b.key in _toggled
-        face = _face(b.radius, b.pill, lit, view.left < b.pos[0] < view.right)
+        face = _face(b.radius, b.pill, lit, view.left < b.pos[0] < view.right, b.wide)
         window.blit(face, face.get_rect(center=b.pos))
         color = ui.YELLOW if lit else ui.WHITE
         if b.label:
             size = 40 if b.label in "AB" else 30 if len(b.label) == 1 else 26
-            _label(window, b.label, b.pos, color, round(size * b.scale))
+            _label(window, b.label, b.pos, color, round(size * b.scale), round(4 * b.radius * b.wide) - 14 if b.pill else 0)
         else:
             _arrow(window, b, color, b.scale)
 
 
-def _label(window: pygame.Surface, s: str, center: tuple[int, int], color, size: int) -> None:
+def _label(window: pygame.Surface, s: str, center: tuple[int, int], color, size: int, fit: int = 0) -> None:
+    """`fit`: the widest it may be (px; a pill's label shrinks a little to
+    fit it, then goes onto two lines: "Reorder / moves")."""
+    lines = [s]
+    if fit and ui.unscaled_font(round(size * 0.85)).size(s)[0] > fit and " " in s:
+        cut = min((i for i, c in enumerate(s) if c == " "), key=lambda i: abs(i - len(s) / 2))
+        lines, size = [s[:cut], s[cut + 1:]], round(size * 0.8)
     font = ui.unscaled_font(size)
-    rect = font.render(s, True, color).get_rect(center=center)
-    window.blit(font.render(s, True, ui.SHADOW), rect.move(2, 2))
-    window.blit(font.render(s, True, color), rect)
+    while fit and size > 10 and max(font.size(line)[0] for line in lines) > fit:
+        size -= 1
+        font = ui.unscaled_font(size)
+    step = font.get_linesize() * 0.8
+    for i, line in enumerate(lines):
+        y = center[1] + (i - (len(lines) - 1) / 2) * step
+        rect = font.render(line, True, color).get_rect(center=(center[0], round(y)))
+        window.blit(font.render(line, True, ui.SHADOW), rect.move(2, 2))
+        window.blit(font.render(line, True, color), rect)
 
 
 def _arrow(window: pygame.Surface, b: Button, color, scale: float) -> None:
