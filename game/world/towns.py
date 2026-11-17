@@ -106,7 +106,7 @@ TOWNS = {t.key: t for t in [
            "Coo! Professor Oak's lab is just up the road.",
            "Route 1 is to the east. The grass there is full of Pidgey like me!",
        )),)),
-    Town("viridian", "Viridian City", 72, (
+    Town("viridian", "Viridian City", 82, (
         Building("", (HOUSES, 2), 8),
         Building("Pokémon Center", (FUNCTIONAL, 0), 17),
         Building("Poké Mart", (FUNCTIONAL, 2), 30, inside="mart"),
@@ -128,6 +128,15 @@ TOWNS = {t.key: t for t in [
            Folk("viridian_fearow", "Fearow", "fearow", 66, (
                "Hmph. The Pidgey think the sky belongs to them. My Spearow know better.",
                "A Spearow that wins its fights grows a long beak. Like mine.",
+           )),
+           # Evolution quests: Nidoran F -> Nidorina, Nidoran M -> Nidorino.
+           Folk("viridian_nidorina", "Nidorina", "nidorina", 72, (
+               "The Nidoran on Route 22 are such sweet little things. Somebody has to look after them.",
+               "When your Nidoran F is ready to grow up (Lv16), come and see me.",
+           )),
+           Folk("viridian_nidorino", "Nidorino", "nidorino", 76, (
+               "Hmph. My horn's sharper than any Spearow beak. Want to see?",
+               "A Nidoran M with a strong horn (Lv16) can grow into one of us. Come back then.",
            )),
        )),
     Town("pewter", "Pewter City", 80, (
@@ -185,6 +194,11 @@ TOWNS = {t.key: t for t in [
            Folk("cerulean_psyduck", "Psyduck", "psyduck", 54, (
                "Psy...? The gym is full of water. And Water Pokémon. My head hurts.",
                "Someone broke into the house at the end of the street last night. Psyduck...",
+           )),
+           # Evolution quest: Abra -> Kadabra.
+           Folk("cerulean_kadabra", "Kadabra", "kadabra", 67, (
+               "...I bent this spoon with my mind. Yes, it's mine. No, you can't have it.",
+               "An Abra sleeps most of the day. Yours will wake up for good once it's ready (Lv16).",
            )),
        )),
     # The top of Route 24, past Nugget Bridge: a stop where Route 25 turns

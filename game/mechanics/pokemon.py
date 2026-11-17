@@ -123,6 +123,8 @@ SPECIES.update({
     # (The game's font has no ♀/♂ symbols.)
     "nidoran_f": _animated("nidoran_f", "Nidoran F", (55, 47, 52, 41), ("poison",), exp=59, hit=4),
     "nidoran_m": _animated("nidoran_m", "Nidoran M", (46, 57, 40, 50), ("poison",), exp=60, hit=4),
+    "nidorina": _animated("nidorina", "Nidorina", (70, 62, 67, 56), ("poison",), exp=117, hit=5),
+    "nidorino": _animated("nidorino", "Nidorino", (61, 72, 57, 65), ("poison",), exp=118, hit=4),
     "rattata": _animated("rattata", "Rattata", (30, 56, 35, 72), ("normal",), exp=57, hit=5),
     "caterpie": _animated("caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), exp=53, hit=5),
     "metapod": _animated("metapod", "Metapod", (50, 20, 55, 30), ("bug",), exp=72, hit=2),
@@ -135,8 +137,9 @@ SPECIES.update({
     "oddish": _animated("oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"), exp=78, hit=4),
     "bellsprout": _animated("bellsprout", "Bellsprout", (50, 75, 35, 40), ("grass", "poison"), exp=84, hit=4),
     # Psychic Pokémon hit with Gen 1's Special, so Abra's Attack is its
-    # Special (105) rather than its Attack (20).
+    # Special (105) rather than its Attack (20); Kadabra's is 120.
     "abra": _animated("abra", "Abra", (25, 105, 15, 90), ("psychic",), exp=73, hit=5),
+    "kadabra": _animated("kadabra", "Kadabra", (40, 120, 30, 105), ("psychic",), exp=145, hit=5),
     "venonat": _animated("venonat", "Venonat", (60, 55, 50, 45), ("bug", "poison"), exp=75, hit=5),
     "pikachu": _animated("pikachu", "Pikachu", (35, 55, 30, 90), ("electric",), exp=82, hit=5),
     "seel": _placeholder("086_seel", "Seel", (65, 45, 55, 45), ("water",), exp=100),

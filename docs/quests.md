@@ -351,6 +351,21 @@ the party or the reserve. A home ground is a map like the feud's
 | Last | Evolve Metapod into Butterfree | Evolve Kakuna into Beedrill | Evolve Rattata into Raticate |
 | Rewards | ₽400, 300 XP | ₽600, 450 XP | ₽700, 500 XP |
 
+### Nidorina, Nidorino and Kadabra (Lv16)
+
+The same way, once your Nidoran F / Nidoran M / Abra is Lv16. Kadabra's
+test is a solo trial like the starters' (`instance._trial`, from Cerulean
+City): Abra alone, Poison Pokémon that Psychic moves hit hard.
+
+| | Mother's Thorns (`evolve_nidorina`) | Horn Rush (`evolve_nidorino`) | Bent Spoon (`evolve_kadabra`) |
+| --- | --- | --- | --- |
+| Giver | Nidorina, Viridian City | Nidorino, Viridian City | Kadabra, Cerulean City |
+| 1. | Collect 4 Soft Grass (35% per Nidoran F or Rattata on Route 22) | Hunt 6 Spearow (Route 22) | Hunt 6 Venonat (Route 25) |
+| 2. Talk | Bring the grass to Nidorina | Report to Nidorino | Report to Kadabra |
+| 3. | – | Defeat the **Horn Brothers** in Horn Hollow (Route 22's look): giant Nidorino 19, Nidoran M 15 ×2 | Pass the **Trial of Mind** (Route 25's look): Venonat 18 ×2; Zubat 19 and Ekans 19; then a giant Kadabra 20 |
+| Last | Evolve Nidoran F into Nidorina | Evolve Nidoran M into Nidorino | Evolve Abra into Kadabra |
+| Rewards | ₽400, 300 XP | ₽600, 450 XP | ₽700, 500 XP |
+
 ---
 
 ## Recruitment

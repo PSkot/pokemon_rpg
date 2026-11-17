@@ -15,8 +15,8 @@ the game deliberately differs from Gen 1, that's called out.
 
 Each species has four Gen 1 base stats: HP, Attack, Defense and Speed.
 There's no Special stat, no IVs/EVs and no natures (Abra, a pure
-Special attacker, uses its Special, 105, as its Attack; so does Butterfree,
-80). Its stats at level
+Special attacker, uses its Special, 105, as its Attack; so do Kadabra,
+120, and Butterfree, 80). Its stats at level
 `L` are worked out using whole-number division (`//`, rounding down):
 
 | Stat | Formula |

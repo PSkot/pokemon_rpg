@@ -313,7 +313,7 @@ Links cost 2 points a rank.
 
 ## The Nidoran F line
 
-Stages: Nidoran F → Nidorina (Lv16, not in the game yet). Whole tree: 111 points.
+Stages: Nidoran F → Nidorina (Lv16). Whole tree: 111 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -338,7 +338,7 @@ Links cost 2 points a rank.
 
 ## The Nidoran M line
 
-Stages: Nidoran M → Nidorino (Lv16, not in the game yet). Whole tree: 96 points.
+Stages: Nidoran M → Nidorino (Lv16). Whole tree: 96 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -540,7 +540,7 @@ Links cost 2 points a rank.
 
 ## The Abra line
 
-Stages: Abra → Kadabra (Lv16, not in the game yet) → Alakazam (by stone, not in the game yet). Whole tree: 121 points.
+Stages: Abra → Kadabra (Lv16) → Alakazam (by stone, not in the game yet). Whole tree: 121 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |

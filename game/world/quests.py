@@ -273,6 +273,55 @@ QUESTS = {q.key: q for q in [
                Step("evolve", "rattata", "Evolve your Rattata into Raticate (party screen: E)")),
         money=700, xp=500,
     ),
+    Quest(
+        "evolve_nidorino", "Horn Rush",
+        "Viridian City's Nidorino says a Nidoran M sharpens its horn on its rivals. Beat the Horn Brothers in "
+        "their hollow, and yours could grow into a Nidorino.",
+        giver="viridian_nidorino",
+        offer=(("Nidorino", "That Nidoran of yours has a horn worth sharpening. Spearow keep pecking at ours, though."),
+               ("Nidorino", "Beat 6 Spearow on Route 22. Then we'll talk.")),
+        steps=(hunt("spearow", 6, "Route 22"),
+               Step("talk", "viridian_nidorino", "Report to Nidorino (Viridian City)", town="viridian",
+                    dialogue=(("Nidorino", "Good. Now for the real test: the Horn Brothers rule Horn Hollow."),
+                              ("Nidorino", "Their leader's horn is twice the size of mine. Talk to me when "
+                                           "you're ready."))),
+               Step("defeat", "horn_hollow", "Beat the Horn Brothers in Horn Hollow (talk to Nidorino, Viridian City)",
+                    dialogue=(("Nidorino", "Ha! Your Nidoran's horn is the sharpest in the hollow now."),)),
+               Step("evolve", "nidoran_m", "Evolve your Nidoran M into Nidorino (party screen: E)")),
+        money=600, xp=450,
+    ),
+    Quest(
+        "evolve_nidorina", "Mother's Thorns",
+        "Viridian City's Nidorina says a Nidoran F grows by caring for others. Bring soft grass for the young "
+        "ones' nests.",
+        giver="viridian_nidorina",
+        offer=(("Nidorina", "Your Nidoran is so grown-up now. A Nidorina looks after the little ones, you know."),
+               ("Nidorina", "Their nests on Route 22 need soft grass. Bring me 4 bundles?")),
+        steps=(collect("Soft Grass", 4, "route_22", ("nidoran_f", "rattata"), 35,
+                       "Nidoran F and Rattata on Route 22", "Soft Grass bundles"),
+               Step("talk", "viridian_nidorina", "Bring the Soft Grass to Nidorina (Viridian City)", town="viridian",
+                    dialogue=(("Nidorina", "Lovely and soft. The little ones will sleep well tonight."),
+                              ("Nidorina", "Your Nidoran has a kind heart. It's ready to grow up."))),
+               Step("evolve", "nidoran_f", "Evolve your Nidoran F into Nidorina (party screen: E)")),
+        money=400, xp=300,
+    ),
+    Quest(
+        "evolve_kadabra", "Bent Spoon",
+        "Cerulean City's Kadabra says an Abra's mind wakes when it's tested. Pass the Trial of Mind, and yours "
+        "could grow into a Kadabra.",
+        giver="cerulean_kadabra",
+        offer=(("Kadabra", "...Your Abra is awake. Barely. Its mind is ready for more."),
+               ("Kadabra", "Sharpen it first: beat 6 Venonat on Route 25. Their poison clouds the mind.")),
+        steps=(hunt("venonat", 6, "Route 25"),
+               Step("talk", "cerulean_kadabra", "Report to Kadabra (Cerulean City)", town="cerulean",
+                    dialogue=(("Kadabra", "Clear. Focused. Good."),
+                              ("Kadabra", "Now the Trial of Mind. Your Abra goes in alone. Talk to me when "
+                                          "you're ready."))),
+               Step("defeat", "trial_abra", "Pass the Trial of Mind (talk to Kadabra, Cerulean City)",
+                    dialogue=(("Kadabra", "...Impressive. Take this spoon. Your Abra will know what to do with it."),)),
+               Step("evolve", "abra", "Evolve your Abra into Kadabra (party screen: E)")),
+        money=700, xp=500,
+    ),
 
     # The starters' evolutions: the elder in Pewter City (the last form of
     # the player's starter's line) gives the one for the player's starter.

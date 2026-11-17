@@ -330,7 +330,12 @@ non-commercial project.
   Kakuna → Beedrill (Pewter's Butterfree and Beedrill) and Rattata →
   Raticate (Viridian's Rattata) the same way (`evolve_butterfree`: hunt,
   talk, evolve; `evolve_beedrill`: collect Royal Jelly, the Hive Queen's
-  thicket; `evolve_raticate`: hunt Ekans, the Rat King's burrows).
+  thicket; `evolve_raticate`: hunt Ekans, the Rat King's burrows), as are
+  Nidoran F → Nidorina and Nidoran M → Nidorino (Viridian's Nidorina and
+  Nidorino: `evolve_nidorina`: collect Soft Grass; `evolve_nidorino`: hunt
+  Spearow, the Horn Brothers' hollow) and Abra → Kadabra (Cerulean's
+  Kadabra, `evolve_kadabra`: hunt Venonat, a solo Trial of Mind,
+  `_trial(town=, folk=)`).
 - Recruitment (`docs/quests.md` → Recruitment): won route battles count
   defeated Pokémon per line (`Game.defeated`, `pokemon.line_base`); at
   `instance.RECRUITS[line].needed` its recruitment quest opens (board
@@ -423,8 +428,9 @@ non-commercial project.
   frame) and Squirtle's jump crouch. Their bases were generated with the
   species' icon as a design reference and Charmander as a style reference
   (Oddish, Bellsprout, Abra, Venonat, Goldeen, Staryu, Starmie, Horsea,
-  Shellder, Psyduck, Butterfree, Beedrill and Raticate too, made the same
-  way; Goldeen's, Butterfree's and Raticate's bases were mirrored, as
+  Shellder, Psyduck, Butterfree, Beedrill, Raticate, Nidorina, Nidorino
+  and Kadabra too, made the same
+  way; Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
   their candidates faced left). Placeholder quality: likely to be redone.
 - A move's `anim` plays if the species has that animation; otherwise the
   species' `fight_anim` does (no move-specific sheets for now).

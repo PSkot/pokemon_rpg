@@ -230,11 +230,14 @@ ROUTES = {r.key: r for r in [
 # City sends it alone through waves of Pokémon its type beats, then a giant
 # of its own next form.
 
-def _trial(starter: str, name: str, theme: Theme, waves: tuple[Wave, ...], master: str) -> Route:
+def _trial(starter: str, name: str, theme: Theme, waves: tuple[Wave, ...], master: str, level: int = 16,
+           town: str = "pewter", folk: str = "pewter_elder") -> Route:
+    """A solo trial for `starter` (any species about to evolve): its waves,
+    then a giant `master` at `level`; walked by talking to `folk` in `town`."""
     line = (starter, EVOLUTIONS[starter].into)
-    return Route(f"trial_{starter}", name, theme, maps=1, towns=("pewter", "pewter"), boss=True,
-                 boss_group=((master, 16),), boss_scale=2, trainer="Trial Master", boss_chest="battle",
-                 waves=waves, wave_team=1, wave_species=line, wild=False, folk="pewter_elder", cols=30)
+    return Route(f"trial_{starter}", name, theme, maps=1, towns=(town, town), boss=True,
+                 boss_group=((master, level),), boss_scale=2, trainer="Trial Master", boss_chest="battle",
+                 waves=waves, wave_team=1, wave_species=line, wild=False, folk=folk, cols=30)
 
 
 ROUTES.update({r.key: r for r in [
@@ -247,6 +250,12 @@ ROUTES.update({r.key: r for r in [
     _trial("squirtle", "Trial of Tides", ROUTE_22, (
         Wave("Stone Rollers", (("geodude", 11), ("geodude", 11)), 0),
         Wave("Rock Burrowers", (("diglett", 12), ("geodude", 12)), 0)), "wartortle"),
+    # Abra -> Kadabra (quest evolve_kadabra, Cerulean's Kadabra): Poison
+    # Pokémon, which Psychic moves hit hard.
+    _trial("abra", "Trial of Mind", ROUTE_25, (
+        Wave("Night Swarm", (("venonat", 18), ("venonat", 18)), 0),
+        Wave("Cave Biters", (("zubat", 19), ("ekans", 19)), 0)), "kadabra", level=20,
+        town="cerulean", folk="cerulean_kadabra"),
 ]})
 
 
@@ -279,6 +288,8 @@ ROUTES.update({r.key: r for r in [
           (13, 11), town="pewter"),
     _feud("rat_den", "Rat King's Burrows", MEADOW, "rattata", "raticate", "Rat King's Gang", "viridian_rattata",
           (23, 19)),
+    _feud("horn_hollow", "Horn Hollow", ROUTE_22, "nidoran_m", "nidorino", "Horn Brothers", "viridian_nidorino",
+          (19, 15)),
 ]})
 
 
