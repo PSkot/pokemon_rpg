@@ -67,10 +67,12 @@ non-commercial project.
   the target menu (arrows, or tap a Pokémon / its row; tap again to
   confirm; tapping an enemy in the command menu fights it); it starts on
   the member's last target (`Combatant.last_target`), and the names of
-  members who already aimed show under their targets. A spread move (e.g.
-  Fight with Sweeping) goes through the target menu too, with an arrow
-  over every one it hits (`_aimed`, `_spread_aim`): confirm, or tap any;
-  its user's name then shows under all of them. Each party member's
+  members who already aimed show under their targets. A spread move on
+  enemies (e.g. Fight with Sweeping) is aimed too: a big arrow over the
+  main target (full damage, and any set-off move goes there), small ones
+  over the rest (`_splashed`, at `Move.spread_share`; `_land`); one on the
+  own side just hits them all (`_spread_aim`: confirm, or tap any). Its
+  user's name shows under everyone it hits. Each party member's
   menus open on what it chose last (`Combatant.last_command`/`last_skill`).
   In the Skills list, O (touch: Order) carries the highlighted move up or
   down: the equipped moves' order, kept after the battle (`_move_skill`);

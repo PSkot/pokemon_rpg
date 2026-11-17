@@ -999,10 +999,9 @@ class BattleScene(Scene):
             target = action.target if action.target in candidates else random.choice(candidates)
             yield from self._use_item(user, move, target)
             return
-        if move.spread:
-            targets = candidates
-        else:
-            targets = [action.target if action.target in candidates else random.choice(candidates)]
+        main = action.target if action.target in candidates else random.choice(candidates)
+        # A spread move hits them all; on enemies, the one aimed at comes first (it takes full damage).
+        targets = [main] + [c for c in candidates if c is not main] if move.spread else [main]
 
         anim = user.anims[user.monster.anim_for(move)]
         charging = bool(move.charge) and user.charging is None
@@ -1089,8 +1088,9 @@ class BattleScene(Scene):
             # A set-off move fires at once and sets off nothing more.
             extra = replace(user.monster.move(key), charge="", recharge=False, triggers=())
             if extra.target == "enemy":
-                foes = [t for t in self._candidates(user, extra) if t.alive]
-                aim = foes if extra.spread else [t for t in targets if t.alive and t.enemy != user.enemy][:1]
+                first = [t for t in targets if t.alive and t.enemy != user.enemy][:1]  # (the one aimed at)
+                foes = first + [t for t in self._candidates(user, extra) if t.alive and t not in first]
+                aim = foes if extra.spread else first
             else:
                 aim = self._candidates(user, extra) if extra.spread else [user]
             if aim:
@@ -1101,9 +1101,10 @@ class BattleScene(Scene):
 
     def _land(self, user: Combatant, move: Move, targets: list[Combatant]) -> list[str]:
         """The move lands on each of `targets`. Returns notes for the message."""
-        share = move.spread_share if len(targets) > 1 else 1.0
         notes: list[str] = []
-        for target in targets:
+        for i, target in enumerate(targets):
+            # A spread move's share for all but the one aimed at (the first, on enemies).
+            share = move.spread_share if len(targets) > 1 and not (i == 0 and move.target == "enemy") else 1.0
             notes += self._hit(user, move, target, share) if move.damaging else self._effect(user, move, target)
         if move.self_stages and user.alive:
             notes += [self._change_stage(user, stat, change) for stat, change in move.self_stages]
@@ -1310,15 +1311,25 @@ class BattleScene(Scene):
     @property
     def _aimed(self) -> list[Combatant]:
         """Who the target menu has picked: the one under the cursor, or
-        everyone a spread move hits."""
+        everyone a spread move on the own side hits."""
         if self.menu != "target":
             return []
         targets = self._targets()
         return targets if self._spread_aim else [targets[self.target]]
 
     @property
+    def _splashed(self) -> list[Combatant]:
+        """The others a spread move on enemies hits (at its share), besides
+        the one aimed at."""
+        if self.menu != "target" or not (isinstance(self.aim, Move) and self.aim.spread) or self._spread_aim:
+            return []
+        return [c for c in self._targets() if c not in self._aimed]
+
+    @property
     def _spread_aim(self) -> bool:
-        return isinstance(self.aim, Move) and self.aim.spread
+        """A spread move with nobody to pick (on the own side): it just hits them all.
+        (One on enemies is aimed: that one takes full damage.)"""
+        return isinstance(self.aim, Move) and self.aim.spread and self.aim.target != "enemy"
 
     @staticmethod
     def _badge_pos(row: int) -> tuple[int, int]:
@@ -1370,6 +1381,9 @@ class BattleScene(Scene):
             return "Up/Down: move the skill   Enter / O: put it down"
         if self.menu == "target" and self._spread_aim:
             return "Hits all of them   Enter / tap: confirm   X: back"
+        if self.menu == "target" and self._splashed:
+            share = round(self.aim.spread_share * 100)
+            return f"Arrows or tap: main target (the others take {share}%)   Enter / tap again: confirm   X: back"
         return {
             "command": "Up/Down: choose   Enter: confirm   X: back",
             "skills": "Up/Down: choose skill   Enter: confirm   O: reorder   X: back",
@@ -1419,13 +1433,15 @@ class BattleScene(Scene):
                 if c.status:
                     ui.badge(canvas, self._enemy_badge_pos(i, self._enemy_row_h), STATUSES[c.status].color)
 
-        for aimed in self._aimed:  # a bouncing arrow over each one's head
+        # A bouncing arrow over each one's head: big over the one aimed at,
+        # small over the others a spread move also hits.
+        for aimed, size in [(c, 7) for c in self._aimed] + [(c, 4) for c in self._splashed]:
             body = aimed.body_rect
             tip = body.top - 4 - round(abs(math.sin(self.blink * 6)) * 5)
-            x = body.centerx
-            pygame.draw.polygon(canvas, ui.SHADOW, [(x - 6, tip - 9), (x + 8, tip - 9), (x + 1, tip + 2)])
-            pygame.draw.polygon(canvas, ui.YELLOW, [(x - 7, tip - 10), (x + 7, tip - 10), (x, tip)])
-            pygame.draw.polygon(canvas, ui.SHADOW, [(x - 7, tip - 10), (x + 7, tip - 10), (x, tip)], 1)
+            x, h = body.centerx, size + 3
+            pygame.draw.polygon(canvas, ui.SHADOW, [(x - size + 1, tip - h + 1), (x + size + 1, tip - h + 1), (x + 1, tip + 2)])
+            pygame.draw.polygon(canvas, ui.YELLOW, [(x - size, tip - h), (x + size, tip - h), (x, tip)])
+            pygame.draw.polygon(canvas, ui.SHADOW, [(x - size, tip - h), (x + size, tip - h), (x, tip)], 1)
         if self.message:
             ui.window_box(canvas, MESSAGE_WINDOW)
         if self.rewards:

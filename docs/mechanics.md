@@ -177,7 +177,8 @@ stages*). A hit is worked out in these steps:
    crits).
 5. **Leaf Shield:** if the target is shielded, `base` × **0.5**.
 6. **Random spread:** `base` × a random number from 0.85 to 1.0, × the
-   move's share if it hits several targets (Whirling Leaves: 0.75).
+   move's share if it hits several targets (Sweeping: 0.5 / 0.75), except
+   for the enemy it was aimed at, which takes full damage.
 7. **Type effectiveness:** × the type chart multiplier for the move's type
    against each of the target's types (multiplied together: 0, ¼, ½, 1,
    2 or 4). Typeless moves are always ×1.
@@ -272,8 +273,12 @@ stats; only type immunity stops it (Ghost).
   (Gen 1's intended effect; its real one was a bug).
 - **Rest:** the user's status is cured, it heals fully, and it falls
   asleep for exactly 2 turns.
-- Moves that **hit every target** (Growl R2, Spreading Seeds, ...) need no
-  target choice and work on each Pokémon on that side.
+- Moves that **hit every target** (Sweeping, Wide, Growl R2, ...): one on
+  the enemies is still aimed at one of them (big arrow; the others get
+  small ones), which takes full damage, the others the move's share; a
+  move it sets off (a link) goes to that one too. One on the own side
+  ("Shared") needs no target choice and works on each Pokémon there.
+  Enemies using one aim at a random target.
 
 ### Confusion
 
