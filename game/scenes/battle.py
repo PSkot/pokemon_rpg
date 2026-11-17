@@ -31,10 +31,11 @@ from ..world.themes import MEADOW_BACKDROP, Backdrop
 HORIZON_Y = 118
 PANEL_Y = 264  # top of the menu windows
 
-ENEMY_WINDOW = pygame.Rect(6, PANEL_Y, 170, 90)
-COMMAND_WINDOW = pygame.Rect(180, PANEL_Y, 104, 90)
-PARTY_WINDOW = pygame.Rect(288, PANEL_Y, 346, 90)
-SKILL_WINDOW = pygame.Rect(6, PANEL_Y, 278, 90)  # opens over the enemy + command windows
+ENEMY_WINDOW = pygame.Rect(6, PANEL_Y, 200, 90)
+ENEMY_HP_X = 62  # the right edge of an enemy's HP in its row, from the window's right edge (clear of a status badge)
+COMMAND_WINDOW = pygame.Rect(210, PANEL_Y, 104, 90)
+PARTY_WINDOW = pygame.Rect(318, PANEL_Y, 316, 90)
+SKILL_WINDOW = pygame.Rect(6, PANEL_Y, 308, 90)  # opens over the enemy + command windows
 ROW_H = 19   # menu line height
 LIST_ROWS = 4  # rows that fit in the skill/item list
 PAD = 9      # space above the first line in a window
@@ -1502,6 +1503,9 @@ class BattleScene(Scene):
                 row_h = self._enemy_row_h
                 y, size = ENEMY_WINDOW.y + PAD + i * row_h, 28 if row_h == ROW_H else 24
                 ui.text(window, c.label, (ENEMY_WINDOW.x + 12, y), color, size=size)
+                # Its HP left, between the name and the level (draining with the bar).
+                ui.text(window, f"{math.ceil(c.shown_hp)}/{c.monster.max_hp}", (ENEMY_WINDOW.right - ENEMY_HP_X, y + 2),
+                        ui.GREY, size=size - 6, align="right")
                 if c.status:  # in place of the level
                     ui.badge_text(window, STATUSES[c.status].abbrev, self._enemy_badge_pos(i, row_h))
                 else:

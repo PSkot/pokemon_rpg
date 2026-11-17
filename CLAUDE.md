@@ -77,7 +77,8 @@ non-commercial project.
   In the Skills list, O (touch: Order) carries the highlighted move up or
   down: the equipped moves' order, kept after the battle (`_move_skill`);
   which moves are equipped only changes outside battles. Enemies show an HP bar
-  (no numbers) under their feet (`_enemy_bar`); those names go under it. Battle sequences are generator "scripts"
+  under their feet (`_enemy_bar`; those names go under it) and their HP
+  left as numbers in the enemy window, between name and level/status. Battle sequences are generator "scripts"
   that yield seconds to wait (`BattleScene._round` / `_perform`).
 - Each `Animation` aligns its own baseline (lowest opaque row) to the feet
   position, because rows in a sheet sit at different heights. Rows whose
