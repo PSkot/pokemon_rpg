@@ -14,8 +14,10 @@ The player can resize the buttons, narrow the panels (down to none, with
 the buttons over the game, see-through) and move each side's buttons
 (`Layout`, set in the pause menu's Controls screen). By default the panels
 are Auto: as wide as the screen's shape leaves beside the game, so the
-game fills the screen's height (buttons that don't fit in a panel go over
-the game's edge).
+game fills the screen's height (each side's buttons are fitted into its panel,
+`_fit`: moved in, drawn closer together and smaller, the pills stacked
+down the panel and spilling over to the other side; only with no panels
+do they go over the game).
 
 The controls are on for touch screens in the browser, or with
 POKEMON_TOUCH=1 (the mouse then works as a finger) for testing. Positions
@@ -29,10 +31,11 @@ sideways, its top to the left; touches are turned back (`_unturn`).
 POKEMON_PORTRAIT=1 forces this on the desktop, for testing.
 """
 
+import math
 import os
 import sys
 from collections import Counter
-from dataclasses import asdict, dataclass, fields
+from dataclasses import asdict, dataclass, fields, replace
 from functools import cache
 
 import pygame
@@ -59,6 +62,7 @@ class Button:
     map_only: bool = False  # only on maps (Run)
     toggle: bool = False    # tap on / tap off instead of hold
     pill: bool = False      # a rounded rectangle (menu buttons), twice as wide as tall
+    scale: float = 1.0      # its label's (or arrow's) size: the Layout's size, shrunk to fit a panel
 
 
 @dataclass(frozen=True)
@@ -224,8 +228,86 @@ def _placed(lay: Layout, side: int, extra: tuple[tuple[int, str], ...]) -> list[
         y = spot.y * scale if spot.top else height - (height - spot.y) * scale - dy
         x = width - edge if spot.right else edge
         buttons.append(Button(spot.key, spot.label, (round(x), round(y)), round(spot.radius * scale),
-                              spot.map_only, spot.toggle, spot.pill))
-    return buttons
+                              spot.map_only, spot.toggle, spot.pill, scale))
+    if side <= 0:
+        return buttons  # no panels: the buttons go over the game, as placed
+    return _fit(buttons, [s.right for s in spots], side, width, height)
+
+
+FIT_MARGIN = 6   # px kept between the buttons and the panel's edges
+MIN_FIT = 0.6    # round buttons shrink to fit a narrow panel down to this much
+PILL_GAP = 6     # px between pills, and between the pills and the round buttons
+MIN_PILL = 40    # a pill's least height plus gap (px), squeezed in with many
+
+
+def _fit(buttons: list[Button], rights: list[bool], side: int, width: int, height: int) -> list[Button]:
+    """The buttons fitted into the side panels, off the game: each side's
+    round buttons shrunk (down to `MIN_FIT`) and moved into its panel; the
+    pills narrowed to the panels and stacked down their middles, from the
+    top to just above the round buttons. The scene's pills go under Party,
+    and those that don't fit there under Menu; only if neither has room
+    are they squeezed closer (and smaller)."""
+    room = side - 2 * FIT_MARGIN
+    fitted, floors, pills = [], [], []
+    for right in (False, True):
+        group = [b for b, r in zip(buttons, rights) if r == right and not b.pill]
+        placed = _fit_rounds(group, width - side if right else 0, side, height)
+        fitted += placed
+        floors.append(min((b.pos[1] - b.radius for b in placed), default=height) - PILL_GAP)
+        pills.append([b for b, r in zip(buttons, rights) if r == right and b.pill])
+    first = next(b for b in buttons if b.pill)
+    radius = min(first.radius, room // 4)
+    step = PILL_STEP * first.scale
+    top = first.pos[1] - first.radius
+    # How many pills each side holds at the normal spacing; the right's extras overflow left.
+    fits = [max(1, int((floor - top - 2 * radius) // step) + 1) for floor in floors]
+    while len(pills[1]) > fits[1] and len(pills[0]) < fits[0]:
+        pills[0].append(pills[1].pop(fits[1]))
+    for column, floor, x in zip(pills, floors, (side // 2, width - side // 2)):
+        r, gap = radius, step
+        if len(column) > 1 and top + gap * (len(column) - 1) + 2 * r > floor:
+            gap = max(MIN_PILL, (floor - top) / len(column))  # (buttons moved up high: over them)
+            r = min(r, round(gap - PILL_GAP) // 2)
+        for i, b in enumerate(column):
+            fitted.append(replace(b, pos=(x, round(top + r + gap * i)), radius=r, scale=b.scale * r / b.radius))
+    return fitted
+
+
+def _fit_rounds(group: list[Button], x0: int, side: int, height: int) -> list[Button]:
+    """One panel's round buttons (it starts at `x0`), fitted into it: moved
+    closer together (`spread`) and shrunk (`size`), keeping them as big as
+    the room allows without touching each other; then moved into the panel
+    (or, too wide for it even at `MIN_FIT`, against the window's edge)."""
+    if not group:
+        return []
+    room = side - 2 * FIT_MARGIN
+    old_cx = (min(b.pos[0] for b in group) + max(b.pos[0] for b in group)) / 2
+    pairs = [(a, b) for i, a in enumerate(group) for b in group[i + 1:]]
+
+    def size_for(spread: float) -> float:
+        """The buttons' biggest size with their centres `spread` apart."""
+        size = min([1.0] + [(room / 2 - abs(b.pos[0] - old_cx) * spread) / b.radius for b in group])
+        for a, b in pairs:
+            size = min(size, (math.dist(a.pos, b.pos) * spread - 4) / (a.radius + b.radius))
+        return size
+
+    spread, size = max(((f / 40, size_for(f / 40)) for f in range(16, 41)), key=lambda t: (t[1], t[0]))
+    if size < MIN_FIT:
+        spread = size = MIN_FIT
+    lo = min(old_cx + (b.pos[0] - old_cx) * spread - b.radius * size for b in group)
+    hi = max(old_cx + (b.pos[0] - old_cx) * spread + b.radius * size for b in group)
+    if hi - lo <= room:
+        shift = min(max(lo, x0 + FIT_MARGIN), x0 + side - FIT_MARGIN - (hi - lo)) - lo
+    else:
+        shift = (x0 if x0 == 0 else x0 + side - (hi - lo)) - lo
+    # Shrunk towards the lowest button, kept on the screen.
+    low = max(group, key=lambda b: b.pos[1])
+    low_y = min(low.pos[1], height - FIT_MARGIN - low.radius * size)
+    top = min(low_y - (low.pos[1] - b.pos[1]) * spread - b.radius * size for b in group)
+    low_y += max(0, FIT_MARGIN - top)
+    return [replace(b, pos=(round(old_cx + (b.pos[0] - old_cx) * spread + shift),
+                            round(low_y - (low.pos[1] - b.pos[1]) * spread)),
+                    radius=round(b.radius * size), scale=b.scale * size) for b in group]
 
 
 def _buttons(on_map: bool, extra: tuple[tuple[int, str], ...] = ()) -> list[Button]:
@@ -387,7 +469,6 @@ def draw(window: pygame.Surface, on_map: bool, extra: tuple[tuple[int, str], ...
     view = view_rect()
     window.fill(PANEL_COLOR, (0, 0, view.left, h))
     window.fill(PANEL_COLOR, (view.right, 0, w - view.right, h))
-    scale = layout.size / 100
     for b in _buttons(on_map, extra):
         lit = _held[b.key] > 0 or b.key in _toggled
         face = _face(b.radius, b.pill, lit, view.left < b.pos[0] < view.right)
@@ -395,9 +476,9 @@ def draw(window: pygame.Surface, on_map: bool, extra: tuple[tuple[int, str], ...
         color = ui.YELLOW if lit else ui.WHITE
         if b.label:
             size = 40 if b.label in "AB" else 30 if len(b.label) == 1 else 26
-            _label(window, b.label, b.pos, color, round(size * scale))
+            _label(window, b.label, b.pos, color, round(size * b.scale))
         else:
-            _arrow(window, b, color, scale)
+            _arrow(window, b, color, b.scale)
 
 
 def _label(window: pygame.Surface, s: str, center: tuple[int, int], color, size: int) -> None:

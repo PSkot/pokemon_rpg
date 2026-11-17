@@ -380,7 +380,11 @@ non-commercial project.
   down to 0 = buttons over the game, see-through, or `AUTO` (the
   default): panels as wide as the screen's shape leaves, so the game fills
   its height (`touch.side`; the window is remade when the page's shape
-  changes); each side's buttons moved across/up) in pause menu → Controls (`scenes/controls_menu.py`,
+  changes); each side's buttons moved across/up). With panels, the
+  buttons are fitted into them (`touch._fit`: round ones moved in,
+  closer and smaller, down to `MIN_FIT`; pills narrowed and stacked down
+  the panel, the scene's pills spilling over under Menu when they'd reach
+  A/B), so they don't cover the game or each other) in pause menu → Controls (`scenes/controls_menu.py`,
   only with touch on; every button shows meanwhile). Positions come from
   `touch.SPOTS` (the default layout) placed by the layout (`_placed`).
   Changing the panel width remakes the window (main loop). The game is
