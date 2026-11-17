@@ -433,6 +433,15 @@ half HP, once per battle); the bag starts without gear.
   `attack`, `defense`, `speed`, `power`, `power:<type>`, `added:<type>`
   and `super`. **Chances** (crit, act first, endure, status), regen, drain
   and berry effects only grow with rarity.
+- **Special effects** (`first`, `endure`, `regen`, `drain`, `status:*`)
+  don't use the rarity factor but their own, steeper ladder
+  (`items.SPECIAL_FACTOR`): Common ×0.5, Uncommon ×0.75, Rare ×1.0, Epic
+  ×1.5, Legendary ×2.0; their ranges are what they are at Rare. Quick Claw
+  (act first 12…18%): Common 6…9%, Rare 12…18%, Legendary 24…36%.
+- **Endure** items (Focus Band, Halo) only drop at **Epic or better**
+  (`Item.min_rarity`): 9…12% at Epic, 12…16% at Legendary. Loot, enemies'
+  gear and quest rewards pick the rarity first, then an item that drops
+  at it.
 - So newer gear of a lower rarity can beat older gear of a higher one.
   Muscle Band (Attack +8…12%) at its highest roll: Common Lv5 +14%, Rare
   Lv10 +24%, Common Lv25 +24%, Uncommon Lv35 +35%, Epic Lv10 +33%.
@@ -446,8 +455,9 @@ half HP, once per battle); the bag starts without gear.
    repeats (normal affixes weight 3; Hasty, Draining and of the Chansey 2;
    type and status affixes 1).
 3. **Each value** is rolled as a whole number in its range, then:
-   - a **bonus** (positive) is × the rarity factor (and × the item-level
-     factor if it's a stat, power or damage bonus), rounded, min 1
+   - a **bonus** (positive) is × the rarity factor (× the special factor
+     instead for a special effect, see above; and × the item-level factor
+     if it's a stat, power or damage bonus), rounded, min 1
      (Python rounds .5 to the even number: 7.5 → 8, but 2.5 → 2);
    - a **penalty** (negative, e.g. Power Bracer's Speed −10%) stays as it is.
 4. **Name:** the first prefix + item + the first suffix ("Fierce Red Bandana

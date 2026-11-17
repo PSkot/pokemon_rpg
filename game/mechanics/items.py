@@ -76,10 +76,22 @@ RARE = Rarity("Rare", 1.5, (2, 3), (110, 210, 255))
 EPIC = Rarity("Epic", 2.0, (3, 4), (220, 150, 255))
 LEGENDARY = Rarity("Legendary", 2.5, (4, 5), (255, 176, 64))
 RARITIES = {r.name: r for r in (COMMON, UNCOMMON, RARE, EPIC, LEGENDARY)}
+RARITY_ORDER = list(RARITIES)
+
+# Special effects (rather than plain stat bonuses) are weak on everyday gear
+# and come into their own on rare gear: instead of the rarity's factor they
+# take these. Their ranges below are what they are at Rare.
+SPECIAL_MODS = ("first", "endure", "regen", "drain")  # and status:<status>
+SPECIAL_FACTOR = {"Common": 0.5, "Uncommon": 0.75, "Rare": 1.0, "Epic": 1.5, "Legendary": 2.0}
+
+
+def _special(mod: str) -> bool:
+    return mod in SPECIAL_MODS or mod.startswith("status:")
 
 # Item level: bonuses to stats, move power and damage grow by this much
 # per level above 1 (`level_factor`). Chances (act first, endure, status,
-# crit), regen, drain and berry effects only grow with rarity.
+# crit), regen, drain and berry effects only grow with rarity (the special
+# ones on their own ladder, SPECIAL_FACTOR).
 LEVEL_GROWTH = 0.04
 LEVEL_SCALED = {"hp", "attack", "defense", "speed", "power", "super"}  # and power:<type>, added:<type>
 
@@ -101,6 +113,10 @@ class Item:
     mods: dict[str, Range] = field(default_factory=dict, hash=False)  # its own effect
     cures: tuple[str, ...] = ()  # berries: statuses it cures (once per battle)
     sprite: int = -1   # hats: its cell in the hat sheet (hats.SHEET)
+    min_rarity: str = "Common"  # it only drops at this rarity or better
+
+    def drops_at(self, rarity: str) -> bool:
+        return RARITY_ORDER.index(rarity) >= RARITY_ORDER.index(self.min_rarity)
 
 
 TYPE_ITEMS = {  # type -> (held item that powers up its moves, description)
@@ -129,7 +145,7 @@ HATS = [
     (20, "Nightcap", "A cosy cap. Its wearer rests even in battle.", {"regen": (3, 5)}),
     (24, "Mitre", "A tall ceremonial hat that steadies the spirit.", {"hp": (8, 12)}),
     (26, "Crown", "A crown fit for a champion.", {"attack": (5, 8), "defense": (5, 8)}),
-    (27, "Halo", "A glowing ring. Its wearer may hang on with 1 HP.", {"endure": (8, 12)}),
+    (27, "Halo", "A glowing ring. Its wearer may hang on with 1 HP.", {"endure": (6, 8)}),
     (28, "Tiara", "A jewelled tiara, light and graceful.", {"hp": (5, 8), "speed": (5, 8)}),
     (29, "Turban", "Thick folds of cloth that soften blows.", {"defense": (8, 12)}),
     (31, "Mortarboard", "A scholar's cap. Its wearer knows every weakness.", {"super": (10, 15)}),
@@ -151,7 +167,8 @@ HATS = [
 
 ITEMS = {i.name: i for i in [
     # Head: hats.
-    *(Item(name, "head", description, mods, sprite=cell) for cell, name, description, mods in HATS),
+    *(Item(name, "head", description, mods, sprite=cell, min_rarity="Epic" if "endure" in mods else "Common")
+      for cell, name, description, mods in HATS),
     # Held: type items and battle tools.
     *(Item(name, "held", f"{description} Powers up {type_chart.name(t)} moves.", {f"power:{t}": (10, 15)})
       for t, (name, description) in TYPE_ITEMS.items()),
@@ -163,7 +180,8 @@ ITEMS = {i.name: i for i in [
     Item("Muscle Band", "worn", "A headband that boosts strength.", {"attack": (8, 12)}),
     Item("Assault Vest", "worn", "A sturdy vest for the front line.", {"defense": (12, 18)}),
     Item("Choice Scarf", "worn", "A scarf that makes its wearer quicker.", {"speed": (12, 18)}),
-    Item("Focus Band", "worn", "Its wearer may hang on with 1 HP after a knockout hit.", {"endure": (8, 12)}),
+    Item("Focus Band", "worn", "Its wearer may hang on with 1 HP after a knockout hit.", {"endure": (6, 8)},
+         min_rarity="Epic"),
     Item("Expert Belt", "worn", "Powers up super effective moves.", {"super": (12, 18)}),
     Item("Power Bracer", "worn", "A heavy bracer. Strong, but slow.", {"attack": (16, 24), "speed": (-10, -10)}),
     Item("Power Belt", "worn", "A heavy belt. Tough, but slow.", {"defense": (16, 24), "speed": (-10, -10)}),
@@ -265,7 +283,10 @@ def _roll(mods: dict[str, Range], rarity: Rarity, level: int, rng: random.Random
     for mod, (low, high) in mods.items():
         value = low if values == "min" else high if values == "max" else rng.randint(low, high)
         if value > 0:
-            factor = rarity.factor * (level_factor(level) if _level_scaled(mod) else 1)
+            if _special(mod):
+                factor = SPECIAL_FACTOR[rarity.name]
+            else:
+                factor = rarity.factor * (level_factor(level) if _level_scaled(mod) else 1)
             value = max(1, round(value * factor))
         rolled[mod] = value
     return rolled

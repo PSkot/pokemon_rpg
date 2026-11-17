@@ -50,8 +50,8 @@ class LootTable:
             if isinstance(drop, MedicineDrop):
                 rewards.append(Reward(medicine=drop.name, count=rng.randint(*drop.count)))
             elif isinstance(drop, GearDrop):
-                item = rng.choice(drop.items or tuple(ITEMS))
                 rarity = rng.choices([r for r, _ in drop.rarity], weights=[w for _, w in drop.rarity])[0]
+                item = rng.choice([i for i in (drop.items or tuple(ITEMS)) if ITEMS[i].drops_at(rarity)])
                 rewards.append(Reward(gear=Gear.roll(item, rarity, rng, level=level)))
         return merge(rewards)
 
@@ -114,8 +114,8 @@ def dress(monster, rarity: Rarities, pieces: int, rng: random.Random | None = No
     rng = rng or random.Random()
     slots = rng.sample(sorted({i.slot for i in ITEMS.values()}), pieces)
     for slot in slots:
-        item = rng.choice([name for name, i in ITEMS.items() if i.slot == slot])
         name = rng.choices([r for r, _ in rarity], weights=[w for _, w in rarity])[0]
+        item = rng.choice([n for n, i in ITEMS.items() if i.slot == slot and i.drops_at(name)])
         monster.equip(Gear.roll(item, name, rng, level=monster.level))
 
 

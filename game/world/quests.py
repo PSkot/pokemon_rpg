@@ -844,7 +844,7 @@ def _reward(spec: tuple) -> Reward:
         return Reward(medicine=spec[1], count=spec[2])
     if spec[0] == "pokemon":
         return Reward(pokemon=Monster.create(spec[1], spec[2]))
-    item = spec[1] or random.choice([name for name, i in ITEMS.items() if i.slot != "berry"])
+    item = spec[1] or random.choice([name for name, i in ITEMS.items() if i.slot != "berry" and i.drops_at(spec[2])])
     return Reward(gear=Gear.roll(item, spec[2], level=spec[3]))
 
 
