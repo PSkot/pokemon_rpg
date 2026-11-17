@@ -90,12 +90,19 @@ On top of each skill's own level and stage, tree-wide rules
 | --- | --- | --- |
 | Move of power 71–99 | Lv25 | the line's first evolution |
 | Move of power 100+ (or Super Fang) | Lv35 | the line's last stage |
-| Sweeping, Wide (hitting every enemy) | Lv25 | the first evolution |
+| Sweeping on a move of power 40 or less (Tackle, Ember, Bubble, ...) | Lv25 | the first evolution |
+| Sweeping on a move of power 41–70 (Bite, Horn Attack, Confusion, Razor Leaf, ...) | Lv35 | the first evolution |
+| Sweeping on a move of power 71–99 (Slash, Hyper Fang, Body Slam, Ice Beam, ...) | Lv45 | the line's last stage |
+| Sweeping on a move of power 100+ (Dig, Earthquake, Hydro Pump, ...) | Lv55 | the line's last stage |
+| Wide (status moves on every enemy) | Lv25 | the first evolution |
 | Wide on a move that disables (sleep, paralysis, freeze, confusion: Sleep Powder, Stun Spore, Sing, Supersonic, Thunder Wave, Glare, ...) | Lv30 | the first evolution |
 | Link setting off a status or stat move (Growl, Leer, Leech Seed, Poison Powder, ...) | Lv20 | the first evolution |
 | *Strong* link: setting off a damaging move, or one that disables or binds | Lv25, at most 2 ranks | the first evolution |
 
-A line that doesn't evolve gets each of these 5 levels later. A move set
+For Sweeping, a move's power counts its average hits and crits
+(`skills._sweep_power`): Fury Swipes (18 × 3 hits) as 54, Slash (crits
+half the time) as 85. A line that doesn't evolve gets each of these 5
+levels later. A move set
 off by a link only hits the one aimed at: its Sweeping or Wide doesn't
 carry over (`BattleScene._apply`).
 
@@ -115,7 +122,7 @@ Every move gets its branches from its kind (`skills._buffs`); per rank:
 | *Rider* | 3 | by type: Searing (fire, +10% burn), Crackling (electric, +10% paralysis), Chilling (ice, +5% freeze), Venomous (poison/bug, +10% poison), Draining (grass, heals 15% of the damage), Rippling (water, 10% Speed down), Dusting (ground, 10% accuracy down), Bewildering/Haunting (psychic/ghost, +10% confusion), Staggering (others, +10% flinch) | +3 | the move |
 | Wounding | 2 | wounds: 1/16, then 1/12 of max HP per round for 3 rounds (not on weak moves) | +16 | the rider |
 | Keen | 2 | crits ×3/×4 as likely (not on high-crit or weak moves) | +6 | Potent |
-| Sweeping | 2 | hits every enemy: the one aimed at at full damage, the others at 50%, then 75% (not on spread moves) | +12, Lv25 and the first evolution at least (see above) | Potent |
+| Sweeping | 2 | hits every enemy: the one aimed at at full damage, the others at 50%, then 75% (not on spread moves) | +12, and by its move's power (see above) | Potent |
 | Instant / Tireless / Cushioned / Calm | 1–2 | take away a drawback: the charge round, the recharge round, recoil (half, then none), the user's confusion | +10 to +20 | Potent |
 | *Capstone* | 1 | Swift (power ≥ 90: always goes first), Relentless (multi-hit: 1 more hit) or Twin (hits twice at −30% power) | +24 (Lv30 at least), last stage | Keen |
 

@@ -144,7 +144,8 @@ non-commercial project.
   (`Monster.move(key)`). Moves cost points by power (`POWER_TIERS`: 1–4;
   71+ power also needs Lv25 and the first evolution, 100+ Lv35 and the last
   stage), links 2 a rank and open from Lv20 at the first evolution,
-  Sweeping/Wide from Lv25 at the first evolution; strong links (setting
+  Wide from Lv25 at the first evolution, Sweeping by its move's power
+  (`SWEEP_TIERS`: Lv25/35/45/55, `_sweep_power` counts hits and crits); strong links (setting
   off damage, sleep, paralysis, freeze, confusion or binding) from Lv25
   with at most 2 ranks, Wide on such disabling moves from Lv30; lines
   that don't evolve 5 levels later (`skills._gated`). A set-off move only

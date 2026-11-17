@@ -24,6 +24,7 @@ from dataclasses import dataclass, field, replace
 from fractions import Fraction
 from functools import cache
 
+from .combat import CRIT_CHANCE, CRIT_FACTOR
 from .moves import MOVES, STAT_WORDS, Move
 
 FIRST_POINT_LEVEL = 3   # skill points = level − this (2 for a Lv5 starter)
@@ -32,8 +33,12 @@ FIRST_POINT_LEVEL = 3   # skill points = level − this (2 for a Lv5 starter)
 # first evolution, 2 the line's last stage).
 POWER_TIERS = ((100, 4, 35, 2), (71, 3, 25, 1), (41, 2, 0, 0), (0, 1, 0, 0))
 WEAK_POWER = 40          # damaging moves this weak get fewer buffs (no Wounding or Keen)
-SPREAD_LEVEL = 25        # Sweeping and Wide (hitting every enemy) open from here, at the first evolution ...
-SPREAD_LEVEL_SINGLE = 30  # ... or here for a line that doesn't evolve
+SPREAD_LEVEL = 25        # Sweeping and Wide (hitting every enemy) open from here at the earliest, at the first evolution
+SPREAD_LEVEL_SINGLE = 30  # ... (a line that doesn't evolve: 5 levels later)
+# Sweeping opens later the stronger its move hits (`_sweep_power`):
+# (lowest power, earliest level, evolution stage: 1 the first evolution,
+# 2 the line's last stage).
+SWEEP_TIERS = ((100, 55, 2), (71, 45, 2), (41, 35, 1), (0, SPREAD_LEVEL, 1))
 LINK_LEVEL = 20          # links open from here (at the first evolution, if the line has one) ...
 LINK_LEVEL_SINGLE = 25   # ... or here for a line that doesn't evolve
 # Strong links (setting off a damaging move, or one that puts the target to
@@ -496,7 +501,11 @@ def _gated(skill: Skill, skills: dict[str, Skill], last_stage: int) -> Skill:
         stage = {0: 0, 1: first, 2: last_stage}[stage]
         return replace(skill, cost=cost, level=max(skill.level, level), stage=max(skill.stage, stage))
     single = 0 if last_stage else 5  # a line that doesn't evolve: these come 5 levels later
-    if skill.kind == "buff" and skill.short in ("Sweeping", "Wide"):
+    if skill.kind == "buff" and skill.short == "Sweeping":
+        _, level, stage = next(t for t in SWEEP_TIERS if _sweep_power(MOVES[skills[skill.move].move]) >= t[0])
+        stage = {1: first, 2: last_stage}[stage]
+        return replace(skill, level=max(skill.level, level + single), stage=max(skill.stage, stage))
+    if skill.kind == "buff" and skill.short == "Wide":
         level = (DISABLE_WIDE_LEVEL if _disables(MOVES[skills[skill.move].move]) else SPREAD_LEVEL) + single
         return replace(skill, level=max(skill.level, level), stage=max(skill.stage, first))
     if skill.kind == "link":
@@ -507,6 +516,20 @@ def _gated(skill: Skill, skills: dict[str, Skill], last_stage: int) -> Skill:
                            ranks=skill.ranks[:n], text=skill.text[:n])
         return replace(skill, cost=LINK_COST, level=max(skill.level, LINK_LEVEL + single), stage=max(skill.stage, first))
     return skill
+
+
+def _sweep_power(move: Move) -> float:
+    """How hard `move` hits on average, for Sweeping: its power times its
+    average number of hits and its average crit bonus (Slash, crits half
+    the time: as 85 power; Super Fang: as 100)."""
+    if move.halve:
+        return 100
+    lo, hi = move.hits
+    hits = 3 if (lo, hi) == (2, 5) else (lo + hi) / 2  # (2-5 hits: 3 on average)
+
+    def crits(ratio: float) -> float:
+        return 1 + min(1.0, CRIT_CHANCE * ratio / 100) * (CRIT_FACTOR - 1)
+    return move.power * hits * crits(move.crit_ratio) / crits(1)
 
 
 def _disables(move: Move) -> bool:
