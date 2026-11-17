@@ -122,7 +122,7 @@ Every move gets its branches from its kind (`skills._buffs`); per rank:
 | *Rider* | 3 | by type: Searing (fire, +10% burn), Crackling (electric, +10% paralysis), Chilling (ice, +5% freeze), Venomous (poison/bug, +10% poison), Draining (grass, heals 15% of the damage), Rippling (water, 10% Speed down), Dusting (ground, 10% accuracy down), Bewildering/Haunting (psychic/ghost, +10% confusion), Staggering (others, +10% flinch) | +3 | the move |
 | Wounding | 2 | wounds: 1/16, then 1/12 of max HP per round for 3 rounds (not on weak moves) | +16 | the rider |
 | Keen | 2 | crits ×3/×4 as likely (not on high-crit or weak moves) | +6 | Potent |
-| Sweeping | 2 | hits every enemy: the one aimed at at full damage, the others at 50%, then 75% (not on spread moves) | +12, and by its move's power (see above) | Potent |
+| Sweeping | 2 | hits every enemy: the one aimed at at full damage, the others at 25%, then 35% (not on spread moves) | +12, and by its move's power (see above) | Potent |
 | Instant / Tireless / Cushioned / Calm | 1–2 | take away a drawback: the charge round, the recharge round, recoil (half, then none), the user's confusion | +10 to +20 | Potent |
 | *Capstone* | 1 | Swift (power ≥ 90: always goes first), Relentless (multi-hit: 1 more hit) or Twin (hits twice at −30% power) | +24 (Lv30 at least), last stage | Keen |
 
@@ -199,7 +199,7 @@ A species added without a tree gets Tackle as its only skill
   ended wild battles); Psychic lowers Defense (Gen 1: Special, not in this
   game); Wrap and Clamp hurt for 2–5 rounds instead of locking the target;
   Thrash and Petal Dance hit once and confuse the user (Petal Dance hits
-  every enemy, the others at 50%); Focus Energy works as intended (Gen 1's was bugged).
+  every enemy, the others at 35%); Focus Energy works as intended (Gen 1's was bugged).
   Mirror Move, Disable, Mist and other moves that don't fit are left out.
 - **Status moves** that inflict a status or confusion have their Gen 1
   hit chance (Sleep Powder 75%, Sing 55%, ...); everything else always
@@ -486,7 +486,7 @@ Stages: Oddish → Gloom (Lv21, not in the game yet) → Vileplume (by stone, no
 | Sleep Powder | 1 | 19 | Stun Spore | Oddish | Puts an enemy to sleep (75% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
 | Acid | 1 | 24 | Absorb | Oddish | Poison, 40 power. 33% chance to lower its Defense. | Potent, Venomous, Sweeping, Twin (9) |
 | Mega Drain | 1 | 25 | Absorb | Gloom | Grass, 40 power. Heals the user 1/2 of the damage dealt. | Potent, Draining, Sweeping, Twin (9) |
-| Petal Dance | 2 | 33 | Acid | Oddish | Grass, 70 power. Hits every enemy at 50% damage. The user becomes confused afterwards. | Potent, Draining, Wounding, Keen, Calm, Twin (12) |
+| Petal Dance | 2 | 33 | Acid | Oddish | Grass, 70 power. Hits every enemy, the others at 35% damage. The user becomes confused afterwards. | Potent, Draining, Wounding, Keen, Calm, Twin (12) |
 | Solar Beam | 4 | 46 | Petal Dance | Vileplume | Grass, 120 power. Charges for a round first. | Potent, Draining, Wounding, Keen, Sweeping, Instant, Swift (14) |
 
 Links cost 2 points a rank.

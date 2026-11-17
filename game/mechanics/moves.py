@@ -121,7 +121,7 @@ MOVES = {m.name: m for m in [
     Move("Leech Life", 20, "enemy", type="bug", drain=0.5),
     Move("Vine Whip", 35, "enemy", type="grass"),
     Move("Razor Leaf", 55, "enemy", type="grass", crit_ratio=8),
-    Move("Petal Dance", 70, "enemy", type="grass", spread=True, spread_share=0.5, self_confuse=True),
+    Move("Petal Dance", 70, "enemy", type="grass", spread=True, spread_share=0.35, self_confuse=True),
     Move("Solar Beam", 120, "enemy", "solar_beam", type="grass", charge="{user} took in sunlight!"),
     Move("Leech Seed", 0, "enemy", type="grass", seed=1 / 16, immune=("grass",)),
     Move("Leaf Shield", 0, "ally", "leaf_shield", type="grass", shield=2),
@@ -204,7 +204,7 @@ def describe(m: Move) -> str:
             head += ", hits twice" if lo == hi == 2 else f", hits {lo}-{hi} times"
         parts.append(head + ".")
         if m.spread:
-            share = "" if m.spread_share == 1 else f" at {round(m.spread_share * 100)}% damage"
+            share = "" if m.spread_share == 1 else f", the others at {round(m.spread_share * 100)}% damage"
             parts.append(f"Hits every enemy{share}.")
     if m.priority:
         parts.append("Always goes first.")

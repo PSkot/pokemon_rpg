@@ -352,8 +352,8 @@ def _damaging_buffs(k: str, m: Move, base: int, last_stage: int) -> list[Skill]:
                            ("Critical hits ×3 as likely.", "×4 as likely.")))
     if not m.spread:
         nodes.append(_node(k, "Sweeping", name, base + 12, (trunk,),
-                           ({"spread": True, "spread_share": 0.5}, {"spread": True, "spread_share": 0.75}),
-                           ("Hits every enemy, at 50% damage.", "At 75% damage.")))
+                           ({"spread": True, "spread_share": 0.25}, {"spread": True, "spread_share": 0.35}),
+                           ("Hits every enemy, the others at 25% damage.", "The others at 35% damage.")))
     # Buffs that take away a drawback.
     if m.charge:
         nodes.append(_node(k, "Instant", name, base + 20, (trunk,), ({"charge": ""},), ("Fires without charging.",)))

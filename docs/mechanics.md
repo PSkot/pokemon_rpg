@@ -178,7 +178,7 @@ stages*). A hit is worked out in these steps:
    crits).
 5. **Leaf Shield:** if the target is shielded, `base` × **0.5**.
 6. **Random spread:** `base` × a random number from 0.85 to 1.0, × the
-   move's share if it hits several targets (Sweeping: 0.5 / 0.75), except
+   move's share if it hits several targets (Sweeping: 0.25 / 0.35; Petal Dance 0.35), except
    for the enemy it was aimed at, which takes full damage.
 7. **Type effectiveness:** × the type chart multiplier for the move's type
    against each of the target's types (multiplied together: 0, ¼, ½, 1,
