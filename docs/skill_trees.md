@@ -90,25 +90,78 @@ On top of each skill's own level and stage, tree-wide rules
 | --- | --- | --- |
 | Move of power 71–99 | Lv25 | the line's first evolution |
 | Move of power 100+ (or Super Fang) | Lv35 | the line's last stage |
-| Sweeping on a move of power 40 or less (Tackle, Ember, Bubble, ...) | Lv25 | the first evolution |
-| Sweeping on a move of power 41–70 (Bite, Horn Attack, Confusion, Razor Leaf, ...) | Lv35 | the first evolution |
-| Sweeping on a move of power 71–99 (Slash, Hyper Fang, Body Slam, Ice Beam, ...) | Lv45 | the line's last stage |
-| Sweeping on a move of power 100+ (Dig, Earthquake, Hydro Pump, ...) | Lv55 | the line's last stage |
+| A damaging move's area buff | its own level (see Area buffs) | by its move's strength |
 | Wide (status moves on every enemy) | Lv25 | the first evolution |
 | Wide on a move that disables (sleep, paralysis, freeze, confusion: Sleep Powder, Stun Spore, Sing, Supersonic, Thunder Wave, Glare, ...) | Lv30 | the first evolution |
 | Link setting off a status or stat move (Growl, Leer, Leech Seed, Poison Powder, ...) | Lv20 | the first evolution |
 | *Strong* link: setting off a damaging move, or one that disables or binds | Lv25, at most 2 ranks | the first evolution |
 
-For Sweeping, a move's power counts its average hits and crits
-(`skills._sweep_power`): Fury Swipes (18 × 3 hits) as 54, Slash (crits
-half the time) as 85. A line that doesn't evolve gets each of these 5
-levels later. A move set
-off by a link only hits the one aimed at: its Sweeping or Wide doesn't
+A line that doesn't evolve gets each of these 5 levels later. A move set
+off by a link only hits the one aimed at: its area buff or Wide doesn't
 carry over (`BattleScene._apply`).
 
 (A stage the game doesn't have yet, e.g. Kadabra, can't be reached: those
 skills wait for it.) Older saves get every point back once
 (`saves.SKILLS_VERSION`), to spend again under these rules.
+
+### Area buffs
+
+Each damaging move reaches past its target in its own way, or not at all
+(`skills.AREAS`; Tackle, Scratch, Bite, Peck, Quick Attack, ... stay
+single-target): **sweep** (hits every enemy, the others at a share),
+**reach** (also hits one enemy standing next to the target, at a share)
+or **spill** (a chance to put a status or a stat drop on each enemy next
+to the target, no damage). Each opens at its own level (or 6 levels after
+its move, if later), at the first evolution, or the last stage for
+strong moves (power 71+, counting average hits and crits,
+`skills._sweep_power`: Slash crits half the time, so it counts as 85). In
+one tree, no two open within 3 levels of each other (`AREA_STEP`): the
+later one waits.
+
+| Move | Buff | Effect (rank 1 / 2) | Earliest | Evolution |
+| --- | --- | --- | --- | --- |
+| Slash | Sweeping | every enemy, the others at 30% / 45% | Lv40 | last stage |
+| Fury Swipes | Sweeping | every enemy, the others at 20% / 30% | Lv30 | first evolution |
+| Razor Leaf | Scattering | every enemy, the others at 30% / 40% | Lv34 | first evolution |
+| Gust | Gale | every enemy, the others at 20% / 30% | Lv26 | first evolution |
+| Wing Attack | Gale | every enemy, the others at 25% / 35% | Lv31 | first evolution |
+| Swift | Starfall | every enemy, the others at 30% / 40% | Lv33 | first evolution |
+| Bubble | Foaming | every enemy, the others at 20% / 30% | Lv25 | first evolution |
+| Bubble Beam | Foaming | every enemy, the others at 30% / 40% | Lv37 | first evolution |
+| Surf | Tidal | every enemy, the others at 50% / 65% | Lv50 | last stage |
+| Rock Slide | Landslide | every enemy, the others at 35% / 50% | Lv44 | last stage |
+| Earthquake | Shockwave | every enemy, the others at 50% / 65% | Lv55 | last stage |
+| Blizzard | Whiteout | every enemy, the others at 45% / 60% | Lv58 | last stage |
+| Pin Missile | Volley | every enemy, the others at 25% / 35% | Lv32 | first evolution |
+| Thrash | Rampaging | every enemy, the others at 30% / 45% | Lv46 | last stage |
+| Thunder Shock | Arcing | one enemy next to the target, at 30% / 45% | Lv27 | first evolution |
+| Thunderbolt | Arcing | one enemy next to the target, at 40% / 55% | Lv42 | last stage |
+| Thunder | Arcing | one enemy next to the target, at 50% / 65% | Lv55 | last stage |
+| Water Gun | Piercing | one enemy next to the target, at 25% / 40% | Lv28 | first evolution |
+| Hydro Pump | Piercing | one enemy next to the target, at 45% / 60% | Lv52 | last stage |
+| Vine Whip | Lashing | one enemy next to the target, at 30% / 45% | Lv25 | first evolution |
+| Rock Throw | Shrapnel | one enemy next to the target, at 35% / 50% | Lv30 | first evolution |
+| Body Slam | Bowling | one enemy next to the target, at 30% / 45% | Lv38 | last stage |
+| Slam | Bowling | one enemy next to the target, at 35% / 50% | Lv41 | last stage |
+| Take Down | Bowling | one enemy next to the target, at 35% / 50% | Lv39 | last stage |
+| Double-Edge | Bowling | one enemy next to the target, at 40% / 55% | Lv48 | last stage |
+| Skull Bash | Bowling | one enemy next to the target, at 45% / 60% | Lv50 | last stage |
+| Hyper Beam | Piercing | one enemy next to the target, at 50% / 70% | Lv60 | last stage |
+| Solar Beam | Piercing | one enemy next to the target, at 45% / 60% | Lv56 | last stage |
+| Sky Attack | Piercing | one enemy next to the target, at 50% / 65% | Lv58 | last stage |
+| Ember | Spreading | each enemy next to the target: 10% / 20% chance to burn | Lv25 | first evolution |
+| Fire Spin | Spreading | each enemy next to the target: 15% / 25% chance to burn | Lv30 | first evolution |
+| Flamethrower | Spreading | each enemy next to the target: 15% / 30% chance to burn | Lv42 | last stage |
+| Fire Blast | Spreading | each enemy next to the target: 25% / 40% chance to burn | Lv55 | last stage |
+| Poison Sting | Venom Cloud | each enemy next to the target: 10% / 20% chance to poison | Lv26 | first evolution |
+| Acid | Splashing | each enemy next to the target: 20% / 40% chance to lower Defense | Lv30 | first evolution |
+| Ice Beam | Frost | each enemy next to the target: 25% / 50% chance to lower Speed | Lv45 | last stage |
+| Aurora Beam | Frost | each enemy next to the target: 20% / 40% chance to lower Attack | Lv36 | first evolution |
+| Ice Punch | Frost | each enemy next to the target: 20% / 40% chance to lower Speed | Lv44 | last stage |
+| Confusion | Rippling | each enemy next to the target: 10% / 20% chance to confuse | Lv30 | first evolution |
+| Psybeam | Rippling | each enemy next to the target: 15% / 25% chance to confuse | Lv36 | first evolution |
+| Psychic | Rippling | each enemy next to the target: 20% / 35% chance to confuse | Lv50 | last stage |
+| Dig | Cave-in | each enemy next to the target: 25% / 50% chance to lower accuracy | Lv40 | last stage |
 
 ### The buffs of each move
 
@@ -122,7 +175,7 @@ Every move gets its branches from its kind (`skills._buffs`); per rank:
 | *Rider* | 3 | by type: Searing (fire, +10% burn), Crackling (electric, +10% paralysis), Chilling (ice, +5% freeze), Venomous (poison/bug, +10% poison), Draining (grass, heals 15% of the damage), Rippling (water, 10% Speed down), Dusting (ground, 10% accuracy down), Bewildering/Haunting (psychic/ghost, +10% confusion), Staggering (others, +10% flinch) | +3 | the move |
 | Wounding | 2 | wounds: 1/16, then 1/12 of max HP per round for 3 rounds (not on weak moves) | +16 | the rider |
 | Keen | 2 | crits ×3/×4 as likely (not on high-crit or weak moves) | +6 | Potent |
-| Sweeping | 2 | hits every enemy: the one aimed at at full damage, the others at 25%, then 35% (not on spread moves) | +12, and by its move's power (see above) | Potent |
+| *Area* | 2 | the move's own area buff, if it has one (see Area buffs) | its own level | Potent |
 | Instant / Tireless / Cushioned / Calm | 1–2 | take away a drawback: the charge round, the recharge round, recoil (half, then none), the user's confusion | +10 to +20 | Potent |
 | *Capstone* | 1 | Swift (power ≥ 90: always goes first), Relentless (multi-hit: 1 more hit) or Twin (hits twice at −30% power) | +24 (Lv30 at least), last stage | Keen |
 
@@ -162,7 +215,7 @@ Rest; each with Wide/Shared, Lingering or Renewing, and Quick.
   Learned moves that aren't equipped can be swapped in outside battle.
 - Buffs and links work on their move automatically. A link's set-off move
   shows its name over the user and "Vine Whip set off Leech Seed!". It
-  only hits the one aimed at (not every enemy, even with Sweeping or Wide).
+  only hits the one aimed at (no area buff carries over).
 - **Wounds** (Wounding, Lingering): the target loses its share of max HP
   at the end of each round for 3 rounds; a new wound restarts the count
   (the bigger share stays).
@@ -213,24 +266,24 @@ A species added without a tree gets Tackle as its only skill
 
 ## The Bulbasaur line
 
-Stages: Bulbasaur → Ivysaur (Lv16) → Venusaur (Lv32). Whole tree: 202 points.
+Stages: Bulbasaur → Ivysaur (Lv16) → Venusaur (Lv32). Whole tree: 200 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Tackle | – | free | – | Bulbasaur | Normal, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Tackle | – | free | – | Bulbasaur | Normal, 35 power. | Potent, Staggering, Twin (7) |
 | Growl | – | free | – | Bulbasaur | Lowers an enemy's Attack 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Leech Seed | 1 | 7 | Growl | Bulbasaur | Seeds an enemy: drains 1/16 of its max HP each round. Doesn't affect Grass types. | Deep-Rooted, Wide, Lingering, Quick (7) |
-| Vine Whip | 1 | 9 | Tackle | Bulbasaur | Grass, 35 power. | Potent, Draining, Sweeping, Twin (9) |
+| Vine Whip | 1 | 9 | Tackle | Bulbasaur | Grass, 35 power. | Potent, Draining, Lashing, Twin (9) |
 | Poison Powder | 1 | 20 | Growl | Bulbasaur | Poisons an enemy (75% chance). | Sure, Wide, Lingering, Toxic, Quick (8) |
-| Take Down | 3 | 25 | Tackle | Ivysaur | Normal, 90 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (15) |
+| Take Down | 3 | 25 | Tackle | Ivysaur | Normal, 90 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Bowling, Cushioned, Swift (15) |
 | Leaf Shield | 1 | 22 | Leech Seed | Ivysaur | Halves the damage an ally takes for 2 rounds. | Thick, Shared, Renewing, Quick (7) |
-| Razor Leaf | 2 | 27 | Vine Whip | Bulbasaur | Grass, 55 power. High critical-hit ratio. | Potent, Draining, Wounding, Sweeping, Twin (11) |
-| Body Slam | 3 | 30 | Take Down | Ivysaur | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Razor Leaf | 2 | 27 | Vine Whip | Bulbasaur | Grass, 55 power. High critical-hit ratio. | Potent, Draining, Wounding, Scattering, Twin (11) |
+| Body Slam | 3 | 30 | Take Down | Ivysaur | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Bowling, Twin (13) |
 | Growth | 1 | 34 | Leech Seed | Bulbasaur | Raises its Attack 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
 | Sleep Powder | 1 | 41 | Poison Powder | Ivysaur | Puts an enemy to sleep (75% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
-| Solar Beam | 4 | 48 | Razor Leaf | Venusaur | Grass, 120 power. Charges for a round first. | Potent, Draining, Wounding, Keen, Sweeping, Instant, Swift (14) |
-| Double-Edge | 4 | 50 | Body Slam | Venusaur | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (15) |
-| Hyper Beam | 4 | 55 | Solar Beam | Venusaur | Normal, 150 power. The user must rest the next round. | Potent, Staggering, Wounding, Keen, Sweeping, Tireless, Swift (14) |
+| Solar Beam | 4 | 48 | Razor Leaf | Venusaur | Grass, 120 power. Charges for a round first. | Potent, Draining, Wounding, Keen, Piercing, Instant, Swift (14) |
+| Double-Edge | 4 | 50 | Body Slam | Venusaur | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Bowling, Cushioned, Swift (15) |
+| Hyper Beam | 4 | 55 | Solar Beam | Venusaur | Normal, 150 power. The user must rest the next round. | Potent, Staggering, Wounding, Keen, Piercing, Tireless, Swift (14) |
 
 Links cost 2 points a rank.
 
@@ -246,20 +299,20 @@ Links cost 2 points a rank.
 
 ## The Charmander line
 
-Stages: Charmander → Charmeleon (Lv16) → Charizard (Lv36). Whole tree: 142 points.
+Stages: Charmander → Charmeleon (Lv16) → Charizard (Lv36). Whole tree: 140 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Scratch | – | free | – | Charmander | Normal, 40 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Scratch | – | free | – | Charmander | Normal, 40 power. | Potent, Staggering, Twin (7) |
 | Growl | – | free | – | Charmander | Lowers an enemy's Attack 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Ember | 1 | 9 | Scratch | Charmander | Fire, 40 power. 10% chance to burn. | Potent, Searing, Sweeping, Twin (9) |
+| Ember | 1 | 9 | Scratch | Charmander | Fire, 40 power. 10% chance to burn. | Potent, Searing, Spreading, Twin (9) |
 | Leer | 1 | 15 | Growl | Charmander | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Swords Dance | 1 | 25 | Leer | Charmeleon | Raises its Attack 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
 | Slash | 2 | 30 | Scratch | Charmander | Normal, 70 power. High critical-hit ratio. | Potent, Staggering, Wounding, Sweeping, Twin (11) |
-| Flamethrower | 3 | 38 | Ember | Charmeleon | Fire, 95 power. 10% chance to burn. | Potent, Searing, Wounding, Keen, Sweeping, Swift (13) |
-| Fire Spin | 1 | 46 | Flamethrower | Charmander | Fire, 15 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | Potent, Searing, Sweeping, Twin (9) |
-| Fire Blast | 4 | 50 | Flamethrower | Charizard | Fire, 120 power. 30% chance to burn. | Potent, Searing, Wounding, Keen, Sweeping, Swift (13) |
-| Earthquake | 4 | 55 | Slash | Charizard | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (13) |
+| Flamethrower | 3 | 38 | Ember | Charmeleon | Fire, 95 power. 10% chance to burn. | Potent, Searing, Wounding, Keen, Spreading, Swift (13) |
+| Fire Spin | 1 | 46 | Flamethrower | Charmander | Fire, 15 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | Potent, Searing, Spreading, Twin (9) |
+| Fire Blast | 4 | 50 | Flamethrower | Charizard | Fire, 120 power. 30% chance to burn. | Potent, Searing, Wounding, Keen, Spreading, Swift (13) |
+| Earthquake | 4 | 55 | Slash | Charizard | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Shockwave, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -274,20 +327,20 @@ Links cost 2 points a rank.
 
 ## The Squirtle line
 
-Stages: Squirtle → Wartortle (Lv16) → Blastoise (Lv36). Whole tree: 150 points.
+Stages: Squirtle → Wartortle (Lv16) → Blastoise (Lv36). Whole tree: 146 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Tackle | – | free | – | Squirtle | Normal, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Tackle | – | free | – | Squirtle | Normal, 35 power. | Potent, Staggering, Twin (7) |
 | Tail Whip | – | free | – | Squirtle | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Bubble | 1 | 8 | Tackle | Squirtle | Water, 30 power. 33% chance to lower its Speed. | Potent, Rippling, Sweeping, Twin (9) |
-| Water Gun | 1 | 15 | Bubble | Squirtle | Water, 40 power. | Potent, Rippling, Sweeping, Twin (9) |
-| Bite | 2 | 22 | Tackle | Squirtle | Normal, 60 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Bubble | 1 | 8 | Tackle | Squirtle | Water, 30 power. 33% chance to lower its Speed. | Potent, Rippling, Foaming, Twin (9) |
+| Water Gun | 1 | 15 | Bubble | Squirtle | Water, 40 power. | Potent, Rippling, Piercing, Twin (9) |
+| Bite | 2 | 22 | Tackle | Squirtle | Normal, 60 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Twin (11) |
 | Withdraw | 1 | 28 | Tail Whip | Squirtle | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Ice Beam | 3 | 30 | Water Gun | Wartortle | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (13) |
-| Skull Bash | 4 | 35 | Bite | Blastoise | Normal, 100 power. Charges for a round first. | Potent, Staggering, Wounding, Keen, Sweeping, Instant, Swift (14) |
-| Hydro Pump | 4 | 42 | Water Gun | Blastoise | Water, 120 power. | Potent, Rippling, Wounding, Keen, Sweeping, Swift (13) |
-| Blizzard | 4 | 55 | Ice Beam | Blastoise | Ice, 120 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (13) |
+| Ice Beam | 3 | 30 | Water Gun | Wartortle | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Frost, Swift (13) |
+| Skull Bash | 4 | 35 | Bite | Blastoise | Normal, 100 power. Charges for a round first. | Potent, Staggering, Wounding, Keen, Bowling, Instant, Swift (14) |
+| Hydro Pump | 4 | 42 | Water Gun | Blastoise | Water, 120 power. | Potent, Rippling, Wounding, Keen, Piercing, Swift (13) |
+| Blizzard | 4 | 55 | Ice Beam | Blastoise | Ice, 120 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Whiteout, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -302,19 +355,19 @@ Links cost 2 points a rank.
 
 ## The Spearow line
 
-Stages: Spearow → Fearow (Lv20). Whole tree: 121 points.
+Stages: Spearow → Fearow (Lv20). Whole tree: 115 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Peck | – | free | – | Spearow | Flying, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Peck | – | free | – | Spearow | Flying, 35 power. | Potent, Staggering, Twin (7) |
 | Growl | – | free | – | Spearow | Lowers an enemy's Attack 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Leer | 1 | 9 | Growl | Spearow | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Fury Attack | 1 | 15 | Peck | Spearow | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Sweeping, Relentless (9) |
-| Swift | 2 | 20 | Peck | Spearow | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Fury Attack | 1 | 15 | Peck | Spearow | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Relentless (7) |
+| Swift | 2 | 20 | Peck | Spearow | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Starfall, Twin (13) |
 | Whirlwind | 1 | 22 | Leer | Spearow | Lowers every enemy's Speed 1 stage. | Deep, Lingering, Hexing, Emboldening, Quick (10) |
-| Drill Peck | 3 | 29 | Fury Attack | Fearow | Flying, 80 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Drill Peck | 3 | 29 | Fury Attack | Fearow | Flying, 80 power. | Potent, Staggering, Wounding, Keen, Twin (11) |
 | Agility | 1 | 36 | Leer | Spearow | Raises its Speed 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Hyper Beam | 4 | 45 | Drill Peck | Fearow | Normal, 150 power. The user must rest the next round. | Potent, Staggering, Wounding, Keen, Sweeping, Tireless, Swift (14) |
+| Hyper Beam | 4 | 45 | Drill Peck | Fearow | Normal, 150 power. The user must rest the next round. | Potent, Staggering, Wounding, Keen, Piercing, Tireless, Swift (14) |
 
 Links cost 2 points a rank.
 
@@ -327,19 +380,19 @@ Links cost 2 points a rank.
 
 ## The Nidoran F line
 
-Stages: Nidoran F → Nidorina (Lv16). Whole tree: 111 points.
+Stages: Nidoran F → Nidorina (Lv16). Whole tree: 103 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Tackle | – | free | – | Nidoran F | Normal, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Tackle | – | free | – | Nidoran F | Normal, 35 power. | Potent, Staggering, Twin (7) |
 | Growl | – | free | – | Nidoran F | Lowers an enemy's Attack 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Scratch | 1 | 8 | Tackle | Nidoran F | Normal, 40 power. | Potent, Staggering, Sweeping, Twin (9) |
-| Poison Sting | 1 | 14 | Tackle | Nidoran F | Poison, 15 power. 30% chance to poison. | Potent, Venomous, Sweeping, Twin (9) |
+| Scratch | 1 | 8 | Tackle | Nidoran F | Normal, 40 power. | Potent, Staggering, Twin (7) |
+| Poison Sting | 1 | 14 | Tackle | Nidoran F | Poison, 15 power. 30% chance to poison. | Potent, Venomous, Venom Cloud, Twin (9) |
 | Tail Whip | 1 | 21 | Growl | Nidoran F | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Body Slam | 3 | 25 | Tackle | Nidorina | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Bite | 2 | 29 | Scratch | Nidoran F | Normal, 60 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Body Slam | 3 | 25 | Tackle | Nidorina | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Bowling, Twin (13) |
+| Bite | 2 | 29 | Scratch | Nidoran F | Normal, 60 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Twin (11) |
 | Fury Swipes | 1 | 36 | Scratch | Nidoran F | Normal, 18 power, hits 2-5 times. | Potent, Staggering, Sweeping, Relentless (9) |
-| Double Kick | 1 | 43 | Bite | Nidoran F | Fighting, 30 power, hits twice. | Potent, Staggering, Sweeping, Relentless (9) |
+| Double Kick | 1 | 43 | Bite | Nidoran F | Fighting, 30 power, hits twice. | Potent, Staggering, Relentless (7) |
 
 Links cost 2 points a rank.
 
@@ -352,18 +405,18 @@ Links cost 2 points a rank.
 
 ## The Nidoran M line
 
-Stages: Nidoran M → Nidorino (Lv16). Whole tree: 96 points.
+Stages: Nidoran M → Nidorino (Lv16). Whole tree: 88 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Tackle | – | free | – | Nidoran M | Normal, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Tackle | – | free | – | Nidoran M | Normal, 35 power. | Potent, Staggering, Twin (7) |
 | Leer | – | free | – | Nidoran M | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Horn Attack | 2 | 8 | Tackle | Nidoran M | Normal, 65 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Poison Sting | 1 | 14 | Tackle | Nidoran M | Poison, 15 power. 30% chance to poison. | Potent, Venomous, Sweeping, Twin (9) |
+| Horn Attack | 2 | 8 | Tackle | Nidoran M | Normal, 65 power. | Potent, Staggering, Wounding, Keen, Twin (11) |
+| Poison Sting | 1 | 14 | Tackle | Nidoran M | Poison, 15 power. 30% chance to poison. | Potent, Venomous, Venom Cloud, Twin (9) |
 | Focus Energy | 1 | 21 | Leer | Nidoran M | The user's critical-hit chance ×4 for the battle. | Fired-Up, Renewing, Quick (6) |
-| Body Slam | 3 | 25 | Tackle | Nidorino | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Fury Attack | 1 | 29 | Horn Attack | Nidoran M | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Sweeping, Relentless (9) |
-| Double Kick | 1 | 43 | Horn Attack | Nidoran M | Fighting, 30 power, hits twice. | Potent, Staggering, Sweeping, Relentless (9) |
+| Body Slam | 3 | 25 | Tackle | Nidorino | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Bowling, Twin (13) |
+| Fury Attack | 1 | 29 | Horn Attack | Nidoran M | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Relentless (7) |
+| Double Kick | 1 | 43 | Horn Attack | Nidoran M | Fighting, 30 power, hits twice. | Potent, Staggering, Relentless (7) |
 
 Links cost 2 points a rank.
 
@@ -376,18 +429,18 @@ Links cost 2 points a rank.
 
 ## The Pidgey line
 
-Stages: Pidgey → Pidgeotto (Lv18) → Pidgeot (Lv36). Whole tree: 105 points.
+Stages: Pidgey → Pidgeotto (Lv18) → Pidgeot (Lv36). Whole tree: 103 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Gust | – | free | – | Pidgey | Normal, 40 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Gust | – | free | – | Pidgey | Normal, 40 power. | Potent, Staggering, Gale, Twin (9) |
 | Sand-Attack | – | free | – | Pidgey | Lowers an enemy's accuracy 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Quick Attack | 1 | 12 | Gust | Pidgey | Normal, 40 power. Always goes first. | Potent, Staggering, Sweeping, Twin (9) |
+| Quick Attack | 1 | 12 | Gust | Pidgey | Normal, 40 power. Always goes first. | Potent, Staggering, Twin (7) |
 | Whirlwind | 1 | 19 | Sand-Attack | Pidgey | Lowers every enemy's Speed 1 stage. | Deep, Lingering, Hexing, Emboldening, Quick (10) |
-| Wing Attack | 1 | 28 | Gust | Pidgey | Flying, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
-| Double-Edge | 4 | 35 | Quick Attack | Pidgeot | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (15) |
+| Wing Attack | 1 | 28 | Gust | Pidgey | Flying, 35 power. | Potent, Staggering, Gale, Twin (9) |
+| Double-Edge | 4 | 35 | Quick Attack | Pidgeot | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Bowling, Cushioned, Swift (15) |
 | Agility | 1 | 36 | Whirlwind | Pidgey | Raises its Speed 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Sky Attack | 4 | 44 | Wing Attack | Pidgeot | Flying, 140 power. Charges for a round first. High critical-hit ratio. | Potent, Staggering, Wounding, Sweeping, Instant, Swift (12) |
+| Sky Attack | 4 | 44 | Wing Attack | Pidgeot | Flying, 140 power. Charges for a round first. High critical-hit ratio. | Potent, Staggering, Wounding, Piercing, Instant, Swift (12) |
 
 Links cost 2 points a rank.
 
@@ -400,18 +453,18 @@ Links cost 2 points a rank.
 
 ## The Rattata line
 
-Stages: Rattata → Raticate (Lv20). Whole tree: 106 points.
+Stages: Rattata → Raticate (Lv20). Whole tree: 98 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Tackle | – | free | – | Rattata | Normal, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Tackle | – | free | – | Rattata | Normal, 35 power. | Potent, Staggering, Twin (7) |
 | Tail Whip | – | free | – | Rattata | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Quick Attack | 1 | 7 | Tackle | Rattata | Normal, 40 power. Always goes first. | Potent, Staggering, Sweeping, Twin (9) |
-| Hyper Fang | 3 | 25 | Quick Attack | Raticate | Normal, 80 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Quick Attack | 1 | 7 | Tackle | Rattata | Normal, 40 power. Always goes first. | Potent, Staggering, Twin (7) |
+| Hyper Fang | 3 | 25 | Quick Attack | Raticate | Normal, 80 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Twin (11) |
 | Focus Energy | 1 | 23 | Tail Whip | Rattata | The user's critical-hit chance ×4 for the battle. | Fired-Up, Renewing, Quick (6) |
-| Body Slam | 3 | 25 | Tackle | Raticate | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Super Fang | 4 | 35 | Hyper Fang | Raticate | Normal. Takes half the target's HP. | Staggering, Wounding, Sweeping (7) |
-| Hyper Beam | 4 | 45 | Super Fang | Raticate | Normal, 150 power. The user must rest the next round. | Potent, Staggering, Wounding, Keen, Sweeping, Tireless, Swift (14) |
+| Body Slam | 3 | 25 | Tackle | Raticate | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Bowling, Twin (13) |
+| Super Fang | 4 | 35 | Hyper Fang | Raticate | Normal. Takes half the target's HP. | Staggering, Wounding (5) |
+| Hyper Beam | 4 | 45 | Super Fang | Raticate | Normal, 150 power. The user must rest the next round. | Potent, Staggering, Wounding, Keen, Piercing, Tireless, Swift (14) |
 
 Links cost 2 points a rank.
 
@@ -424,21 +477,21 @@ Links cost 2 points a rank.
 
 ## The Caterpie line
 
-Stages: Caterpie → Metapod (Lv7) → Butterfree (Lv10). Whole tree: 129 points.
+Stages: Caterpie → Metapod (Lv7) → Butterfree (Lv10). Whole tree: 125 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Tackle | – | free | – | Caterpie | Normal, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Tackle | – | free | – | Caterpie | Normal, 35 power. | Potent, Staggering, Twin (7) |
 | String Shot | – | free | – | Caterpie | Lowers an enemy's Speed 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Harden | 1 | 7 | String Shot | Metapod | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Confusion | 2 | 12 | Tackle | Butterfree | Psychic, 50 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Sweeping, Twin (13) |
+| Confusion | 2 | 12 | Tackle | Butterfree | Psychic, 50 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Rippling, Twin (13) |
 | Poison Powder | 1 | 15 | String Shot | Butterfree | Poisons an enemy (75% chance). | Sure, Wide, Lingering, Toxic, Quick (8) |
 | Stun Spore | 1 | 16 | Poison Powder | Butterfree | Paralyzes an enemy (75% chance). | Sure, Wide, Lingering, Numbing, Quick (9) |
 | Sleep Powder | 1 | 17 | Stun Spore | Butterfree | Puts an enemy to sleep (75% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
 | Supersonic | 1 | 21 | Confusion | Butterfree | 55% chance to confuse. | Sure, Wide, Lingering, Dizzying, Quick (9) |
-| Mega Drain | 1 | 25 | Confusion | Butterfree | Grass, 40 power. Heals the user 1/2 of the damage dealt. | Potent, Draining, Sweeping, Twin (9) |
+| Mega Drain | 1 | 25 | Confusion | Butterfree | Grass, 40 power. Heals the user 1/2 of the damage dealt. | Potent, Draining, Twin (7) |
 | Whirlwind | 1 | 26 | Supersonic | Butterfree | Lowers every enemy's Speed 1 stage. | Deep, Lingering, Hexing, Emboldening, Quick (10) |
-| Psybeam | 2 | 32 | Confusion | Butterfree | Psychic, 65 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Sweeping, Twin (13) |
+| Psybeam | 2 | 32 | Confusion | Butterfree | Psychic, 65 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Rippling, Twin (13) |
 
 Links cost 2 points a rank.
 
@@ -451,18 +504,18 @@ Links cost 2 points a rank.
 
 ## The Weedle line
 
-Stages: Weedle → Kakuna (Lv7) → Beedrill (Lv10). Whole tree: 98 points.
+Stages: Weedle → Kakuna (Lv7) → Beedrill (Lv10). Whole tree: 94 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Poison Sting | – | free | – | Weedle | Poison, 15 power. 30% chance to poison. | Potent, Venomous, Sweeping, Twin (9) |
+| Poison Sting | – | free | – | Weedle | Poison, 15 power. 30% chance to poison. | Potent, Venomous, Venom Cloud, Twin (9) |
 | String Shot | – | free | – | Weedle | Lowers an enemy's Speed 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Harden | 1 | 7 | String Shot | Kakuna | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Fury Attack | 1 | 12 | Poison Sting | Beedrill | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Sweeping, Relentless (9) |
+| Fury Attack | 1 | 12 | Poison Sting | Beedrill | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Relentless (7) |
 | Focus Energy | 1 | 16 | Harden | Beedrill | The user's critical-hit chance ×4 for the battle. | Fired-Up, Renewing, Quick (6) |
-| Twineedle | 1 | 20 | Fury Attack | Beedrill | Bug, 25 power, hits twice. 20% chance to poison. | Potent, Venomous, Sweeping, Relentless (9) |
+| Twineedle | 1 | 20 | Fury Attack | Beedrill | Bug, 25 power, hits twice. 20% chance to poison. | Potent, Venomous, Relentless (7) |
 | Swords Dance | 1 | 25 | Focus Energy | Beedrill | Raises its Attack 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Pin Missile | 1 | 30 | Twineedle | Beedrill | Bug, 14 power, hits 2-5 times. | Potent, Venomous, Sweeping, Relentless (9) |
+| Pin Missile | 1 | 30 | Twineedle | Beedrill | Bug, 14 power, hits 2-5 times. | Potent, Venomous, Volley, Relentless (9) |
 | Agility | 1 | 35 | Focus Energy | Beedrill | Raises its Speed 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
 
 Links cost 2 points a rank.
@@ -476,18 +529,18 @@ Links cost 2 points a rank.
 
 ## The Oddish line
 
-Stages: Oddish → Gloom (Lv21, not in the game yet) → Vileplume (by stone, not in the game yet). Whole tree: 98 points.
+Stages: Oddish → Gloom (Lv21, not in the game yet) → Vileplume (by stone, not in the game yet). Whole tree: 94 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Absorb | – | free | – | Oddish | Grass, 20 power. Heals the user 1/2 of the damage dealt. | Potent, Draining, Sweeping, Twin (9) |
+| Absorb | – | free | – | Oddish | Grass, 20 power. Heals the user 1/2 of the damage dealt. | Potent, Draining, Twin (7) |
 | Poison Powder | 1 | 15 | Absorb | Oddish | Poisons an enemy (75% chance). | Sure, Wide, Lingering, Toxic, Quick (8) |
 | Stun Spore | 1 | 17 | Poison Powder | Oddish | Paralyzes an enemy (75% chance). | Sure, Wide, Lingering, Numbing, Quick (9) |
 | Sleep Powder | 1 | 19 | Stun Spore | Oddish | Puts an enemy to sleep (75% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
-| Acid | 1 | 24 | Absorb | Oddish | Poison, 40 power. 33% chance to lower its Defense. | Potent, Venomous, Sweeping, Twin (9) |
-| Mega Drain | 1 | 25 | Absorb | Gloom | Grass, 40 power. Heals the user 1/2 of the damage dealt. | Potent, Draining, Sweeping, Twin (9) |
+| Acid | 1 | 24 | Absorb | Oddish | Poison, 40 power. 33% chance to lower its Defense. | Potent, Venomous, Splashing, Twin (9) |
+| Mega Drain | 1 | 25 | Absorb | Gloom | Grass, 40 power. Heals the user 1/2 of the damage dealt. | Potent, Draining, Twin (7) |
 | Petal Dance | 2 | 33 | Acid | Oddish | Grass, 70 power. Hits every enemy, the others at 35% damage. The user becomes confused afterwards. | Potent, Draining, Wounding, Keen, Calm, Twin (12) |
-| Solar Beam | 4 | 46 | Petal Dance | Vileplume | Grass, 120 power. Charges for a round first. | Potent, Draining, Wounding, Keen, Sweeping, Instant, Swift (14) |
+| Solar Beam | 4 | 46 | Petal Dance | Vileplume | Grass, 120 power. Charges for a round first. | Potent, Draining, Wounding, Keen, Piercing, Instant, Swift (14) |
 
 Links cost 2 points a rank.
 
@@ -500,20 +553,20 @@ Links cost 2 points a rank.
 
 ## The Goldeen line
 
-Stages: Goldeen → Seaking (Lv33, not in the game yet). Whole tree: 134 points.
+Stages: Goldeen → Seaking (Lv33, not in the game yet). Whole tree: 128 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Peck | – | free | – | Goldeen | Flying, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Peck | – | free | – | Goldeen | Flying, 35 power. | Potent, Staggering, Twin (7) |
 | Tail Whip | – | free | – | Goldeen | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Water Gun | 1 | 10 | Peck | Goldeen | Water, 40 power. | Potent, Rippling, Sweeping, Twin (9) |
+| Water Gun | 1 | 10 | Peck | Goldeen | Water, 40 power. | Potent, Rippling, Piercing, Twin (9) |
 | Supersonic | 1 | 15 | Tail Whip | Goldeen | 55% chance to confuse. | Sure, Wide, Lingering, Dizzying, Quick (9) |
-| Horn Attack | 2 | 19 | Peck | Goldeen | Normal, 65 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Bubble Beam | 2 | 24 | Water Gun | Goldeen | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (13) |
-| Fury Attack | 1 | 30 | Horn Attack | Goldeen | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Sweeping, Relentless (9) |
+| Horn Attack | 2 | 19 | Peck | Goldeen | Normal, 65 power. | Potent, Staggering, Wounding, Keen, Twin (11) |
+| Bubble Beam | 2 | 24 | Water Gun | Goldeen | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Foaming, Twin (13) |
+| Fury Attack | 1 | 30 | Horn Attack | Goldeen | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Relentless (7) |
 | Agility | 1 | 36 | Supersonic | Goldeen | Raises its Speed 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Ice Beam | 3 | 40 | Bubble Beam | Seaking | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (13) |
-| Double-Edge | 4 | 42 | Fury Attack | Seaking | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (15) |
+| Ice Beam | 3 | 40 | Bubble Beam | Seaking | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Frost, Swift (13) |
+| Double-Edge | 4 | 42 | Fury Attack | Seaking | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Bowling, Cushioned, Swift (15) |
 
 Links cost 2 points a rank.
 
@@ -526,21 +579,21 @@ Links cost 2 points a rank.
 
 ## The Staryu line
 
-Stages: Staryu → Starmie (by stone). Whole tree: 148 points.
+Stages: Staryu → Starmie (by stone). Whole tree: 146 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Tackle | – | free | – | Staryu | Normal, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Tackle | – | free | – | Staryu | Normal, 35 power. | Potent, Staggering, Twin (7) |
 | Harden | – | free | – | Staryu | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Water Gun | 1 | 10 | Tackle | Staryu | Water, 40 power. | Potent, Rippling, Sweeping, Twin (9) |
+| Water Gun | 1 | 10 | Tackle | Staryu | Water, 40 power. | Potent, Rippling, Piercing, Twin (9) |
 | Recover | 1 | 18 | Harden | Staryu | Heals the user 1/2 of its max HP. | Renewing, Quick (4) |
-| Swift | 2 | 22 | Tackle | Staryu | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Bubble Beam | 2 | 24 | Water Gun | Staryu | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (13) |
+| Swift | 2 | 22 | Tackle | Staryu | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Starfall, Twin (13) |
+| Bubble Beam | 2 | 24 | Water Gun | Staryu | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Foaming, Twin (13) |
 | Thunder Wave | 1 | 26 | Harden | Staryu | Paralyzes an enemy. Doesn't affect Ground types. | Wide, Lingering, Numbing, Quick (6) |
-| Psychic | 3 | 36 | Swift | Starmie | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Sweeping, Swift (13) |
-| Thunderbolt | 3 | 38 | Thunder Wave | Starmie | Electric, 95 power. 10% chance to paralyze. | Potent, Crackling, Wounding, Keen, Sweeping, Swift (13) |
-| Ice Beam | 3 | 40 | Bubble Beam | Starmie | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (13) |
-| Hydro Pump | 4 | 47 | Bubble Beam | Starmie | Water, 120 power. | Potent, Rippling, Wounding, Keen, Sweeping, Swift (13) |
+| Psychic | 3 | 36 | Swift | Starmie | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Rippling, Swift (13) |
+| Thunderbolt | 3 | 38 | Thunder Wave | Starmie | Electric, 95 power. 10% chance to paralyze. | Potent, Crackling, Wounding, Keen, Arcing, Swift (13) |
+| Ice Beam | 3 | 40 | Bubble Beam | Starmie | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Frost, Swift (13) |
+| Hydro Pump | 4 | 47 | Bubble Beam | Starmie | Water, 120 power. | Potent, Rippling, Wounding, Keen, Piercing, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -558,15 +611,15 @@ Stages: Abra → Kadabra (Lv16) → Alakazam (by stone, not in the game yet). Wh
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Confusion | – | free | – | Abra | Psychic, 50 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Sweeping, Twin (13) |
+| Confusion | – | free | – | Abra | Psychic, 50 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Rippling, Twin (13) |
 | Kinesis | – | free | – | Abra | Lowers an enemy's accuracy 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Thunder Wave | 1 | 12 | Kinesis | Abra | Paralyzes an enemy. Doesn't affect Ground types. | Wide, Lingering, Numbing, Quick (6) |
 | Reflect | 1 | 18 | Kinesis | Abra | Halves the damage an ally takes for 2 rounds. | Thick, Shared, Renewing, Quick (7) |
-| Psybeam | 2 | 21 | Confusion | Kadabra | Psychic, 65 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Sweeping, Twin (13) |
-| Body Slam | 3 | 25 | Confusion | Kadabra | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Psybeam | 2 | 21 | Confusion | Kadabra | Psychic, 65 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Rippling, Twin (13) |
+| Body Slam | 3 | 25 | Confusion | Kadabra | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Bowling, Twin (13) |
 | Recover | 1 | 27 | Reflect | Kadabra | Heals the user 1/2 of its max HP. | Renewing, Quick (4) |
-| Psychic | 3 | 38 | Psybeam | Kadabra | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Sweeping, Swift (13) |
-| Hyper Beam | 4 | 50 | Psychic | Alakazam | Normal, 150 power. The user must rest the next round. | Potent, Staggering, Wounding, Keen, Sweeping, Tireless, Swift (14) |
+| Psychic | 3 | 38 | Psybeam | Kadabra | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Rippling, Swift (13) |
+| Hyper Beam | 4 | 50 | Psychic | Alakazam | Normal, 150 power. The user must rest the next round. | Potent, Staggering, Wounding, Keen, Piercing, Tireless, Swift (14) |
 
 Links cost 2 points a rank.
 
@@ -580,20 +633,20 @@ Links cost 2 points a rank.
 
 ## The Venonat line
 
-Stages: Venonat → Venomoth (Lv31, not in the game yet). Whole tree: 130 points.
+Stages: Venonat → Venomoth (Lv31, not in the game yet). Whole tree: 126 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Tackle | – | free | – | Venonat | Normal, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Tackle | – | free | – | Venonat | Normal, 35 power. | Potent, Staggering, Twin (7) |
 | Supersonic | – | free | – | Venonat | 55% chance to confuse. | Sure, Wide, Lingering, Dizzying, Quick (9) |
-| Leech Life | 1 | 12 | Tackle | Venonat | Bug, 20 power. Heals the user 1/2 of the damage dealt. | Potent, Venomous, Sweeping, Twin (9) |
-| Confusion | 2 | 16 | Tackle | Venonat | Psychic, 50 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Sweeping, Twin (13) |
+| Leech Life | 1 | 12 | Tackle | Venonat | Bug, 20 power. Heals the user 1/2 of the damage dealt. | Potent, Venomous, Twin (7) |
+| Confusion | 2 | 16 | Tackle | Venonat | Psychic, 50 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Rippling, Twin (13) |
 | Poison Powder | 1 | 18 | Supersonic | Venonat | Poisons an enemy (75% chance). | Sure, Wide, Lingering, Toxic, Quick (8) |
 | Stun Spore | 1 | 22 | Poison Powder | Venonat | Paralyzes an enemy (75% chance). | Sure, Wide, Lingering, Numbing, Quick (9) |
-| Psybeam | 2 | 30 | Confusion | Venonat | Psychic, 65 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Sweeping, Twin (13) |
+| Psybeam | 2 | 30 | Confusion | Venonat | Psychic, 65 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Rippling, Twin (13) |
 | Sleep Powder | 1 | 34 | Stun Spore | Venonat | Puts an enemy to sleep (75% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
-| Double-Edge | 4 | 36 | Leech Life | Venomoth | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (15) |
-| Psychic | 3 | 45 | Psybeam | Venomoth | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Sweeping, Swift (13) |
+| Double-Edge | 4 | 36 | Leech Life | Venomoth | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Bowling, Cushioned, Swift (15) |
+| Psychic | 3 | 45 | Psybeam | Venomoth | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Rippling, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -606,20 +659,20 @@ Links cost 2 points a rank.
 
 ## The Bellsprout line
 
-Stages: Bellsprout → Weepinbell (Lv21, not in the game yet) → Victreebel (by stone, not in the game yet). Whole tree: 116 points.
+Stages: Bellsprout → Weepinbell (Lv21, not in the game yet) → Victreebel (by stone, not in the game yet). Whole tree: 114 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Vine Whip | – | free | – | Bellsprout | Grass, 35 power. | Potent, Draining, Sweeping, Twin (9) |
+| Vine Whip | – | free | – | Bellsprout | Grass, 35 power. | Potent, Draining, Lashing, Twin (9) |
 | Growth | – | free | – | Bellsprout | Raises its Attack 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Wrap | 1 | 13 | Vine Whip | Bellsprout | Normal, 15 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | Potent, Staggering, Sweeping, Twin (9) |
+| Wrap | 1 | 13 | Vine Whip | Bellsprout | Normal, 15 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | Potent, Staggering, Twin (7) |
 | Poison Powder | 1 | 15 | Growth | Bellsprout | Poisons an enemy (75% chance). | Sure, Wide, Lingering, Toxic, Quick (8) |
 | Sleep Powder | 1 | 18 | Poison Powder | Bellsprout | Puts an enemy to sleep (75% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
 | Stun Spore | 1 | 21 | Poison Powder | Bellsprout | Paralyzes an enemy (75% chance). | Sure, Wide, Lingering, Numbing, Quick (9) |
-| Acid | 1 | 26 | Wrap | Bellsprout | Poison, 40 power. 33% chance to lower its Defense. | Potent, Venomous, Sweeping, Twin (9) |
+| Acid | 1 | 26 | Wrap | Bellsprout | Poison, 40 power. 33% chance to lower its Defense. | Potent, Venomous, Splashing, Twin (9) |
 | Swords Dance | 1 | 30 | Growth | Weepinbell | Raises its Attack 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Razor Leaf | 2 | 33 | Vine Whip | Bellsprout | Grass, 55 power. High critical-hit ratio. | Potent, Draining, Wounding, Sweeping, Twin (11) |
-| Slam | 3 | 42 | Wrap | Weepinbell | Normal, 80 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Razor Leaf | 2 | 33 | Vine Whip | Bellsprout | Grass, 55 power. High critical-hit ratio. | Potent, Draining, Wounding, Scattering, Twin (11) |
+| Slam | 3 | 42 | Wrap | Weepinbell | Normal, 80 power. | Potent, Staggering, Wounding, Keen, Bowling, Twin (13) |
 
 Links cost 2 points a rank.
 
@@ -632,18 +685,18 @@ Links cost 2 points a rank.
 
 ## The Pikachu line
 
-Stages: Pikachu. Whole tree: 104 points.
+Stages: Pikachu. Whole tree: 102 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Thunder Shock | – | free | – | Pikachu | Electric, 40 power. 10% chance to paralyze. | Potent, Crackling, Sweeping, Twin (9) |
+| Thunder Shock | – | free | – | Pikachu | Electric, 40 power. 10% chance to paralyze. | Potent, Crackling, Arcing, Twin (9) |
 | Growl | – | free | – | Pikachu | Lowers an enemy's Attack 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Thunder Wave | 1 | 9 | Growl | Pikachu | Paralyzes an enemy. Doesn't affect Ground types. | Wide, Lingering, Numbing, Quick (6) |
-| Quick Attack | 1 | 16 | Thunder Shock | Pikachu | Normal, 40 power. Always goes first. | Potent, Staggering, Sweeping, Twin (9) |
-| Swift | 2 | 26 | Quick Attack | Pikachu | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Thunderbolt | 3 | 30 | Thunder Shock | Pikachu | Electric, 95 power. 10% chance to paralyze. | Potent, Crackling, Wounding, Keen, Sweeping, Swift (13) |
+| Quick Attack | 1 | 16 | Thunder Shock | Pikachu | Normal, 40 power. Always goes first. | Potent, Staggering, Twin (7) |
+| Swift | 2 | 26 | Quick Attack | Pikachu | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Starfall, Twin (13) |
+| Thunderbolt | 3 | 30 | Thunder Shock | Pikachu | Electric, 95 power. 10% chance to paralyze. | Potent, Crackling, Wounding, Keen, Arcing, Swift (13) |
 | Agility | 1 | 33 | Thunder Wave | Pikachu | Raises its Speed 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Thunder | 4 | 43 | Thunderbolt | Pikachu | Electric, 120 power. 10% chance to paralyze. | Potent, Crackling, Wounding, Keen, Sweeping, Swift (13) |
+| Thunder | 4 | 43 | Thunderbolt | Pikachu | Electric, 120 power. 10% chance to paralyze. | Potent, Crackling, Wounding, Keen, Arcing, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -656,20 +709,20 @@ Links cost 2 points a rank.
 
 ## The Seel line
 
-Stages: Seel → Dewgong (Lv34). Whole tree: 145 points.
+Stages: Seel → Dewgong (Lv34). Whole tree: 143 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Headbutt | – | free | – | Seel | Normal, 70 power. 30% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Water Gun | 1 | 10 | Headbutt | Seel | Water, 40 power. | Potent, Rippling, Sweeping, Twin (9) |
-| Bubble Beam | 2 | 25 | Water Gun | Seel | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (13) |
+| Headbutt | – | free | – | Seel | Normal, 70 power. 30% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Twin (11) |
+| Water Gun | 1 | 10 | Headbutt | Seel | Water, 40 power. | Potent, Rippling, Piercing, Twin (9) |
+| Bubble Beam | 2 | 25 | Water Gun | Seel | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Foaming, Twin (13) |
 | Growl | 1 | 30 | Headbutt | Seel | Lowers an enemy's Attack 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Aurora Beam | 2 | 35 | Headbutt | Seel | Ice, 65 power. 10% chance to lower its Attack. | Potent, Chilling, Wounding, Keen, Sweeping, Twin (13) |
+| Aurora Beam | 2 | 35 | Headbutt | Seel | Ice, 65 power. 10% chance to lower its Attack. | Potent, Chilling, Wounding, Keen, Frost, Twin (13) |
 | Rest | 1 | 40 | Growl | Seel | The user heals fully, is cured, and sleeps for 2 rounds. | Renewing, Quick (4) |
-| Surf | 3 | 40 | Bubble Beam | Dewgong | Water, 95 power. | Potent, Rippling, Wounding, Keen, Sweeping, Swift (13) |
-| Take Down | 3 | 45 | Headbutt | Dewgong | Normal, 90 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (15) |
-| Ice Beam | 3 | 50 | Aurora Beam | Dewgong | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (13) |
-| Blizzard | 4 | 55 | Ice Beam | Dewgong | Ice, 120 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (13) |
+| Surf | 3 | 40 | Bubble Beam | Dewgong | Water, 95 power. | Potent, Rippling, Wounding, Keen, Tidal, Swift (13) |
+| Take Down | 3 | 45 | Headbutt | Dewgong | Normal, 90 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Bowling, Cushioned, Swift (15) |
+| Ice Beam | 3 | 50 | Aurora Beam | Dewgong | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Frost, Swift (13) |
+| Blizzard | 4 | 55 | Ice Beam | Dewgong | Ice, 120 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Whiteout, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -682,19 +735,19 @@ Links cost 2 points a rank.
 
 ## The Shellder line
 
-Stages: Shellder. Whole tree: 115 points.
+Stages: Shellder. Whole tree: 111 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Tackle | – | free | – | Shellder | Normal, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Tackle | – | free | – | Shellder | Normal, 35 power. | Potent, Staggering, Twin (7) |
 | Withdraw | – | free | – | Shellder | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Water Gun | 1 | 10 | Tackle | Shellder | Water, 40 power. | Potent, Rippling, Sweeping, Twin (9) |
+| Water Gun | 1 | 10 | Tackle | Shellder | Water, 40 power. | Potent, Rippling, Piercing, Twin (9) |
 | Supersonic | 1 | 18 | Withdraw | Shellder | 55% chance to confuse. | Sure, Wide, Lingering, Dizzying, Quick (9) |
-| Clamp | 1 | 23 | Water Gun | Shellder | Water, 35 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | Potent, Rippling, Sweeping, Twin (9) |
-| Bubble Beam | 2 | 25 | Water Gun | Shellder | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (13) |
-| Aurora Beam | 2 | 30 | Clamp | Shellder | Ice, 65 power. 10% chance to lower its Attack. | Potent, Chilling, Wounding, Keen, Sweeping, Twin (13) |
+| Clamp | 1 | 23 | Water Gun | Shellder | Water, 35 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | Potent, Rippling, Twin (7) |
+| Bubble Beam | 2 | 25 | Water Gun | Shellder | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Foaming, Twin (13) |
+| Aurora Beam | 2 | 30 | Clamp | Shellder | Ice, 65 power. 10% chance to lower its Attack. | Potent, Chilling, Wounding, Keen, Frost, Twin (13) |
 | Leer | 1 | 39 | Supersonic | Shellder | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Ice Beam | 3 | 50 | Aurora Beam | Shellder | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (13) |
+| Ice Beam | 3 | 50 | Aurora Beam | Shellder | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Frost, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -707,18 +760,18 @@ Links cost 2 points a rank.
 
 ## The Psyduck line
 
-Stages: Psyduck → Golduck (Lv33, not in the game yet). Whole tree: 112 points.
+Stages: Psyduck → Golduck (Lv33, not in the game yet). Whole tree: 110 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Scratch | – | free | – | Psyduck | Normal, 40 power. | Potent, Staggering, Sweeping, Twin (9) |
-| Water Gun | 1 | 8 | Scratch | Psyduck | Water, 40 power. | Potent, Rippling, Sweeping, Twin (9) |
-| Bubble Beam | 2 | 20 | Water Gun | Psyduck | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (13) |
+| Scratch | – | free | – | Psyduck | Normal, 40 power. | Potent, Staggering, Twin (7) |
+| Water Gun | 1 | 8 | Scratch | Psyduck | Water, 40 power. | Potent, Rippling, Piercing, Twin (9) |
+| Bubble Beam | 2 | 20 | Water Gun | Psyduck | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Foaming, Twin (13) |
 | Tail Whip | 1 | 28 | Scratch | Psyduck | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Confusion | 2 | 36 | Tail Whip | Psyduck | Psychic, 50 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Sweeping, Twin (13) |
+| Confusion | 2 | 36 | Tail Whip | Psyduck | Psychic, 50 power. 10% chance to confuse. | Potent, Bewildering, Wounding, Keen, Rippling, Twin (13) |
 | Fury Swipes | 1 | 43 | Scratch | Psyduck | Normal, 18 power, hits 2-5 times. | Potent, Staggering, Sweeping, Relentless (9) |
-| Ice Beam | 3 | 45 | Bubble Beam | Golduck | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (13) |
-| Hydro Pump | 4 | 52 | Bubble Beam | Golduck | Water, 120 power. | Potent, Rippling, Wounding, Keen, Sweeping, Swift (13) |
+| Ice Beam | 3 | 45 | Bubble Beam | Golduck | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Frost, Swift (13) |
+| Hydro Pump | 4 | 52 | Bubble Beam | Golduck | Water, 120 power. | Potent, Rippling, Wounding, Keen, Piercing, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -735,14 +788,14 @@ Stages: Horsea → Seadra (Lv32, not in the game yet). Whole tree: 110 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Bubble | – | free | – | Horsea | Water, 30 power. 33% chance to lower its Speed. | Potent, Rippling, Sweeping, Twin (9) |
+| Bubble | – | free | – | Horsea | Water, 30 power. 33% chance to lower its Speed. | Potent, Rippling, Foaming, Twin (9) |
 | Smokescreen | 1 | 19 | Bubble | Horsea | Lowers an enemy's accuracy 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Bubble Beam | 2 | 20 | Bubble | Horsea | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Sweeping, Twin (13) |
+| Bubble Beam | 2 | 20 | Bubble | Horsea | Water, 65 power. 33% chance to lower its Speed. | Potent, Rippling, Wounding, Keen, Foaming, Twin (13) |
 | Leer | 1 | 24 | Smokescreen | Horsea | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Water Gun | 1 | 30 | Bubble | Horsea | Water, 40 power. | Potent, Rippling, Sweeping, Twin (9) |
+| Water Gun | 1 | 30 | Bubble | Horsea | Water, 40 power. | Potent, Rippling, Piercing, Twin (9) |
 | Agility | 1 | 37 | Leer | Horsea | Raises its Speed 2 stages. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Ice Beam | 3 | 40 | Bubble Beam | Seadra | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (13) |
-| Hydro Pump | 4 | 45 | Water Gun | Seadra | Water, 120 power. | Potent, Rippling, Wounding, Keen, Sweeping, Swift (13) |
+| Ice Beam | 3 | 40 | Bubble Beam | Seadra | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Frost, Swift (13) |
+| Hydro Pump | 4 | 45 | Water Gun | Seadra | Water, 120 power. | Potent, Rippling, Wounding, Keen, Piercing, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -755,19 +808,19 @@ Links cost 2 points a rank.
 
 ## The Jynx line
 
-Stages: Jynx. Whole tree: 128 points.
+Stages: Jynx. Whole tree: 122 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Pound | – | free | – | Jynx | Normal, 40 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Pound | – | free | – | Jynx | Normal, 40 power. | Potent, Staggering, Twin (7) |
 | Lovely Kiss | – | free | – | Jynx | Puts an enemy to sleep (75% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
-| Lick | 1 | 18 | Pound | Jynx | Ghost, 20 power. 30% chance to paralyze. | Potent, Haunting, Sweeping, Twin (9) |
-| Double Slap | 1 | 23 | Pound | Jynx | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Sweeping, Relentless (9) |
-| Ice Punch | 3 | 31 | Lick | Jynx | Ice, 75 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Twin (13) |
-| Psychic | 3 | 35 | Lovely Kiss | Jynx | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Sweeping, Swift (13) |
-| Body Slam | 3 | 39 | Double Slap | Jynx | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Thrash | 3 | 47 | Body Slam | Jynx | Normal, 90 power. The user becomes confused afterwards. | Potent, Staggering, Wounding, Keen, Sweeping, Calm, Swift (14) |
-| Blizzard | 4 | 58 | Ice Punch | Jynx | Ice, 120 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (13) |
+| Lick | 1 | 18 | Pound | Jynx | Ghost, 20 power. 30% chance to paralyze. | Potent, Haunting, Twin (7) |
+| Double Slap | 1 | 23 | Pound | Jynx | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Relentless (7) |
+| Ice Punch | 3 | 31 | Lick | Jynx | Ice, 75 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Frost, Twin (13) |
+| Psychic | 3 | 35 | Lovely Kiss | Jynx | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Rippling, Swift (13) |
+| Body Slam | 3 | 39 | Double Slap | Jynx | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Bowling, Twin (13) |
+| Thrash | 3 | 47 | Body Slam | Jynx | Normal, 90 power. The user becomes confused afterwards. | Potent, Staggering, Wounding, Keen, Rampaging, Calm, Swift (14) |
+| Blizzard | 4 | 58 | Ice Punch | Jynx | Ice, 120 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Whiteout, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -784,14 +837,14 @@ Stages: Lapras. Whole tree: 111 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Water Gun | – | free | – | Lapras | Water, 40 power. | Potent, Rippling, Sweeping, Twin (9) |
+| Water Gun | – | free | – | Lapras | Water, 40 power. | Potent, Rippling, Piercing, Twin (9) |
 | Growl | – | free | – | Lapras | Lowers an enemy's Attack 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Sing | 1 | 16 | Growl | Lapras | Puts an enemy to sleep (55% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
-| Body Slam | 3 | 25 | Water Gun | Lapras | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Body Slam | 3 | 25 | Water Gun | Lapras | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Bowling, Twin (13) |
 | Confuse Ray | 1 | 31 | Sing | Lapras | Confuses an enemy. | Wide, Lingering, Dizzying, Quick (6) |
-| Ice Beam | 3 | 38 | Water Gun | Lapras | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (13) |
-| Hydro Pump | 4 | 46 | Ice Beam | Lapras | Water, 120 power. | Potent, Rippling, Wounding, Keen, Sweeping, Swift (13) |
-| Blizzard | 4 | 50 | Ice Beam | Lapras | Ice, 120 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Sweeping, Swift (13) |
+| Ice Beam | 3 | 38 | Water Gun | Lapras | Ice, 95 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Frost, Swift (13) |
+| Hydro Pump | 4 | 46 | Ice Beam | Lapras | Water, 120 power. | Potent, Rippling, Wounding, Keen, Piercing, Swift (13) |
+| Blizzard | 4 | 50 | Ice Beam | Lapras | Ice, 120 power. 10% chance to freeze. | Potent, Chilling, Wounding, Keen, Whiteout, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -804,18 +857,18 @@ Links cost 2 points a rank.
 
 ## The Geodude line
 
-Stages: Geodude → Graveler (Lv25, not in the game yet) → Golem (by stone, not in the game yet). Whole tree: 120 points.
+Stages: Geodude → Graveler (Lv25, not in the game yet) → Golem (by stone, not in the game yet). Whole tree: 118 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Tackle | – | free | – | Geodude | Normal, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Tackle | – | free | – | Geodude | Normal, 35 power. | Potent, Staggering, Twin (7) |
 | Defense Curl | – | free | – | Geodude | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Rock Throw | 2 | 11 | Tackle | Geodude | Rock, 50 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Rock Throw | 2 | 11 | Tackle | Geodude | Rock, 50 power. | Potent, Staggering, Wounding, Keen, Shrapnel, Twin (13) |
 | Harden | 1 | 21 | Defense Curl | Geodude | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Rock Slide | 3 | 25 | Rock Throw | Graveler | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Earthquake | 4 | 35 | Rock Throw | Golem | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (13) |
-| Body Slam | 3 | 30 | Tackle | Graveler | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Dig | 4 | 35 | Earthquake | Golem | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Sweeping, Instant, Swift (14) |
+| Rock Slide | 3 | 25 | Rock Throw | Graveler | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Landslide, Twin (13) |
+| Earthquake | 4 | 35 | Rock Throw | Golem | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Shockwave, Swift (13) |
+| Body Slam | 3 | 30 | Tackle | Graveler | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Bowling, Twin (13) |
+| Dig | 4 | 35 | Earthquake | Golem | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Cave-in, Instant, Swift (14) |
 
 Links cost 2 points a rank.
 
@@ -828,17 +881,17 @@ Links cost 2 points a rank.
 
 ## The Onix line
 
-Stages: Onix. Whole tree: 113 points.
+Stages: Onix. Whole tree: 109 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Tackle | – | free | – | Onix | Normal, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Tackle | – | free | – | Onix | Normal, 35 power. | Potent, Staggering, Twin (7) |
 | Screech | – | free | – | Onix | Lowers an enemy's Defense 2 stages. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Bind | 1 | 14 | Tackle | Onix | Normal, 15 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | Potent, Staggering, Sweeping, Twin (9) |
-| Rock Throw | 2 | 19 | Tackle | Onix | Rock, 50 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Rock Slide | 3 | 28 | Rock Throw | Onix | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Slam | 3 | 33 | Bind | Onix | Normal, 80 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Earthquake | 4 | 38 | Rock Throw | Onix | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (13) |
+| Bind | 1 | 14 | Tackle | Onix | Normal, 15 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | Potent, Staggering, Twin (7) |
+| Rock Throw | 2 | 19 | Tackle | Onix | Rock, 50 power. | Potent, Staggering, Wounding, Keen, Shrapnel, Twin (13) |
+| Rock Slide | 3 | 28 | Rock Throw | Onix | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Landslide, Twin (13) |
+| Slam | 3 | 33 | Bind | Onix | Normal, 80 power. | Potent, Staggering, Wounding, Keen, Bowling, Twin (13) |
+| Earthquake | 4 | 38 | Rock Throw | Onix | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Shockwave, Swift (13) |
 | Harden | 1 | 43 | Screech | Onix | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
 
 Links cost 2 points a rank.
@@ -852,17 +905,17 @@ Links cost 2 points a rank.
 
 ## The Diglett line
 
-Stages: Diglett → Dugtrio (Lv26, not in the game yet). Whole tree: 105 points.
+Stages: Diglett → Dugtrio (Lv26, not in the game yet). Whole tree: 103 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Scratch | – | free | – | Diglett | Normal, 40 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Scratch | – | free | – | Diglett | Normal, 40 power. | Potent, Staggering, Twin (7) |
 | Growl | 1 | 15 | Scratch | Diglett | Lowers an enemy's Attack 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Dig | 4 | 35 | Scratch | Dugtrio | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Sweeping, Instant, Swift (14) |
+| Dig | 4 | 35 | Scratch | Dugtrio | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Cave-in, Instant, Swift (14) |
 | Sand-Attack | 1 | 24 | Growl | Diglett | Lowers an enemy's accuracy 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Slash | 2 | 31 | Scratch | Diglett | Normal, 70 power. High critical-hit ratio. | Potent, Staggering, Wounding, Sweeping, Twin (11) |
-| Rock Slide | 3 | 35 | Dig | Dugtrio | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Earthquake | 4 | 40 | Dig | Dugtrio | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (13) |
+| Rock Slide | 3 | 35 | Dig | Dugtrio | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Landslide, Twin (13) |
+| Earthquake | 4 | 40 | Dig | Dugtrio | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Shockwave, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -875,19 +928,19 @@ Links cost 2 points a rank.
 
 ## The Sandshrew line
 
-Stages: Sandshrew → Sandslash (Lv22, not in the game yet). Whole tree: 128 points.
+Stages: Sandshrew → Sandslash (Lv22, not in the game yet). Whole tree: 126 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Scratch | – | free | – | Sandshrew | Normal, 40 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Scratch | – | free | – | Sandshrew | Normal, 40 power. | Potent, Staggering, Twin (7) |
 | Sand-Attack | 1 | 10 | Scratch | Sandshrew | Lowers an enemy's accuracy 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Slash | 2 | 17 | Scratch | Sandshrew | Normal, 70 power. High critical-hit ratio. | Potent, Staggering, Wounding, Sweeping, Twin (11) |
-| Poison Sting | 1 | 24 | Scratch | Sandshrew | Poison, 15 power. 30% chance to poison. | Potent, Venomous, Sweeping, Twin (9) |
-| Dig | 4 | 35 | Sand-Attack | Sandslash | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Sweeping, Instant, Swift (14) |
-| Swift | 2 | 31 | Slash | Sandshrew | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Poison Sting | 1 | 24 | Scratch | Sandshrew | Poison, 15 power. 30% chance to poison. | Potent, Venomous, Venom Cloud, Twin (9) |
+| Dig | 4 | 35 | Sand-Attack | Sandslash | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Cave-in, Instant, Swift (14) |
+| Swift | 2 | 31 | Slash | Sandshrew | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Starfall, Twin (13) |
 | Fury Swipes | 1 | 38 | Slash | Sandshrew | Normal, 18 power, hits 2-5 times. | Potent, Staggering, Sweeping, Relentless (9) |
-| Rock Slide | 3 | 40 | Dig | Sandslash | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Earthquake | 4 | 45 | Dig | Sandslash | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Sweeping, Swift (13) |
+| Rock Slide | 3 | 40 | Dig | Sandslash | Rock, 75 power. | Potent, Staggering, Wounding, Keen, Landslide, Twin (13) |
+| Earthquake | 4 | 45 | Dig | Sandslash | Ground, 100 power. | Potent, Dusting, Wounding, Keen, Shockwave, Swift (13) |
 
 Links cost 2 points a rank.
 
@@ -900,18 +953,18 @@ Links cost 2 points a rank.
 
 ## The Ekans line
 
-Stages: Ekans → Arbok (Lv22, not in the game yet). Whole tree: 103 points.
+Stages: Ekans → Arbok (Lv22, not in the game yet). Whole tree: 99 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Wrap | – | free | – | Ekans | Normal, 15 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | Potent, Staggering, Sweeping, Twin (9) |
+| Wrap | – | free | – | Ekans | Normal, 15 power. Binds it for 2-5 rounds: 1/16 of its max HP each round. | Potent, Staggering, Twin (7) |
 | Leer | – | free | – | Ekans | Lowers an enemy's Defense 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Poison Sting | 1 | 10 | Wrap | Ekans | Poison, 15 power. 30% chance to poison. | Potent, Venomous, Sweeping, Twin (9) |
-| Bite | 2 | 17 | Wrap | Ekans | Normal, 60 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Poison Sting | 1 | 10 | Wrap | Ekans | Poison, 15 power. 30% chance to poison. | Potent, Venomous, Venom Cloud, Twin (9) |
+| Bite | 2 | 17 | Wrap | Ekans | Normal, 60 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Twin (11) |
 | Glare | 1 | 24 | Leer | Ekans | Paralyzes an enemy (75% chance). | Sure, Wide, Lingering, Numbing, Quick (9) |
 | Screech | 1 | 31 | Glare | Ekans | Lowers an enemy's Defense 2 stages. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
-| Dig | 4 | 35 | Bite | Arbok | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Sweeping, Instant, Swift (14) |
-| Acid | 1 | 38 | Poison Sting | Ekans | Poison, 40 power. 33% chance to lower its Defense. | Potent, Venomous, Sweeping, Twin (9) |
+| Dig | 4 | 35 | Bite | Arbok | Ground, 100 power. Charges for a round first. | Potent, Dusting, Wounding, Keen, Cave-in, Instant, Swift (14) |
+| Acid | 1 | 38 | Poison Sting | Ekans | Poison, 40 power. 33% chance to lower its Defense. | Potent, Venomous, Splashing, Twin (9) |
 
 Links cost 2 points a rank.
 
@@ -924,17 +977,17 @@ Links cost 2 points a rank.
 
 ## The Jigglypuff line
 
-Stages: Jigglypuff. Whole tree: 87 points.
+Stages: Jigglypuff. Whole tree: 83 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Pound | – | free | – | Jigglypuff | Normal, 40 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Pound | – | free | – | Jigglypuff | Normal, 40 power. | Potent, Staggering, Twin (7) |
 | Sing | – | free | – | Jigglypuff | Puts an enemy to sleep (55% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
 | Defense Curl | 1 | 14 | Sing | Jigglypuff | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Double Slap | 1 | 24 | Pound | Jigglypuff | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Sweeping, Relentless (9) |
+| Double Slap | 1 | 24 | Pound | Jigglypuff | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Relentless (7) |
 | Rest | 1 | 29 | Defense Curl | Jigglypuff | The user heals fully, is cured, and sleeps for 2 rounds. | Renewing, Quick (4) |
-| Body Slam | 3 | 34 | Double Slap | Jigglypuff | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Double-Edge | 4 | 39 | Body Slam | Jigglypuff | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (15) |
+| Body Slam | 3 | 34 | Double Slap | Jigglypuff | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Bowling, Twin (13) |
+| Double-Edge | 4 | 39 | Body Slam | Jigglypuff | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Bowling, Cushioned, Swift (15) |
 
 Links cost 2 points a rank.
 
@@ -947,17 +1000,17 @@ Links cost 2 points a rank.
 
 ## The Zubat line
 
-Stages: Zubat → Golbat (Lv22, not in the game yet). Whole tree: 93 points.
+Stages: Zubat → Golbat (Lv22, not in the game yet). Whole tree: 89 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Leech Life | – | free | – | Zubat | Bug, 20 power. Heals the user 1/2 of the damage dealt. | Potent, Venomous, Sweeping, Twin (9) |
+| Leech Life | – | free | – | Zubat | Bug, 20 power. Heals the user 1/2 of the damage dealt. | Potent, Venomous, Twin (7) |
 | Supersonic | 1 | 10 | Leech Life | Zubat | 55% chance to confuse. | Sure, Wide, Lingering, Dizzying, Quick (9) |
-| Bite | 2 | 15 | Leech Life | Zubat | Normal, 60 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Bite | 2 | 15 | Leech Life | Zubat | Normal, 60 power. 10% chance to make it flinch. | Potent, Staggering, Wounding, Keen, Twin (11) |
 | Confuse Ray | 1 | 21 | Supersonic | Zubat | Confuses an enemy. | Wide, Lingering, Dizzying, Quick (6) |
-| Wing Attack | 1 | 28 | Bite | Zubat | Flying, 35 power. | Potent, Staggering, Sweeping, Twin (9) |
-| Swift | 2 | 32 | Wing Attack | Zubat | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
-| Double-Edge | 4 | 38 | Wing Attack | Golbat | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Sweeping, Cushioned, Swift (15) |
+| Wing Attack | 1 | 28 | Bite | Zubat | Flying, 35 power. | Potent, Staggering, Gale, Twin (9) |
+| Swift | 2 | 32 | Wing Attack | Zubat | Normal, 60 power. Ignores accuracy drops. | Potent, Staggering, Wounding, Keen, Starfall, Twin (13) |
+| Double-Edge | 4 | 38 | Wing Attack | Golbat | Normal, 100 power. The user takes 1/4 of the damage dealt. | Potent, Staggering, Wounding, Keen, Bowling, Cushioned, Swift (15) |
 
 Links cost 2 points a rank.
 
@@ -970,18 +1023,18 @@ Links cost 2 points a rank.
 
 ## The Paras line
 
-Stages: Paras → Parasect (Lv24, not in the game yet). Whole tree: 96 points.
+Stages: Paras → Parasect (Lv24, not in the game yet). Whole tree: 90 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Scratch | – | free | – | Paras | Normal, 40 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Scratch | – | free | – | Paras | Normal, 40 power. | Potent, Staggering, Twin (7) |
 | Stun Spore | 1 | 13 | Scratch | Paras | Paralyzes an enemy (75% chance). | Sure, Wide, Lingering, Numbing, Quick (9) |
-| Leech Life | 1 | 20 | Scratch | Paras | Bug, 20 power. Heals the user 1/2 of the damage dealt. | Potent, Venomous, Sweeping, Twin (9) |
-| Mega Drain | 1 | 24 | Leech Life | Paras | Grass, 40 power. Heals the user 1/2 of the damage dealt. | Potent, Draining, Sweeping, Twin (9) |
+| Leech Life | 1 | 20 | Scratch | Paras | Bug, 20 power. Heals the user 1/2 of the damage dealt. | Potent, Venomous, Twin (7) |
+| Mega Drain | 1 | 24 | Leech Life | Paras | Grass, 40 power. Heals the user 1/2 of the damage dealt. | Potent, Draining, Twin (7) |
 | Spore | 1 | 27 | Stun Spore | Paras | Puts an enemy to sleep. | Wide, Lingering, Deep, Quick (6) |
 | Slash | 2 | 34 | Scratch | Paras | Normal, 70 power. High critical-hit ratio. | Potent, Staggering, Wounding, Sweeping, Twin (11) |
 | Growth | 1 | 41 | Spore | Paras | Raises its Attack 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Solar Beam | 4 | 44 | Mega Drain | Parasect | Grass, 120 power. Charges for a round first. | Potent, Draining, Wounding, Keen, Sweeping, Instant, Swift (14) |
+| Solar Beam | 4 | 44 | Mega Drain | Parasect | Grass, 120 power. Charges for a round first. | Potent, Draining, Wounding, Keen, Piercing, Instant, Swift (14) |
 
 Links cost 2 points a rank.
 
@@ -994,18 +1047,18 @@ Links cost 2 points a rank.
 
 ## The Clefairy line
 
-Stages: Clefairy → Clefable (by stone, not in the game yet). Whole tree: 103 points.
+Stages: Clefairy → Clefable (by stone, not in the game yet). Whole tree: 99 points.
 
 | Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Pound | – | free | – | Clefairy | Normal, 40 power. | Potent, Staggering, Sweeping, Twin (9) |
+| Pound | – | free | – | Clefairy | Normal, 40 power. | Potent, Staggering, Twin (7) |
 | Growl | – | free | – | Clefairy | Lowers an enemy's Attack 1 stage. | Deep, Wide, Lingering, Hexing, Emboldening, Quick (11) |
 | Sing | 1 | 13 | Growl | Clefairy | Puts an enemy to sleep (55% chance). | Sure, Wide, Lingering, Deep, Quick (9) |
-| Double Slap | 1 | 18 | Pound | Clefairy | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Sweeping, Relentless (9) |
+| Double Slap | 1 | 18 | Pound | Clefairy | Normal, 15 power, hits 2-5 times. | Potent, Staggering, Relentless (7) |
 | Defense Curl | 1 | 24 | Growl | Clefairy | Raises its Defense 1 stage. | Greater, Renewing, Fortifying, Warding, Quick (10) |
-| Body Slam | 3 | 30 | Double Slap | Clefable | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Sweeping, Twin (13) |
+| Body Slam | 3 | 30 | Double Slap | Clefable | Normal, 85 power. 30% chance to paralyze. | Potent, Staggering, Wounding, Keen, Bowling, Twin (13) |
 | Thunder Wave | 1 | 34 | Sing | Clefairy | Paralyzes an enemy. Doesn't affect Ground types. | Wide, Lingering, Numbing, Quick (6) |
-| Psychic | 3 | 40 | Thunder Wave | Clefable | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Sweeping, Swift (13) |
+| Psychic | 3 | 40 | Thunder Wave | Clefable | Psychic, 90 power. 33% chance to lower its Defense. | Potent, Bewildering, Wounding, Keen, Rippling, Swift (13) |
 | Rest | 1 | 44 | Defense Curl | Clefairy | The user heals fully, is cured, and sleeps for 2 rounds. | Renewing, Quick (4) |
 
 Links cost 2 points a rank.

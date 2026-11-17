@@ -33,6 +33,10 @@ class Move:
     shield: int = 0     # Leaf Shield: rounds the target takes half damage
     spread: bool = False      # hits every target on that side
     spread_share: float = 1.0  # damage share of each hit when it spreads
+    reach: float = 0.0  # also hits one enemy next to the target, at this share (an area buff)
+    # Each enemy next to the target: (kind, what, % chance): ("status",
+    # "burn"), ("stage", "speed") (1 stage down) or ("confuse", "").
+    spill: tuple = ()
     hits: tuple[int, int] = (1, 1)  # hits per use (2-5: Fury Attack)
     priority: int = 0   # goes before moves with a lower priority (Quick Attack: 1)
     halve: bool = False  # Super Fang: takes half the target's HP instead of normal damage
@@ -271,4 +275,12 @@ def describe(m: Move) -> str:
                      f"stage{'s' if n > 1 else ''}.")
     for _, name, chance in m.triggers:
         parts.append(f"{chance}% chance to set off {name}." if chance < 100 else f"Sets off {name}.")
+    # Its area buff, last.
+    if m.reach:
+        parts.append(f"Also hits one enemy next to the target, at {round(m.reach * 100)}% damage.")
+    if m.spill:
+        kind, what, chance = m.spill
+        does = {"status": f"{STATUS_VERBS.get(what, what)} them", "stage": f"lower their {STAT_WORDS.get(what, what)}",
+                "confuse": "confuse them"}[kind]
+        parts.append(f"Spreads: {chance}% chance to {does} too, for each enemy next to the target.")
     return " ".join(parts)

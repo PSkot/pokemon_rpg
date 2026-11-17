@@ -1083,12 +1083,15 @@ class BattleScene(Scene):
         """The move lands on each of `targets`, then may set off others of
         the user's moves (Move.triggers); what happened goes in the message."""
         notes = self._land(user, move, targets)
+        if (move.reach or move.spill) and targets and targets[0].enemy != user.enemy:
+            notes += self._beside(user, move, targets[0])
         for key, name, chance in move.triggers:
             if not user.alive or random.random() * 100 >= chance or key not in user.monster.skills:
                 continue
             # A set-off move fires at once, sets off nothing more and only hits
             # the one aimed at (Sweeping or Wide don't carry over).
-            extra = replace(user.monster.move(key), charge="", recharge=False, triggers=(), spread=False)
+            extra = replace(user.monster.move(key), charge="", recharge=False, triggers=(), spread=False,
+                            reach=0.0, spill=())
             if extra.target == "enemy":
                 first = [t for t in targets if t.alive and t.enemy != user.enemy][:1]  # (the one aimed at)
                 foes = first + [t for t in self._candidates(user, extra) if t.alive and t not in first]
@@ -1100,6 +1103,37 @@ class BattleScene(Scene):
                 notes += [f"{move.name} set off {name}!"] + self._land(user, extra, aim)
         if notes:
             self.message = " ".join(dict.fromkeys(notes))  # (the same note once, for spread moves)
+
+    def _neighbours(self, target: Combatant) -> list[Combatant]:
+        """The Pokémon standing next to `target` on its side (the one before
+        and after it in the line), still standing."""
+        side = self.enemies if target.enemy else self.party
+        i = side.index(target)
+        return [c for c in side[max(0, i - 1):i + 2] if c is not target and c.alive]
+
+    def _beside(self, user: Combatant, move: Move, target: Combatant) -> list[str]:
+        """A move's area buff past its target (`Move.reach`, `Move.spill`):
+        one neighbour hit at a share, or a chance of an effect on each."""
+        near = self._neighbours(target)
+        if not near or not user.alive:
+            return []
+        if move.reach:
+            other = random.choice(near)
+            plain = replace(move, reach=0.0, spill=(), status="", stages=(), confuse=0, flinch=0, bind=0.0,
+                            bleed=0.0, drain=0.0, recoil=0.0)
+            return self._hit(user, plain, other, move.reach)
+        kind, what, chance = move.spill
+        notes = []
+        for other in near:
+            if random.random() * 100 >= chance:
+                continue
+            if kind == "status":
+                notes.append(self._inflict(other, what, move))
+            elif kind == "stage":
+                notes.append(self._change_stage(other, what, -1))
+            else:
+                notes.append(self._confuse(other))
+        return [n for n in notes if n]
 
     def _land(self, user: Combatant, move: Move, targets: list[Combatant]) -> list[str]:
         """The move lands on each of `targets`. Returns notes for the message."""

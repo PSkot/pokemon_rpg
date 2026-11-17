@@ -25,7 +25,7 @@ from fractions import Fraction
 from functools import cache
 
 from .combat import CRIT_CHANCE, CRIT_FACTOR
-from .moves import MOVES, STAT_WORDS, Move
+from .moves import MOVES, STAT_WORDS, STATUS_VERBS, Move
 
 FIRST_POINT_LEVEL = 3   # skill points = level − this (2 for a Lv5 starter)
 # How much a move costs and how soon it opens, by its power (`_gated`):
@@ -33,12 +33,92 @@ FIRST_POINT_LEVEL = 3   # skill points = level − this (2 for a Lv5 starter)
 # first evolution, 2 the line's last stage).
 POWER_TIERS = ((100, 4, 35, 2), (71, 3, 25, 1), (41, 2, 0, 0), (0, 1, 0, 0))
 WEAK_POWER = 40          # damaging moves this weak get fewer buffs (no Wounding or Keen)
-SPREAD_LEVEL = 25        # Sweeping and Wide (hitting every enemy) open from here at the earliest, at the first evolution
-SPREAD_LEVEL_SINGLE = 30  # ... (a line that doesn't evolve: 5 levels later)
-# Sweeping opens later the stronger its move hits (`_sweep_power`):
-# (lowest power, earliest level, evolution stage: 1 the first evolution,
-# 2 the line's last stage).
-SWEEP_TIERS = ((100, 55, 2), (71, 45, 2), (41, 35, 1), (0, SPREAD_LEVEL, 1))
+SPREAD_LEVEL = 25        # Wide (a status move on every enemy) and strong links open from here, at the first evolution
+# The evolution stage a damaging move's area buff (`AREAS`) needs, by how
+# hard the move hits (`_sweep_power`): (lowest power, -, stage: 1 the
+# first evolution, 2 the line's last stage). Its level is its own.
+SWEEP_TIERS = ((71, 0, 2), (0, 0, 1))
+AREA_STEP = 3            # area buffs in one tree open at least this many levels apart
+
+
+@dataclass(frozen=True)
+class Area:
+    """A damaging move's own way of reaching past its target (at most one per
+    move; moves not in `AREAS` stay single-target):
+    - "sweep": hits every enemy, the others at `values` (a share per rank);
+    - "reach": also hits one neighbour of the target, at `values`;
+    - "spill": a chance per rank (`values`, %) to give each of the target's
+      neighbours `effect`: ("status", "burn"), ("stage", "speed") (1 stage
+      down) or ("confuse", "").
+    It opens at `level` (or 6 levels after its move, if later), at the
+    stage its move's strength asks for (`SWEEP_TIERS`)."""
+    kind: str
+    word: str
+    values: tuple
+    level: int
+    effect: tuple[str, str] = ("", "")
+
+
+def _sweep(word, values, level):
+    return Area("sweep", word, values, level)
+
+
+def _reach(word, values, level):
+    return Area("reach", word, values, level)
+
+
+def _spill(word, effect, values, level):
+    return Area("spill", word, values, level, effect)
+
+
+AREAS = {
+    # Moves that sweep through a group or scatter over it.
+    "Slash": _sweep("Sweeping", (0.3, 0.45), 40),
+    "Fury Swipes": _sweep("Sweeping", (0.2, 0.3), 30),
+    "Razor Leaf": _sweep("Scattering", (0.3, 0.4), 34),
+    "Gust": _sweep("Gale", (0.2, 0.3), 26),
+    "Wing Attack": _sweep("Gale", (0.25, 0.35), 31),
+    "Swift": _sweep("Starfall", (0.3, 0.4), 33),
+    "Bubble": _sweep("Foaming", (0.2, 0.3), 25),
+    "Bubble Beam": _sweep("Foaming", (0.3, 0.4), 37),
+    "Surf": _sweep("Tidal", (0.5, 0.65), 50),
+    "Rock Slide": _sweep("Landslide", (0.35, 0.5), 44),
+    "Earthquake": _sweep("Shockwave", (0.5, 0.65), 55),
+    "Blizzard": _sweep("Whiteout", (0.45, 0.6), 58),
+    "Pin Missile": _sweep("Volley", (0.25, 0.35), 32),
+    "Thrash": _sweep("Rampaging", (0.3, 0.45), 46),
+    # Moves that go on to one neighbour: lightning arcs, a jet or beam goes
+    # through, a whip lashes, a heavy body knocks the target into another.
+    "Thunder Shock": _reach("Arcing", (0.3, 0.45), 27),
+    "Thunderbolt": _reach("Arcing", (0.4, 0.55), 42),
+    "Thunder": _reach("Arcing", (0.5, 0.65), 55),
+    "Water Gun": _reach("Piercing", (0.25, 0.4), 28),
+    "Hydro Pump": _reach("Piercing", (0.45, 0.6), 52),
+    "Vine Whip": _reach("Lashing", (0.3, 0.45), 25),
+    "Rock Throw": _reach("Shrapnel", (0.35, 0.5), 30),
+    "Body Slam": _reach("Bowling", (0.3, 0.45), 38),
+    "Slam": _reach("Bowling", (0.35, 0.5), 41),
+    "Take Down": _reach("Bowling", (0.35, 0.5), 39),
+    "Double-Edge": _reach("Bowling", (0.4, 0.55), 48),
+    "Skull Bash": _reach("Bowling", (0.45, 0.6), 50),
+    "Hyper Beam": _reach("Piercing", (0.5, 0.7), 60),
+    "Solar Beam": _reach("Piercing", (0.45, 0.6), 56),
+    "Sky Attack": _reach("Piercing", (0.5, 0.65), 58),
+    # Moves whose element spills onto the target's neighbours.
+    "Ember": _spill("Spreading", ("status", "burn"), (10, 20), 25),
+    "Fire Spin": _spill("Spreading", ("status", "burn"), (15, 25), 30),
+    "Flamethrower": _spill("Spreading", ("status", "burn"), (15, 30), 42),
+    "Fire Blast": _spill("Spreading", ("status", "burn"), (25, 40), 55),
+    "Poison Sting": _spill("Venom Cloud", ("status", "poison"), (10, 20), 26),
+    "Acid": _spill("Splashing", ("stage", "defense"), (20, 40), 30),
+    "Ice Beam": _spill("Frost", ("stage", "speed"), (25, 50), 45),
+    "Aurora Beam": _spill("Frost", ("stage", "attack"), (20, 40), 36),
+    "Ice Punch": _spill("Frost", ("stage", "speed"), (20, 40), 44),
+    "Confusion": _spill("Rippling", ("confuse", ""), (10, 20), 30),
+    "Psybeam": _spill("Rippling", ("confuse", ""), (15, 25), 36),
+    "Psychic": _spill("Rippling", ("confuse", ""), (20, 35), 50),
+    "Dig": _spill("Cave-in", ("stage", "accuracy"), (25, 50), 40),
+}
 LINK_LEVEL = 20          # links open from here (at the first evolution, if the line has one) ...
 LINK_LEVEL_SINGLE = 25   # ... or here for a line that doesn't evolve
 # Strong links (setting off a damaging move, or one that puts the target to
@@ -350,10 +430,8 @@ def _damaging_buffs(k: str, m: Move, base: int, last_stage: int) -> list[Skill]:
     if potent and m.crit_ratio <= 1 and not weak:
         nodes.append(_node(k, "Keen", name, base + 6, (trunk,), tuple({"crit_ratio": r} for r in (2, 3)),
                            ("Critical hits ×3 as likely.", "×4 as likely.")))
-    if not m.spread:
-        nodes.append(_node(k, "Sweeping", name, base + 12, (trunk,),
-                           ({"spread": True, "spread_share": 0.25}, {"spread": True, "spread_share": 0.35}),
-                           ("Hits every enemy, the others at 25% damage.", "The others at 35% damage.")))
+    if name in AREAS and not m.spread:
+        nodes.append(_area_node(k, m, AREAS[name], base, trunk))
     # Buffs that take away a drawback.
     if m.charge:
         nodes.append(_node(k, "Instant", name, base + 20, (trunk,), ({"charge": ""},), ("Fires without charging.",)))
@@ -382,6 +460,23 @@ def _damaging_buffs(k: str, m: Move, base: int, last_stage: int) -> list[Skill]:
         nodes.append(_node(k, "Twin", name, deep, (keen,), ({"hits": (2, 2), "scale": -0.3},),
                            ("Hits twice, at 30% less power each.",), stage=last_stage))
     return nodes
+
+
+def _area_node(k: str, m: Move, area: Area, base: int, trunk: str) -> Skill:
+    """A damaging move's area buff (`AREAS`)."""
+    if area.kind == "sweep":
+        ranks = tuple({"spread": True, "spread_share": v} for v in area.values)
+        text = tuple(f"Hits every enemy, the others at {round(v * 100)}% damage." for v in area.values)
+    elif area.kind == "reach":
+        ranks = tuple({"reach": v} for v in area.values)
+        text = tuple(f"Also hits one enemy next to the target, at {round(v * 100)}% damage." for v in area.values)
+    else:
+        kind, what = area.effect
+        does = {"status": f"{STATUS_VERBS.get(what, what)} them", "stage": f"lower their {STAT_WORDS.get(what, what)}",
+                "confuse": "confuse them"}[kind]
+        ranks = tuple({"spill": (kind, what, v)} for v in area.values)
+        text = tuple(f"Spreads to the enemies next to the target: {v}% chance to {does}." for v in area.values)
+    return _node(k, area.word, m.name, max(area.level, base + 6), (trunk,), ranks, text)
 
 
 def _lowering_buffs(k: str, m: Move, base: int) -> list[Skill]:
@@ -501,10 +596,10 @@ def _gated(skill: Skill, skills: dict[str, Skill], last_stage: int) -> Skill:
         stage = {0: 0, 1: first, 2: last_stage}[stage]
         return replace(skill, cost=cost, level=max(skill.level, level), stage=max(skill.stage, stage))
     single = 0 if last_stage else 5  # a line that doesn't evolve: these come 5 levels later
-    if skill.kind == "buff" and skill.short == "Sweeping":
-        _, level, stage = next(t for t in SWEEP_TIERS if _sweep_power(MOVES[skills[skill.move].move]) >= t[0])
+    if skill.kind == "buff" and _is_area(skill, skills):
+        _, _, stage = next(t for t in SWEEP_TIERS if _sweep_power(MOVES[skills[skill.move].move]) >= t[0])
         stage = {1: first, 2: last_stage}[stage]
-        return replace(skill, level=max(skill.level, level + single), stage=max(skill.stage, stage))
+        return replace(skill, level=skill.level + single, stage=max(skill.stage, stage))
     if skill.kind == "buff" and skill.short == "Wide":
         level = (DISABLE_WIDE_LEVEL if _disables(MOVES[skills[skill.move].move]) else SPREAD_LEVEL) + single
         return replace(skill, level=max(skill.level, level), stage=max(skill.stage, first))
@@ -516,6 +611,12 @@ def _gated(skill: Skill, skills: dict[str, Skill], last_stage: int) -> Skill:
                            ranks=skill.ranks[:n], text=skill.text[:n])
         return replace(skill, cost=LINK_COST, level=max(skill.level, LINK_LEVEL + single), stage=max(skill.stage, first))
     return skill
+
+
+def _is_area(skill: Skill, skills: dict[str, Skill]) -> bool:
+    """`skill` is a damaging move's area buff (`AREAS`)."""
+    area = AREAS.get(MOVES[skills[skill.move].move].name)
+    return bool(area) and skill.short == area.word and skill.ranks and not MOVES[skills[skill.move].move].spread
 
 
 def _sweep_power(move: Move) -> float:
@@ -557,7 +658,17 @@ def _tree(species: tuple[str, ...], *items: Skill | Link) -> SkillTree:
         if isinstance(item, Link):
             skill = _link(item)
             skills[skill.key] = skill
-    return SkillTree(species, {key: _gated(s, skills, last_stage) for key, s in skills.items()})
+    gated = {key: _gated(s, skills, last_stage) for key, s in skills.items()}
+    # No two area buffs open together: each at least AREA_STEP levels after
+    # the one before.
+    areas = sorted((s for s in gated.values() if s.kind == "buff" and _is_area(s, skills)),
+                   key=lambda s: s.level)
+    floor = 0
+    for s in areas:
+        level = max(s.level, floor)
+        gated[s.key] = replace(s, level=level)
+        floor = level + AREA_STEP
+    return SkillTree(species, gated)
 
 
 TREES = {t.species[0]: t for t in [

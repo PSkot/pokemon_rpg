@@ -178,7 +178,7 @@ stages*). A hit is worked out in these steps:
    crits).
 5. **Leaf Shield:** if the target is shielded, `base` × **0.5**.
 6. **Random spread:** `base` × a random number from 0.85 to 1.0, × the
-   move's share if it hits several targets (Sweeping: 0.25 / 0.35; Petal Dance 0.35), except
+   move's share if it hits several targets (area buffs: per move, `skills.AREAS`; Petal Dance 0.35), except
    for the enemy it was aimed at, which takes full damage.
 7. **Type effectiveness:** × the type chart multiplier for the move's type
    against each of the target's types (multiplied together: 0, ¼, ½, 1,
@@ -274,13 +274,19 @@ stats; only type immunity stops it (Ghost).
   (Gen 1's intended effect; its real one was a bug).
 - **Rest:** the user's status is cured, it heals fully, and it falls
   asleep for exactly 2 turns.
-- Moves that **hit every target** (Sweeping, Wide, Growl R2, ...): one on
+- Moves that **hit every target** (a sweep area buff, Wide, ...): one on
   the enemies is still aimed at one of them (big arrow; the others get
   small ones), which takes full damage, the others the move's share; a
   move it sets off (a link) goes to that one only (a set-off move never
   hits every target, whatever its buffs). One on the own side
   ("Shared") needs no target choice and works on each Pokémon there.
   Enemies using one aim at a random target.
+- **Area buffs that reach or spill** (`BattleScene._beside`): after the
+  move lands on its target, a *reach* move also hits one random enemy
+  standing next to it (the one before or after it in the line) at its
+  share, with no added effects; a *spill* move rolls its chance for each
+  enemy next to the target to burn/poison it, lower a stat 1 stage or
+  confuse it. Neither carries into a set-off move.
 
 ### Confusion
 

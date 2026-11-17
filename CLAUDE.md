@@ -137,19 +137,26 @@ non-commercial project.
   Kinds: moves (each Gen 1 move one 1-point skill, linked by paths; the
   free ones are base attacks, the first = Fight; 4 equipped,
   `Monster.equipped`), buffs (1–5 ranks, branches off one move, generated
-  per kind of move by `skills._buffs`: Potent, riders, Wounding, Sweeping,
-  capstones, ...) and links (`Link`: two moves; the first sets off the
+  per kind of move by `skills._buffs`: Potent, riders, Wounding, area
+  buffs, capstones, ...) and links (`Link`: two moves; the first sets off the
   second, `Move.triggers`). A rank is a dict of `Move` field changes,
   added up by `apply_changes`; `SkillTree.effective_move` applies them
   (`Monster.move(key)`). Moves cost points by power (`POWER_TIERS`: 1–4;
   71+ power also needs Lv25 and the first evolution, 100+ Lv35 and the last
   stage), links 2 a rank and open from Lv20 at the first evolution,
-  Wide from Lv25 at the first evolution, Sweeping by its move's power
-  (`SWEEP_TIERS`: Lv25/35/45/55, `_sweep_power` counts hits and crits); strong links (setting
+  Wide from Lv25 at the first evolution. A damaging move has at most one
+  area buff of its own (`skills.AREAS`, each with its own level and
+  numbers; most basic attacks none): sweep (every enemy, the others at a
+  share: Slash, Gust, Bubble, Earthquake), reach (one enemy next to the
+  target, `Move.reach`: Thunder Shock, Water Gun, Body Slam) or spill (a
+  status/stat drop chance on the target's neighbours, `Move.spill`: Ember
+  burns, Confusion confuses; `BattleScene._beside`); strong moves' at the
+  last stage (`SWEEP_TIERS`, `_sweep_power` counts hits and crits), and no
+  two in a tree within `AREA_STEP` levels; strong links (setting
   off damage, sleep, paralysis, freeze, confusion or binding) from Lv25
   with at most 2 ranks, Wide on such disabling moves from Lv30; lines
   that don't evolve 5 levels later (`skills._gated`). A set-off move only
-  hits the target aimed at (no Sweeping/Wide); Potent
+  hits the target aimed at (no area buff/Wide); Potent
   has 3 ranks, Keen 2, weak moves (≤ 40) no Wounding/Keen. Trees cost
   87–202 points (97 at Lv100): builds choose. Saves from before these
   costs refund every point once (`saves.SKILLS_VERSION`). Every line in the game has a tree (`docs/skill_trees.md`'s
