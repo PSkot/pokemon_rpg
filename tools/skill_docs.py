@@ -43,17 +43,20 @@ def _section(tree: SkillTree) -> str:
     lines = [f"## The {_name(tree.species[0])} line", "",
              f"Stages: {_stages(tree)}. Whole tree: {tree.cost} points.", ""]
     stage_name = lambda s: _name(tree.species[s])  # noqa: E731
-    lines += ["| Move | Lv | Opened by | Stage | Effect | Buffs (points) |", "| --- | --- | --- | --- | --- | --- |"]
+    lines += ["| Move | Cost | Lv | Opened by | Stage | Effect | Buffs (points) |",
+              "| --- | --- | --- | --- | --- | --- | --- |"]
     for s in tree.moves:
         buffs = [b for b in tree.skills.values() if b.kind == "buff" and b.move == s.key]
         names = ", ".join(b.label for b in buffs)
         level = "free" if s.free else s.level
         parent = tree.skills[s.parents[0]].name if s.parents else "–"
-        lines.append(f"| {s.name} | {level} | {parent} | {stage_name(s.stage)} | {describe(MOVES[s.move])} | "
+        cost = "–" if s.free else s.cost
+        lines.append(f"| {s.name} | {cost} | {level} | {parent} | {stage_name(s.stage)} | {describe(MOVES[s.move])} | "
                      f"{names} ({sum(b.max_rank for b in buffs)}) |")
     links = [s for s in tree.skills.values() if s.kind == "link"]
     if links:
-        lines += ["", "| Link | Sets off | Lv per rank | Stage | Chance per rank |", "| --- | --- | --- | --- | --- |"]
+        lines += ["", f"Links cost {links[0].cost} points a rank.", "",
+                  "| Link | Sets off | Lv per rank | Stage | Chance per rank |", "| --- | --- | --- | --- | --- |"]
         for s in links:
             chances = " / ".join(f"{r['triggers'][0][2]}%" for r in s.ranks)
             lines.append(f"| {s.name} | {tree.skills[s.parents[0]].name} → {tree.skills[s.parents[1]].name} | "

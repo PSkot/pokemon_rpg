@@ -72,10 +72,13 @@ def _load_gear(d: dict) -> Gear:
     return gear if d.get("v", 1) >= GEAR_VERSION else updated_gear(gear)  # (older saves: today's rules)
 
 
+SKILLS_VERSION = 2  # skills saved before version 2 were bought at the old costs (each point is given back)
+
+
 def _monster(m: Monster) -> dict:
     return {"species": m.species.key, "level": m.level, "xp": m.xp, "hp": m.hp, "status": m.status,
             "sleep_rounds": m.sleep_rounds, "gear": {slot: _gear(g) for slot, g in m.gear.items()},
-            "skills": m.skills, "equipped": m.equipped}
+            "skills": m.skills, "equipped": m.equipped, "sv": SKILLS_VERSION}
 
 
 def _load_monster(d: dict) -> Monster:
@@ -87,8 +90,11 @@ def _load_monster(d: dict) -> Monster:
     tree = species.tree.skills
     skills = {key: min(rank, tree[key].max_rank) for key, rank in d.get("skills", {}).items() if key in tree}
     equipped = [key for key in d.get("equipped", []) if key in skills]
-    return Monster(species, d["level"], hp=d["hp"], gear=gear, status=d["status"],
-                   sleep_rounds=d["sleep_rounds"], xp=d["xp"], skills=skills, equipped=equipped)
+    monster = Monster(species, d["level"], hp=d["hp"], gear=gear, status=d["status"],
+                      sleep_rounds=d["sleep_rounds"], xp=d["xp"], skills=skills, equipped=equipped)
+    if d.get("sv", 1) < SKILLS_VERSION:  # spent under older costs: every point back, to spend again
+        monster.reset_skills()
+    return monster
 
 
 def snapshot(scene) -> dict:

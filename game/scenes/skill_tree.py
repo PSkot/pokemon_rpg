@@ -408,7 +408,8 @@ class SkillTreeScene(Scene):
             ui.badge_text(window, type_name(move.type), BADGE_POS)
         y += 16
         if skill.kind == "move":
-            ui.text(window, "Learned" if rank else "1 point", (x, y), GREEN if rank else ui.GREY, size=20)
+            cost = f"{skill.cost} point{'s' if skill.cost > 1 else ''}"
+            ui.text(window, "Learned" if rank else cost, (x, y), GREEN if rank else ui.GREY, size=20)
             y += 15
         else:
             what = (f"Changes {owner.name}" if skill.kind == "buff"
@@ -416,7 +417,8 @@ class SkillTreeScene(Scene):
             for part in _wrap(what, WRAP - 4):
                 ui.text(window, part, (x, y), BUFF_COLOR if skill.kind == "buff" else LINK_COLOR, size=20)
                 y += 13
-            ui.text(window, f"Rank {rank}/{skill.max_rank}", (x, y + 1), ui.WHITE if rank else ui.GREY, size=20)
+            each = f"   ({skill.cost} points a rank)" if skill.cost > 1 else ""
+            ui.text(window, f"Rank {rank}/{skill.max_rank}{each}", (x, y + 1), ui.WHITE if rank else ui.GREY, size=20)
             y += 16
             for r in range(1, skill.max_rank + 1):  # what each rank does
                 color = GREEN if r <= rank else ui.WHITE if r == rank + 1 else ui.GREY
@@ -457,7 +459,8 @@ class SkillTreeScene(Scene):
             line, color = self.message, ui.YELLOW
         else:
             reason = m.why_not(skill.key)
-            line, color = ((("Enter: learn (1 point)" if not rank else "Enter: rank up (1 point)"), GREEN)
+            cost = f"{skill.cost} point{'s' if skill.cost > 1 else ''}"
+            line, color = (((f"Enter: learn ({cost})" if not rank else f"Enter: rank up ({cost})"), GREEN)
                            if not reason else (reason, ui.GREY))
         for i, part in enumerate(_wrap(line, WRAP)[:2]):
             ui.text(window, part, (x, INFO_WINDOW.bottom - PAD - 38 + i * 12), color, size=20)

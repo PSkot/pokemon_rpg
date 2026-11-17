@@ -160,8 +160,8 @@ stages*). A hit is worked out in these steps:
 
 1. **Attack:** the user's Attack (with gear) × its **Attack stage**
    multiplier (see *Stat stages*). Halved if the user is **burned**.
-2. **Power:** the move's power × its **buffs** (Potent: +8% per rank, up
-   to +40%; Twin: −30% for its two hits), + the user's gear `power` bonus.
+2. **Power:** the move's power × its **buffs** (Potent: +10% per rank, up
+   to +30%; Twin: −30% for its two hits), + the user's gear `power` bonus.
    Fight uses the Pokémon's basic attack (see `skill_trees.md`).
 3. **Base damage** (the Gen 1 formula):
 

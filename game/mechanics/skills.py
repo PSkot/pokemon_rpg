@@ -6,7 +6,7 @@ parent skills and its evolution stage; each further rank of a buff or link
 needs `RANK_LEVELS` more levels. Kinds:
 
 - moves: every move of the line's Gen 1 learnset (and TMs) is one skill
-  (1 point), linked by paths (Vine Whip opens Razor Leaf). The first free
+  (1-4 points by power, `POWER_TIERS`), linked by paths (Vine Whip opens Razor Leaf). The first free
   ones are known from the start; the first of all is the basic attack
   (Fight). Learned moves are used in battle once equipped (`MAX_EQUIPPED`).
 - buffs: each move has its own branches of buffs, 1-5 ranks each, that
@@ -27,6 +27,15 @@ from functools import cache
 from .moves import MOVES, STAT_WORDS, Move
 
 FIRST_POINT_LEVEL = 3   # skill points = level − this (2 for a Lv5 starter)
+# How much a move costs and how soon it opens, by its power (`_gated`):
+# (lowest power, points, earliest level, evolution stage: 0 none, 1 the
+# first evolution, 2 the line's last stage).
+POWER_TIERS = ((100, 4, 35, 2), (71, 3, 25, 1), (41, 2, 0, 0), (0, 1, 0, 0))
+WEAK_POWER = 40          # damaging moves this weak get fewer buffs (no Wounding or Keen)
+SPREAD_LEVEL = 25        # Sweeping and Wide (hitting every enemy) open from here, at the first evolution ...
+SPREAD_LEVEL_SINGLE = 30  # ... or here for a line that doesn't evolve
+LINK_LEVEL = 20          # links open from here (at the first evolution, if the line has one)
+LINK_COST = 2            # points per rank of a link
 RANK_LEVELS = 5         # each rank after the first opens this many levels later
 MAX_EQUIPPED = 4
 
@@ -47,6 +56,7 @@ class Skill:
     text: tuple[str, ...] = ()  # what each rank does, in words (rank 1 first; moves: none)
     free: bool = False  # a move known from the start, at no cost
     short: str = ""     # its name in the tree, under its move ("" = `name`)
+    cost: int = 1       # skill points per rank (strong moves and links cost more)
 
     @property
     def label(self) -> str:
@@ -82,7 +92,7 @@ class SkillTree:
     @property
     def cost(self) -> int:
         """Points to learn everything."""
-        return sum(s.max_rank for s in self.skills.values() if not s.free)
+        return sum(s.max_rank * s.cost for s in self.skills.values() if not s.free)
 
     def owner(self, key: str) -> str:
         """The move skill `key` belongs to (itself, for a move)."""
@@ -94,7 +104,7 @@ class SkillTree:
 
     def spent(self, ranks: dict[str, int]) -> int:
         """Points in `ranks` (free moves cost nothing)."""
-        return sum(r for key, r in ranks.items() if key in self.skills and not self.skills[key].free)
+        return sum(r * self.skills[key].cost for key, r in ranks.items() if key in self.skills and not self.skills[key].free)
 
     def why_not(self, ranks: dict[str, int], key: str, level: int, stage: int) -> str:
         """Why skill `key` can't be learned or ranked up now ("" if it can)."""
@@ -109,8 +119,8 @@ class SkillTree:
         missing = [self.skills[p].name for p in skill.parents if not ranks.get(p)]
         if missing:
             return f"Needs {' and '.join(missing)}"
-        if self.spent(ranks) >= self.total_points(level):
-            return "No skill points"
+        if self.spent(ranks) + skill.cost > self.total_points(level):
+            return "No skill points" if skill.cost == 1 else f"Needs {skill.cost} skill points"
         return ""
 
     def effective_move(self, ranks: dict[str, int], key: str) -> Move:
@@ -314,16 +324,18 @@ def _damaging_buffs(k: str, m: Move, base: int, last_stage: int) -> list[Skill]:
         rider_text = tuple(f"+{r['stage_chance']}% chance to lower its {stat}." for r in rider_ranks)
     potent = None
     if not m.halve:
-        potent = _node(k, "Potent", name, base, (k,), tuple({"scale": 0.08 * r} for r in range(1, 6)),
-                       tuple(f"+{8 * r}% power." for r in range(1, 6)))
+        potent = _node(k, "Potent", name, base, (k,), tuple({"scale": 0.1 * r} for r in range(1, 4)),
+                       tuple(f"+{10 * r}% power." for r in range(1, 4)))
         nodes.append(potent)
     rider_node = _node(k, rider_word, name, base + 3, (k,), rider_ranks, rider_text)
     nodes.append(rider_node)
-    nodes.append(_node(k, "Wounding", name, base + 16, (rider_node.key,), *_bleed_ranks(2)))
+    weak = m.power <= WEAK_POWER and not m.halve  # a weak move gets fewer buffs
+    if not weak:
+        nodes.append(_node(k, "Wounding", name, base + 16, (rider_node.key,), *_bleed_ranks(2)))
     trunk = potent.key if potent else rider_node.key
-    if potent and m.crit_ratio <= 1:
-        nodes.append(_node(k, "Keen", name, base + 6, (trunk,), tuple({"crit_ratio": r} for r in (1, 2, 3)),
-                           ("Critical hits ×2 as likely.", "×3 as likely.", "×4 as likely.")))
+    if potent and m.crit_ratio <= 1 and not weak:
+        nodes.append(_node(k, "Keen", name, base + 6, (trunk,), tuple({"crit_ratio": r} for r in (2, 3)),
+                           ("Critical hits ×3 as likely.", "×4 as likely.")))
     if not m.spread:
         nodes.append(_node(k, "Sweeping", name, base + 12, (trunk,),
                            ({"spread": True, "spread_share": 0.5}, {"spread": True, "spread_share": 0.75}),
@@ -462,6 +474,25 @@ def _link(link: Link) -> Skill:
     return Skill(_key(link.name), link.name, "link", src, len(ranks), link.level, (src, dst), link.stage, ranks, text)
 
 
+def _gated(skill: Skill, last_stage: int) -> Skill:
+    """`skill` with the tree-wide rules: strong moves cost more and open
+    later (`POWER_TIERS`), hitting every enemy (Sweeping, Wide) and links
+    come in mid-game."""
+    first = min(1, last_stage)  # the first evolution (or none)
+    if skill.kind == "move" and not skill.free:
+        move = MOVES[skill.move]
+        power = 100 if move.halve else move.power
+        _, cost, level, stage = next(t for t in POWER_TIERS if power >= t[0])
+        stage = {0: 0, 1: first, 2: last_stage}[stage]
+        return replace(skill, cost=cost, level=max(skill.level, level), stage=max(skill.stage, stage))
+    if skill.kind == "buff" and skill.short in ("Sweeping", "Wide"):
+        level = SPREAD_LEVEL if last_stage else SPREAD_LEVEL_SINGLE
+        return replace(skill, level=max(skill.level, level), stage=max(skill.stage, first))
+    if skill.kind == "link":
+        return replace(skill, cost=LINK_COST, level=max(skill.level, LINK_LEVEL), stage=max(skill.stage, first))
+    return skill
+
+
 def _tree(species: tuple[str, ...], *items: Skill | Link) -> SkillTree:
     """A line's tree: its moves (each followed by its buffs), then its links."""
     last_stage = len(species) - 1
@@ -475,7 +506,7 @@ def _tree(species: tuple[str, ...], *items: Skill | Link) -> SkillTree:
         if isinstance(item, Link):
             skill = _link(item)
             skills[skill.key] = skill
-    return SkillTree(species, skills)
+    return SkillTree(species, {key: _gated(s, last_stage) for key, s in skills.items()})
 
 
 TREES = {t.species[0]: t for t in [
