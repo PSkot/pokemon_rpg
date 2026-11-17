@@ -90,16 +90,24 @@ non-commercial project.
   are named after Pokémon). Rarity (Common/Uncommon/Rare/Epic/Legendary)
   sets the affix count (0, 1, 2–3, 3–4, 4–5) and multiplies rolled
   bonuses, not penalties. Item level (`Gear.level`) = the level needed to
-  equip it (`usable_by`); it also scales stat/power/damage bonuses
-  (`level_factor`, +4%/level), not chances. Drops get the defeated
+  equip it (`usable_by`); ranges are a Lv50 Common item's and the level
+  scales them (`items.scale`: stats/power/damage/crit × level/50, chances
+  and specials × √(level/50), berry healing by absolute HP × (level+5)/55),
+  so early gear is mild; every kind of bonus is priced by its worth (Super
+  effective 40–50% vs Attack 14–18%). Drops get the defeated
   Pokémon's level, chests the area's level range. Mods:
   stats in %, `crit` (% points, base 6.25%), `power` (added to move power),
   `power:<type>` (% on that type's moves), `added:<type>` (every hit deals
   that % extra as that type), `status:<status>` (% chance a hit inflicts
   it), `first` (Quick Claw), `endure` (Focus Band), `super`, `regen`,
-  `drain`, `berry_heal`/`berry_attack`; cure berries use `Item.cures`.
-  Berries are eaten at most once per battle (`BattleScene._berry`), not
-  used up. `Monster.attack` etc. include gear; `base_*` don't.
+  `drain`, `berry_*` (Oran heals absolute HP; cure berries
+  (`Item.cures`) have a `berry_cure`% chance each round end their holder
+  has the status). Berries roll berry affixes (`BERRY_AFFIXES`: Juicy,
+  Bitter, Spicy/Dry/Sweet, of the Vileplume (heals 3 rounds), of the
+  Exeggcute (may not be used up), of the Jolteon (eaten sooner);
+  `affixes_for(slot)`)
+  and are eaten at most once per battle (`BattleScene._berry`), not used
+  up. `Monster.attack` etc. include gear; `base_*` don't.
 - Hats (`hats.py`): head-slot items (`items.HATS`) are cells of
   `hats_new.png`, drawn on the Pokémon wearing them (map, battle, party
   screen). The cells' reference faces are cut out on load, so the Pokémon's

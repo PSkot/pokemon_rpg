@@ -92,6 +92,7 @@ HIT_TIME = 0.35      # seconds a hit combatant shakes and flickers
 HEAL_TIME = 0.8      # seconds healing sparkles rise around a combatant
 FADE_TIME = 0.5      # seconds a fainting combatant takes to fade
 HP_DRAIN_TIME = 0.6  # seconds for an HP bar to drain completely
+BERRY_REGEN_ROUNDS = 3  # a Lingering berry heals for this many rounds
 POPUP_TIME = 0.9     # seconds a damage number stays up
 FAINTED_OPACITY = 0.35  # fainted party members stay visible, dimmed
 
@@ -140,7 +141,9 @@ class Combatant:
         self.bind_share = 0.0  # ... losing this share of max HP each round
         self.bleed = 0         # rounds left wounded ...
         self.bleed_share = 0.0  # ... losing this share of max HP each round
-        self.berry_used = False  # its berry can be eaten once per battle
+        self.berry_used = False  # its berry can be eaten once per battle (Seedy: maybe more)
+        self.berry_regen = 0     # rounds left of a Lingering berry's healing ...
+        self.berry_regen_hp = 0  # ... HP a round
         self.last_target: Combatant | None = None  # who it aimed at last (the target menu starts there)
         self.last_command = 0  # what it chose last (its menus open there): the command ...
         self.last_skill = 0    # ... and the skill
@@ -807,14 +810,21 @@ class BattleScene(Scene):
             self.rewards = ui.ListPanel("Rewards", rows, (320, 120), footer="")
 
     def _regen(self):
-        """End of the round: gear that restores HP every round."""
+        """End of the round: gear that restores HP every round, a Lingering
+        berry's healing, and cure berries' chances."""
         for c in self.everyone:
             percent = c.monster.gear_bonus("regen")
-            if not c.alive or not percent or c.monster.hp == c.monster.max_hp:
+            amount = max(1, round(c.monster.max_hp * percent / 100)) if percent else 0
+            if c.berry_regen and c.alive:
+                c.berry_regen -= 1
+                amount += c.berry_regen_hp
+            if not c.alive or not amount or c.monster.hp == c.monster.max_hp:
                 continue
-            amount = self._heal(c, max(1, round(c.monster.max_hp * percent / 100)))
+            amount = self._heal(c, amount)
             self.message = f"{c.label} restored {amount} HP."
             yield REGEN_MESSAGE_TIME
+        for c in self.everyone:
+            yield from self._berry(c, round_end=True)
 
     def _heal(self, c: Combatant, amount: int) -> int:
         """Restore up to `amount` HP, with a popup; returns what was restored."""
@@ -824,26 +834,49 @@ class BattleScene(Scene):
         self._popup(c, f"+{amount}", HEAL_COLOR)
         return amount
 
-    def _berry(self, c: Combatant):
-        """A script: `c` eats its berry, if it has one left and needs it now."""
+    def _berry(self, c: Combatant, round_end: bool = False):
+        """A script: `c` eats its berry, if it has one left and needs it now:
+        a healing berry at half HP (Liechi: 1/4), sooner with Early; a cure
+        berry has a chance at the end of every round its holder has its
+        status (`round_end`). Then its affixes' extras."""
         gear = c.monster.gear.get("berry")
         if not gear or c.berry_used or not c.alive:
             return
         m, mods = c.monster, gear.mods
-        if m.status and m.status in gear.item.cures:
-            note = STATUSES[m.status].cured.format(c.label)
+        early = mods.get("berry_early")
+        notes = []
+        if "berry_cure" in mods:
+            if not (round_end and m.status in gear.item.cures and random.random() * 100 < mods["berry_cure"]):
+                return
+            notes.append(STATUSES[m.status].cured.format(c.label))
             m.cure()
-        elif "berry_heal" in mods and m.hp * 2 <= m.max_hp:
-            amount = self._heal(c, max(1, round(m.max_hp * mods["berry_heal"] / 100)))
-            note = f"{c.label} restored {amount} HP!"
-        elif "berry_attack" in mods and m.hp * 4 <= m.max_hp and c.stages["attack"] < MAX_STAGE:
+            c.toxic = 0
+        elif "berry_heal" in mods and m.hp <= m.max_hp * (2 / 3 if early else 1 / 2):
+            amount = self._heal(c, mods["berry_heal"])
+            notes.append(f"{c.label} restored {amount} HP!")
+        elif ("berry_attack" in mods and m.hp <= m.max_hp * (1 / 2 if early else 1 / 4)
+              and c.stages["attack"] < MAX_STAGE):
             c.stages["attack"] = min(MAX_STAGE, c.stages["attack"] + mods["berry_attack"])
             self._popup(c, "ATK UP", ui.YELLOW)
-            note = f"{c.label}'s attack rose!"
+            notes.append(f"{c.label}'s attack rose!")
         else:
             return
-        c.berry_used = True
-        self.message = f"{c.label} ate its {gear.item.name}! {note}"
+        # Its affixes.
+        if mods.get("berry_juicy") and m.hp < m.max_hp:
+            notes.append(f"{c.label} restored {self._heal(c, mods['berry_juicy'])} HP!")
+        if m.status and random.random() * 100 < mods.get("berry_lum", 0):
+            notes.append(STATUSES[m.status].cured.format(c.label))
+            m.cure()
+            c.toxic = 0
+        for stat in ("attack", "defense", "speed"):
+            if mods.get(f"berry_stage:{stat}"):
+                notes.append(self._change_stage(c, stat, mods[f"berry_stage:{stat}"]))
+        if mods.get("berry_regen"):
+            c.berry_regen, c.berry_regen_hp = BERRY_REGEN_ROUNDS, mods["berry_regen"]
+        c.berry_used = not random.random() * 100 < mods.get("berry_seed", 0)
+        if not c.berry_used:
+            notes.append("It has some left!")
+        self.message = f"{c.label} ate its {gear.item.name}! " + " ".join(n for n in notes if n)
         yield STATUS_MESSAGE_TIME
 
     def _status_damage(self):

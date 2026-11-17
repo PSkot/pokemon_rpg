@@ -340,7 +340,7 @@ Instant buff is learned). After **Hyper Beam** the user must rest the next round
 
 After all actions, in this order:
 
-1. **Burn and poison damage** (see below), then berries may be eaten.
+1. **Burn and poison damage** (see below), then healing berries may be eaten.
 2. **Leech Seed:** each seeded Pokémon loses its seed's share of its max
    HP (1/16; more with Deep-Rooted; min 1), and whoever seeded it
    gets that much back (if it's still standing).
@@ -348,7 +348,9 @@ After all actions, in this order:
 4. **Wounds** (buffs: Wounding, Lingering): wounded Pokémon lose their
    wound's share of max HP (min 1), for 3 rounds.
 5. **Regen** (gear `regen`: Leftovers, Nightcap, "of the Chansey"): heals
-   `regen`% of max HP (min 1).
+   `regen`% of max HP (min 1), plus a Lingering berry's HP (3 rounds after
+   it's eaten). Then each cure berry whose holder has its status gets its
+   chance (`berry_cure`).
 6. **Leaf Shield** counts down: it lasts the round it's used and the next
    (and more with Thick). Flinching wears off.
 
@@ -402,16 +404,29 @@ party members skip the menu.
 ### Berries
 
 Berries are eaten **at most once per battle** and are **not used up** (the
-same berry works again next battle). They're checked at the start of
-battle, after being hit, and after burn/poison damage. A berry is only
-eaten when it does something:
+same berry works again next battle). Healing amounts are **absolute HP**,
+like potions', so a berry is worth less to a stronger Pokémon. A berry is
+only eaten when it does something:
 
-| Berry | When | Effect |
+| Berry | When | Effect (Lv50 Common; see *Item level*) |
 | --- | --- | --- |
-| Oran Berry | HP at or below 1/2 | Heals `berry_heal`% of max HP (rolled 20–25% at Common) |
-| Liechi Berry | HP at or below 1/4 | Attack stage +1 at Common, +2 at Rare and up (not above +6) |
-| Pecha / Rawst / Cheri / Chesto / Aspear | Has that status | Cures poison / burn / paralysis / sleep / freeze |
-| Lum Berry | Has any status | Cures it |
+| Oran Berry | HP at or below 1/2 (Early: 2/3); checked at the start of battle, after being hit, and after end-of-round damage | Heals `berry_heal` HP: 20–24 (Lv5 Common: 4) |
+| Liechi Berry | HP at or below 1/4 (Early: 1/2) | Attack stage +1 (+2 at Epic and up; not above +6) |
+| Pecha / Rawst / Cheri / Chesto / Aspear | At the end of each round its holder has that status | `berry_cure`% chance to cure poison / burn / paralysis / sleep / freeze: 30–40% (Lv5 Common 13%) |
+| Lum Berry | Same, any status | 15–20% chance to cure it |
+
+**Berry affixes** (`items.BERRY_AFFIXES`; as many as gear's by rarity:
+Uncommon 1, Rare 2–3, Epic 3–4, Legendary 4–5) add to what happens when
+it's eaten:
+
+| Affix | When eaten (Lv50 Common) |
+| --- | --- |
+| Juicy | also heals 10–12 HP |
+| Bitter | 30–40% chance to also cure any status |
+| Spicy / Dry / Sweet | also Attack / Defense / Speed +1 stage |
+| of the Vileplume | then heals 5–6 HP at the end of each of the next 3 rounds |
+| of the Exeggcute | 20–30% chance it isn't used up (can be eaten again this battle) |
+| of the Jolteon | eaten sooner (Oran at 2/3 HP, Liechi at 1/2) |
 
 ---
 
@@ -424,8 +439,8 @@ Each Pokémon has four slots: **Head** (hats, drawn on the Pokémon),
 an **item level**, plus its rolls.
 
 **Starting gear:** the starter (Bulbasaur, Charmander or Squirtle, chosen
-at the start, Lv5) holds a Common Oran Berry (heals 20–25% of max HP at
-half HP, once per battle); the bag starts without gear.
+at the start, Lv5) holds a Common Lv5 Oran Berry (heals 4 HP at half HP,
+once per battle); the bag starts without gear.
 
 ### Item level
 
@@ -435,43 +450,55 @@ half HP, once per battle); the bag starts without gear.
 - Dropped gear gets the **defeated Pokémon's level**; chest gear a level in
   the area's range (its Pokémon's lowest to highest level; a boss chest:
   the boss group's highest level).
-- Item level makes **stat, power and damage bonuses** bigger: × `1 + 0.04 ×
-  (item level − 1)` (Lv1 ×1, Lv11 ×1.4, Lv26 ×2, Lv51 ×3). These are `hp`,
-  `attack`, `defense`, `speed`, `power`, `power:<type>`, `added:<type>`
-  and `super`. **Chances** (crit, act first, endure, status), regen, drain
-  and berry effects only grow with rarity.
+- Every range in `ITEMS`, `HATS` and the affixes is a **Lv50 Common**
+  item's (`items.FULL_LEVEL`). The item level scales it (`items.scale`):
+  - **stats, power, damage and crit** (`hp`, `attack`, `defense`,
+    `speed`, `power`, `power:<type>`, `added:<type>`, `super`, `crit`):
+    × level/50 (Lv5 ×0.1, Lv20 ×0.4, Lv50 ×1, Lv100 ×2);
+  - **chances and special effects** (`first`, `endure`, `status:*`,
+    `regen`, `drain`, berries' chances): × √(level/50) (Lv5 ×0.32, Lv20
+    ×0.63, Lv50 ×1, Lv100 ×1.41), so they still show early;
+  - **berry healing** (absolute HP): × (level + 5)/55 (Lv5 ×0.18, Lv20
+    ×0.45, Lv50 ×1);
+  - stages and switches (Liechi, Spicy, Early) don't scale.
 - **Special effects** (`first`, `endure`, `regen`, `drain`, `status:*`)
   don't use the rarity factor but their own, steeper ladder
   (`items.SPECIAL_FACTOR`): Common ×0.5, Uncommon ×0.75, Rare ×1.0, Epic
-  ×1.5, Legendary ×2.0; their ranges are what they are at Rare. Quick Claw
-  (act first 12…18%): Common 6…9%, Rare 12…18%, Legendary 24…36%.
+  ×1.5, Legendary ×2.0. Quick Claw (12…18%) at Lv50: Common 6…9%, Rare
+  12…18%, Legendary 24…36%.
 - **Endure** items (Focus Band, Halo) only drop at **Epic or better**
-  (`Item.min_rarity`): 9…12% at Epic, 12…16% at Legendary. Loot, enemies'
-  gear and quest rewards pick the rarity first, then an item that drops
-  at it.
-- **Older saves** (gear saved before these rules, `items.GEAR_VERSION`)
-  are brought up to them once, on loading (`items.updated_gear`): an
-  Endure item below Epic becomes another item for the same slot (same
-  rarity, level and affixes), and special effects are rescaled to the
-  special ladder.
+  (`Item.min_rarity`). Loot, enemies' gear and quest rewards pick the
+  rarity first, then an item that drops at it.
+- **Every bonus is priced by what it's worth**, so items of the same
+  level and rarity are about equally strong: Attack/Defense/HP 14–18%
+  is the yardstick; Speed (only turn order) 20–26%; flat move power
+  +6–8; one type's moves or added type damage 18–24%; Super effective
+  (only some hits) 40–50%; crit +16–20 points (a point is about +0.5%
+  damage); trade-off items (Power Bracer) 26–34% for a Speed penalty.
+  Affixes are about half an item's effect.
+- **Older saves** (gear saved under older rules, `items.GEAR_VERSION`)
+  are rolled again once, on loading (`items.updated_gear`): same item
+  (an Endure item below Epic becomes another of its slot), rarity, level
+  and affixes, new values.
 - So newer gear of a lower rarity can beat older gear of a higher one.
-  Muscle Band (Attack +8…12%) at its highest roll: Common Lv5 +14%, Rare
-  Lv10 +24%, Common Lv25 +24%, Uncommon Lv35 +35%, Epic Lv10 +33%.
+  Red Bandana (Attack +14…18%) at its highest roll: Common Lv5 +2%,
+  Common Lv25 +9%, Rare Lv25 +14%, Common Lv50 +18%, Legendary Lv50 +45%.
 
 ### Rolling a piece (`Gear.roll`)
 
 1. **The item's own effect** is rolled from its range (e.g. Red Bandana:
-   Attack +8…12%).
+   Attack +14…18% at Lv50).
 2. **Affixes:** Head, Held and Worn items get the number of affixes their
-   rarity gives (Common none). Berries get none. Affixes are picked by weight without
+   rarity gives (Common none), berries as many berry affixes. Affixes are picked by weight without
    repeats (normal affixes weight 3; Hasty, Draining and of the Chansey 2;
    type and status affixes 1).
 3. **Each value** is rolled as a whole number in its range, then:
    - a **bonus** (positive) is × the rarity factor (× the special factor
-     instead for a special effect, see above; and × the item-level factor
-     if it's a stat, power or damage bonus), rounded, min 1
-     (Python rounds .5 to the even number: 7.5 → 8, but 2.5 → 2);
-   - a **penalty** (negative, e.g. Power Bracer's Speed −10%) stays as it is.
+     instead for a special effect, see above) × its item-level scale,
+     rounded, min 1 (Python rounds .5 to the even number: 7.5 → 8, but
+     2.5 → 2);
+   - a **penalty** (negative, e.g. Power Bracer's Speed −10% at Lv50) is ×
+     the item-level scale only, rounded, at least −1.
 4. **Name:** the first prefix + item + the first suffix ("Fierce Red Bandana
    of the Aerodactyl"). Further affixes still count but aren't in the name.
 
@@ -486,8 +513,8 @@ two Attack rolls), and all rolls simply add up.
 | Epic (purple) | ×2.0 | 3–4 | not yet (late game) |
 | Legendary (orange) | ×2.5 | 4–5 | not yet (end game) |
 
-Example: Muscle Band (Attack +8…12%) at Legendary Lv1 rolls 8…12 × 2.5 =
-Attack +20…30%.
+Example: Muscle Band (Attack +14…18%) at Legendary Lv20 rolls 14…18 × 2.5
+× 0.4 = Attack +14…18%.
 
 ### What gear can do (mods)
 
@@ -504,26 +531,28 @@ Attack +20…30%.
 | `endure` | % chance to survive a knockout hit with 1 HP |
 | `regen` | % of max HP healed at the end of each round |
 | `drain` | % of damage dealt healed |
-| `berry_heal` / `berry_attack` | berry effects (see *Berries*) |
+| `berry_*` | berry effects and berry affixes (see *Berries*) |
 
 ### Affixes
 
-Values at Common (before the rarity factor).
+Values at Lv50 Common (before the rarity factor and item level).
 
 | Prefix | Mods | | Suffix | Mods |
 | --- | --- | --- | --- | --- |
-| Fierce | Attack +4…8% | | of the Machamp | Attack +4…8% |
-| Sturdy | Defense +4…8% | | of the Onix | Defense +5…10% |
-| Swift | Speed +4…8% | | of the Pidgeot | Speed +5…10% |
-| Hearty | HP +4…8% | | of the Snorlax | HP +5…10% |
-| Keen | Crit +2…4 | | of the Tauros | Attack +2…5%, Speed +2…5% |
-| Mighty | Power +3…6 | | of the Golem | Defense +2…5%, HP +2…5% |
-| Hasty | First 3…6% | | of the Scyther | Crit +1…3, Attack +2…4% |
-| Draining | Drain 3…6% | | of the Hitmonlee | Power +2…4, Speed +2…4% |
-| Blazing, Drenching, … (14 types, not Normal) | Added type damage 3…6% | | of the Chansey | Regen 2…3% |
-| | | | of the Moltres, of the Gyarados, … (15 types) | Type power +5…10% |
+| Fierce | Attack +7…9% | | of the Machamp | Attack +7…9% |
+| Sturdy | Defense +7…9% | | of the Onix | Defense +7…9% |
+| Swift | Speed +10…13% | | of the Pidgeot | Speed +10…13% |
+| Hearty | HP +7…9% | | of the Snorlax | HP +7…9% |
+| Keen | Crit +8…10 | | of the Tauros | Attack +4…5%, Speed +5…6% |
+| Mighty | Power +3…4 | | of the Golem | Defense +4…5%, HP +4…5% |
+| Hasty | First 3…6% | | of the Scyther | Crit +4…5, Attack +4…5% |
+| Draining | Drain 3…6% | | of the Hitmonlee | Power +2, Speed +5…6% |
+| Blazing, Drenching, … (14 types, not Normal) | Added type damage 9…12% | | of the Chansey | Regen 2…3% |
+| | | | of the Moltres, of the Gyarados, … (15 types) | Type power +9…12% |
 | | | | of the Magmar / Muk / Pikachu | Burn / poison / paralysis chance 5…10% |
 | | | | of the Hypno / Jynx | Sleep / freeze chance 3…6% |
+
+Berries roll their own affixes (see *Berries*).
 
 Item stats are listed in `ITEMS` and `HATS` in `items.py`.
 

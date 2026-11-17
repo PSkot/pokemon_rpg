@@ -41,7 +41,7 @@ class Game:
         medicines."""
         party = [Monster.create(starter, 5)]
         bag = Bag()
-        party[0].equip(Gear.roll("Oran Berry", "Common"))
+        party[0].equip(Gear.roll("Oran Berry", "Common", level=5))
         for name, count in [("Potion", 3), ("Super Potion", 1), ("Revive", 1), ("Antidote", 2),
                             ("Paralyze Heal", 1), ("Full Heal", 1)]:
             bag.add_medicine(name, count)

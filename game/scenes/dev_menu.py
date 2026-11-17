@@ -11,8 +11,8 @@ import pygame
 
 from .. import settings
 from ..engine import ui
-from ..mechanics.items import (AFFIX_BY_NAME, AFFIX_SLOTS, AFFIXES, ITEMS, MEDICINE, RARITIES, SLOT_NAMES, SLOTS,
-                               Bag, Gear, Roll, level_factor, mod_text)
+from ..mechanics.items import (AFFIX_BY_NAME, ITEMS, MEDICINE, RARITIES, SLOT_NAMES, SLOTS,
+                               Bag, Gear, Roll, affixes_for, level_factor, mod_text)
 
 PAD = 9
 ROW_H = 19
@@ -110,7 +110,7 @@ class ItemMaker:
         rows = ["item"]
         if self.is_gear:
             rows += ["rarity", "level"]
-            if ITEMS[self.item].slot in AFFIX_SLOTS:
+            if affixes_for(ITEMS[self.item].slot):
                 rows += [f"affix{i}" for i in range(min(len(self.affixes) + 1, MAX_AFFIXES))]
             rows.append("values")
         else:
@@ -170,8 +170,8 @@ class ItemMaker:
         row = row or self.picking
         if row == "item":
             self.item = value
-            if not self.is_gear or ITEMS[self.item].slot not in AFFIX_SLOTS:
-                self.affixes = []
+            allowed = {a.name for a in affixes_for(ITEMS[self.item].slot)} if self.is_gear else set()
+            self.affixes = [a for a in self.affixes if a in allowed]
         else:
             i = int(row[5:])
             if value is None:
@@ -192,7 +192,7 @@ class ItemMaker:
         taken = set(self.affixes) - ({self.affixes[row]} if row < len(self.affixes) else set())
         return [(None, "(none)", ui.GREY, "")] + [
             (a.name, a.name, ui.WHITE, ("Prefix   " if a.prefix else "Suffix   ") + _mods_text(a.mods))
-            for a in AFFIXES if a.name not in taken]
+            for a in affixes_for(ITEMS[self.item].slot) if a.name not in taken]
 
     def _make(self) -> None:
         if not self.is_gear:
@@ -239,7 +239,7 @@ class ItemMaker:
             elif row == "level":
                 ui.text(window, "Level", (left, y), color)
                 ui.text(window, f"< Lv{self.level} >", (value_x, y))
-                ui.text(window, f"stat/damage bonuses ×{level_factor(self.level):.2f}   PgUp/PgDn: ±10",
+                ui.text(window, f"bonuses ×{level_factor(self.level):.2f} of Lv50's   PgUp/PgDn: ±10",
                         (right, y + 2), ui.GREY, size=22, align="right")
             elif row.startswith("affix"):
                 n = int(row[5:])

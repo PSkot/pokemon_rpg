@@ -6,9 +6,13 @@ rolled when it drops: its item's own effect plus a number of random
 affixes (prefixes and suffixes, which also name it: "Fierce Red Bandana of
 the Aerodactyl"). Its rarity decides how many affixes it gets and multiplies
 every rolled bonus (penalties stay as they are). Its item level is the
-level needed to equip it, and makes stat, power and damage bonuses bigger
-(`level_factor`), so newer gear of a lower rarity can beat older gear of a
-higher one. Hats (the head slot) are drawn on the Pokémon wearing them
+level needed to equip it, and sets how strong it is (`scale`): the ranges
+below are a Lv50 Common item's, and lower levels get a share of them, so
+early gear is mild and newer gear of a lower rarity can beat older gear of
+a higher one. Every kind of bonus is priced by what it's worth (a bonus
+that only works sometimes, like Super effective, gets bigger numbers).
+Berries are eaten once per battle (or more, with Seedy) and roll berry
+affixes (`BERRY_AFFIXES`) instead of gear's. Hats (the head slot) are drawn on the Pokémon wearing them
 (see hats.py).
 """
 
@@ -45,10 +49,18 @@ MOD_TEXT = {
     "super": "Super effective {:+d}%",   # more damage on super effective hits
     "regen": "Regen {:d}% HP/round",
     "drain": "Drain {:d}% of damage",    # heals by this share of damage dealt
-    # Berries, eaten once per battle:
-    "berry_heal": "Heals {:d}% at half HP",
-    "berry_attack": "Attack +{:d} at 1/4 HP",
+    # Berries, eaten (at most) once per battle; HP amounts are absolute, like potions':
+    "berry_heal": "Heals {:d} HP when low",
+    "berry_attack": "Attack +{:d} when low",
+    "berry_cure": "{:d}% a round to cure",
+    "berry_juicy": "Also heals {:d} HP",
+    "berry_lum": "{:d}% to cure any status",
+    "berry_regen": "+{:d} HP a round, 3 rounds",
+    "berry_seed": "{:d}% not used up",
+    "berry_early": "Eaten sooner",
 }
+for _stat in ("attack", "defense", "speed"):
+    MOD_TEXT[f"berry_stage:{_stat}"] = f"Also {STAT_NAMES[_stat]} +{{:d}} stage"
 for _t in TYPES:
     MOD_TEXT[f"power:{_t}"] = f"{type_chart.name(_t)} moves {{:+d}}%"
     MOD_TEXT[f"added:{_t}"] = f"Adds {{:d}}% {type_chart.name(_t)}"
@@ -57,7 +69,7 @@ for _s in STATUSES.values():
 
 SLOTS = ("head", "held", "worn", "berry")
 SLOT_NAMES = {"head": "Head", "held": "Held", "worn": "Worn", "berry": "Berry"}
-AFFIX_SLOTS = ("head", "held", "worn")  # berries only have their own effect
+AFFIX_SLOTS = ("head", "held", "worn")  # gear affixes; berries roll berry affixes
 
 Range = tuple[int, int]  # a roll's lowest and highest value, at Common
 
@@ -80,29 +92,48 @@ RARITY_ORDER = list(RARITIES)
 
 # Special effects (rather than plain stat bonuses) are weak on everyday gear
 # and come into their own on rare gear: instead of the rarity's factor they
-# take these. Their ranges below are what they are at Rare.
+# take these.
 SPECIAL_MODS = ("first", "endure", "regen", "drain")  # and status:<status>
+# Berries' chances: they grow gently with level, like special effects, but
+# take the rarity's factor.
+BERRY_CHANCES = ("berry_cure", "berry_lum", "berry_seed")
 SPECIAL_FACTOR = {"Common": 0.5, "Uncommon": 0.75, "Rare": 1.0, "Epic": 1.5, "Legendary": 2.0}
+HEAL_MODS = ("berry_heal", "berry_juicy", "berry_regen")  # absolute HP
+# Counts that don't scale (stages, a switch). Liechi's stage: +1 more from Epic up.
+FIXED_MODS = ("berry_attack", "berry_early")  # and berry_stage:<stat>
+EPIC_STAGE = ("Epic", "Legendary")
 
 
 def _special(mod: str) -> bool:
     return mod in SPECIAL_MODS or mod.startswith("status:")
 
-# Item level: bonuses to stats, move power and damage grow by this much
-# per level above 1 (`level_factor`). Chances (act first, endure, status,
-# crit), regen, drain and berry effects only grow with rarity (the special
-# ones on their own ladder, SPECIAL_FACTOR).
-LEVEL_GROWTH = 0.04
-LEVEL_SCALED = {"hp", "attack", "defense", "speed", "power", "super"}  # and power:<type>, added:<type>
+
+def _fixed(mod: str) -> bool:
+    return mod in FIXED_MODS or mod.startswith("berry_stage:")
+
+
+# Item level: the ranges are a Lv50 Common item's (`FULL_LEVEL`). Stats,
+# power, damage and crit grow in step with the level (Lv5: a tenth);
+# chances and other special effects more gently, so they still show early
+# (Lv5: about a third); healing berries by HP, like potions (Lv5: a fifth).
+FULL_LEVEL = 50
+
+
+def scale(mod: str, level: int) -> float:
+    """How much item level `level` multiplies `mod`'s range."""
+    level = max(1, level)
+    if _fixed(mod):
+        return 1.0
+    if mod in HEAL_MODS:
+        return (level + 5) / (FULL_LEVEL + 5)
+    if _special(mod) or mod in BERRY_CHANCES:
+        return math.sqrt(level / FULL_LEVEL)
+    return level / FULL_LEVEL
 
 
 def level_factor(level: int) -> float:
-    """How much an item level multiplies the bonuses it scales: Lv1 ×1, Lv26 ×2, Lv51 ×3."""
-    return 1 + LEVEL_GROWTH * (max(1, level) - 1)
-
-
-def _level_scaled(mod: str) -> bool:
-    return mod in LEVEL_SCALED or mod.startswith(("power:", "added:"))
+    """How much item level `level` multiplies stat and damage bonuses (Lv50: ×1)."""
+    return scale("attack", level)
 
 
 @dataclass(frozen=True)
@@ -139,30 +170,30 @@ TYPE_ITEMS = {  # type -> (held item that powers up its moves, description)
 
 # Hats: (cell in the hat sheet, name, description, own effect).
 HATS = [
-    (16, "Wizard Hat", "A tall, pointed hat full of arcane power.", {"power": (3, 5)}),
+    (16, "Wizard Hat", "A tall, pointed hat full of arcane power.", {"power": (6, 8)}),
     (17, "Witch Hat", "Its buckle glints with a sleepy hex.", {"status:sleep": (4, 7)}),
-    (19, "Starry Hat", "Stitched with stars that point out weak spots.", {"crit": (3, 5)}),
+    (19, "Starry Hat", "Stitched with stars that point out weak spots.", {"crit": (16, 20)}),
     (20, "Nightcap", "A cosy cap. Its wearer rests even in battle.", {"regen": (3, 5)}),
-    (24, "Mitre", "A tall ceremonial hat that steadies the spirit.", {"hp": (8, 12)}),
-    (26, "Crown", "A crown fit for a champion.", {"attack": (5, 8), "defense": (5, 8)}),
+    (24, "Mitre", "A tall ceremonial hat that steadies the spirit.", {"hp": (12, 15), "regen": (1, 1)}),
+    (26, "Crown", "A crown fit for a champion.", {"attack": (7, 9), "defense": (7, 9)}),
     (27, "Halo", "A glowing ring. Its wearer may hang on with 1 HP.", {"endure": (6, 8)}),
-    (28, "Tiara", "A jewelled tiara, light and graceful.", {"hp": (5, 8), "speed": (5, 8)}),
-    (29, "Turban", "Thick folds of cloth that soften blows.", {"defense": (8, 12)}),
-    (31, "Mortarboard", "A scholar's cap. Its wearer knows every weakness.", {"super": (10, 15)}),
-    (32, "Archer's Cap", "A feathered cap for sharp-eyed hunters.", {"crit": (2, 4), "speed": (4, 6)}),
-    (36, "Headband", "A plain headband tied tight for focus.", {"attack": (4, 6), "speed": (4, 6)}),
+    (28, "Tiara", "A jewelled tiara, light and graceful.", {"hp": (7, 9), "speed": (10, 13)}),
+    (29, "Turban", "Thick folds of cloth that soften blows.", {"defense": (14, 18)}),
+    (31, "Mortarboard", "A scholar's cap. Its wearer knows every weakness.", {"super": (40, 50)}),
+    (32, "Archer's Cap", "A feathered cap for sharp-eyed hunters.", {"crit": (8, 10), "speed": (10, 13)}),
+    (36, "Headband", "A plain headband tied tight for focus.", {"attack": (7, 9), "speed": (10, 13)}),
     (37, "Tricorne", "A buccaneer's hat. Takes a share of every hit.", {"drain": (6, 10)}),
-    (38, "Blue Bandana", "A light bandana for quick getaways.", {"speed": (8, 12)}),
+    (38, "Blue Bandana", "A light bandana for quick getaways.", {"speed": (20, 26)}),
     (39, "Officer's Cap", "Its wearer is always first to act.", {"first": (8, 12)}),
     (40, "Jester's Cap", "Its jingling bells can leave foes stunned.", {"status:paralysis": (5, 8)}),
-    (41, "Pirate Hat", "A captain's hat. Bold and ruthless.", {"attack": (6, 10), "crit": (1, 3)}),
-    (42, "Red Bandana", "A fiery bandana that boosts strength.", {"attack": (8, 12)}),
-    (43, "Plumed Hat", "A dashing, feathered hat.", {"speed": (6, 10), "crit": (1, 2)}),
-    (45, "Straw Hat", "A wide hat that keeps its wearer going.", {"hp": (10, 15)}),
-    (56, "Visor Helmet", "A sturdy helmet. Tough, but heavy.", {"defense": (16, 24), "speed": (-8, -8)}),
-    (61, "Alpine Hat", "A warm hat for long climbs.", {"hp": (5, 8), "defense": (5, 8)}),
-    (62, "Fez", "A smart hat with a tassel. It sharpens the aim.", {"power": (2, 4), "crit": (1, 2)}),
-    (63, "Sultan's Turban", "A grand turban with a healing jewel.", {"hp": (6, 10), "regen": (2, 3)}),
+    (41, "Pirate Hat", "A captain's hat. Bold and ruthless.", {"attack": (10, 12), "crit": (5, 6)}),
+    (42, "Red Bandana", "A fiery bandana that boosts strength.", {"attack": (14, 18)}),
+    (43, "Plumed Hat", "A dashing, feathered hat.", {"speed": (14, 18), "crit": (5, 6)}),
+    (45, "Straw Hat", "A wide hat that keeps its wearer going.", {"hp": (14, 18)}),
+    (56, "Visor Helmet", "A sturdy helmet. Tough, but heavy.", {"defense": (26, 34), "speed": (-10, -10)}),
+    (61, "Alpine Hat", "A warm hat for long climbs.", {"hp": (7, 9), "defense": (7, 9)}),
+    (62, "Fez", "A smart hat with a tassel. It sharpens the aim.", {"power": (3, 4), "crit": (8, 10)}),
+    (63, "Sultan's Turban", "A grand turban with a healing jewel.", {"hp": (9, 11), "regen": (2, 3)}),
 ]
 
 ITEMS = {i.name: i for i in [
@@ -170,30 +201,31 @@ ITEMS = {i.name: i for i in [
     *(Item(name, "head", description, mods, sprite=cell, min_rarity="Epic" if "endure" in mods else "Common")
       for cell, name, description, mods in HATS),
     # Held: type items and battle tools.
-    *(Item(name, "held", f"{description} Powers up {type_chart.name(t)} moves.", {f"power:{t}": (10, 15)})
+    *(Item(name, "held", f"{description} Powers up {type_chart.name(t)} moves.", {f"power:{t}": (18, 24)})
       for t, (name, description) in TYPE_ITEMS.items()),
     Item("Quick Claw", "held", "A light, sharp claw. Its holder may move first.", {"first": (12, 18)}),
     Item("Leftovers", "held", "Restores a little HP every round.", {"regen": (4, 6)}),
     Item("Shell Bell", "held", "Restores HP when its holder deals damage.", {"drain": (8, 12)}),
-    Item("Scope Lens", "held", "A lens that spots weak points.", {"crit": (4, 6)}),
+    Item("Scope Lens", "held", "A lens that spots weak points.", {"crit": (16, 20)}),
     # Worn: bands, belts and vests.
-    Item("Muscle Band", "worn", "A headband that boosts strength.", {"attack": (8, 12)}),
-    Item("Assault Vest", "worn", "A sturdy vest for the front line.", {"defense": (12, 18)}),
-    Item("Choice Scarf", "worn", "A scarf that makes its wearer quicker.", {"speed": (12, 18)}),
+    Item("Muscle Band", "worn", "A headband that boosts strength.", {"attack": (14, 18)}),
+    Item("Assault Vest", "worn", "A sturdy vest for the front line.", {"defense": (14, 18)}),
+    Item("Choice Scarf", "worn", "A scarf that makes its wearer quicker.", {"speed": (20, 26)}),
     Item("Focus Band", "worn", "Its wearer may hang on with 1 HP after a knockout hit.", {"endure": (6, 8)},
          min_rarity="Epic"),
-    Item("Expert Belt", "worn", "Powers up super effective moves.", {"super": (12, 18)}),
-    Item("Power Bracer", "worn", "A heavy bracer. Strong, but slow.", {"attack": (16, 24), "speed": (-10, -10)}),
-    Item("Power Belt", "worn", "A heavy belt. Tough, but slow.", {"defense": (16, 24), "speed": (-10, -10)}),
-    # Berries: eaten (at most) once per battle, when they're needed.
-    Item("Oran Berry", "berry", "Restores HP when its holder is at half HP or less.", {"berry_heal": (20, 25)}),
+    Item("Expert Belt", "worn", "Powers up super effective moves.", {"super": (40, 50)}),
+    Item("Power Bracer", "worn", "A heavy bracer. Strong, but slow.", {"attack": (26, 34), "speed": (-10, -10)}),
+    Item("Power Belt", "worn", "A heavy belt. Tough, but slow.", {"defense": (26, 34), "speed": (-10, -10)}),
+    # Berries: eaten (at most) once per battle, when they're needed. Cure
+    # berries get a chance every round their holder has the status.
+    Item("Oran Berry", "berry", "Restores HP when its holder is at half HP or less.", {"berry_heal": (20, 24)}),
     Item("Liechi Berry", "berry", "Raises Attack when its holder is at 1/4 HP or less.", {"berry_attack": (1, 1)}),
-    Item("Pecha Berry", "berry", "Cures poison.", cures=("poison",)),
-    Item("Rawst Berry", "berry", "Heals a burn.", cures=("burn",)),
-    Item("Cheri Berry", "berry", "Cures paralysis.", cures=("paralysis",)),
-    Item("Chesto Berry", "berry", "Wakes its holder up.", cures=("sleep",)),
-    Item("Aspear Berry", "berry", "Thaws its holder out.", cures=("freeze",)),
-    Item("Lum Berry", "berry", "Cures any status.", cures=tuple(STATUSES)),
+    Item("Pecha Berry", "berry", "May cure poison.", {"berry_cure": (30, 40)}, cures=("poison",)),
+    Item("Rawst Berry", "berry", "May heal a burn.", {"berry_cure": (30, 40)}, cures=("burn",)),
+    Item("Cheri Berry", "berry", "May cure paralysis.", {"berry_cure": (30, 40)}, cures=("paralysis",)),
+    Item("Chesto Berry", "berry", "May wake its holder up.", {"berry_cure": (30, 40)}, cures=("sleep",)),
+    Item("Aspear Berry", "berry", "May thaw its holder out.", {"berry_cure": (30, 40)}, cures=("freeze",)),
+    Item("Lum Berry", "berry", "May cure any status.", {"berry_cure": (15, 20)}, cures=tuple(STATUSES)),
 ]}
 
 
@@ -236,38 +268,58 @@ STATUS_AFFIXES = {
     "freeze": ("of the Jynx", (3, 6)),
 }
 
-AFFIXES = [
-    Affix("Fierce", True, {"attack": (4, 8)}),
-    Affix("Sturdy", True, {"defense": (4, 8)}),
-    Affix("Swift", True, {"speed": (4, 8)}),
-    Affix("Hearty", True, {"hp": (4, 8)}),
-    Affix("Keen", True, {"crit": (2, 4)}),
-    Affix("Mighty", True, {"power": (3, 6)}),
+AFFIXES = [  # about half an item's own effect
+    Affix("Fierce", True, {"attack": (7, 9)}),
+    Affix("Sturdy", True, {"defense": (7, 9)}),
+    Affix("Swift", True, {"speed": (10, 13)}),
+    Affix("Hearty", True, {"hp": (7, 9)}),
+    Affix("Keen", True, {"crit": (8, 10)}),
+    Affix("Mighty", True, {"power": (3, 4)}),
     Affix("Hasty", True, {"first": (3, 6)}, weight=2),
     Affix("Draining", True, {"drain": (3, 6)}, weight=2),
-    Affix("of the Machamp", False, {"attack": (4, 8)}),
-    Affix("of the Onix", False, {"defense": (5, 10)}),
-    Affix("of the Pidgeot", False, {"speed": (5, 10)}),
-    Affix("of the Snorlax", False, {"hp": (5, 10)}),
-    Affix("of the Tauros", False, {"attack": (2, 5), "speed": (2, 5)}),
-    Affix("of the Golem", False, {"defense": (2, 5), "hp": (2, 5)}),
-    Affix("of the Scyther", False, {"crit": (1, 3), "attack": (2, 4)}),
-    Affix("of the Hitmonlee", False, {"power": (2, 4), "speed": (2, 4)}),
+    Affix("of the Machamp", False, {"attack": (7, 9)}),
+    Affix("of the Onix", False, {"defense": (7, 9)}),
+    Affix("of the Pidgeot", False, {"speed": (10, 13)}),
+    Affix("of the Snorlax", False, {"hp": (7, 9)}),
+    Affix("of the Tauros", False, {"attack": (4, 5), "speed": (5, 6)}),
+    Affix("of the Golem", False, {"defense": (4, 5), "hp": (4, 5)}),
+    Affix("of the Scyther", False, {"crit": (4, 5), "attack": (4, 5)}),
+    Affix("of the Hitmonlee", False, {"power": (2, 2), "speed": (5, 6)}),
     Affix("of the Chansey", False, {"regen": (2, 3)}, weight=2),
-    *(Affix(prefix, True, {f"added:{t}": (3, 6)}, weight=1)
+    *(Affix(prefix, True, {f"added:{t}": (9, 12)}, weight=1)
       for t, (prefix, _) in TYPE_AFFIXES.items() if prefix),
-    *(Affix(suffix, False, {f"power:{t}": (5, 10)}, weight=1)
+    *(Affix(suffix, False, {f"power:{t}": (9, 12)}, weight=1)
       for t, (_, suffix) in TYPE_AFFIXES.items()),
     *(Affix(suffix, False, {f"status:{s}": chance}, weight=1)
       for s, (suffix, chance) in STATUS_AFFIXES.items()),
 ]
-AFFIX_BY_NAME = {a.name: a for a in AFFIXES}
+
+# Berries' affixes: extra effects when the berry is eaten (more of them on
+# rarer berries, as gear's).
+BERRY_AFFIXES = [
+    Affix("Juicy", True, {"berry_juicy": (10, 12)}),
+    Affix("Bitter", True, {"berry_lum": (30, 40)}),
+    Affix("Spicy", True, {"berry_stage:attack": (1, 1)}),
+    Affix("Dry", True, {"berry_stage:defense": (1, 1)}),
+    Affix("Sweet", True, {"berry_stage:speed": (1, 1)}),
+    Affix("of the Vileplume", False, {"berry_regen": (5, 6)}),
+    Affix("of the Exeggcute", False, {"berry_seed": (20, 30)}, weight=2),
+    Affix("of the Jolteon", False, {"berry_early": (1, 1)}),
+]
 
 
-def _pick_affixes(count: int, rng: random.Random) -> list[Affix]:
-    """`count` different affixes, picked by weight."""
-    pool, picked = list(AFFIXES), []
-    for _ in range(count):
+def affixes_for(slot: str) -> list[Affix]:
+    """The affixes gear of `slot` can roll."""
+    return BERRY_AFFIXES if slot == "berry" else AFFIXES if slot in AFFIX_SLOTS else []
+
+
+AFFIX_BY_NAME = {a.name: a for a in AFFIXES + BERRY_AFFIXES}
+
+
+def _pick_affixes(count: int, rng: random.Random, pool: list[Affix] | None = None) -> list[Affix]:
+    """`count` different affixes of `pool` (gear's), picked by weight."""
+    pool, picked = list(AFFIXES if pool is None else pool), []
+    for _ in range(min(count, len(pool))):
         affix = rng.choices(pool, weights=[a.weight for a in pool])[0]
         pool.remove(affix)
         picked.append(affix)
@@ -277,17 +329,18 @@ def _pick_affixes(count: int, rng: random.Random) -> list[Affix]:
 def _roll(mods: dict[str, Range], rarity: Rarity, level: int, rng: random.Random,
           values: str = "random") -> dict[str, int]:
     """Roll each mod's value in its range ("min"/"max" values: the lowest or
-    highest instead), then apply the rarity and (to the mods it scales) the
-    item level. Penalties stay as they are."""
+    highest instead), then apply the item level (`scale`) and the rarity
+    (special effects: `SPECIAL_FACTOR`). Penalties only follow the level."""
     rolled = {}
     for mod, (low, high) in mods.items():
         value = low if values == "min" else high if values == "max" else rng.randint(low, high)
-        if value > 0:
-            if _special(mod):
-                factor = SPECIAL_FACTOR[rarity.name]
-            else:
-                factor = rarity.factor * (level_factor(level) if _level_scaled(mod) else 1)
-            value = max(1, round(value * factor))
+        if _fixed(mod):
+            value += 1 if mod == "berry_attack" and rarity.name in EPIC_STAGE else 0
+        elif value > 0:
+            factor = SPECIAL_FACTOR[rarity.name] if _special(mod) else rarity.factor
+            value = max(1, round(value * factor * scale(mod, level)))
+        else:
+            value = min(-1, round(value * scale(mod, level)))
         rolled[mod] = value
     return rolled
 
@@ -321,8 +374,8 @@ class Gear:
         rolls = [Roll(None, _roll(item_.mods, rarity_, level, rng, values))] if item_.mods else []
         if affixes is not None:
             picked = [AFFIX_BY_NAME[name] for name in affixes]
-        elif item_.slot in AFFIX_SLOTS:
-            picked = _pick_affixes(rng.randint(*rarity_.affixes), rng)
+        elif affixes_for(item_.slot):
+            picked = _pick_affixes(rng.randint(*rarity_.affixes), rng, affixes_for(item_.slot))
         else:
             picked = []
         for affix in picked:
@@ -452,25 +505,21 @@ def money_text(amount: int) -> str:
     return f"₽{amount:,}"
 
 
-GEAR_VERSION = 2  # saved gear from before version 2 had special effects at full strength on any rarity
+GEAR_VERSION = 3  # saved gear from before version 3 was rolled under older rules
 
 
 def updated_gear(gear: Gear, rng: random.Random | None = None) -> Gear:
-    """Gear rolled before version 2, brought up to its rules: an item that
-    can't drop at its rarity any more (Endure below Epic) becomes another of
-    the same slot (same rarity, level and affixes), and special effects are
-    scaled to SPECIAL_FACTOR instead of the rarity's factor."""
+    """Gear rolled under older rules, rolled again under today's: the same
+    item (or, if it can't drop at its rarity any more, e.g. Endure below
+    Epic, another of the same slot), rarity, level and affixes, with new
+    values."""
     rng = rng or random.Random()
-    item, rolls = gear.item, list(gear.rolls)
+    item = gear.item
     if not item.drops_at(gear.rarity.name):
-        item = ITEMS[rng.choice([n for n, i in ITEMS.items()
-                                 if i.slot == item.slot and i.drops_at(gear.rarity.name)])]
-        own = [Roll(None, _roll(item.mods, gear.rarity, gear.level, rng))] if item.mods else []
-        rolls = own + [r for r in rolls if r.affix]
-    special = SPECIAL_FACTOR[gear.rarity.name] / gear.rarity.factor
-    rolls = [Roll(r.affix, {m: max(1, round(v * special)) if _special(m) and v > 0 else v for m, v in r.mods.items()})
-             for r in rolls]
-    return Gear(item, gear.rarity, rolls, gear.level)
+        item = ITEMS[rng.choice([n for n, i in ITEMS.items() if i.slot == item.slot and i.drops_at(gear.rarity.name)])]
+    names = {a.name for a in affixes_for(item.slot)}
+    affixes = [r.affix.name for r in gear.rolls if r.affix and r.affix.name in names]
+    return Gear.roll(item.name, gear.rarity.name, rng, affixes=affixes, level=gear.level)
 
 
 @dataclass
