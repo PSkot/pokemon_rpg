@@ -216,8 +216,10 @@ ROUTES = {r.key: r for r in [
                                     "fresh talent. Pity you said no."),),
           boss_after=("nugget_rocket", (("oddish", 22), ("bellsprout", 22), ("abra", 21))),
           trainers=(
-              Trainer("nugget_rival", "Rival", (("pidgeotto", 21), ("abra", 20), ("rattata", 19),
-                                                (RIVAL_STARTER_EVOLVED, 22)), 0, 50,
+              # (Gen 1's team a couple of levels up; tuned with tools/balance_sim.py:
+              # all four attack at once, against the player's two)
+              Trainer("nugget_rival", "Rival", (("pidgeotto", 19), ("abra", 16), ("rattata", 16),
+                                                (RIVAL_STARTER_EVOLVED, 20)), 0, 50,
                       first=True, blocks=True, boss_loot=True),
               Trainer("nugget_1", "Bridge Crawlers", (("caterpie", 20), ("weedle", 20), ("metapod", 20)), 0, 10),
               Trainer("nugget_2", "Bridge Flock", (("pidgey", 20), ("nidoran_f", 20)), 0, 15),
@@ -229,9 +231,11 @@ ROUTES = {r.key: r for r in [
     # Crew's two waves of Water Pokémon, then the crew itself, led by a
     # Starmie (Gen 1's Misty's team, Staryu and Starmie).
     Route("cerulean_gym", "Cerulean Gym", CERULEAN_GYM, maps=1, towns=("cerulean", "cerulean"), boss=True,
-          boss_group=(("starmie", 25), ("staryu", 22)), trainer="Cascade Crew", boss_chest="fancy", prize=99,
-          waves=(Wave("Cascade Crew Swimmers", (("goldeen", 21), ("psyduck", 21)), 30),
-                 Wave("Cascade Crew Divers", (("horsea", 22), ("shellder", 22)), 30)),
+          # (Misty's Staryu 18 and Starmie 21, a little up; the waves come first,
+          # without healing; tuned with tools/balance_sim.py)
+          boss_group=(("starmie", 22), ("staryu", 19)), trainer="Cascade Crew", boss_chest="fancy", prize=99,
+          waves=(Wave("Cascade Crew Swimmers", (("goldeen", 18), ("psyduck", 18)), 30),
+                 Wave("Cascade Crew Divers", (("horsea", 19), ("shellder", 19)), 30)),
           wild=False, building="Cerulean Gym", cols=44,
           needs=("cascade_badge", "not_done"),
           blocked="Starmie: Hyah! You already have the Cascade Badge. Show it off somewhere else!"),

@@ -229,12 +229,12 @@ yet.
   (`Quest.starts_in`); it can be done before or after quests 7–8.
 - **Steps:** defeat the **Cascade Crew** (Water types led by a Starmie)
   at the end of the Cerulean Gym (Up at the gym building), the third of
-  three waves (Goldeen 21 and Psyduck 21; Horsea 22 and Shellder 22;
-  Starmie 25 and Staryu 22), fought by the Pokémon the player picks.
+  three waves (Goldeen 18 and Psyduck 18; Horsea 19 and Shellder 19;
+  Starmie 22 and Staryu 19), fought by the Pokémon the player picks.
   Starmie: "Hyah... Hyah! You really are strong. Here, the Cascade
   Badge!" (key item).
 - **Rewards:** ₽900, 800 XP, 2 Hyper Potions and a **Rare** gear piece
-  (item level 21), on top of the crew's prize money (₽1,089) and the gym's
+  (item level 21), on top of the crew's prize money (₽940) and the gym's
   fancy chest.
 - **Unlocks:** nothing yet (in Red/Blue the badge lets you use Cut).
 
@@ -243,8 +243,8 @@ yet.
 - **Starts:** automatically when quest 6 is done.
 - **Steps:** beat the **rival**, who waits at the start of **Nugget
   Bridge** (Route 24, Cerulean's east doorway), as in Red/Blue: Pidgeotto
-  21, Abra 20, Rattata 19 and his starter's next form (Charmeleon,
-  Wartortle or Ivysaur) at 22. He stands at the bridge's first spot and
+  19, Abra 16, Rattata 16 and his starter's next form (Charmeleon,
+  Wartortle or Ivysaur) at 20. He stands at the bridge's first spot and
   can't be got past (`Trainer.blocks`); beaten once for good
   (`Trainer.first`, key `nugget_rival`, the step's target).
 - **The rest of the bridge:** the five trainer bands, then at the far end

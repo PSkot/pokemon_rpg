@@ -849,12 +849,13 @@ Moon's exit down to Cerulean City; the stop is a town, "route_4"; Route
 | Sandshrew | 20 | 16–20 |
 
 **Nugget Bridge** (`Route` "nugget_bridge", Route 24: 2 maps from Cerulean
-City up to the Route 24 stop, a town; map 1 is the bridge with five
-trainer bands, map 2 has a Rocket and ends in the **rival** (Pidgeotto 21,
-Abra 20, Rattata 19 and his starter's next form at 22,
-`RIVAL_STARTER_EVOLVED`; a reward roll with the battle). Once quest
-"rival_cerulean" is done the arena holds Oddish 22, Bellsprout 22 and
-Abra 21 instead (wild). Oddish from Red, Bellsprout from Blue:
+City up to the Route 24 stop, a town), as in Red/Blue: the **rival** waits
+at the bridge's start (Pidgeotto 19, Abra 16, Rattata 16 and his starter's
+next form at 20, `RIVAL_STARTER_EVOLVED`: Gen 1's team a couple of levels
+up, as all four attack at once; a reward roll with the battle), then the
+five trainer bands, and the arena at the far end holds a **Rocket** (Ekans
+23, Zubat 22) who gives the Nugget. Once he's beaten the arena holds
+Oddish 22, Bellsprout 22 and Abra 21 instead (wild). Oddish from Red, Bellsprout from Blue:
 
 | Species | Weight | Levels |
 | --- | --- | --- |
@@ -911,17 +912,19 @@ Once it's done the gym stays shut ("You already have the Boulder Badge").
 
 **The Cerulean Gym** (`Route` "cerulean_gym", the same way: an indoor pool
 hall, drawn in code with a painted far wall; puddles on the tiles): the
-**Cascade Crew**'s two waves, then the crew itself (Starmie Lv25, Staryu
-Lv22: Misty's team in Gen 1, four levels up; the Starmie leads it); beating it finishes
+**Cascade Crew**'s two waves, then the crew itself (Starmie Lv22, Staryu
+Lv19: Misty's team in Gen 1, a level up; the Starmie leads it; tuned with
+`tools/balance_sim.py` so that a Lv21/20 party wins about 78%, a
+Charmander, Fire against Water, about 40%); beating it finishes
 the Cascade Badge quest, and the gym then stays shut. Starmie evolves by
 Water Stone (not in yet); `pokemon.LATER_FORMS` gives it Staryu's moves
 and talents, at stage 1.
 
 | Wave | Band | Team | Prize |
 | --- | --- | --- | --- |
-| 1 | Cascade Crew Swimmers | Goldeen 21, Psyduck 21 | ₽315 |
-| 2 | Cascade Crew Divers | Horsea 22, Shellder 22 | ₽330 |
-| 3 | Cascade Crew | Starmie 25, Staryu 22 | ₽1089 |
+| 1 | Cascade Crew Swimmers | Goldeen 18, Psyduck 18 | ₽270 |
+| 2 | Cascade Crew Divers | Horsea 19, Shellder 19 | ₽285 |
+| 3 | Cascade Crew | Starmie 22, Staryu 19 | ₽940 |
 
 Wild Pokémon have no gear. **Bosses and trainers' Pokémon wear gear**
 (`loot.dress`, set up in `OverworldScene._battle`): a boss (the leader of
@@ -958,7 +961,7 @@ always the same spot), with its team in a row.
 | Where | Band (Gen 1 class) | Team | Prize |
 | --- | --- | --- | --- |
 | Pewter Gym (boss) | Boulder Gang (Brock) | Geodude 14, Onix 16 | ₽792 |
-| Cerulean Gym (boss) | Cascade Crew (Misty) | Starmie 25, Staryu 22 | ₽1089 |
+| Cerulean Gym (boss) | Cascade Crew (Misty) | Starmie 22, Staryu 19 | ₽940 |
 | Route 3, map 1 | Alley Gang (Youngster) | Rattata 15, Ekans 15 | ₽112 |
 | Route 3, map 1 | Crawler Swarm (Bug Catcher) | Caterpie 14, Weedle 14, Caterpie 14 | ₽70 |
 | Route 3, map 2 | Pidgey Flock (Lass) | Pidgey 13, Pidgey 13 | ₽97 |
@@ -978,9 +981,9 @@ always the same spot), with its team in a row.
 | Nugget Bridge, map 1 | Bridge Flock (Lass) | Pidgey 20, Nidoran F 20 | ₽150 |
 | Nugget Bridge, map 1 | Bridge Rats (Youngster) | Rattata 20, Ekans 20, Zubat 20 | ₽150 |
 | Nugget Bridge, map 1 | Bridge Thorns (Lass) | Nidoran F 21, Nidoran M 21 | ₽157 |
-| Nugget Bridge, map 1 | Bridge Champs (Camper) | Sandshrew 22, Spearow 22 | ₽220 |
-| Nugget Bridge, map 2 | Rocket Gang (Team Rocket Grunt) | Ekans 22, Zubat 22 | ₽330 |
-| Nugget Bridge (boss) | Rival | Pidgeotto 21, Abra 20, Rattata 19, starter's next form 22 | ₽550 |
+| Nugget Bridge, map 2 | Bridge Champs (Camper) | Sandshrew 22, Spearow 22 | ₽220 |
+| Nugget Bridge, map 1 | Rival | Pidgeotto 19, Abra 16, Rattata 16, starter's next form 20 | ₽500 |
+| Nugget Bridge (boss) | Rocket | Ekans 23, Zubat 22 (gives the Nugget, once) | ₽330 |
 | Route 25, map 1 | Hill Hikers (Hiker) | Geodude 21, Geodude 21, Onix 21 | ₽367 |
 | Route 25, map 1 | Picnic Party (Picnicker) | Pidgey 21, Nidoran F 21, Nidoran M 21 | ₽157 |
 | Route 25, map 2 | Camping Crew (Camper) | Rattata 22, Ekans 22, Spearow 22 | ₽165 |
