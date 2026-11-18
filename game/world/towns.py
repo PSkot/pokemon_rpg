@@ -176,14 +176,14 @@ TOWNS = {t.key: t for t in [
     Town("route_4", "Route 4", 40, (), exits=(("left", "mt_moon_cave"), ("right", "route_4_east")), home_col=8),
     # Cerulean City: the water gym, Bill's road north over Nugget Bridge and
     # the burgled house.
-    Town("cerulean", "Cerulean City", 84, (
+    Town("cerulean", "Cerulean City", 92, (
         Building("Bike Shop", (HOUSES, 1), 6),
         Building("Pokémon Center", (FUNCTIONAL, 0), 18),
         Building("Poké Mart", (FUNCTIONAL, 2), 30, inside="mart"),
         Building("Cerulean Gym", (FUNCTIONAL, 1), 44),
         Building("Recruitment Center", (HOUSES, 3), 57, inside="recruit"),
-        Building("", (HOUSES, 0), 70),
-    ), exits=(("left", "route_4_east"), ("right", "nugget_bridge")), home_col=22, board_col=41,
+        Building("Burgled House", (HOUSES, 0), 70),
+    ), exits=(("left", "route_4_east"), ("right", "nugget_bridge"), (82, "route_5_south")), home_col=22, board_col=41,
        mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal",
              "Ice Heal"),
        folk=(
@@ -208,6 +208,21 @@ TOWNS = {t.key: t for t in [
              "Coo! You crossed Nugget Bridge? Route 25 runs east from here, to the sea.",
              "A Pokémaniac called Bill lives by the sea. Strange noises come from his cottage.",
          )),)),
+    # The bottom of Route 5: the Day Care, Saffron City's gate (shut) and the
+    # Underground Path to Route 6 (being dug out: the next part).
+    Town("route_5", "Route 5", 48, (
+        Building("Day Care", (HOUSES, 1), 8),
+    ), exits=(("left", "route_5_south"),), home_col=5,
+       folk=(
+           Folk("route_5_guard", "Gate Guard", "nidorino", 22, (
+               "The gate to Saffron City is shut. Orders from up high. Nobody gets through.",
+               "Phew, I'm parched. Standing guard all day is thirsty work...",
+           )),
+           Folk("route_5_diglett", "Diglett", "diglett", 34, (
+               "Dig dig! The Underground Path to Route 6 caved in. We're digging it out again. Come back soon!",
+               "Dig...? Under Saffron City, the tunnel goes all the way to Vermilion. Dig dig!",
+           )),
+       )),
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a
     # Clefairy in his teleporter (quest "bill").
     Town("sea_cottage", "Sea Cottage", 40, (

@@ -159,7 +159,7 @@ class TownScene(MapScene):
             return
         door = self._door_at_player()
         if door and not quests.open_for(self.game, ROUTES[door[1]].needs):
-            self.show(quest_ui.Dialogue([("", ROUTES[door[1]].blocked)]))
+            self.show(quest_ui.Dialogue([("", quests.blocked_text(self.game, ROUTES[door[1]]))]))
             return
         building = None if door else self._building_at_player()
         if building and building.inside == "mart":
@@ -171,7 +171,7 @@ class TownScene(MapScene):
         gym = self._route_in(building)
         if gym:
             if not quests.open_for(self.game, gym.needs):
-                self.show(quest_ui.Dialogue([("", gym.blocked)]))
+                self.show(quest_ui.Dialogue([("", quests.blocked_text(self.game, gym))]))
                 return
             first_map = OverworldScene(Instance(gym, self.town.key), self.game)
             saves.autosave(first_map)

@@ -289,6 +289,14 @@ hit rolls the added effects' chances.
 
 **Super Fang** takes half the target's current HP (min 1), whatever the
 stats; only type immunity stops it (Ghost).
+
+**Seismic Toss** (`Move.fixed`) deals damage equal to the user's level,
+whatever the stats and types (as in Gen 1): no crits, STAB or gear.
+
+**Pay Day** (`Move.pay_day`: 2): each hit by a party member scatters
+₽2 × the user's level (Gen 1's rule); the party picks it up if it wins
+the battle (`BattleScene.scattered`, added to the prize row of the
+rewards). Meowth's Amulet Coin talent doubles it.
 - **Berries:** the target (and the user, after recoil) may eat its berry
   right after the move (see *Berries*).
 
@@ -670,6 +678,8 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 4 | Common | (no boss) |
 | Nugget Bridge (Route 24) | Common | Common 60%, Uncommon 40% (the rival: a reward roll with the battle) |
 | Route 25 | Common | (no boss) |
+| Burgled House (Cerulean) | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the burglar: a reward roll with the battle) |
+| Route 5 | Common | (no boss) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -883,6 +893,25 @@ Bill's Sea Cottage, a town; no boss, four trainers):
 | Metapod | 8 | 18–20 |
 | Kakuna | 7 | 18–20 |
 
+**Route 5** (`Route` "route_5_south", 2 maps from Cerulean City's
+doorway behind the burgled house south to the Route 5 stop, a town; no
+boss or trainers, as in Red/Blue). Meowth from Blue, Mankey from Red:
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Meowth | 25 | 20–23 |
+| Mankey | 25 | 20–23 |
+| Pidgey | 20 | 21–24 |
+| Oddish | 15 | 20–23 |
+| Bellsprout | 15 | 20–23 |
+
+The **Burgled House** (`Route` "cerulean_backyard", walked from the house
+at the end of Cerulean's street, open while quest *The Cerulean Burglar*
+is active): a short walk (30 tiles, no wild Pokémon) to its backyard,
+where the burglar's **Rocket Gang** (Mankey 24, Abra 22, Zubat 22; Gen 1's
+Machop and Drowzee) waits. Win rate in `tools/balance_sim.py` at Lv24 +
+Lv23: about 73%.
+
 **Gyms** are fought in waves. The gym is a short walk (one map,
 `Route.cols` tiles plus the arena) up to an arena where the gym's band
 stands. Touching it opens the team pick (`scenes/gym.TeamPick`): the
@@ -992,6 +1021,7 @@ always the same spot), with its team in a row.
 | Route 25, map 1 | Picnic Party (Picnicker) | Pidgey 21, Nidoran F 21, Nidoran M 21 | ₽157 |
 | Route 25, map 2 | Camping Crew (Camper) | Rattata 22, Ekans 22, Spearow 22 | ₽165 |
 | Route 25, map 2 | Garden Club (Lass) | Oddish 22, Bellsprout 22 | ₽165 |
+| Burgled House (boss) | Rocket Gang (Team Rocket Grunt) | Mankey 24, Abra 22, Zubat 22 | ₽330 |
 | Route 22 (boss) | the rival | Pidgey 7, starter 6 | ₽105 |
 
 ---

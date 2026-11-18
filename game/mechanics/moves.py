@@ -41,6 +41,8 @@ class Move:
     hits: tuple[int, int] = (1, 1)  # hits per use (2-5: Fury Attack)
     priority: int = 0   # goes before moves with a lower priority (Quick Attack: 1)
     halve: bool = False  # Super Fang: takes half the target's HP instead of normal damage
+    fixed: bool = False  # Seismic Toss: deals damage equal to the user's level, whatever the types
+    pay_day: int = 0     # Pay Day: each hit scatters this × the user's level in Poké Dollars, picked up after a win
     drain: float = 0.0  # the user heals this share of the damage dealt (Absorb)
     heal: float = 0.0   # the user also heals this share of its max HP
     rest: bool = False  # Rest: the user heals fully, is cured, and sleeps 2 rounds
@@ -82,7 +84,7 @@ class Move:
 
     @property
     def damaging(self) -> bool:
-        return self.power > 0 or self.halve
+        return self.power > 0 or self.halve or self.fixed
 
 
 def _status(key: str, chance: int = 100) -> dict:
@@ -132,6 +134,7 @@ MOVES = {m.name: m for m in [
     Move("Bind", 15, "enemy", type="normal", bind=1 / 16),
     Move("Defense Curl", 0, "self", type="normal", stages=(("defense", 1),)),
     Move("Screech", 0, "enemy", type="normal", stages=(("defense", -2),)),
+    Move("Pay Day", 40, "enemy", type="normal", pay_day=2),
     Move("Glare", 0, "enemy", type="normal", **_status("paralysis", 75)),
     Move("Sing", 0, "enemy", type="normal", **_status("sleep", 55)),
     # Flying
@@ -167,6 +170,11 @@ MOVES = {m.name: m for m in [
     Move("Fire Blast", 120, "enemy", type="fire", **_status("burn", 30)),
     # Fighting and Ground
     Move("Double Kick", 30, "enemy", type="fighting", hits=(2, 2)),
+    # Karate Chop was a Normal move in Gen 1 (as Gust here); Low Kick was
+    # Fighting, with a 30% flinch.
+    Move("Karate Chop", 50, "enemy", type="normal", crit_ratio=8),
+    Move("Low Kick", 50, "enemy", type="fighting", flinch=30),
+    Move("Seismic Toss", 0, "enemy", type="fighting", fixed=True),
     Move("Earthquake", 100, "enemy", type="ground"),
     Move("Dig", 100, "enemy", type="ground", charge="{user} dug a hole!"),
     # Rock
@@ -212,7 +220,7 @@ GEN1_ACCURACY = {
     "Fury Attack": 85, "Fury Swipes": 80, "Double Slap": 85, "Wrap": 85, "Bind": 75, "Sky Attack": 90,
     "Razor Leaf": 95, "Pin Missile": 85, "Fire Spin": 70, "Fire Blast": 85, "Rock Throw": 65, "Rock Slide": 90,
     "Thunder": 70, "Clamp": 75, "Hydro Pump": 80, "Blizzard": 90,
-    "Screech": 85, "String Shot": 95, "Kinesis": 80, "Leech Seed": 90, "Whirlwind": 85,
+    "Screech": 85, "Low Kick": 90, "String Shot": 95, "Kinesis": 80, "Leech Seed": 90, "Whirlwind": 85,
 }
 MOVES = {name: replace(m, accuracy=GEN1_ACCURACY.get(name, 100)) for name, m in MOVES.items()}
 
@@ -233,15 +241,19 @@ def describe(m: Move) -> str:
     parts = []
     if m.halve:
         parts.append(f"{kind}. Takes half the target's HP.")
+    elif m.fixed:
+        parts.append(f"{kind}. Deals damage equal to the user's level, whatever the types.")
     elif m.damaging:
         head = f"{kind}, {round(m.power * m.scale)} power"
         lo, hi = m.hits
         if hi > 1:
-            head += ", hits twice" if lo == hi == 2 else f", hits {lo}-{hi} times"
+            head += ", hits twice" if lo == hi == 2 else f", hits {lo} times" if lo == hi else f", hits {lo}-{hi} times"
         parts.append(head + ".")
         if m.spread:
             share = "" if m.spread_share == 1 else f", the others at {round(m.spread_share * 100)}% damage"
             parts.append(f"Hits every enemy{share}.")
+    if m.pay_day:
+        parts.append(f"Each hit scatters ₽{m.pay_day} × the user's level, picked up after a win.")
     if m.accuracy < 100 and not m.sure_hit:
         parts.append(f"{m.accuracy}% accurate.")
     if m.priority:

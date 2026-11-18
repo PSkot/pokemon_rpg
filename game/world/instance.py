@@ -28,8 +28,8 @@ from dataclasses import dataclass, field, replace
 from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate
-from .themes import (CERULEAN_GYM, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_4, ROUTE_22, ROUTE_24, ROUTE_25, PoolEntry,
-                     Theme)
+from .themes import (CERULEAN_GYM, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_22, ROUTE_24,
+                     ROUTE_25, PoolEntry, Theme)
 
 # Stands in a boss group for the rival's starter, which depends on the
 # player's (`progress.Game.rival_starter`).
@@ -109,6 +109,7 @@ class Route:
     # Its doorways need (quest key, "started" or "done"); `blocked` says why not.
     needs: tuple[str, str] | None = None
     blocked: str = ""
+    blocked_done: str = ""  # ... once that quest is done, if it says something else then
     # Once this quest is done (or this key is in Game.trainers: a beaten
     # `boss_key`), the boss is this group instead (no trainer).
     boss_after: tuple[str, tuple[tuple[str, int], ...]] | None = None
@@ -252,6 +253,23 @@ ROUTES = {r.key: r for r in [
               Trainer("route_25_camper", "Camping Crew", (("rattata", 22), ("ekans", 22), ("spearow", 22)), 1, 15),
               Trainer("route_25_lass", "Garden Club", (("oddish", 22), ("bellsprout", 22)), 1, 15),
           )),
+    # The burgled house at the end of Cerulean City's street (quest
+    # "burglary"): through it, its backyard, where the Rocket who broke in
+    # is hiding (Gen 1's Machop and Drowzee: Mankey and Abra stand in).
+    Route("cerulean_backyard", "Burgled House", MEADOW, maps=1, towns=("cerulean", "cerulean"), boss=True,
+          boss_group=(("mankey", 24), ("abra", 22), ("zubat", 22)), trainer="Rocket Gang", boss_chest="battle",
+          prize=30, wild=False, building="Burgled House", cols=30,
+          needs=("burglary", "started"),
+          blocked="The door is taped shut. A note says: \"Police business. Nobody goes in until the thief is found.\"",
+          blocked_done="The owner is tidying up: \"Thanks for chasing off that thief! The backyard's open, by the way: "
+                       "it's the way south, onto Route 5.\""),
+    # Route 5, south from Cerulean City (through the burgled house's
+    # backyard) to the stop by the Underground Path and Saffron City's gate
+    # (its key isn't "route_5": that's the stop, a town). No trainers, as
+    # in Red/Blue.
+    Route("route_5_south", "Route 5", ROUTE_5, maps=2, towns=("cerulean", "route_5"),
+          needs=("burglary", "done"),
+          blocked="A fence blocks the road south. Past it, footprints lead into the backyard of the burgled house."),
 ]}
 
 
@@ -369,6 +387,8 @@ RECRUITS = {r.species: r for r in [
     Recruit("bellsprout", 10, ROUTE_24, 19),
     Recruit("abra", 4, ROUTE_24, 19),
     Recruit("venonat", 10, ROUTE_25, 20),
+    Recruit("meowth", 10, ROUTE_5, 21),
+    Recruit("mankey", 10, ROUTE_5, 21),
 ]}
 
 

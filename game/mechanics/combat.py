@@ -66,6 +66,8 @@ def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.
     if move.halve:  # Super Fang: half the target's HP, whatever the stats
         multiplier = effectiveness(move.type, types)
         return Hit(max(1, target.monster.hp // 2) if multiplier else 0, False, multiplier, [])
+    if move.fixed:  # Seismic Toss: the user's level, whatever the stats and types (Gen 1)
+        return Hit(max(1, round(m.level * share)), False, 1.0, [])
     special = is_special(move)  # (Gen 1: these types use Special, attacking and defending)
     attack = (m.special_attack if special else m.attack) * stage_factor(user.stages["attack"])
     if user.status == "burn" and not special:  # (a burn weakens physical moves only)

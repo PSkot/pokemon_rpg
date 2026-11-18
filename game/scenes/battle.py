@@ -436,6 +436,7 @@ class BattleScene(Scene):
         self.trainer = trainer  # a trainer's team ("" = wild): no running, more XP
         self.bonus = bonus  # rolled once (at the highest enemy level) when the party wins
         self.prize = prize  # Poké Dollars a trainer pays when the party wins
+        self.scattered = 0  # Poké Dollars the party's Pay Day scattered, picked up if it wins
         # Called when the party wins; returns (text, detail) rows for the
         # rewards (quest progress: Pokémon counted, quest items dropped).
         self.on_win = on_win
@@ -869,8 +870,8 @@ class BattleScene(Scene):
         if self.bonus:
             rewards += self.bonus.roll(level=max(e.monster.level for e in self.enemies))
         rewards = merge(rewards)
-        if self.prize:
-            rewards.insert(0, Reward(money=self.prize))
+        if self.prize or self.scattered:
+            rewards.insert(0, Reward(money=self.prize + self.scattered))
         for r in rewards:
             r.give(self.bag)
         rows = [r.row() for r in rewards]
@@ -1401,9 +1402,13 @@ class BattleScene(Scene):
             self._popup(user, str(spiked), WOUND_COLOR, offset=(0, -10), delay=0.2)
         if hit.damage:
             self._popup(target, str(hit.damage), ui.YELLOW if hit.crit else ui.WHITE)
+        coins = move.pay_day * user.monster.level * len(hits) if hit.effectiveness and not user.enemy else 0
+        self.scattered += coins
         for i, (t, amount) in enumerate(hit.added):  # beside the main number, just after it
             self._popup(target, f"+{amount}", COLORS[t], offset=(28 + 24 * i, 8), delay=0.12 * (i + 1))
         notes = [f"Hit {len(hits)} times!"] if len(hits) > 1 and hit.effectiveness else []
+        if coins:
+            notes.append("Coins scattered everywhere!")
         if hit.crit:
             notes.append("A critical hit!")
         if hit.effectiveness == 0:
@@ -1860,7 +1865,7 @@ class BattleScene(Scene):
                 ui.text(window, move.name, (SKILL_WINDOW.x + 22, y), ui.YELLOW if carried else ui.WHITE)
                 if move.type:
                     ui.badge_text(window, type_name(move.type), self._badge_pos(i))
-                power = "1/2" if move.halve else str(round(move.power * move.scale)) if move.damaging else "-"
+                power = "1/2" if move.halve else "Lv" if move.fixed else str(round(move.power * move.scale)) if move.damaging else "-"
                 ui.text(window, power, (SKILL_WINDOW.x + 210, y), align="right")
                 aim = SPREAD_TEXT.get(move.target) if move.spread else TARGET_TEXT[move.target]
                 ui.text(window, aim, (SKILL_WINDOW.x + 222, y), ui.GREY)

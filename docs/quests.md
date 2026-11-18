@@ -176,6 +176,8 @@ handing them in at any board.
 | Cerulean | Bent Spoons | Cerulean City | Defeat 3 Abra (Route 24) | – | ₽800, 550 XP |
 | Cerulean | Sweet Nectar | Rival at Nugget Bridge | Collect 5 Sweet Nectar (Oddish, Bellsprout; Route 25) | 40% | ₽900, 600 XP |
 | Cerulean | Night Swarm | Rival at Nugget Bridge | Defeat 6 Venonat (Route 25) | – | ₽900, 600 XP |
+| Cerulean | Pickpockets | The Cerulean Burglar | Defeat 6 Meowth (Route 5) | – | ₽1,000, 650 XP |
+| Cerulean | Hot Tempers | The Cerulean Burglar | Collect 5 Mankey Fur (Mankey, Route 5) | 40% | ₽1,000, 650 XP |
 
 Each takes about one or two runs of its route. They can't be repeated
 yet.
@@ -266,6 +268,30 @@ yet.
 - **Rewards:** ₽1,000, 800 XP, the **S.S. Ticket** (a key item, for the
   S.S. Anne at Vermilion City later), 2 Revives and an Uncommon gear piece
   (item level 17).
+- **Unlocks:** quest 9 (Bill mentions the break-in in Cerulean).
+
+### 9. The Cerulean Burglar
+
+- **Starts:** automatically when quest 8 is done.
+- **Steps:** Up at the **Burgled House** at the end of Cerulean's street
+  (shut before: "Police business"), a short walk through to its backyard,
+  and beat the burglar's **Rocket Gang** there (Mankey 24, Abra 22, Zubat
+  22; Gen 1's Machop and Drowzee). He drops the stolen TM28, which goes
+  back to the owner (TMs aren't in the game yet).
+- **Rewards:** ₽1,000, 900 XP, 3 Super Potions and an Uncommon gear piece
+  (item level 18), on top of the prize (₽330).
+- **Unlocks:** Cerulean's doorway behind the house onto **Route 5**
+  (fenced off before), quest 10 and Cerulean's Route 5 jobs. The house
+  stays shut after (`Route.blocked_done`: the owner thanks you).
+
+### 10. South of Cerulean
+
+- **Starts:** automatically when quest 9 is done.
+- **Steps:** walk **Route 5** (2 maps, wild Meowth and Mankey) to the
+  Route 5 stop at its bottom (town "route_5"): the Day Care (scenery),
+  Saffron City's gate guard (the gate is shut, as in Red/Blue), and a
+  Diglett digging out the **Underground Path** to Route 6 (the next part).
+- **Rewards:** ₽600, 500 XP.
 
 ---
 
@@ -426,6 +452,8 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | Bellsprout | 10 | Route 24 | 17–19 | Lv22 |
 | Abra | 4 | Route 24 | 17–19 | Lv22 |
 | Venonat | 10 | Route 25 | 18–20 | Lv23 |
+| Meowth | 10 | Route 5 | 19–21 | Lv24 |
+| Mankey | 10 | Route 5 | 19–21 | Lv24 |
 
 Not every Pokémon comes this way: the starters, and those only met with
 trainers (Geodude, Onix, Diglett), will have special quests.
@@ -454,7 +482,8 @@ trainers (Geodude, Onix, Diglett), will have special quests.
   given by `Game.add_member`. Their routes (`instance.RECRUITS`,
   `_recruit_route`) have no `towns` and `building` "Recruitment Center".
 - `Route.needs` / `Route.blocked` (a quest condition for its doorways, and
-  what's said when it isn't met), `Route.boss_after` (the boss group once a
+  what's said when it isn't met; `Route.blocked_done`: what's said instead
+  once that quest is done, `quests.blocked_text`), `Route.boss_after` (the boss group once a
   quest is done).
 - `scenes/quest_ui.py`: `Dialogue`, `QuestBoard`, `QuestLog`, and the
   "New quest" / "Quest complete" panels. Map scenes show panels one after

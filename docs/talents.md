@@ -35,10 +35,10 @@ Pokémon, each one written by hand.
   Geodude and Onix, Route 3's Jigglypuff, Sandshrew and Ekans, and Mt.
   Moon's Zubat, Paras and Clefairy, and the Cerulean Gym's Goldeen, Staryu
   (and Starmie), Horsea, Shellder and Psyduck, and Routes 24 and 25's
-  Oddish, Bellsprout, Abra (and Kadabra) and Venonat; and Diglett, from
-  the Pewter Gym's waves. Every line in the game now has talents. (Dugtrio, Graveler,
+  Oddish, Bellsprout, Abra (and Kadabra) and Venonat; Diglett, from
+  the Pewter Gym's waves; and Route 5's Meowth and Mankey. Every line in the game now has talents. (Dugtrio, Graveler,
   Sandslash, Arbok, Golbat, Parasect, Seaking, Seadra, Golduck, Gloom,
-  Weepinbell, Venomoth and Alakazam aren't in the game yet, and Staryu
+  Weepinbell, Venomoth, Alakazam, Persian and Primeape aren't in the game yet, and Staryu
   doesn't evolve in it, so those lines can't learn their
   evolved forms' moves; their trees are built on the moves they can.)
 - **Tiers.** 12 tiers open at **Lv6, 10, 14, 18, 22, 27, 32, 38, 44, 50,
@@ -59,7 +59,8 @@ Pokémon, each one written by hand.
     Riding the Wind, Aerial Ace; Bug: Swarm, Shed Skin; Electric: Static,
     Charge Up; Rock: Stone Fist, Landslide, Sharp Rocks, Rockfall,
     Stone Edge, Jagged Hide; Ground: Mud Claws, Groundswell, Tremor, Burrow
-    Feast, Sand Veil, Sand Force, Sand Stream; Psychic:
+    Feast, Sand Veil, Sand Force, Sand Stream; Fighting: Fighting Spirit,
+    Last Stand, Combo, Victory Rush, Pressure Points, Stagger; Psychic:
     Telepathy, Mind Over Matter, Focus Mind, Mind Feast, Magic Guard; Fire: Blaze, Searing, Scorch, Smoulder, Ash Cloud, Wildfire,
     Heat Haze; Water: Torrent, Undertow, Splash Zone, Hydration; Ice:
     Frostbite, Chill; sleep: Nightmare, Deep Sleep, Lull, Yawn, Dream
@@ -494,6 +495,48 @@ Paths: **Eyes** (compound eyes: never missing, and muddling minds); **Powder** (
 | 10 | 50 | **Psychic Mastery**: Psybeam hits every enemy, the others at 60% damage. *(Psybeam)* | **Drowsy Dust**: Sleep Powder works on every enemy. *(Sleep Powder)* | **Feeding Frenzy**: Knocking an enemy out with a Bug move heals the user 1/4 of its max HP. *(Bug)* |
 | 11 | 60 | **Hysteria** *(needs 4)*: Confusion the user causes has a 30% chance each round to spread to an enemy next to it. *(Confusion)* | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Unbreakable** *(needs 4)*: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
 | 12 | 75 | **Bedlam** *(needs 6)*: Enemies the user confuses always hurt themselves. *(Confusion)* | **Powder Storm** *(needs 6)*: Psybeam has a 20% chance to set off Stun Spore, Poison Powder or Sleep Powder. *(Psybeam)* | **Venom Swarm** *(needs 6)*: Leech Life hits every enemy at full damage. *(**own**)* |
+
+### Meowth → Persian
+
+Moves: Scratch, Growl, Bite 12, Pay Day 17, Screech 24, Fury Swipes 33, Slash 44 (Persian).
+
+Paths: **Coin** (pay Day: lucky hits, and money); **Claw** (scratch, Fury Swipes and Slash: claws and wounds); **Prowl** (striking first: Bite, Screech and ambushes).
+
+| Tier | Lv | Coin | Claw | Prowl |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Sharp Claws**: Scratch is 4× as likely to be a critical hit. *(Scratch)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 2 | 10 | **Amulet Coin**: Pay Day scatters twice as much money. *(**own**)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
+| 3 | 14 | **Lucky Coin**: Pay Day has a high critical-hit ratio. *(**own**)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Crunch**: Bite has a 30% chance to lower the target's Defense 1 stage. *(Bite)* |
+| 4 | 18 | **Exploit Weakness**: Enemies with lowered Defense take 30% more damage from the user's party. *(Any)* | **Raking Claws**: Fury Swipes wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Fury Swipes)* | **Piercing Screech**: Screech works on every enemy. *(Screech)* |
+| 5 | 22 | **Coin Toss**: Pay Day hits every enemy, the others at 60% damage. *(**own**)* | **Frenzy Claws**: Fury Swipes always hits 5 times. *(Fury Swipes)* | **Shriek**: After Screech, the user hits the target with its basic attack at 60% power. *(Screech)* |
+| 6 | 27 | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Rend**: Slash wounds the target: 1/12 of its max HP each round, for 3 rounds. *(Slash)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 7 | 32 | **Scavenger**: Knocking an enemy out with a Normal move heals the user 1/4 of its max HP. *(Normal)* | **Sweeping Claw**: Slash hits every enemy, the others at 50% damage. *(Slash)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 8 | 38 | **Glittering Coins**: Pay Day has a 30% chance to lower the target's accuracy 1 stage. *(**own**)* | **Crush Claw**: Slash has a 50% chance to lower the target's Defense 1 stage. *(Slash)* | **Stalker**: The user's moves deal 50% more to a target that hasn't moved yet this round. *(**own**)* |
+| 9 | 44 | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Rending Claws**: Slash and Fury Swipes wound the target: 1/8 of its max HP each round, for 3 rounds. *(Slash)* | **Intimidate**: At the start of each battle, every enemy's Attack falls 1 stage. *(Any)* |
+| 10 | 50 | **Blind Spot**: Enemies with lowered accuracy take 30% more damage from the user's party. *(Any)* | **Rampage**: Each Normal move in a row deals 25% more than the last, up to +75%. *(Normal)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 11 | 60 | **Fortune** *(needs 4)*: Pay Day is always a critical hit. *(**own**)* | **Dragon Claw** *(needs 4)*: Slash is always a critical hit. *(Slash)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
+| 12 | 75 | **Jackpot** *(needs 6)*: Pay Day hits 2-5 times, at 60% power each. *(**own**)* | **Thousand Cuts** *(needs 6)*: Fury Swipes and Slash hit every enemy, the others at 60% damage. *(**own**)* | **Pounce** *(needs 6)*: Bite always goes first, and makes the target flinch 50% of the time. *(**own**)* |
+
+### Mankey → Primeape
+
+Moves: Scratch, Leer, Karate Chop 15, Low Kick 18, Fury Swipes 21, Focus Energy 27, Seismic Toss 33, Thrash 39 (Primeape).
+
+Paths: **Fury** (fury Swipes and Thrash: a temper that builds); **Chop** (karate Chop and Low Kick: Fighting blows and critical hits); **Brawler** (leer, Focus Energy and Seismic Toss: picking fights and lasting them).
+
+| Tier | Lv | Fury | Chop | Brawler |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Fighting Spirit**: The basic attack becomes a Fighting move (with STAB). *(Fighting)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* |
+| 2 | 10 | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 3 | 14 | **Raking Claws**: Fury Swipes wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Fury Swipes)* | **Chop Chop**: Karate Chop hits twice, at 60% power each. *(**own**)* | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* |
+| 4 | 18 | **Last Stand**: Below 1/3 HP, the user's Fighting moves deal 1.5× damage. *(Fighting)* | **Combo**: Each Fighting move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Fighting)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 5 | 22 | **Frenzy Claws**: Fury Swipes always hits 5 times. *(Fury Swipes)* | **Pressure Points**: The user's Fighting moves are 4× as likely to be critical hits. *(Fighting)* | **Keen Focus**: Focus Energy also raises the user's Attack 1 stage. *(Focus Energy)* |
+| 6 | 27 | **Cool Head**: Thrash no longer confuses the user. *(**own**)* | **Sweep Kick**: Low Kick hits every enemy, the others at 50% damage. *(**own**)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 7 | 32 | **Rampage**: Each Normal move in a row deals 25% more than the last, up to +75%. *(Normal)* | **Stagger**: The user's Fighting moves have a 30% chance to lower the target's Defense 1 stage. *(Fighting)* | **Vital Throw**: Seismic Toss always goes first. *(**own**)* |
+| 8 | 38 | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Victory Rush**: Knocking an enemy out with a Fighting move heals the user 1/4 of its max HP. *(Fighting)* | **Shared Focus**: Focus Energy works on the whole party. *(Focus Energy)* |
+| 9 | 44 | **Rampaging Fists**: Thrash hits every enemy, the others at 50% damage. *(**own**)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Exploit Weakness**: Enemies with lowered Defense take 30% more damage from the user's party. *(Any)* |
+| 10 | 50 | **Scavenger**: Knocking an enemy out with a Normal move heals the user 1/4 of its max HP. *(Normal)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Intimidate**: At the start of each battle, every enemy's Attack falls 1 stage. *(Any)* |
+| 11 | 60 | **Unbreakable** *(needs 4)*: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Bulwark Stance** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(Any)* |
+| 12 | 75 | **Primal Rage** *(needs 6)*: Thrash deals 50% more and no longer confuses the user. *(**own**)* | **Mega Kick** *(needs 6)*: Low Kick hits much harder: 100 power, and makes the target flinch 50% of the time. *(**own**)* | **Pick a Fight** *(needs 6)*: Leer works on every enemy, and makes them all attack the user, this round and the next. *(**own**)* |
 
 ### Bellsprout → Weepinbell → Victreebel
 

@@ -168,7 +168,7 @@ non-commercial project.
   starters, Pidgey, Rattata, Spearow, Nidoran F/M, Caterpie, Weedle,
   Pikachu, Geodude, Onix, Jigglypuff, Sandshrew, Ekans, Zubat, Paras,
   Clefairy, Goldeen, Staryu (Starmie), Horsea, Shellder, Psyduck, Oddish,
-  Bellsprout, Abra, Venonat, Diglett: every line in the game (a new
+  Bellsprout, Abra, Venonat, Diglett, Meowth, Mankey: every line in the game (a new
   line without `TALENT_TREES` would have just its moves). `Monster.create`
   picks for wild/trainer Pokémon (mostly one random path). The talent
   screen (`scenes/talent_screen.py`, party screen → S): a grid (tiers ×
@@ -184,7 +184,9 @@ non-commercial project.
   `Move.accuracy`/`moves.GEN1_ACCURACY`, × lowered accuracy's
   `hit_chance`; `BattleScene._misses`), priority, multi-hit, flinch, confusion, bind, Leech Seed,
   spread moves, recoil, recharge, drain, Rest, Focus Energy, Toxic,
-  wounds (`Move.bleed`), stages on the user (`self_stages`), set-off
+  wounds (`Move.bleed`), stages on the user (`self_stages`), Seismic
+  Toss (`Move.fixed`: the user's level), Pay Day (`Move.pay_day`:
+  money picked up after a win, `BattleScene.scattered`), set-off
   moves (`Move.triggers`, `BattleScene._apply`), reach/spill
   (`_beside`).
 - Evolution (`pokemon.py`): `EVOLUTIONS` lists every Red/Blue level
@@ -309,7 +311,15 @@ non-commercial project.
   boss is a Rocket who gives the Nugget once, `Route.boss_key`/
   `boss_gift`/`boss_dialogue`; the Nugget: `Medicine.valuable`, only sold) → stop town
   "route_24" → route "route_25" → town "sea_cottage" (quest "bill":
-  talk to the Clefairy, i.e. Bill, then Up at the cottage → S.S. Ticket). Code-drawn caves take their colours from
+  talk to the Clefairy, i.e. Bill, then Up at the cottage → S.S. Ticket). Then quest "burglary": the
+  Cerulean house at the street's end ("Burgled House") is walked as route
+  "cerulean_backyard" (`Route.building`) to the burglar's Rocket Gang;
+  beating it opens Cerulean's doorway behind it onto route
+  "route_5_south" (Route 5: wild Meowth and Mankey, icon placeholders)
+  → stop town "route_5" (Day Care, the shut Saffron gate, a Diglett
+  digging out the Underground Path: next). `Route.blocked_done`: what a
+  shut doorway says once its quest is done (`quests.blocked_text`).
+  Code-drawn caves take their colours from
   `Theme.cave` (`CaveLook`) and ceiling decor from `tileset.CEILING_DECOR`.
   Themes (`themes.py`) pick their map art with `Theme.art` ("woods":
   Pixellab ground and background; "cave": drawn in code). `tileset.py` draws the meadow's ground

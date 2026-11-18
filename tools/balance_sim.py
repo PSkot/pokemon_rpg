@@ -143,6 +143,7 @@ STORY = [
     ("Mt. Moon Rocket leader", "mt_moon_cave", (18, 17), False, {"Potion": 2, "Super Potion": 2}),
     ("Cerulean Gym (2 waves + crew)", "cerulean_gym", (21, 20), False, {"Super Potion": 4}),
     ("Nugget Bridge rival", "nugget_bridge", (22, 21), False, {"Super Potion": 3}),
+    ("Cerulean burglar", "cerulean_backyard", (24, 23), False, {"Super Potion": 3}),
 ]
 PARTNERS = ["pidgey", "rattata", "nidoran_m", "spearow", "caterpie", "pikachu"]
 

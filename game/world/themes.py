@@ -197,6 +197,21 @@ ROUTE_25 = Theme(
     backdrop=MEADOW_BACKDROP,
 )
 
+# Route 5, south of Cerulean City: Red/Blue's Pokémon there (Meowth from
+# Blue, Mankey from Red), with Route 24's grass ones.
+ROUTE_5 = Theme(
+    "route_5", "Route 5",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("meowth", 25, (20, 23)),
+        PoolEntry("mankey", 25, (20, 23)),
+        PoolEntry("pidgey", 20, (21, 24)),
+        PoolEntry("oddish", 15, (20, 23)),
+        PoolEntry("bellsprout", 15, (20, 23)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+)
+
 # The Pewter Gym: an indoor rock hall (drawn in code). Its pool is never
 # met: gyms have only their trainers (`Route.wild`).
 PEWTER_GYM = Theme(

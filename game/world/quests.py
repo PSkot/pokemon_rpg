@@ -498,6 +498,28 @@ QUESTS = {q.key: q for q in [
                     gives=("S.S. Ticket",))),
         money=1000, xp=800,
         rewards=(("medicine", "Revive", 2), ("gear", None, "Uncommon", 17)),
+        done_dialogue=(("Bill", "Oh, and on your way back: someone broke into a house in Cerulean City. The police "
+                                "gave up, but they say the thief is still hiding nearby!"),),
+    ),
+    Quest(
+        "burglary", "The Cerulean Burglar",
+        "A house at the end of Cerulean City's street was broken into. The police have gone, but the thief is "
+        "said to be hiding in its backyard.",
+        requires=("bill",),
+        steps=(Step("defeat", "cerulean_backyard", "Catch the thief behind the burgled house (Cerulean City)",
+                    dialogue=(("Rocket", "Argh! OK, OK! Take it back, I don't even know what a TM28 does!"),
+                              ("", "The Rocket drops the stolen TM and runs off south."),
+                              ("", "You gave TM28 back to the house's owner."),
+                              ("", "With the thief gone, the backyard is the way south: Route 5 is open.")),),),
+        money=1000, xp=900,
+        rewards=(("medicine", "Super Potion", 3), ("gear", None, "Uncommon", 18)),
+    ),
+    Quest(
+        "to_route_5", "South of Cerulean",
+        "Route 5 runs south from Cerulean City, through the burgled house's backyard, towards Saffron City.",
+        requires=("burglary",),
+        steps=(Step("reach", "route_5", "Follow Route 5 south of Cerulean City"),),
+        money=600, xp=500,
     ),
     Quest(
         "snake_charmer", "Snake Charmer",
@@ -550,6 +572,21 @@ QUESTS = {q.key: q for q in [
         board="cerulean", requires=("rival_cerulean",),
         steps=(hunt("venonat", 6, "Route 25"), HAND_IN),
         money=900, xp=600,
+    ),
+    Quest(
+        "pickpockets", "Pickpockets",
+        "Meowth on Route 5 snatch anything shiny from travellers' bags. Teach a few of them a lesson.",
+        board="cerulean", requires=("burglary",),
+        steps=(hunt("meowth", 6, "Route 5"), HAND_IN),
+        money=1000, xp=650,
+    ),
+    Quest(
+        "hot_tempers", "Hot Tempers",
+        "A Cerulean tailor wants the bristly fur of the Mankey on Route 5, the angrier the better.",
+        board="cerulean", requires=("burglary",),
+        steps=(collect("Mankey Fur", 5, "route_5_south", ("mankey",), 40, "Mankey on Route 5", "Mankey Fur"),
+               HAND_IN),
+        money=1000, xp=650,
     ),
 ]}
 
@@ -814,6 +851,13 @@ def step_text(game, quest: Quest, i: int) -> str:
     if s.kind in ("hunt", "collect") and step(game, quest.key) == i:
         return f"{s.text}: {game.quest_counts.get(quest.key, 0)}/{s.count}"
     return s.text
+
+
+def blocked_text(game, route) -> str:
+    """What a shut `route`'s doorway (or building) says."""
+    if route.blocked_done and route.needs and is_done(game, route.needs[0]):
+        return route.blocked_done
+    return route.blocked
 
 
 def open_for(game, needs: tuple[str, str] | None) -> bool:
