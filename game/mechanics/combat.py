@@ -70,7 +70,7 @@ def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.
     if move.keen and target.monster.hp < target.monster.max_hp * move.keen:  # (Keen Edge)
         crit = True
     if crit:
-        base *= CRIT_FACTOR
+        base *= CRIT_FACTOR + (m.talent("sniper") if m.talents else 0)  # (Sniper: ×2)
     if target.shield:
         base *= SHIELD_FACTOR
     base *= random.uniform(0.85, 1.0) * share

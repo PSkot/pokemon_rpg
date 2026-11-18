@@ -33,8 +33,10 @@ Pokémon, each one written by hand.
   (Bulbasaur, Charmander, Squirtle); the early routes' Pidgey, Rattata,
   Spearow, Nidoran ♀ and ♂, Caterpie, Weedle and Pikachu; the Pewter Gym's
   Geodude and Onix, Route 3's Jigglypuff, Sandshrew and Ekans, and Mt.
-  Moon's Zubat, Paras and Clefairy. (Graveler, Sandslash, Arbok, Golbat
-  and Parasect aren't in the game yet, so those lines can't learn their
+  Moon's Zubat, Paras and Clefairy, and the Cerulean Gym's Goldeen, Staryu
+  (and Starmie), Horsea, Shellder and Psyduck. (Graveler, Sandslash,
+  Arbok, Golbat, Parasect, Seaking, Seadra and Golduck aren't in the game
+  yet, and Staryu doesn't evolve in it, so those lines can't learn their
   evolved forms' moves; their trees are built on the moves they can.)
 - **Tiers.** 12 tiers open at **Lv6, 10, 14, 18, 22, 27, 32, 38, 44, 50,
   60, 75** (`TIER_LEVELS`). At each tier the player picks **1 of its 3
@@ -112,7 +114,8 @@ A talent changes moves and/or works in battle by itself:
     side takes 15% less while it stands), **Sturdy** (the holder's first
     hit taken each battle: half; Juggernaut, Iron Turtle: none); **filter**
     (Solid Rock: super-effective hits on the holder deal 25% less);
-    **prey:bound** (Squeeze: +30% on a bound target); **Pyre**
+    **prey:bound** (Squeeze: +30% on a bound target); **sniper** (the
+    holder's critical hits deal ×2, not ×1.5); **Pyre**
     (burned foes of its side lose a further 1/8 of max HP each round);
   - like gear mods (`Monster.gear_bonus`): `first` (Head Start: 30% to
     act first), `crit` (Lucky Strikes: +10 points), `endure` (Tenacity
@@ -133,7 +136,7 @@ A talent changes moves and/or works in battle by itself:
     1/16 of its max HP, as Thornskin's spikes do);
   - at the start of each battle: **aura:<status>** (Miasma: 50% per foe to
     be poisoned; Thunder Cloud: 30% paralyzed; Heat Haze: 30% burned;
-    Absolute Zero: 20% frozen), **intimidate** (every foe's Attack −1
+    Absolute Zero: 20% frozen; Dazzling Fins: 25% confused), **intimidate** (every foe's Attack −1
     stage; Sand Veil: accuracy −1, Sand Stream −2: **lower:<stat>**).
 - **Move fields** they use (`moves.Move`): `taunt` (Taunting Growl, Decoy,
   Mob Rule, Lightning Rod: for this round and the next, the foes'
@@ -218,9 +221,9 @@ Paths: **Torrent** (water damage); **Shell** (withdraw and shells: taking the hi
 
 | Tier | Lv | Torrent | Shell | Tide |
 | --- | --- | --- | --- | --- |
-| 1 | 6 | **Splash Tackle**: Tackle becomes a Water move (with STAB). *(**own**)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* | **Wagging Tail**: Tail Whip works on every enemy. *(Tail Whip)* |
+| 1 | 6 | **Splash Strike**: The basic attack becomes a Water move (with STAB). *(Water)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* | **Wagging Tail**: Tail Whip works on every enemy. *(Tail Whip)* |
 | 2 | 10 | **Bubble Burst**: Bubble hits every enemy, the others at 60% damage. *(Bubble)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Froth**: Bubble is twice as likely to lower Speed. *(Bubble)* |
-| 3 | 14 | **Torrent**: Below 1/3 HP, the user's Water moves deal 1.5× damage. *(Water)* | **Rough Shell**: Whoever hits the user loses 1/16 of its max HP. *(**own**)* | **Tail Slap**: After Tail Whip, the user hits the target with its basic attack at 60% power. *(Tail Whip)* |
+| 3 | 14 | **Torrent**: Below 1/3 HP, the user's Water moves deal 1.5× damage. *(Water)* | **Rough Shell**: Whoever hits the user loses 1/16 of its max HP. *(Water)* | **Tail Slap**: After Tail Whip, the user hits the target with its basic attack at 60% power. *(Tail Whip)* |
 | 4 | 18 | **Pressure Jet**: Water Gun hits harder: 60 power. *(Water Gun)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Undertow**: The user's Water moves have a 20% chance to lower the target's Speed 1 stage. *(Water)* |
 | 5 | 22 | **Rising Tide**: Each Water move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Water)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Crunch**: Bite has a 30% chance to lower the target's Defense 1 stage. *(Bite)* |
 | 6 | 27 | **Splash Zone**: The user's Water moves also hit one enemy next to the target, at half damage. *(Water)* | **Hydration**: At the end of each round, the user has a 30% chance to wash off its status. *(Water)* | **Riptide**: Enemies with lowered Speed take 30% more damage from the user's party. *(**own**)* |
@@ -228,8 +231,8 @@ Paths: **Torrent** (water damage); **Shell** (withdraw and shells: taking the hi
 | 8 | 38 | **Headlong**: Once the user has used Withdraw in a battle, Skull Bash needs no charging. *(Skull Bash)* | **Turtle Wall**: Withdraw works on the whole party. *(Withdraw)* | **Frost Ray**: Ice Beam hits every enemy, the others at 50% damage. *(Ice Beam)* |
 | 9 | 44 | **Geyser**: Hydro Pump hits every enemy, the others at 50% damage. *(Hydro Pump)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Shatter**: Frozen enemies take 50% more damage from the user. *(Freeze)* |
 | 10 | 50 | **Hydro Cannon**: Hydro Pump never misses. *(Hydro Pump)* | **Shell Formation**: While the user stands, the whole party takes 15% less damage. *(**own**)* | **Chill**: The user's Ice moves have a 30% chance to lower the target's Speed 1 stage. *(Ice)* |
-| 11 | 60 | **Tsunami** *(needs 4)*: Hydro Pump hits every enemy at full damage. *(**own**)* | **Iron Turtle** *(needs 4)*: The first hit the user takes in each battle deals no damage, and Withdraw heals the user 1/4 of its max HP. *(**own**)* | **Whiteout** *(needs 4)*: Blizzard never misses and hits every enemy, the others at 60% damage. *(Blizzard)* |
-| 12 | 75 | **Tidal Force** *(needs 6)*: The user's Water moves are always critical hits on a target below half HP. *(**own**)* | **Fortress** *(needs 6)*: While the user stands, the whole party takes 25% less damage. *(**own**)* | **Absolute Zero** *(needs 6)*: At the start of each battle, each enemy has a 20% chance to be frozen. *(**own**)* |
+| 11 | 60 | **Tsunami** *(needs 4)*: Hydro Pump hits every enemy at full damage. *(Hydro Pump)* | **Iron Turtle** *(needs 4)*: The first hit the user takes in each battle deals no damage, and Withdraw heals the user 1/4 of its max HP. *(Withdraw)* | **Whiteout** *(needs 4)*: Blizzard never misses and hits every enemy, the others at 60% damage. *(Blizzard)* |
+| 12 | 75 | **Tidal Force** *(needs 6)*: The user's Water moves are always critical hits on a target below half HP. *(Water)* | **Fortress** *(needs 6)*: While the user stands, the whole party takes 25% less damage. *(Any)* | **Absolute Zero** *(needs 6)*: At the start of each battle, each enemy has a 20% chance to be frozen. *(Freeze)* |
 
 ### Spearow → Fearow
 
@@ -239,7 +242,7 @@ Paths: **Talon** (pecks and Drill Peck: hard Flying strikes); **Flock** (fury At
 
 | Tier | Lv | Talon | Flock | Bully |
 | --- | --- | --- | --- | --- |
-| 1 | 6 | **Pecking Order**: Peck has a 30% chance to make the target flinch. *(**own**)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Taunting Growl**: Growl also makes every enemy attack the user, this round and the next. *(Growl)* |
+| 1 | 6 | **Pecking Order**: Peck has a 30% chance to make the target flinch. *(Peck)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Taunting Growl**: Growl also makes every enemy attack the user, this round and the next. *(Growl)* |
 | 2 | 10 | **Rapid Pecks**: Peck hits twice, at 60% power each. *(**own**)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* |
 | 3 | 14 | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* |
 | 4 | 18 | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Frenzy**: Fury Attack always hits at least 3 times. *(Fury Attack)* | **Screech Growl**: Growl lowers Attack 2 stages. *(**own**)* |
@@ -283,7 +286,7 @@ Paths: **Venom** (poison, and making it worse); **Horn** (horn Attack: critical 
 | --- | --- | --- | --- | --- |
 | 1 | 6 | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Charge**: Tackle hits harder: 50 power. *(Tackle)* |
 | 2 | 10 | **Poison Point**: Whoever hits the user has a 25% chance to be poisoned. *(Poison)* | **Gore**: Horn Attack is 8× as likely to be a critical hit. *(Horn Attack)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* |
-| 3 | 14 | **Barbed Sting**: Poison Sting is 30% more likely to poison. *(Poison Sting)* | **Piercing Horn**: Horn Attack also hits one enemy next to the target, at half damage. *(**own**)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* |
+| 3 | 14 | **Barbed Sting**: Poison Sting is 30% more likely to poison. *(Poison Sting)* | **Piercing Horn**: Horn Attack also hits one enemy next to the target, at half damage. *(Horn Attack)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* |
 | 4 | 18 | **Sapping**: Poisoned enemies deal 20% less damage. *(Poison)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* |
 | 5 | 22 | **Horn Drill**: Horn Attack has a 30% chance to poison. *(**own**)* | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* | **Keen Focus**: Focus Energy also raises the user's Attack 1 stage. *(Focus Energy)* |
 | 6 | 27 | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* |
@@ -292,7 +295,7 @@ Paths: **Venom** (poison, and making it worse); **Horn** (horn Attack: critical 
 | 9 | 44 | **Venom Needle**: Poison Sting wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Poison Sting)* | **Rapid Kicks**: Each of Double Kick's hits has a 30% chance to make the target flinch. *(Double Kick)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
 | 10 | 50 | **Toxic Horn**: Horn Attack is a Poison move, and poisons 30% of the time. *(**own**)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
 | 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Apex Predator** *(needs 4)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Shared Focus** *(needs 4)*: Focus Energy works on the whole party. *(Focus Energy)* |
-| 12 | 75 | **Venom Lord** *(needs 6)*: All poison the user inflicts is bad poison, and the user's hits have a 20% chance to poison. *(**own**)* | **Megahorn** *(needs 6)*: Horn Attack hits much harder: 100 power. *(**own**)* | **Juggernaut** *(needs 6)*: The first hit the user takes in each battle deals no damage, and its Normal moves never miss. *(**own**)* |
+| 12 | 75 | **Venom Lord** *(needs 6)*: All poison the user inflicts is bad poison, and the user's hits have a 20% chance to poison. *(**own**)* | **Megahorn** *(needs 6)*: Horn Attack hits much harder: 100 power. *(Horn Attack)* | **Juggernaut** *(needs 6)*: The first hit the user takes in each battle deals no damage, and its Normal moves never miss. *(**own**)* |
 
 ### Pidgey → Pidgeotto → Pidgeot
 
@@ -312,7 +315,7 @@ Paths: **Gale** (wind that hits every enemy); **Raptor** (fast, hard strikes on 
 | 8 | 38 | **Downdraft**: Wing Attack hits every enemy, the others at 60% damage. *(**own**)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* | **Tailwind**: Agility works on the whole party. *(Agility)* |
 | 9 | 44 | **Eye of the Storm**: Below 1/3 HP, the user's Normal and Flying moves deal 1.5× damage. *(**own**)* | **Ascend**: Once the user has used Agility in a battle, Sky Attack needs no charging. *(Sky Attack)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
 | 10 | 50 | **Gale Force**: The user's moves that hit every enemy deal 25% more. *(**own**)* | **Bird of Prey**: Knocking an enemy out with a Flying move heals the user 1/4 of its max HP. *(Flying)* | **Preening**: The user heals 1/16 of its max HP at the end of each round. *(**own**)* |
-| 11 | 60 | **Wind Shear** *(needs 4)*: The user's moves that hit every enemy have a 20% chance to make each one flinch. *(**own**)* | **Aerial Ace** *(needs 4)*: The user's Flying moves never miss and are twice as likely to be critical hits. *(Flying)* | **Blind Spot** *(needs 4)*: Enemies with lowered accuracy take 30% more damage from the user's party. *(**own**)* |
+| 11 | 60 | **Wind Shear** *(needs 4)*: The user's moves that hit every enemy have a 20% chance to make each one flinch. *(**own**)* | **Aerial Ace** *(needs 4)*: The user's Flying moves never miss and are twice as likely to be critical hits. *(Flying)* | **Blind Spot** *(needs 4)*: Enemies with lowered accuracy take 30% more damage from the user's party. *(Any)* |
 | 12 | 75 | **Hurricane** *(needs 6)*: Gust becomes a Flying move with 60 power, and hits every enemy at full damage. *(**own**)* | **Apex Predator** *(needs 6)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Sheltering Wings** *(needs 6)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
 
 ### Rattata → Raticate
@@ -378,6 +381,48 @@ Paths: **Venom** (poison, and making it worse); **Swarm** (many quick stings); *
 | 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Barrage** *(needs 4)*: Pin Missile always hits 5 times. *(**own**)* | **Hornet's Nest** *(needs 4)*: Whoever hits the user has a 25% chance to be poisoned, and takes 1/16 of its max HP. *(**own**)* |
 | 12 | 75 | **Queen's Venom** *(needs 6)*: The user's moves deal 30% more to poisoned enemies. *(**own**)* | **Stinging Swarm** *(needs 6)*: Fury Attack and Pin Missile hit every enemy, the others at 50% damage. *(**own**)* | **Hive Queen** *(needs 6)*: Once a battle, a partner that would faint keeps 1 HP instead. *(**own**)* |
 
+### Goldeen → Seaking
+
+Moves: Peck, Tail Whip, Water Gun 10, Supersonic 19, Horn Attack 24, Bubble Beam 24, Fury Attack 30, Ice Beam 40 (Seaking), Double-Edge 42 (Seaking), Agility 54.
+
+Paths: **Horn** (peck and Horn Attack: piercing strikes); **Current** (water Gun and Bubble Beam); **Showy** (tail Whip and Supersonic: dazzling enemies, and staying up).
+
+| Tier | Lv | Horn | Current | Showy |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Pecking Order**: Peck has a 30% chance to make the target flinch. *(Peck)* | **Water Peck**: Peck becomes a Water move (with STAB). *(**own**)* | **Wagging Tail**: Tail Whip works on every enemy. *(Tail Whip)* |
+| 2 | 10 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Pressure Jet**: Water Gun hits harder: 60 power. *(Water Gun)* | **Tail Slap**: After Tail Whip, the user hits the target with its basic attack at 60% power. *(Tail Whip)* |
+| 3 | 14 | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Torrent**: Below 1/3 HP, the user's Water moves deal 1.5× damage. *(Water)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 4 | 18 | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Undertow**: The user's Water moves have a 20% chance to lower the target's Speed 1 stage. *(Water)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 5 | 22 | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Rising Tide**: Each Water move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Water)* | **Echo**: Supersonic works on every enemy. *(Supersonic)* |
+| 6 | 27 | **Gore**: Horn Attack is 8× as likely to be a critical hit. *(Horn Attack)* | **Bubble Barrage**: Bubble Beam hits every enemy, the others at 50% damage. *(Bubble Beam)* | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* |
+| 7 | 32 | **Piercing Horn**: Horn Attack also hits one enemy next to the target, at half damage. *(Horn Attack)* | **Splash Zone**: The user's Water moves also hit one enemy next to the target, at half damage. *(Water)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 8 | 38 | **Frenzy**: Fury Attack always hits at least 3 times. *(Fury Attack)* | **Foam**: Bubble Beam is twice as likely to lower Speed. *(Bubble Beam)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 9 | 44 | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Rain Dish**: Knocking an enemy out with a Water move heals the user 1/4 of its max HP. *(Water)* | **Hysteria**: Confusion the user causes has a 30% chance each round to spread to an enemy next to it. *(Confusion)* |
+| 10 | 50 | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Hydration**: At the end of each round, the user has a 30% chance to wash off its status. *(Water)* | **Mind Crush**: Confused enemies take 30% more damage from the user. *(Confusion)* |
+| 11 | 60 | **Megahorn** *(needs 4)*: Horn Attack hits much harder: 100 power. *(Horn Attack)* | **Tidal Force** *(needs 4)*: The user's Water moves are always critical hits on a target below half HP. *(Water)* | **Bulwark Stance** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(Any)* |
+| 12 | 75 | **Drill Horn** *(needs 6)*: Horn Attack always goes first and never misses. *(**own**)* | **Waterfall** *(needs 6)*: Bubble Beam hits much harder (100 power) and has a 20% chance to make the target flinch. *(**own**)* | **Dazzling Fins** *(needs 6)*: At the start of each battle, each enemy has a 25% chance to be confused. *(**own**)* |
+
+### Staryu → Starmie
+
+Moves: Tackle, Water Gun 17, Harden 22, Bubble Beam 24, Thunder Wave 26, Recover 27, Swift 32, Psychic 36 (Starmie), Thunderbolt 38 (Starmie), Ice Beam 40 (Starmie), Hydro Pump 47 (Starmie).
+
+Paths: **Core** (harden and Recover: a star that keeps coming back); **Prism** (swift, Psychic, Thunderbolt, Ice Beam: beams of every kind); **Torrent** (water damage).
+
+| Tier | Lv | Core | Prism | Torrent |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Splash Strike**: The basic attack becomes a Water move (with STAB). *(Water)* |
+| 2 | 10 | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Torrent**: Below 1/3 HP, the user's Water moves deal 1.5× damage. *(Water)* |
+| 3 | 14 | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Rising Tide**: Each Water move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Water)* |
+| 4 | 18 | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Pressure Jet**: Water Gun hits harder: 60 power. *(Water Gun)* |
+| 5 | 22 | **Iron Shell**: Harden also halves the damage the user takes for 2 rounds. *(Harden)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Splash Zone**: The user's Water moves also hit one enemy next to the target, at half damage. *(Water)* |
+| 6 | 27 | **Natural Cure**: Recover also cures the user's status. *(Recover)* | **Chain Lightning**: Thunder Wave works on every enemy. *(Thunder Wave)* | **Bubble Barrage**: Bubble Beam hits every enemy, the others at 50% damage. *(Bubble Beam)* |
+| 7 | 32 | **Shell Wall**: Harden works on the whole party. *(Harden)* | **Star Shower**: Swift hits every enemy, the others at 60% damage. *(Swift)* | **Rain Dish**: Knocking an enemy out with a Water move heals the user 1/4 of its max HP. *(Water)* |
+| 8 | 38 | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Conductor**: Enemies the user paralyzes take 30% more damage from everyone. *(Paralysis)* | **Foam**: Bubble Beam is twice as likely to lower Speed. *(Bubble Beam)* |
+| 9 | 44 | **Regenerating Core**: The user heals 1/16 of its max HP at the end of each round. *(**own**)* | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Undertow**: The user's Water moves have a 20% chance to lower the target's Speed 1 stage. *(Water)* |
+| 10 | 50 | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Hydration**: At the end of each round, the user has a 30% chance to wash off its status. *(Water)* |
+| 11 | 60 | **Bulwark Stance** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(Any)* | **Sandblast** *(needs 4)*: Swift has a 50% chance to lower the target's accuracy 1 stage. *(Swift)* | **Tidal Force** *(needs 4)*: The user's Water moves are always critical hits on a target below half HP. *(Water)* |
+| 12 | 75 | **Star Core** *(needs 6)*: Recover heals all the user's HP. *(**own**)* | **Rainbow Beam** *(needs 6)*: Swift hits every enemy at full damage. *(**own**)* | **Whirlpool** *(needs 6)*: Bubble Beam hits every enemy at full damage. *(Bubble Beam)* |
+
 ### Pikachu
 
 Moves: Thunder Shock, Growl, Thunder Wave 9, Quick Attack 16, Swift 26, Thunderbolt 30, Agility 33, Thunder 43.
@@ -392,12 +437,75 @@ Paths: **Spark** (paralysis: slowing and stopping enemies); **Bolt** (raw Electr
 | 4 | 18 | **Conductor**: Enemies the user paralyzes take 30% more damage from everyone. *(Paralysis)* | **Charge Up**: Each Electric move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Electric)* | **Lightning Reflexes**: Quick Attack has a 30% chance to make the target flinch. *(Quick Attack)* |
 | 5 | 22 | **Chain Lightning**: Thunder Wave works on every enemy. *(Thunder Wave)* | **Discharge**: Knocking an enemy out with a Electric move heals the user 1/4 of its max HP. *(Electric)* | **Hit and Run**: Quick Attack also raises the user's Speed 1 stage. *(Quick Attack)* |
 | 6 | 27 | **Arc Flash**: Thunder Shock also hits one enemy next to the target, at half damage. *(**own**)* | **Star Shower**: Swift hits every enemy, the others at 60% damage. *(Swift)* | **Volt Tackle**: Quick Attack becomes an Electric move with 60 power. *(**own**)* |
-| 7 | 32 | **Lightning Rod**: Thunder Wave also makes every enemy attack the user, this round and the next. *(**own**)* | **High Voltage**: Thunderbolt is 4× as likely to be a critical hit. *(**own**)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
+| 7 | 32 | **Lightning Rod**: Thunder Wave also makes every enemy attack the user, this round and the next. *(**own**)* | **High Voltage**: Thunderbolt is 4× as likely to be a critical hit. *(Thunderbolt)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
 | 8 | 38 | **Taunting Growl**: Growl also makes every enemy attack the user, this round and the next. *(Growl)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* |
 | 9 | 44 | **Thunderstorm**: Thunder never misses, and paralyzes 30% of the time. *(**own**)* | **Overload**: Thunderbolt and Thunder hit every enemy, the others at 50% damage. *(**own**)* | **Tailwind**: Agility works on the whole party. *(Agility)* |
 | 10 | 50 | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Thunderclap**: Thunder always goes first. *(**own**)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
 | 11 | 60 | **Thunder Cloud** *(needs 4)*: At the start of each battle, each enemy has a 30% chance to be paralyzed. *(**own**)* | **Gigavolt** *(needs 4)*: Thunder hits every enemy, at full damage. *(**own**)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
 | 12 | 75 | **Supercharged** *(needs 6)*: The user's Electric moves deal 50% more to paralyzed enemies. *(**own**)* | **Thunder God** *(needs 6)*: Thunderbolt and Thunder never miss, and are always critical hits on a target below half HP. *(**own**)* | **Lightning Speed** *(needs 6)*: Quick Attack hits 3 times, at 70% power each. *(Quick Attack)* |
+
+### Shellder
+
+Moves: Tackle, Withdraw, Water Gun 10, Supersonic 18, Clamp 23, Bubble Beam 25, Aurora Beam 30, Leer 39, Ice Beam 50.
+
+Paths: **Shell** (withdraw: the hardest shell in the sea); **Clamp** (clamp and Supersonic: catching and confusing); **Frost** (water Gun, then Aurora Beam and Ice Beam).
+
+| Tier | Lv | Shell | Clamp | Frost |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Frost Tackle**: Tackle becomes an Ice move. *(**own**)* |
+| 2 | 10 | **Shell Shield**: Withdraw also halves the damage the user takes for 2 rounds. *(Withdraw)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Pressure Jet**: Water Gun hits harder: 60 power. *(Water Gun)* |
+| 3 | 14 | **Rough Shell**: Whoever hits the user loses 1/16 of its max HP. *(Water)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Torrent**: Below 1/3 HP, the user's Water moves deal 1.5× damage. *(Water)* |
+| 4 | 18 | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Echo**: Supersonic works on every enemy. *(Supersonic)* | **Undertow**: The user's Water moves have a 20% chance to lower the target's Speed 1 stage. *(Water)* |
+| 5 | 22 | **Turtle Wall**: Withdraw works on the whole party. *(Withdraw)* | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* | **Rising Tide**: Each Water move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Water)* |
+| 6 | 27 | **Solid Rock**: Super-effective hits on the user deal 25% less damage. *(Any)* | **Iron Jaw**: Clamp grips twice as hard: 1/8 of max HP each round. *(Clamp)* | **Bubble Barrage**: Bubble Beam hits every enemy, the others at 50% damage. *(Bubble Beam)* |
+| 7 | 32 | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Squeeze**: Enemies caught in a bind take 30% more damage from the user. *(Any)* | **Frostbite**: The user's Ice moves are 10% more likely to freeze. *(Ice)* |
+| 8 | 38 | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Chill**: The user's Ice moves have a 30% chance to lower the target's Speed 1 stage. *(Ice)* |
+| 9 | 44 | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* | **Northern Lights**: Aurora Beam has a 50% chance to lower the target's Attack. *(Aurora Beam)* |
+| 10 | 50 | **Bulwark Stance**: While the user stands, the whole party takes 15% less damage. *(Any)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* | **Frost Ray**: Ice Beam hits every enemy, the others at 50% damage. *(Ice Beam)* |
+| 11 | 60 | **Iron Turtle** *(needs 4)*: The first hit the user takes in each battle deals no damage, and Withdraw heals the user 1/4 of its max HP. *(Withdraw)* | **Apex Predator** *(needs 4)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Shatter** *(needs 4)*: Frozen enemies take 50% more damage from the user. *(Freeze)* |
+| 12 | 75 | **Fortress** *(needs 6)*: While the user stands, the whole party takes 25% less damage. *(Any)* | **Pearl Crusher** *(needs 6)*: Clamp hits much harder (80 power) and grips harder: a further 1/16 of max HP a round. *(**own**)* | **Absolute Zero** *(needs 6)*: At the start of each battle, each enemy has a 20% chance to be frozen. *(Freeze)* |
+
+### Psyduck → Golduck
+
+Moves: Scratch, Water Gun 8, Bubble Beam 20, Tail Whip 28, Confusion 36, Fury Swipes 43, Ice Beam 45 (Golduck), Hydro Pump 52 (Golduck).
+
+Paths: **Headache** (confusion: a head full of pain and power); **Paddle** (water damage); **Scratch** (scratch and Fury Swipes).
+
+| Tier | Lv | Headache | Paddle | Scratch |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Migraine**: Below 1/3 HP, all the user's moves deal 1.5× damage. *(**own**)* | **Splash Strike**: The basic attack becomes a Water move (with STAB). *(Water)* | **Sharp Claws**: Scratch is 4× as likely to be a critical hit. *(Scratch)* |
+| 2 | 10 | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Pressure Jet**: Water Gun hits harder: 60 power. *(Water Gun)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* |
+| 3 | 14 | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Torrent**: Below 1/3 HP, the user's Water moves deal 1.5× damage. *(Water)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 4 | 18 | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* | **Undertow**: The user's Water moves have a 20% chance to lower the target's Speed 1 stage. *(Water)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* |
+| 5 | 22 | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* | **Bubble Barrage**: Bubble Beam hits every enemy, the others at 50% damage. *(Bubble Beam)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* |
+| 6 | 27 | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Rising Tide**: Each Water move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Water)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
+| 7 | 32 | **Tail Slap**: After Tail Whip, the user hits the target with its basic attack at 60% power. *(Tail Whip)* | **Foam**: Bubble Beam is twice as likely to lower Speed. *(Bubble Beam)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* |
+| 8 | 38 | **Wagging Tail**: Tail Whip works on every enemy. *(Tail Whip)* | **Splash Zone**: The user's Water moves also hit one enemy next to the target, at half damage. *(Water)* | **Scavenger**: Knocking an enemy out with a Normal move heals the user 1/4 of its max HP. *(Normal)* |
+| 9 | 44 | **Dizzying Mind**: Confusion is 20% more likely to confuse. *(Confusion)* | **Rain Dish**: Knocking an enemy out with a Water move heals the user 1/4 of its max HP. *(Water)* | **Raking Claws**: Fury Swipes wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Fury Swipes)* |
+| 10 | 50 | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* | **Hydration**: At the end of each round, the user has a 30% chance to wash off its status. *(Water)* | **Frenzy Claws**: Fury Swipes always hits 5 times. *(Fury Swipes)* |
+| 11 | 60 | **Mind Crush** *(needs 4)*: Confused enemies take 30% more damage from the user. *(Confusion)* | **Tidal Force** *(needs 4)*: The user's Water moves are always critical hits on a target below half HP. *(Water)* | **Apex Predator** *(needs 4)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* |
+| 12 | 75 | **Psychic Surge** *(needs 6)*: Confusion hits every enemy at full damage, and confuses half the time. *(**own**)* | **Whirlpool** *(needs 6)*: Bubble Beam hits every enemy at full damage. *(Bubble Beam)* | **Blur** *(needs 6)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
+
+### Horsea → Seadra
+
+Moves: Bubble, Smokescreen 19, Bubble Beam 20, Leer 24, Water Gun 30, Agility 37, Ice Beam 40 (Seadra), Hydro Pump 45 (Seadra).
+
+Paths: **Ink** (smokescreen: blinding enemies, and punishing the blind); **Current** (bubble and Bubble Beam); **Dart** (speed, and striking first).
+
+| Tier | Lv | Ink | Current | Dart |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Murky Water**: Bubble has a 20% chance to lower the target's accuracy 1 stage. *(**own**)* | **Bubble Burst**: Bubble hits every enemy, the others at 60% damage. *(Bubble)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 2 | 10 | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Froth**: Bubble is twice as likely to lower Speed. *(Bubble)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* |
+| 3 | 14 | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Torrent**: Below 1/3 HP, the user's Water moves deal 1.5× damage. *(Water)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* |
+| 4 | 18 | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* | **Rising Tide**: Each Water move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Water)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
+| 5 | 22 | **Smoke Cloud**: Smokescreen works on every enemy. *(Smokescreen)* | **Bubble Barrage**: Bubble Beam hits every enemy, the others at 50% damage. *(Bubble Beam)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* |
+| 6 | 27 | **Ink Blind**: Smokescreen lowers accuracy 2 stages. *(Smokescreen)* | **Foam**: Bubble Beam is twice as likely to lower Speed. *(Bubble Beam)* | **Scavenger**: Knocking an enemy out with a Normal move heals the user 1/4 of its max HP. *(Normal)* |
+| 7 | 32 | **Blind Spot**: Enemies with lowered accuracy take 30% more damage from the user's party. *(Any)* | **Splash Zone**: The user's Water moves also hit one enemy next to the target, at half damage. *(Water)* | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
+| 8 | 38 | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* | **Undertow**: The user's Water moves have a 20% chance to lower the target's Speed 1 stage. *(Water)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* |
+| 9 | 44 | **Menacing Leer**: Leer works on every enemy. *(Leer)* | **Rain Dish**: Knocking an enemy out with a Water move heals the user 1/4 of its max HP. *(Water)* | **Tailwind**: Agility works on the whole party. *(Agility)* |
+| 10 | 50 | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Pressure Jet**: Water Gun hits harder: 60 power. *(Water Gun)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* |
+| 11 | 60 | **Smoke Bomb** *(needs 4)*: At the start of each battle, every enemy's accuracy falls 1 stage. *(**own**)* | **Tidal Force** *(needs 4)*: The user's Water moves are always critical hits on a target below half HP. *(Water)* | **Unbreakable** *(needs 4)*: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 12 | 75 | **Phantom Ink** *(needs 6)*: Enemies with lowered accuracy take 50% more damage from the user's party. *(**own**)* | **Whirlpool** *(needs 6)*: Bubble Beam hits every enemy at full damage. *(Bubble Beam)* | **Sniper** *(needs 6)*: The user's critical hits deal double damage (not 1.5×). *(**own**)* |
 
 ### Geodude → Graveler → Golem
 
@@ -460,7 +568,7 @@ Paths: **Sand** (sand-Attack: blinding enemies, and punishing the blind); **Claw
 | 9 | 44 | **Decoy**: Sand-Attack also makes every enemy attack the user, this round and the next. *(Sand-Attack)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Dig In**: Once a battle, ending a round below 1/3 HP heals the user half its max HP. *(**own**)* |
 | 10 | 50 | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Frenzy Claws**: Fury Swipes always hits 5 times. *(Fury Swipes)* | **Bulwark Stance**: While the user stands, the whole party takes 15% less damage. *(Any)* |
 | 11 | 60 | **Sand Stream** *(needs 4)*: At the start of each battle, every enemy's accuracy falls 2 stages. *(**own**)* | **Crush Claw** *(needs 4)*: Slash has a 50% chance to lower the target's Defense 1 stage. *(**own**)* | **Spiked Armor** *(needs 4)*: Whoever hits the user loses 1/8 of its max HP. *(**own**)* |
-| 12 | 75 | **Sandblast** *(needs 6)*: Swift has a 50% chance to lower the target's accuracy 1 stage. *(**own**)* | **Rending Claws** *(needs 6)*: Slash and Fury Swipes wound the target: 1/8 of its max HP each round, for 3 rounds. *(**own**)* | **Impregnable** *(needs 6)*: The first hit the user takes in each battle deals no damage, and super-effective hits deal half. *(**own**)* |
+| 12 | 75 | **Sandblast** *(needs 6)*: Swift has a 50% chance to lower the target's accuracy 1 stage. *(Swift)* | **Rending Claws** *(needs 6)*: Slash and Fury Swipes wound the target: 1/8 of its max HP each round, for 3 rounds. *(**own**)* | **Impregnable** *(needs 6)*: The first hit the user takes in each battle deals no damage, and super-effective hits deal half. *(**own**)* |
 
 ### Ekans → Arbok
 

@@ -187,7 +187,7 @@ out in these steps:
    11.25%). Always a crit with Keen Edge on a target below half HP (Apex
    Predator: below ⅓). A crit
    multiplies `base` by **×1.5** (Gen 2+ style; *not* Gen 1's level-based
-   crits).
+   crits; ×2 with the Sniper talent).
 5. **Leaf Shield:** if the target is shielded, `base` × **0.5**.
 6. **Random spread:** `base` × a random number from 0.85 to 1.0, × the
    move's share if it hits several targets (Petal Dance 0.35), except

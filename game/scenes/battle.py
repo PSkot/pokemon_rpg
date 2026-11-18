@@ -700,6 +700,11 @@ class BattleScene(Scene):
                     self.message = " ".join([f"{holder.label}'s aura spreads!"]
                                             + [STATUSES[status].inflicted.format(c.label) for c in hit])
                     yield STATUS_MESSAGE_TIME
+            chance = m.talent("aura:confused")  # (Dazzling Fins)
+            hit = [c for c in foes if chance and not c.confused and random.random() * 100 < chance]
+            if hit:
+                self.message = " ".join([f"{holder.label}'s aura spreads!"] + [self._confuse(c) for c in hit])
+                yield STATUS_MESSAGE_TIME
             for stat in STAGE_STATS:  # (Intimidate: Attack; Sand Veil: accuracy)
                 stages = round(m.talent(f"lower:{stat}"))
                 if stages and foes:
