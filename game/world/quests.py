@@ -522,6 +522,22 @@ QUESTS = {q.key: q for q in [
         money=600, xp=500,
     ),
     Quest(
+        "underground_path", "Under Saffron",
+        "Saffron City's gates are shut. The Underground Path runs beneath the city, from Route 5 to Route 6.",
+        requires=("to_route_5",),
+        steps=(Step("reach", "route_6", "Take the Underground Path to Route 6 (from the Route 5 stop)"),),
+        money=700, xp=600,
+    ),
+    Quest(
+        "to_vermilion", "Vermilion City",
+        "Route 6 runs down to Vermilion City, the port where the S.S. Anne is docked.",
+        requires=("underground_path",),
+        steps=(Step("reach", "vermilion", "Follow Route 6 down to Vermilion City"),),
+        money=900, xp=800,
+        rewards=(("medicine", "Super Potion", 3), ("gear", None, "Uncommon", 22)),
+        done_dialogue=(("", "The S.S. Anne is in port. With Bill's S.S. Ticket, you can go aboard."),),
+    ),
+    Quest(
         "snake_charmer", "Snake Charmer",
         "Ekans on Route 3 keep frightening travelers. Drive a few of them off.",
         board="pewter", requires=("boulder_badge",),
@@ -572,6 +588,21 @@ QUESTS = {q.key: q for q in [
         board="cerulean", requires=("rival_cerulean",),
         steps=(hunt("venonat", 6, "Route 25"), HAND_IN),
         money=900, xp=600,
+    ),
+    # Vermilion City's board: jobs in the Underground Path and on Route 6.
+    Quest(
+        "tunnel_diggers", "Tunnel Trouble",
+        "Diglett keep popping up under travellers' feet in the Underground Path. Shoo a few of them off.",
+        board="vermilion", requires=("to_vermilion",),
+        steps=(hunt("diglett", 6, "Underground Path"), HAND_IN),
+        money=1100, xp=700,
+    ),
+    Quest(
+        "lucky_coins", "Lucky Coins",
+        "Meowth on Route 6 pick up every coin they find. A Vermilion sailor wants his lucky ones back.",
+        board="vermilion", requires=("to_vermilion",),
+        steps=(collect("Lucky Coin", 5, "route_6_south", ("meowth",), 40, "Meowth on Route 6"), HAND_IN),
+        money=1100, xp=700,
     ),
     Quest(
         "pickpockets", "Pickpockets",

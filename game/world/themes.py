@@ -60,6 +60,9 @@ class CaveLook:
     wall: str = ""
     dim: int = 90
     near_rocks: bool = True  # rock drawn in front of the far wall (not in halls)
+    # A built tunnel's far wall instead of rock: courses of wall tiles, and a
+    # lamp (in `glow`'s colours) every `lamps` px (the Underground Path).
+    lamps: int = 0
 
 
 @dataclass(frozen=True)
@@ -208,6 +211,46 @@ ROUTE_5 = Theme(
         PoolEntry("pidgey", 20, (21, 24)),
         PoolEntry("oddish", 15, (20, 23)),
         PoolEntry("bellsprout", 15, (20, 23)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+)
+
+# The Underground Path under Saffron City, from Route 5 to Route 6: a
+# lamp-lit tunnel (drawn in code). No wild Pokémon live there in Red/Blue;
+# here the Diglett who dug it out again, and what moved in after them.
+UNDERGROUND = Theme(
+    "underground", "Underground Path",
+    Palette(fill=(104, 98, 92), fill_dark=(76, 72, 68), fill_light=(138, 130, 122),
+            top=(170, 160, 144), top_dark=(134, 126, 114), top_light=(204, 194, 176),
+            platform=(120, 100, 76), platform_dark=(80, 66, 50), platform_light=(160, 136, 104)),
+    pool=(
+        PoolEntry("diglett", 35, (21, 24)),
+        PoolEntry("rattata", 30, (22, 25)),
+        PoolEntry("zubat", 20, (22, 25)),
+        PoolEntry("ekans", 15, (22, 25)),
+    ),
+    backdrop=Backdrop(sky_top=(40, 36, 34), sky_bottom=(84, 78, 72), hills=((96, 90, 84), (86, 80, 74)),
+                      field_far=(160, 150, 136), field_near=(138, 128, 116), stripe=(150, 140, 126),
+                      shadow=(90, 84, 76)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(30, 28, 28), sky_bottom=(66, 60, 56), far_rock=(54, 50, 48), near_rock=(72, 66, 62),
+                  glow=((150, 120, 60), (255, 232, 160)), near_rocks=False, lamps=96),
+    doorway="",
+)
+
+# Route 6, from the Underground Path's south end down to Vermilion City:
+# Route 5's Pokémon, a little stronger, and Psyduck from its pond.
+ROUTE_6 = Theme(
+    "route_6", "Route 6",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("meowth", 20, (22, 25)),
+        PoolEntry("mankey", 20, (22, 25)),
+        PoolEntry("pidgey", 20, (23, 26)),
+        PoolEntry("oddish", 15, (22, 25)),
+        PoolEntry("bellsprout", 15, (22, 25)),
+        PoolEntry("psyduck", 10, (22, 25)),
     ),
     backdrop=MEADOW_BACKDROP,
 )

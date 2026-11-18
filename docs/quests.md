@@ -178,6 +178,8 @@ handing them in at any board.
 | Cerulean | Night Swarm | Rival at Nugget Bridge | Defeat 6 Venonat (Route 25) | – | ₽900, 600 XP |
 | Cerulean | Pickpockets | The Cerulean Burglar | Defeat 6 Meowth (Route 5) | – | ₽1,000, 650 XP |
 | Cerulean | Hot Tempers | The Cerulean Burglar | Collect 5 Mankey Fur (Mankey, Route 5) | 40% | ₽1,000, 650 XP |
+| Vermilion | Tunnel Trouble | Vermilion City | Defeat 6 Diglett (Underground Path) | – | ₽1,100, 700 XP |
+| Vermilion | Lucky Coins | Vermilion City | Collect 5 Lucky Coins (Meowth, Route 6) | 40% | ₽1,100, 700 XP |
 
 Each takes about one or two runs of its route. They can't be repeated
 yet.
@@ -290,8 +292,31 @@ yet.
 - **Steps:** walk **Route 5** (2 maps, wild Meowth and Mankey) to the
   Route 5 stop at its bottom (town "route_5"): the Day Care (scenery),
   Saffron City's gate guard (the gate is shut, as in Red/Blue), and a
-  Diglett digging out the **Underground Path** to Route 6 (the next part).
+  Diglett who dug the **Underground Path** out again.
 - **Rewards:** ₽600, 500 XP.
+- **Unlocks:** quest 11.
+
+### 11. Under Saffron
+
+- **Starts:** automatically when quest 10 is done.
+- **Steps:** take the **Underground Path** (the Route 5 stop's east
+  doorway; 2 maps of lamp-lit tunnel under Saffron City, whose gates are
+  shut; wild Diglett, Rattata, Zubat and Ekans, no trainers) to the stop at
+  the top of Route 6 (town "route_6").
+- **Rewards:** ₽700, 600 XP.
+
+### 12. Vermilion City
+
+- **Starts:** automatically when quest 11 is done.
+- **Steps:** follow **Route 6** (2 maps, four trainer bands) down to
+  **Vermilion City**.
+- **Rewards:** ₽900, 800 XP, 3 Super Potions and an Uncommon gear piece
+  (item level 22).
+- **Unlocks:** Vermilion's board jobs. Vermilion City has a Pokémon Center,
+  a Poké Mart, a Recruitment Center, the Pokémon Fan Club (scenery), the
+  Vermilion Gym (a small tree grows over its door, as in Red/Blue: Cut
+  comes from the S.S. Anne) and, at the east end, the dock where the S.S.
+  Anne lies (the next part).
 
 ---
 
@@ -413,7 +438,7 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
   10 for most, fewer for rare ones), its **recruitment quest** opens. The
   battle's rewards say so ("Pidgey can be recruited!"), and a "!" shows
   over the Recruitment Centers.
-- **Recruitment Centers** (in Viridian, Pewter and Cerulean, for now in one of the
+- **Recruitment Centers** (in Viridian, Pewter, Cerulean and Vermilion, for now in one of the
   town's houses): inside, a **recruitment board** with the open
   recruitments' Pokémon pinned on it, and **Mr. Mime** beside it.
   - Up at the board: every recruitable line, locked (with its count),
@@ -454,9 +479,11 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | Venonat | 10 | Route 25 | 18–20 | Lv23 |
 | Meowth | 10 | Route 5 | 19–21 | Lv24 |
 | Mankey | 10 | Route 5 | 19–21 | Lv24 |
+| Diglett | 8 | Underground Path | 20–22 | Lv25 |
+| Psyduck | 6 | Route 6 | 21–23 | Lv26 |
 
 Not every Pokémon comes this way: the starters, and those only met with
-trainers (Geodude, Onix, Diglett), will have special quests.
+trainers (Geodude, Onix), will have special quests.
 
 ---
 

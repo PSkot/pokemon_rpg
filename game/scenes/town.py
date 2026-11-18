@@ -188,6 +188,8 @@ class TownScene(MapScene):
                 self.show(quest_ui.Dialogue([("Nurse", "We've restored your Pokémon to full health. "
                                                        "We hope to see you again!")]))
                 saves.autosave(self)
+            elif building.note:
+                self.show(quest_ui.Dialogue([("", building.note)]))
             return
         if door:
             route = ROUTES[door[1]]
@@ -206,7 +208,8 @@ class TownScene(MapScene):
         if door:
             return door[0].x, door[0].feet_y - 66
         building = self._building_at_player()
-        if building and (building.inside or self._route_in(building) or building.name == "Pokémon Center"):
+        if building and (building.inside or self._route_in(building) or building.name == "Pokémon Center"
+                         or building.note):
             return building_mid(building), self.level.ground_y(0) - 60
         return None
 

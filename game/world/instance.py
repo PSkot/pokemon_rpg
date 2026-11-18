@@ -28,8 +28,8 @@ from dataclasses import dataclass, field, replace
 from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate
-from .themes import (CERULEAN_GYM, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_22, ROUTE_24,
-                     ROUTE_25, PoolEntry, Theme)
+from .themes import (CERULEAN_GYM, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_22,
+                     ROUTE_24, ROUTE_25, UNDERGROUND, PoolEntry, Theme)
 
 # Stands in a boss group for the rival's starter, which depends on the
 # player's (`progress.Game.rival_starter`).
@@ -270,6 +270,21 @@ ROUTES = {r.key: r for r in [
     Route("route_5_south", "Route 5", ROUTE_5, maps=2, towns=("cerulean", "route_5"),
           needs=("burglary", "done"),
           blocked="A fence blocks the road south. Past it, footprints lead into the backyard of the burgled house."),
+    # The Underground Path under Saffron City (its gates are shut), from the
+    # Route 5 stop to the one at Route 6's top. No trainers, as in Red/Blue.
+    Route("underground_path", "Underground Path", UNDERGROUND, maps=2, towns=("route_5", "route_6")),
+    # Route 6, down to Vermilion City (its key isn't "route_6": that's the
+    # stop at the tunnel's south end). Gen 1's Bug Catchers and Jr.
+    # Trainers (here bands), a couple of levels up.
+    Route("route_6_south", "Route 6", ROUTE_6, maps=2, towns=("route_6", "vermilion"),
+          trainers=(
+              Trainer("route_6_bug_catcher_1", "Meadow Swarm", (("butterfree", 24), ("beedrill", 24)), 0, 10),
+              Trainer("route_6_jr_trainer_1", "Pond Pals", (("psyduck", 24), ("goldeen", 24)), 0, 20),
+              Trainer("route_6_jr_trainer_2", "Spark Squad", (("pikachu", 25), ("rattata", 25), ("raticate", 24)),
+                      1, 20),
+              Trainer("route_6_bug_catcher_2", "Thicket Crawlers", (("venonat", 25), ("paras", 25), ("metapod", 25)),
+                      1, 10),
+          )),
 ]}
 
 
@@ -389,6 +404,8 @@ RECRUITS = {r.species: r for r in [
     Recruit("venonat", 10, ROUTE_25, 20),
     Recruit("meowth", 10, ROUTE_5, 21),
     Recruit("mankey", 10, ROUTE_5, 21),
+    Recruit("diglett", 8, UNDERGROUND, 22),
+    Recruit("psyduck", 6, ROUTE_6, 23),
 ]}
 
 

@@ -132,12 +132,22 @@ def _moonstone(s, x, y, rng, p):
     s.set_at((x, y - 4), (230, 220, 255))
 
 
-CEILING_DECOR = {"pewter_gym": _stalactite, "mt_moon": _stalactite}  # theme -> what hangs
+def _lamp(s, x, y, rng, p):
+    """A lamp hanging from the tunnel's ceiling (the Underground Path)."""
+    h = rng.randint(3, 6)
+    pygame.draw.line(s, p.fill_dark, (x, y), (x, y + h))
+    pygame.draw.rect(s, (60, 54, 48), (x - 2, y + h, 5, 2))
+    pygame.draw.rect(s, (255, 220, 130), (x - 1, y + h + 2, 3, 2))
+    s.set_at((x, y + h + 2), (255, 248, 210))
+
+
+CEILING_DECOR = {"pewter_gym": _stalactite, "mt_moon": _stalactite, "underground": _lamp}  # theme -> what hangs
 
 DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the meadow's come from its tileset)
     "pewter_gym": [(0.12, _rock)],
     "mt_moon": [(0.10, _rock), (0.03, _moonstone)],
     "cerulean_gym": [(0.08, _puddle)],
+    "underground": [(0.06, _rock)],  # rubble the Diglett left
 }
 
 
@@ -455,13 +465,15 @@ def backgrounds(level: Level) -> list[tuple[pygame.Surface, float]]:
     look = level.theme.cave
     if look.wall:
         _painting(far, "walls/" + look.wall, look.dim)
+    elif look.lamps:
+        _tunnel_wall(far, look)
     else:
         _gradient(far, look.sky_top, look.sky_bottom)
         for x in range(0, far_w, 24):  # the cave's back wall: hanging and standing rock
             w = rng.randint(14, 30)
             pygame.draw.polygon(far, look.far_rock, [(x, 0), (x + w, 0), (x + w // 2, rng.randint(30, 90))])
             pygame.draw.polygon(far, look.far_rock, [(x, h), (x + w, h), (x + w // 2, h - rng.randint(60, 160))])
-    if look.glow and not look.wall:
+    if look.glow and not look.wall and not look.lamps:
         for _ in range(far_w // 40):  # faint glowing crystals
             x, y = rng.randrange(far_w), rng.randint(100, 280)
             pygame.draw.circle(far, look.glow[0], (x, y), 3)
@@ -471,6 +483,29 @@ def backgrounds(level: Level) -> list[tuple[pygame.Surface, float]]:
         pygame.draw.polygon(near, look.near_rock, [(x, h), (x + w, h), (x + w // 2, h - rng.randint(90, 190))])
         pygame.draw.polygon(near, look.near_rock, [(x, 0), (x + w, 0), (x + w // 2, rng.randint(40, 110))])
     return [(far, FAR), (near, NEAR)]
+
+
+def _tunnel_wall(far: pygame.Surface, look) -> None:
+    """A built tunnel's back wall: courses of tiles, a dark skirting band, and
+    a lamp with its pool of light every `look.lamps` px."""
+    w, h = far.get_size()
+    _gradient(far, look.sky_top, look.sky_bottom)
+    course, tile = 12, 24
+    for row, y in enumerate(range(40, h - 40, course)):
+        pygame.draw.line(far, look.far_rock, (0, y), (w, y))
+        for x in range(-tile + (row % 2) * tile // 2, w, tile):
+            pygame.draw.line(far, look.far_rock, (x, y), (x, y + course - 1))
+    pygame.draw.rect(far, look.far_rock, (0, 40 - 6, w, 6))     # the ceiling's edge ...
+    pygame.draw.rect(far, look.near_rock, (0, h - 40, w, 40))   # ... and the skirting
+    dim, bright = look.glow
+    glow = pygame.Surface((90, 90), pygame.SRCALPHA)
+    for r in range(45, 0, -5):  # a soft pool of lamplight
+        pygame.draw.circle(glow, (*dim, 6), (45, 45), r)
+    for x in range(look.lamps // 2, w, look.lamps):
+        far.blit(glow, (x - 45, 70 - 45))
+        pygame.draw.rect(far, look.near_rock, (x - 4, 62, 9, 4))   # the bracket
+        pygame.draw.rect(far, dim, (x - 3, 66, 7, 6))
+        pygame.draw.rect(far, bright, (x - 2, 67, 5, 4))
 
 
 def _painting(surface: pygame.Surface, name: str, dim: int = 0) -> None:

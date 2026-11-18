@@ -29,6 +29,7 @@ class Building:
     # What Up there enters: "mart" (scenes/mart.py), "recruit" (a Recruitment
     # Center, scenes/recruit.py), or "" (nothing).
     inside: str = ""
+    note: str = ""  # what Up there says, if nothing else happens there (a shut gym)
 
     @property
     def x(self) -> int:
@@ -212,15 +213,52 @@ TOWNS = {t.key: t for t in [
     # Underground Path to Route 6 (being dug out: the next part).
     Town("route_5", "Route 5", 48, (
         Building("Day Care", (HOUSES, 1), 8),
-    ), exits=(("left", "route_5_south"),), home_col=5,
+    ), exits=(("left", "route_5_south"), ("right", "underground_path")), home_col=5,
        folk=(
            Folk("route_5_guard", "Gate Guard", "nidorino", 22, (
                "The gate to Saffron City is shut. Orders from up high. Nobody gets through.",
                "Phew, I'm parched. Standing guard all day is thirsty work...",
            )),
            Folk("route_5_diglett", "Diglett", "diglett", 34, (
-               "Dig dig! The Underground Path to Route 6 caved in. We're digging it out again. Come back soon!",
-               "Dig...? Under Saffron City, the tunnel goes all the way to Vermilion. Dig dig!",
+               "Dig dig! We dug the Underground Path out again. It runs under Saffron City to Route 6.",
+               "Dig...? Some of us stayed down in the tunnel. They don't like being stepped on. Dig dig!",
+           )),
+       )),
+    # The top of Route 6, at the Underground Path's south end: Saffron
+    # City's south gate (shut too), and the road on down to Vermilion.
+    Town("route_6", "Route 6", 40, (), exits=(("left", "underground_path"), ("right", "route_6_south")), home_col=8,
+         folk=(Folk("route_6_psyduck", "Psyduck", "psyduck", 22, (
+             "Psy...? The gate to Saffron City is shut on this side too. Everyone has to go under it.",
+             "Vermilion City is down the road. It smells of the sea... Psyduck likes that.",
+         )),)),
+    # Vermilion City, the port: Lt. Surge's gym (a little tree blocks its
+    # door, as in Red/Blue: Cut comes from the S.S. Anne), the Pokémon Fan
+    # Club and the dock where the S.S. Anne lies (the next part).
+    Town("vermilion", "Vermilion City", 90, (
+        Building("Pokémon Center", (FUNCTIONAL, 0), 10),
+        Building("Pokémon Fan Club", (HOUSES, 1), 22,
+                 note="A sign on the door: \"Pokémon Fan Club. Members only. Meetings: whenever the chairman "
+                      "feels like talking.\""),
+        Building("Poké Mart", (FUNCTIONAL, 2), 34, inside="mart"),
+        Building("Recruitment Center", (HOUSES, 3), 46, inside="recruit"),
+        Building("Vermilion Gym", (FUNCTIONAL, 1), 60,
+                 note="A small, thorny tree has grown over the gym's door. It would have to be cut down to get in."),
+        Building("", (HOUSES, 2), 72),
+    ), exits=(("left", "route_6_south"),), home_col=14, board_col=57,
+       mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal",
+             "Ice Heal"),
+       folk=(
+           Folk("vermilion_jigglypuff", "Jigglypuff", "jigglypuff", 31, (
+               "Puff! The Pokémon Fan Club meets next door. The chairman talks about his Pokémon for hours.",
+               "Jiggly... Everyone's here for the S.S. Anne. It only comes to port once a year!",
+           )),
+           Folk("vermilion_pikachu", "Pikachu", "pikachu", 69, (
+               "Pika! A little tree has grown right over the gym's door. Someone would have to cut it down...",
+               "The gym's leader, Lt. Surge, uses Electric Pokémon. Pika pika! Ground types don't mind them at all.",
+           )),
+           Folk("vermilion_shellder", "Shellder", "shellder", 84, (
+               "Clack! The S.S. Anne is in port, at the dock just past here. Only passengers with a ticket may board.",
+               "Clack clack. The sailors on the S.S. Anne have strong Pokémon from all over the world.",
            )),
        )),
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a

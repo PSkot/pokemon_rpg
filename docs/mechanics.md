@@ -680,6 +680,8 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 25 | Common | (no boss) |
 | Burgled House (Cerulean) | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the burglar: a reward roll with the battle) |
 | Route 5 | Common | (no boss) |
+| Underground Path | Common | (no boss) |
+| Route 6 | Common | (no boss) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -905,6 +907,30 @@ boss or trainers, as in Red/Blue). Meowth from Blue, Mankey from Red:
 | Oddish | 15 | 20–23 |
 | Bellsprout | 15 | 20–23 |
 
+**Underground Path** (`Route` "underground_path", 2 maps of tunnel from
+the Route 5 stop to the one at the top of Route 6; no boss or trainers, as
+in Red/Blue, which has no wild Pokémon there; here the Diglett who dug it
+out again, and what moved in):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Diglett | 35 | 21–24 |
+| Rattata | 30 | 22–25 |
+| Zubat | 20 | 22–25 |
+| Ekans | 15 | 22–25 |
+
+**Route 6** (`Route` "route_6_south", 2 maps from the Route 6 stop down to
+Vermilion City; four trainers):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Meowth | 20 | 22–25 |
+| Mankey | 20 | 22–25 |
+| Pidgey | 20 | 23–26 |
+| Oddish | 15 | 22–25 |
+| Bellsprout | 15 | 22–25 |
+| Psyduck | 10 | 22–25 |
+
 The **Burgled House** (`Route` "cerulean_backyard", walked from the house
 at the end of Cerulean's street, open while quest *The Cerulean Burglar*
 is active): a short walk (30 tiles, no wild Pokémon) to its backyard,
@@ -1022,6 +1048,10 @@ always the same spot), with its team in a row.
 | Route 25, map 2 | Camping Crew (Camper) | Rattata 22, Ekans 22, Spearow 22 | ₽165 |
 | Route 25, map 2 | Garden Club (Lass) | Oddish 22, Bellsprout 22 | ₽165 |
 | Burgled House (boss) | Rocket Gang (Team Rocket Grunt) | Mankey 24, Abra 22, Zubat 22 | ₽330 |
+| Route 6, map 1 | Meadow Swarm (Bug Catcher) | Butterfree 24, Beedrill 24 | ₽120 |
+| Route 6, map 1 | Pond Pals (Jr. Trainer) | Psyduck 24, Goldeen 24 | ₽240 |
+| Route 6, map 2 | Spark Squad (Jr. Trainer) | Pikachu 25, Rattata 25, Raticate 24 | ₽240 |
+| Route 6, map 2 | Thicket Crawlers (Bug Catcher) | Venonat 25, Paras 25, Metapod 25 | ₽125 |
 | Route 22 (boss) | the rival | Pidgey 7, starter 6 | ₽105 |
 
 ---

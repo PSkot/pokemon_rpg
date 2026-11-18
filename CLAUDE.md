@@ -316,9 +316,14 @@ non-commercial project.
   "cerulean_backyard" (`Route.building`) to the burglar's Rocket Gang;
   beating it opens Cerulean's doorway behind it onto route
   "route_5_south" (Route 5: wild Meowth and Mankey, icon placeholders)
-  → stop town "route_5" (Day Care, the shut Saffron gate, a Diglett
-  digging out the Underground Path: next). `Route.blocked_done`: what a
-  shut doorway says once its quest is done (`quests.blocked_text`).
+  → stop town "route_5" (Day Care, the shut Saffron gate) → route
+  "underground_path" (theme `UNDERGROUND`: a code-drawn tunnel,
+  `CaveLook.lamps`: a tiled far wall with wall lamps, `tileset._tunnel_wall`;
+  ceiling lamps) → stop town "route_6" → route "route_6_south" (four
+  bands) → Vermilion City (Center, Mart, Recruitment Center, Fan Club,
+  the gym shut by a tree; the S.S. Anne's dock: next). `Route.blocked_done`: what a
+  shut doorway says once its quest is done (`quests.blocked_text`);
+  `Building.note`: what Up at a building says if nothing else happens.
   Code-drawn caves take their colours from
   `Theme.cave` (`CaveLook`) and ceiling decor from `tileset.CEILING_DECOR`.
   Themes (`themes.py`) pick their map art with `Theme.art` ("woods":
