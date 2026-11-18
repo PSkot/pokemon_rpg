@@ -102,29 +102,6 @@ MEADOW = Theme(
     group_sizes=((1, 80), (2, 20)),  # mostly one at a time: the starter starts out alone
 )
 
-ICE_CAVE = Theme(
-    "ice_cave", "Ice Cave",
-    Palette(fill=(70, 88, 128), fill_dark=(52, 66, 100), fill_light=(110, 140, 180),
-            top=(232, 244, 252), top_dark=(180, 206, 230), top_light=(255, 255, 255),
-            platform=(150, 210, 240), platform_dark=(96, 160, 210), platform_light=(220, 245, 255)),
-    pool=(
-        PoolEntry("seel", 30, (3, 5)),
-        PoolEntry("shellder", 30, (3, 5)),
-        PoolEntry("psyduck", 15, (3, 5)),
-        PoolEntry("horsea", 15, (3, 5)),
-        PoolEntry("jynx", 5, (4, 6)),
-        PoolEntry("dewgong", 3, (5, 7)),
-        PoolEntry("lapras", 1, (6, 8)),
-    ),
-    backdrop=Backdrop(sky_top=(20, 28, 52), sky_bottom=(48, 66, 104),
-                      hills=((60, 80, 120), (52, 70, 108)),
-                      field_far=(176, 204, 228), field_near=(140, 176, 210), stripe=(160, 192, 222),
-                      shadow=(96, 124, 160)),
-    ceiling=True,
-    art="cave",
-    doorway="",
-)
-
 # Viridian Forest: Red's and Blue's forest Pokémon together, at their Gen 1
 # levels. (Same map art as the meadow for now; a darker battle backdrop.)
 FOREST = Theme(
@@ -282,4 +259,4 @@ MT_MOON = Theme(
     doorway="doorway_cave",
 )
 
-THEMES = {t.key: t for t in (MEADOW, ROUTE_22, FOREST, ICE_CAVE, ROUTE_3, PEWTER_GYM, MT_MOON)}
+THEMES = {t.key: t for t in (MEADOW, ROUTE_22, FOREST, ROUTE_3, PEWTER_GYM, MT_MOON)}

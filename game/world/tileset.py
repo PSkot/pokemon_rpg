@@ -1,8 +1,8 @@
 """Map art: tiles, decorations, buildings and parallax backgrounds.
 
 The meadow (towns and routes) uses Pixellab art: its ground from the woods
-tileset, buildings, and a parallax background. The ice cave and one-way
-platforms are still placeholders drawn in code from the theme's colours.
+tileset, buildings, and a parallax background. Caves and one-way
+platforms are drawn in code from the theme's colours.
 """
 
 import random
@@ -112,24 +112,6 @@ def _rock(s, x, y, rng, p):
     pygame.draw.ellipse(s, p.fill_light, (x - 3, y - 5, 5, 3))
 
 
-def _crystal(s, x, y, rng, p):
-    for dx, h, color in ((-3, 6, (110, 200, 240)), (2, 9, (150, 225, 255)), (0, 12, (190, 240, 255))):
-        pygame.draw.polygon(s, color, [(x + dx - 2, y), (x + dx + 2, y), (x + dx, y - h)])
-    s.set_at((x, y - 9), (255, 255, 255))
-
-
-def _snow_mound(s, x, y, rng, p):
-    pygame.draw.ellipse(s, p.top_dark, (x - 6, y - 4, 13, 6))
-    pygame.draw.ellipse(s, p.top, (x - 5, y - 5, 10, 5))
-
-
-def _icicle(s, x, y, rng, p):
-    """Hangs down from a ceiling whose underside is at `y`."""
-    h = rng.randint(4, 10)
-    pygame.draw.polygon(s, (170, 220, 250), [(x - 2, y), (x + 2, y), (x, y + h)])
-    pygame.draw.line(s, (235, 250, 255), (x - 1, y), (x, y + h - 2))
-
-
 def _stalactite(s, x, y, rng, p):
     """A rock spike hanging from a ceiling whose underside is at `y`."""
     h = rng.randint(4, 9)
@@ -150,10 +132,9 @@ def _moonstone(s, x, y, rng, p):
     s.set_at((x, y - 4), (230, 220, 255))
 
 
-CEILING_DECOR = {"ice_cave": _icicle, "pewter_gym": _stalactite, "mt_moon": _stalactite}  # theme -> what hangs
+CEILING_DECOR = {"pewter_gym": _stalactite, "mt_moon": _stalactite}  # theme -> what hangs
 
 DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the meadow's come from its tileset)
-    "ice_cave": [(0.07, _crystal), (0.10, _snow_mound), (0.05, _rock)],
     "pewter_gym": [(0.12, _rock)],
     "mt_moon": [(0.10, _rock), (0.03, _moonstone)],
     "cerulean_gym": [(0.08, _puddle)],

@@ -57,7 +57,7 @@ full HP when its max HP goes up or down.
   Lv6 = 216, Lv10 = 1000. Max level 100.
 - **XP for defeating a Pokémon:** `base_exp × L // 7`, where `base_exp` is
   the species' Gen 1 base experience yield (`Species.base_exp`; e.g.
-  Pidgey 55, Bulbasaur 64, Lapras 219). This is Gen 1's formula for wild
+  Pidgey 55, Bulbasaur 64, Venusaur 208). This is Gen 1's formula for wild
   Pokémon.
 - **Wild battles give half** (`WILD_XP` = 0.5) and trainer battles ×1.5
   (`TRAINER_XP`): quests are the main source of XP (see `quests.md` for
@@ -146,8 +146,7 @@ changes how the player looks.
 | Dratini | Dragonair | 30 | | Omanyte | Omastar | 40 |
 | Dragonair | Dragonite | 55 | | Kabuto | Kabutops | 40 |
 
-**Bold** = in the game now. Seel → Dewgong can happen once Seel is in the
-party (Dewgong exists as a placeholder species).
+**Bold** = in the game now.
 
 ---
 

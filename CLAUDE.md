@@ -307,8 +307,8 @@ non-commercial project.
   `Theme.cave` (`CaveLook`) and ceiling decor from `tileset.CEILING_DECOR`.
   Themes (`themes.py`) pick their map art with `Theme.art` ("woods":
   Pixellab ground and background; "cave": drawn in code). `tileset.py` draws the meadow's ground
-  from `tileset_woods.png` (`_render_woods`); the ice cave's tiles and all
-  one-way platforms are still drawn in code. The
+  from `tileset_woods.png` (`_render_woods`); all one-way platforms are
+  still drawn in code. The
   meadow's background (towns and routes) is Pixellab art: a sky gradient
   with clouds, then three parallax strips (`MEADOW_STRIPS`: far mountains,
   mid hills, near tree line; 20/35/50% of the camera). `backgrounds()`
@@ -491,7 +491,7 @@ non-commercial project.
 - Battle backdrops (`assets/sprites/pixellab/backdrops/`, `Backdrop.art`):
   320×132 Pixellab paintings drawn 2× over the battle area (meadow, forest,
   route_3, pewter_gym, mt_moon, cerulean_gym), their ground starting high enough for the
-  back row; themes without one (ice cave) are drawn in code from the
+  back row; a theme without one would be drawn in code from the
   `Backdrop` colours.
 - Map props (`assets/sprites/pixellab/props/`, `tileset.draw_prop`: centred,
   standing on the ground): chests (closed/open, plain and the gyms' fancy

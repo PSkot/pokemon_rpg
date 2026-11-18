@@ -114,10 +114,6 @@ LEARNSETS = {
         ('Thunder Shock', 0), ('Growl', 0), ('Thunder Wave', 9), ('Quick Attack', 16), ('Swift', 26),
         ('Thunderbolt', 30), ('Agility', 33), ('Thunder', 43),
     ),
-    ('seel', 'dewgong'): (
-        ('Headbutt', 0), ('Water Gun', 10), ('Bubble Beam', 25), ('Growl', 30), ('Aurora Beam', 35),
-        ('Rest', 40), ('Surf', 40, 1), ('Take Down', 45, 1), ('Ice Beam', 50, 1), ('Blizzard', 55, 1),
-    ),
     ('shellder',): (
         ('Tackle', 0), ('Withdraw', 0), ('Water Gun', 10), ('Supersonic', 18), ('Clamp', 23),
         ('Bubble Beam', 25), ('Aurora Beam', 30), ('Leer', 39), ('Ice Beam', 50),
@@ -129,14 +125,6 @@ LEARNSETS = {
     ('horsea', 'seadra'): (
         ('Bubble', 0), ('Smokescreen', 19), ('Bubble Beam', 20), ('Leer', 24), ('Water Gun', 30),
         ('Agility', 37), ('Ice Beam', 40, 1), ('Hydro Pump', 45, 1),
-    ),
-    ('jynx',): (
-        ('Pound', 0), ('Lovely Kiss', 0), ('Lick', 18), ('Double Slap', 23), ('Ice Punch', 31),
-        ('Psychic', 35), ('Body Slam', 39), ('Thrash', 47), ('Blizzard', 58),
-    ),
-    ('lapras',): (
-        ('Water Gun', 0), ('Growl', 0), ('Sing', 16), ('Body Slam', 25), ('Confuse Ray', 31),
-        ('Ice Beam', 38), ('Hydro Pump', 46), ('Blizzard', 50),
     ),
     ('geodude', 'graveler', 'golem'): (
         ('Tackle', 0), ('Defense Curl', 11), ('Rock Throw', 16), ('Rock Slide', 25, 1), ('Harden', 26),
