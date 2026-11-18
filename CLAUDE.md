@@ -229,7 +229,10 @@ non-commercial project.
   platform) generated from a seed and a theme (`themes.py`: tile palette,
   weighted encounter pool with level ranges, group sizes, battle backdrop,
   cave ceiling). Maps scroll sideways and end at a doorway (Up) to the next
-  map. Wild groups are shown in full and stay gone once beaten. With two
+  map. Wild groups are shown in full and stay gone once beaten. A group
+  can't be jumped over: it also catches the player in a column up to
+  `GROUP_REACH` above it, stopped by a platform or ceiling overhead
+  (`WildPokemon.reach_rects`), so platforms still get past. With two
   fighting, about half the wild groups get one more Pokémon
   (`overworld.EXTRA_FOE_CHANCE`, `level.extra_member`; seeded by the map).
   Area levels track the party's expected level (`docs/quests.md`).

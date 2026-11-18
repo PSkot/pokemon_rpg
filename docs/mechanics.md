@@ -706,6 +706,14 @@ one) guards the last map's exit: the group the area names (`Route.boss_group`),
 or else 4–5 Pokémon from the pool at the same levels; its leader (the
 first) can be drawn bigger (`Route.boss_scale`).
 
+**Touching a group** starts the battle. Besides the Pokémon themselves,
+each group catches the player in an invisible column over it, up to
+6 tiles (96 px) above its feet (`overworld.GROUP_REACH`; a full jump is
+~62 px), so it can't be jumped over from the ground. The column stops at
+the first tile overhead (a platform, also one a column to the side, or a
+cave's ceiling): a group can still be passed on a platform over it, or
+with a jump from a platform.
+
 Route 1 (Meadow pool; Red/Blue's Route 1: only Pidgey and Rattata):
 
 | Species | Weight | Levels |

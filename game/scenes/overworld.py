@@ -26,7 +26,7 @@ from ..mechanics.loot import BOSS_GEAR, TRAINER_GEAR, LootTable, ball_loot, boss
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES, Monster, animations
 from ..world import tileset
 from ..world.instance import RIVAL_STARTER, RIVAL_STARTER_EVOLVED, Instance, Stair, Trainer
-from ..world.level import SOLID, TILE, Level, Spawn, extra_member
+from ..world.level import EMPTY, PLATFORM, SOLID, TILE, Level, Spawn, extra_member
 from ..world.player import Controls, Player
 from ..world import quests
 from ..world.progress import Game
@@ -48,6 +48,10 @@ TRACKED = 3  # active quests shown under the location
 EXTRA_FOE_CHANCE = 0.5  # with two fighting: a wild group's chance of one more Pokémon
 LADDER_SEGMENT = pygame.Rect(8, 16, 16, 16)  # a repeating stretch of the ladder prop
 GROUP_SPACING = 30  # px between the members of a wild group, standing in a row
+# A wild group also catches the player this high above its feet (an invisible
+# column over it), up to the first tile overhead: so it can't be jumped over
+# from the ground, only passed on a platform over it (or jumped from one).
+GROUP_REACH = 6 * TILE
 EVOLVE_COLOR = (255, 130, 200)  # evolution quests (their marks and tracked steps)
 # Marks over what quests need: (symbol, colour).
 QUEST_MARK = ("!", ui.YELLOW)    # a quest to take, or the next step's place
@@ -101,12 +105,40 @@ class WildPokemon:
         rects = [anim.body_rect(0, x, y, self.facing < 0) for _, anim, x, y in self._placed()]
         return rects[0].unionall(rects[1:])
 
-    def draw(self, surface: pygame.Surface, debug: bool = False) -> None:
+    def reach_rects(self, level: Level) -> list[pygame.Rect]:
+        """Where touching the group starts a battle: its body, and a column
+        over each map column it stands in, up to GROUP_REACH above its feet
+        or the first tile overhead (a platform, also one a column further,
+        or a cave's ceiling)."""
+        body = self.body_rect
+        rects = [body]
+        feet_row = math.ceil(self.ground_y / TILE - 0.001)
+        lowest = self.ground_y - GROUP_REACH
+        for col in level._cols(body.left, body.right):
+            top = lowest
+            for row in range(feet_row - 1, math.floor(lowest / TILE) - 1, -1):
+                # A platform also caps the columns next to it, so a group
+                # sticking out a little past its end doesn't catch the player
+                # jumping up onto it.
+                if level.tile(col, row) != EMPTY or PLATFORM in (level.tile(col - 1, row), level.tile(col + 1, row)):
+                    top = max(lowest, (row + 1) * TILE)
+                    break
+            left, right = max(body.left, col * TILE), min(body.right, (col + 1) * TILE)
+            if top < body.bottom and left < right:
+                rects.append(pygame.Rect(left, math.floor(top), right - left, body.bottom - math.floor(top)))
+        return rects
+
+    def touches(self, rect: pygame.Rect, level: Level) -> bool:
+        return rect.collidelist(self.reach_rects(level)) >= 0
+
+    def draw(self, surface: pygame.Surface, level: Level, debug: bool = False) -> None:
         flip = self.facing < 0
         for _, anim, x, y in self._placed():
             surface.blit(anim.frame(0, flip), anim.place(0, x, y, flip))
         if debug:
-            pygame.draw.rect(surface, (255, 0, 0) if self.boss else (255, 255, 0), self.body_rect, 1)
+            color = (255, 0, 0) if self.boss else (255, 255, 0)
+            for rect in self.reach_rects(level):
+                pygame.draw.rect(surface, color, rect, 1)
 
 
 class Chest:
@@ -646,7 +678,7 @@ class OverworldScene(MapScene):
             return
         for wild in self.wild:
             wild.facing = 1 if self.player.x > wild.x else -1
-            touching = self.player.body_rect.colliderect(wild.body_rect)
+            touching = wild.touches(self.player.body_rect, self.level)
             if touching and wild.armed:
                 if wild is self.boss and self.instance.route.waves:  # a gym's arena: pick the team first
                     pick = TeamPick(self.instance.route, self.party, quests.active_limit(self.game))
@@ -716,7 +748,7 @@ class OverworldScene(MapScene):
             if not ball.taken:
                 ball.draw(layer)
         for wild in self.wild:
-            wild.draw(layer, self.debug)
+            wild.draw(layer, self.level, self.debug)
 
     def draw_overlay(self, window: pygame.Surface) -> None:
         super().draw_overlay(window)
@@ -776,7 +808,7 @@ class OverworldScene(MapScene):
         p.x, p.feet_y, p.facing = state["player"]
         self._follow()
         for wild in self.wild:  # don't start a battle just by loading next to a group
-            wild.armed = not p.body_rect.colliderect(wild.body_rect)
+            wild.armed = not wild.touches(p.body_rect, self.level)
 
 
 def _spread(spawns: int, n: int) -> list[int]:
