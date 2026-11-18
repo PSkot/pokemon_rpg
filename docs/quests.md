@@ -241,10 +241,17 @@ yet.
 ### 7. Rival at Nugget Bridge
 
 - **Starts:** automatically when quest 6 is done.
-- **Steps:** cross **Nugget Bridge** (Route 24, north of Cerulean: five
-  trainer bands on the bridge, a Rocket beyond) and beat the **rival** at
-  its end: Pidgeotto 21, Abra 20, Rattata 19 and his starter's next form
-  (Charmeleon, Wartortle or Ivysaur) at 22.
+- **Steps:** beat the **rival**, who waits at the start of **Nugget
+  Bridge** (Route 24, Cerulean's east doorway), as in Red/Blue: Pidgeotto
+  21, Abra 20, Rattata 19 and his starter's next form (Charmeleon,
+  Wartortle or Ivysaur) at 22. He stands at the bridge's first spot and
+  can't be got past (`Trainer.blocks`); beaten once for good
+  (`Trainer.first`, key `nugget_rival`, the step's target).
+- **The rest of the bridge:** the five trainer bands, then at the far end
+  a **Rocket** (the arena boss: Ekans 23, Zubat 22) who hands over a
+  **Nugget** (sells for ₽5,000) and then fights, once (`Route.boss_key`,
+  `boss_gift`, `boss_dialogue`); later trips find Oddish, Bellsprout and
+  Abra there instead.
 - **Rewards:** ₽900, 700 XP, 3 Super Potions and an Uncommon gear piece
   (item level 16).
 - **Unlocks:** quest 8, Route 25 (from the Route 24 stop at the bridge's

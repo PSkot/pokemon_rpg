@@ -471,7 +471,7 @@ QUESTS = {q.key: q for q in [
         "rival_cerulean", "Rival at Nugget Bridge",
         "Your rival went north from Cerulean City, over Nugget Bridge, to see a Pokémaniac called Bill.",
         requires=("to_cerulean",),
-        steps=(Step("defeat", "nugget_bridge", "Cross Nugget Bridge (Route 24, north of Cerulean) and beat your rival"),),
+        steps=(Step("defeat", "nugget_rival", "Beat your rival at Nugget Bridge (Route 24, north of Cerulean)"),),
         money=900, xp=700,
         rewards=(("medicine", "Super Potion", 3), ("gear", None, "Uncommon", 16)),
         done_dialogue=(("Rival", "What? Again?! I was just warming up."),
@@ -697,8 +697,16 @@ def visit(game, town: str, building: str) -> Event:
 
 
 def defeat(game, route: str) -> Event:
-    """The player beat `route`'s boss."""
+    """The player beat `route`'s boss, or the map trainer with that key (the
+    rival on Nugget Bridge)."""
     return _advance_where(game, lambda s: s.kind == "defeat" and s.target == route)
+
+
+def trainer_beaten(game, key: str) -> bool:
+    """Map trainer `key` is beaten for good, or a quest that needed beating
+    it is done (saves from when the rival was Nugget Bridge's end boss)."""
+    return key in game.trainers or any(
+        is_done(game, q.key) for q in QUESTS.values() if any(s.kind == "defeat" and s.target == key for s in q.steps))
 
 
 def reach(game, town: str) -> Event:

@@ -47,6 +47,13 @@ class Trainer:
     team: tuple[tuple[str, int], ...]  # (species, level), shown in a row on the map
     map: int     # which of the route's maps it's on
     prize: int   # the Gen 1 class's base prize it stands in for (Youngster 15, Bug Catcher 10, ...)
+    # The rival on Nugget Bridge: at the map's first wild-group spot (`first`),
+    # not to be got past (`blocks`: platforms over it don't help), with the
+    # route's boss loot as its reward (`boss_loot`). Its key is a "defeat"
+    # quest step's target (`quests.defeat`).
+    first: bool = False
+    blocks: bool = False
+    boss_loot: bool = False
 
 
 @dataclass(frozen=True)
@@ -102,8 +109,12 @@ class Route:
     # Its doorways need (quest key, "started" or "done"); `blocked` says why not.
     needs: tuple[str, str] | None = None
     blocked: str = ""
-    # Once this quest is done, the boss is this group instead (no trainer).
+    # Once this quest is done (or this key is in Game.trainers: a beaten
+    # `boss_key`), the boss is this group instead (no trainer).
     boss_after: tuple[str, tuple[tuple[str, int], ...]] | None = None
+    boss_key: str = ""   # saved in Game.trainers once the boss is beaten (a one-time boss trainer)
+    boss_gift: str = ""  # an item (in MEDICINE) the boss gives the first time it's beaten (the Nugget)
+    boss_dialogue: tuple[tuple[str, str], ...] = ()  # what it says then
     prize: int = 0                      # a boss trainer's base prize (as Trainer.prize)
     trainers: tuple[Trainer, ...] = ()  # trainers on its maps
     wild: bool = True                   # wild Pokémon and chests (a gym: only its trainers)
@@ -188,20 +199,29 @@ ROUTES = {r.key: r for r in [
               Trainer("route_4_lass", "Hillside Pack", (("spearow", 19), ("rattata", 19), ("ekans", 19)), 0, 15),
               Trainer("route_4_hiker", "Dune Diggers", (("sandshrew", 20), ("sandshrew", 20)), 1, 20),
           )),
-    # Route 24 north of Cerulean: Nugget Bridge's five bands in a row, then
-    # a Rocket on the far bank, and the rival waiting at the end (Gen 1's
-    # second rival battle, with Abra and an evolved starter).
+    # Route 24 north of Cerulean, as in Red/Blue: the rival waits at the
+    # bridge's start (Gen 1's second rival battle, with Abra and an evolved
+    # starter), then the bridge's five bands in a row, and at the far end a
+    # Rocket who hands over the Nugget, then fights (once; later trips find
+    # wild Pokémon there).
     Route("nugget_bridge", "Nugget Bridge", ROUTE_24, maps=2, towns=("cerulean", "route_24"), boss=True,
-          boss_group=(("pidgeotto", 21), ("abra", 20), ("rattata", 19), (RIVAL_STARTER_EVOLVED, 22)),
-          trainer="Rival", boss_chest="battle", prize=50,
-          boss_after=("rival_cerulean", (("oddish", 22), ("bellsprout", 22), ("abra", 21))),
+          boss_group=(("ekans", 23), ("zubat", 22)), trainer="Rocket Gang", boss_chest="battle", prize=30,
+          boss_key="nugget_rocket", boss_gift="Nugget",
+          boss_dialogue=(("Rocket", "Congratulations! You beat our five contest trainers! Here's your prize: "
+                                    "a Nugget!"),
+                         ("", "You received a Nugget!"),
+                         ("Rocket", "...Hey, kid. That was the contest. This is Team Rocket's way of finding "
+                                    "fresh talent. Pity you said no."),),
+          boss_after=("nugget_rocket", (("oddish", 22), ("bellsprout", 22), ("abra", 21))),
           trainers=(
+              Trainer("nugget_rival", "Rival", (("pidgeotto", 21), ("abra", 20), ("rattata", 19),
+                                                (RIVAL_STARTER_EVOLVED, 22)), 0, 50,
+                      first=True, blocks=True, boss_loot=True),
               Trainer("nugget_1", "Bridge Crawlers", (("caterpie", 20), ("weedle", 20), ("metapod", 20)), 0, 10),
               Trainer("nugget_2", "Bridge Flock", (("pidgey", 20), ("nidoran_f", 20)), 0, 15),
               Trainer("nugget_3", "Bridge Rats", (("rattata", 20), ("ekans", 20), ("zubat", 20)), 0, 15),
               Trainer("nugget_4", "Bridge Thorns", (("nidoran_f", 21), ("nidoran_m", 21)), 0, 15),
-              Trainer("nugget_5", "Bridge Champs", (("sandshrew", 22), ("spearow", 22)), 0, 20),
-              Trainer("nugget_rocket", "Rocket Gang", (("ekans", 22), ("zubat", 22)), 1, 30),
+              Trainer("nugget_5", "Bridge Champs", (("sandshrew", 22), ("spearow", 22)), 1, 20),
           )),
     # The Cerulean Gym, from its building, as the Pewter Gym: the Cascade
     # Crew's two waves of Water Pokémon, then the crew itself, led by a

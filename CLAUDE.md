@@ -289,8 +289,12 @@ non-commercial project.
   Recruitment Center, and the Cerulean Gym: the Cascade Crew's waves of
   Water Pokémon, then Starmie and Staryu, for the Cascade Badge; Starmie
   takes Staryu's moves via `pokemon.LATER_FORMS`). North of Cerulean (its right-edge doorway):
-  route "nugget_bridge" (Route 24: five bands on the bridge, a Rocket,
-  the rival's second battle, `RIVAL_STARTER_EVOLVED`) → stop town
+  route "nugget_bridge" (Route 24, as in Red/Blue: the rival's second
+  battle at the bridge's start, a map trainer that can't be got past,
+  `Trainer.first`/`blocks`/`boss_loot`, `RIVAL_STARTER_EVOLVED`, the
+  quest step's target, `quests.trainer_beaten`; five bands; the arena
+  boss is a Rocket who gives the Nugget once, `Route.boss_key`/
+  `boss_gift`/`boss_dialogue`; the Nugget: `Medicine.valuable`, only sold) → stop town
   "route_24" → route "route_25" → town "sea_cottage" (quest "bill":
   talk to the Clefairy, i.e. Bill, then Up at the cottage → S.S. Ticket). Code-drawn caves take their colours from
   `Theme.cave` (`CaveLook`) and ceiling decor from `tileset.CEILING_DECOR`.

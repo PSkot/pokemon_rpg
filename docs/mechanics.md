@@ -450,6 +450,7 @@ party members skip the menu.
 | Antidote / Burn Heal / Paralyze Heal / Awakening / Ice Heal | Cures that one status |
 | Full Heal | Cures any status |
 | Escape Rope | Not in battle: from the bag on a route or in a dungeon, back to the last town or Pokémon Center (where a fainted party would wake up) |
+| Nugget | Only worth money (`Medicine.valuable`): sold at a Poké Mart for ₽5,000; not in the battle's Item menu. From the Nugget Bridge Rocket |
 
 ### Berries
 
@@ -706,6 +707,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Ice Heal | ₽125 | ₽62 |
 | Full Heal | ₽300 | ₽150 |
 | Escape Rope | ₽275 | ₽137 |
+| Nugget | – (not sold) | ₽5,000 (as in Gen 1) |
 
 What each Poké Mart sells (`Town.mart`; Gen 1's stock, minus the items
 the game doesn't have yet: Poké Balls, Repel):

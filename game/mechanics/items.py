@@ -419,6 +419,7 @@ class Medicine:
     revive: bool = False    # only works on (and revives) a fainted Pokémon
     cures: tuple[str, ...] = ()  # statuses it cures
     escape: bool = False    # Escape Rope: back to the last town or Pokémon Center (not in battle)
+    valuable: bool = False  # only worth money (the Nugget): sold at a Poké Mart, never used
 
     @property
     def sell_price(self) -> int:
@@ -468,6 +469,7 @@ MEDICINE = {m.name: m for m in [
     Medicine("Full Heal", "Cures any status.", 300, cures=tuple(STATUSES)),
     Medicine("Escape Rope", "Leads back to the last town or Pokémon Center (pause menu, on a route).", 275,
              escape=True),
+    Medicine("Nugget", "A nugget of pure gold. Sells for ₽5,000 at a Poké Mart.", 10000, valuable=True),
 ]}
 ESCAPE_ROPE = "Escape Rope"
 

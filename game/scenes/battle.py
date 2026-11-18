@@ -484,7 +484,7 @@ class BattleScene(Scene):
 
     def _medicine(self) -> list[Medicine]:
         """The medicine the current party member can pick from."""
-        return [m for m in MEDICINE.values() if not m.escape and self._available(m) > 0]
+        return [m for m in MEDICINE.values() if not (m.escape or m.valuable) and self._available(m) > 0]
 
     def _start_round(self) -> None:
         self.actions = []

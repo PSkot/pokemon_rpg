@@ -110,6 +110,9 @@ class BagScreen:
     def _use(self) -> None:
         """Enter on the selected entry: pick who it's for, or use it right away."""
         item = self.selected
+        if POCKETS[self.pocket] == "Items" and MEDICINE[item].valuable:
+            self.message = "It's only worth money: sell it at a Poké Mart."
+            return
         if POCKETS[self.pocket] == "Items" and MEDICINE[item].escape:
             if not hasattr(self.scene, "instance"):  # (a route or dungeon map)
                 self.message = "Use it on a route or in a cave."

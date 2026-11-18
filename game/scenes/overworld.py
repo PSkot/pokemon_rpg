@@ -112,6 +112,8 @@ class WildPokemon:
         or a cave's ceiling)."""
         body = self.body_rect
         rects = [body]
+        if self.trainer and self.trainer.blocks:  # (the rival: no getting past, platforms or not)
+            return rects + [pygame.Rect(body.left, 0, body.w, body.bottom)]
         feet_row = math.ceil(self.ground_y / TILE - 0.001)
         lowest = self.ground_y - GROUP_REACH
         for col in level._cols(body.left, body.right):
@@ -463,9 +465,15 @@ class OverworldScene(MapScene):
         # Trainers stand in for some of the map's wild groups (each always at
         # the same one, beaten or not); a gym has nothing else.
         trainers = [t for t in route.trainers if t.map == instance.index]
-        placed = dict(zip(_spread(len(level.spawns), len(trainers)), trainers))
+        first = [t for t in trainers if t.first][:1]  # (the rival: at the first spot)
+        rest = [t for t in trainers if t not in first]
+        placed = dict(zip([0] if first else [], first))
+        offset = len(placed)
+        placed |= {offset + i: t for i, t in zip(_spread(len(level.spawns) - offset, len(rest)), rest)}
+        rival = {RIVAL_STARTER: game.rival_starter, RIVAL_STARTER_EVOLVED: EVOLUTIONS[game.rival_starter].into}
         for i, trainer in placed.items():
-            level.spawns[i].encounter = list(trainer.team)
+            if i < len(level.spawns):  # (the rival's starter depends on the player's)
+                level.spawns[i].encounter = [(rival.get(sp, sp), lv) for sp, lv in trainer.team]
         # With two fighting, about half the wild groups have one more Pokémon
         # (the same ones each time this map is shown).
         if route.wild and quests.active_limit(game) >= 2:
@@ -476,16 +484,16 @@ class OverworldScene(MapScene):
         self.wild = []
         for i, spawn in enumerate(level.spawns):
             trainer = placed.get(i)
-            if (trainer and trainer.key not in game.trainers) or (not trainer and route.wild):
+            if (trainer and not quests.trainer_beaten(game, trainer.key)) or (not trainer and route.wild):
                 self.wild.append(WildPokemon(spawn))
                 self.wild[-1].trainer = trainer
         room = instance.room
         self.trainer = room.trainer if room else route.trainer  # whose team the boss group is ("" = wild)
-        if level.boss and route.boss_after and quests.is_done(game, route.boss_after[0]):
+        if level.boss and route.boss_after and (route.boss_after[0] in game.trainers
+                                                or (route.boss_after[0] in quests.QUESTS
+                                                    and quests.is_done(game, route.boss_after[0]))):
             level.boss.encounter, self.trainer = list(route.boss_after[1]), ""  # the quest's boss is beaten
         if level.boss:  # the rival's starter depends on the player's
-            rival = {RIVAL_STARTER: game.rival_starter,
-                     RIVAL_STARTER_EVOLVED: EVOLUTIONS[game.rival_starter].into}
             level.boss.encounter = [(rival.get(species, species), lv) for species, lv in level.boss.encounter]
         self.boss = WildPokemon(level.boss, boss=True, scale=instance.route.boss_scale) if level.boss else None
         if self.boss:
@@ -633,12 +641,20 @@ class OverworldScene(MapScene):
     def _after_battle(self, wild: WildPokemon, battle: BattleScene) -> None:
         if battle.won:
             self.wild.remove(wild)
-            if wild.trainer:  # beaten for good
+            if wild.trainer:  # beaten for good (and maybe a quest step: the rival)
                 self.game.trainers.add(wild.trainer.key)
             self.show_event(self.battle_event)
+            if wild.trainer:
+                self.show_event(quests.defeat(self.game, wild.trainer.key))
             if wild is self.boss:
+                route = self.instance.route
+                if route.boss_key and self.trainer and route.boss_key not in self.game.trainers:
+                    self.game.trainers.add(route.boss_key)  # a one-time boss trainer (the Rocket): its gift
+                    if route.boss_gift:
+                        self.bag.add_medicine(route.boss_gift, 1)
+                    self.show_event(quests.Event(dialogue=list(route.boss_dialogue)))
                 self._boss_beaten()
-                self.show_event(quests.defeat(self.game, self.instance.route.key))
+                self.show_event(quests.defeat(self.game, route.key))
             saves.autosave(self)
         elif battle.lost:
             town = TOWNS[self.game.town]
@@ -701,7 +717,8 @@ class OverworldScene(MapScene):
         battle = BattleScene(self, party, enemies, self.bag, loot=wild_loot(route.boss_loot if boss else route.loot),
                              backdrop=self.level.theme.backdrop, boss=boss, trainer=trainer,
                              prize=prize_money(prize, encounter) if trainer else 0,
-                             bonus=boss_loot(route.boss_loot) if boss and route.boss_chest == "battle" else None,
+                             bonus=boss_loot(route.boss_loot) if (boss and route.boss_chest == "battle") or (
+                                 wild.trainer and wild.trainer.boss_loot) else None,
                              on_win=lambda key=route.key, defeated=[s for s, _ in encounter]:
                                  quests.won_battle(self.game, key, defeated, self.battle_event),
                              evolves=lambda m: quests.can_evolve(self.game, m), **extra)
