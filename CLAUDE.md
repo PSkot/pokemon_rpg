@@ -315,11 +315,11 @@ non-commercial project.
   Cerulean house at the street's end ("Burgled House") is walked as route
   "cerulean_backyard" (`Route.building`) to the burglar's Rocket Gang;
   beating it opens Cerulean's doorway behind it onto route
-  "route_5_south" (Route 5: wild Meowth and Mankey, icon placeholders)
+  "route_5_south" (Route 5: wild Meowth and Mankey)
   → stop town "route_5" (Day Care, the shut Saffron gate) → route
-  "underground_path" (theme `UNDERGROUND`: a code-drawn tunnel,
-  `CaveLook.lamps`: a tiled far wall with wall lamps, `tileset._tunnel_wall`;
-  ceiling lamps) → stop town "route_6" → route "route_6_south" (four
+  "underground_path" (theme `UNDERGROUND`: a tunnel, its far wall the
+  painting `walls/underground.png`; without it `CaveLook.lamps` draws a
+  tiled wall with lamps in code, `tileset._tunnel_wall`; ceiling lamps) → stop town "route_6" → route "route_6_south" (four
   bands) → Vermilion City (Center, Mart, Recruitment Center, Fan Club,
   the gym shut by a tree; the S.S. Anne's dock: next). `Route.blocked_done`: what a
   shut doorway says once its quest is done (`quests.blocked_text`);
@@ -487,9 +487,10 @@ non-commercial project.
   frame) and Squirtle's jump crouch. Their bases were generated with the
   species' icon as a design reference and Charmander as a style reference
   (Oddish, Bellsprout, Abra, Venonat, Goldeen, Staryu, Starmie, Horsea,
-  Shellder, Psyduck, Butterfree, Beedrill, Raticate, Nidorina, Nidorino
-  and Kadabra too, made the same
-  way; Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
+  Shellder, Psyduck, Butterfree, Beedrill, Raticate, Nidorina, Nidorino,
+  Kadabra, Meowth and Mankey too, made the same
+  way (Meowth's and Mankey's on 32 px canvases; Meowth's idle is its base
+  with 1 px breathing); Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
   their candidates faced left). Placeholder quality: likely to be redone.
 - A move's `anim` plays if the species has that animation; otherwise the
   species' `fight_anim` does (no move-specific sheets for now).
@@ -513,7 +514,8 @@ non-commercial project.
   slopes/islands/roots aren't used yet.
 - Battle backdrops (`assets/sprites/pixellab/backdrops/`, `Backdrop.art`):
   320×132 Pixellab paintings drawn 2× over the battle area (meadow, forest,
-  route_3, pewter_gym, mt_moon, cerulean_gym), their ground starting high enough for the
+  route_3, pewter_gym, mt_moon, cerulean_gym, underground; the last shifted
+  up 14 px, its floor extended), their ground starting high enough for the
   back row; a theme without one would be drawn in code from the
   `Backdrop` colours.
 - Map props (`assets/sprites/pixellab/props/`, `tileset.draw_prop`: centred,
@@ -529,7 +531,8 @@ non-commercial project.
 - The title screen's background: `backdrops/title.png` (dark bands keep
   the title and save line readable).
 - Cave walls (`assets/sprites/pixellab/walls/`, `CaveLook.wall`): 320×180
-  paintings of Mt. Moon's, the Pewter Gym's and the Cerulean Gym's far wall, drawn 2×,
+  paintings of Mt. Moon's, the Pewter Gym's, the Cerulean Gym's and the
+  Underground Path's far wall, drawn 2×,
   mirrored every other copy, dimmed (`dim`); the code-drawn rock in front
   stays (`near_rocks`, off in the gym).
 - `assets/sprites/pokemon_icons/` holds reference icons. Species without a

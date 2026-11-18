@@ -157,9 +157,9 @@ SPECIES.update({
     "zubat": _animated("zubat", "Zubat", (40, 45, 35, 55, 40), ("poison", "flying"), exp=54, hit=5),
     "paras": _animated("paras", "Paras", (35, 70, 55, 25, 55), ("bug", "grass"), exp=70, hit=4),
     "clefairy": _animated("clefairy", "Clefairy", (70, 45, 48, 35, 60), ("normal",), exp=68, hit=3),
-    # Route 5 (no PixelLab sheets yet: their icons stand in).
-    "meowth": _placeholder("052_meowth", "Meowth", (40, 45, 35, 90, 40), ("normal",), exp=69),
-    "mankey": _placeholder("056_mankey", "Mankey", (40, 80, 35, 70, 35), ("fighting",), exp=74),
+    # Route 5.
+    "meowth": _animated("meowth", "Meowth", (40, 45, 35, 90, 40), ("normal",), exp=69, hit=3),
+    "mankey": _animated("mankey", "Mankey", (40, 80, 35, 70, 35), ("fighting",), exp=74, hit=5),
 })
 
 _KEYS = {species: key for key, species in SPECIES.items()}

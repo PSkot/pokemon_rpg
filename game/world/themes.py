@@ -229,13 +229,14 @@ UNDERGROUND = Theme(
         PoolEntry("zubat", 20, (22, 25)),
         PoolEntry("ekans", 15, (22, 25)),
     ),
-    backdrop=Backdrop(sky_top=(40, 36, 34), sky_bottom=(84, 78, 72), hills=((96, 90, 84), (86, 80, 74)),
+    backdrop=Backdrop(art="underground.png", sky_top=(40, 36, 34), sky_bottom=(84, 78, 72), hills=((96, 90, 84), (86, 80, 74)),
                       field_far=(160, 150, 136), field_near=(138, 128, 116), stripe=(150, 140, 126),
                       shadow=(90, 84, 76)),
     ceiling=True,
     art="cave",
     cave=CaveLook(sky_top=(30, 28, 28), sky_bottom=(66, 60, 56), far_rock=(54, 50, 48), near_rock=(72, 66, 62),
-                  glow=((150, 120, 60), (255, 232, 160)), near_rocks=False, lamps=96),
+                  glow=((150, 120, 60), (255, 232, 160)), wall="underground.png", dim=60, near_rocks=False,
+                  lamps=96),
     doorway="",
 )
 
