@@ -29,9 +29,9 @@ Pokémon, each one written by hand.
 
 - **Paths.** Each line has 3 paths, each a way to play it (Bulbasaur:
   **Toxin**, **Bloom**, **Bulwark**; Pidgey: **Gale**, **Raptor**,
-  **Scout**; see *Lines*). Lines with talents so far: Bulbasaur, and the
-  early routes' Pidgey, Rattata, Spearow, Nidoran ♀ and ♂, Caterpie,
-  Weedle and Pikachu.
+  **Scout**; see *Lines*). Lines with talents so far: the three starters
+  (Bulbasaur, Charmander, Squirtle), and the early routes' Pidgey,
+  Rattata, Spearow, Nidoran ♀ and ♂, Caterpie, Weedle and Pikachu.
 - **Tiers.** 12 tiers open at **Lv6, 10, 14, 18, 22, 27, 32, 38, 44, 50,
   60, 75** (`TIER_LEVELS`). At each tier the player picks **1 of its 3
   talents**, one per path. Paths can be mixed freely. Tier 11's talents
@@ -48,8 +48,10 @@ Pokémon, each one written by hand.
     inflict that status (Grass: Overgrow, Harvest, ...; Poison: Sapping,
     Contagion, Poison Point, ...; Normal: Cornered, Momentum; Flying:
     Riding the Wind, Aerial Ace; Bug: Swarm, Shed Skin; Electric: Static,
-    Charge Up; sleep: Nightmare; paralysis: Conductor; confusion: Mind
-    Games). A type's "low HP", "in a row" and "knockout heals" talents
+    Charge Up; Fire: Blaze, Searing, Scorch, Smoulder, Ash Cloud, Wildfire,
+    Heat Haze; Water: Torrent, Undertow, Splash Zone, Hydration; Ice:
+    Frostbite, Chill; sleep: Nightmare; paralysis: Conductor; freezing:
+    Shatter; confusion: Mind Games). A type's "low HP", "in a row" and "knockout heals" talents
     share one mechanism (Overgrow / Cornered / Swarm / Surge; Ripening /
     Momentum / Hive Mind / Charge Up; Harvest / Scavenger / Bird of Prey /
     Feeding Frenzy / Discharge); the rest of each pool is the type's own;
@@ -83,7 +85,10 @@ A talent changes moves and/or works in battle by itself:
   Toxic Touch's poison also gets Contagion and Siphon. Changed moves show
   a "*" on the talent screen.
 - **Battle effects** (`Talent.flags`, `Monster.talent(flag)`; the list is
-  in `talents.py` above `TALENTS`):
+  in `talents.py` above `TALENTS`). Talents with the same effect don't add
+  up: the strongest counts, so a later one is an upgrade (Fortress after
+  Shell Formation, Unbreakable after Tenacity, Rampage after Momentum,
+  Murder of Crows after Gang Up):
   - damage (`BattleScene._talent_factor`, multiplying the hit): the
     user's **pinch:<type>** (×1.5 for that type's moves below ⅓ HP:
     Overgrow, Cornered, Swarm, Surge, Eye of the Storm), **streak:<type>**
@@ -98,7 +103,8 @@ A talent changes moves and/or works in battle by itself:
     Blind Spot, Spiteful); **Sapping** (a poisoned attacker deals 20% less
     to the holder's side), **Ancient Roots** and its copies (the holder's
     side takes 15% less while it stands), **Sturdy** (the holder's first
-    hit taken each battle: half; Juggernaut: none);
+    hit taken each battle: half; Juggernaut, Iron Turtle: none); **Pyre**
+    (burned foes of its side lose a further 1/8 of max HP each round);
   - like gear mods (`Monster.gear_bonus`): `first` (Head Start: 30% to
     act first), `crit` (Lucky Strikes: +10 points), `endure` (Tenacity
     25%, Unbreakable 50%), `regen` (Photosynthesis, Preening, Nesting:
@@ -117,8 +123,9 @@ A talent changes moves and/or works in battle by itself:
     attacker gets the status), **thorns** (Thorny Hide: the attacker loses
     1/16 of its max HP, as Thornskin's spikes do);
   - at the start of each battle: **aura:<status>** (Miasma: 50% per foe to
-    be poisoned; Thunder Cloud: 30% paralyzed), **intimidate** (every
-    foe's Attack −1 stage).
+    be poisoned; Thunder Cloud: 30% paralyzed; Heat Haze: 30% burned;
+    Absolute Zero: 20% frozen), **intimidate** (every foe's Attack −1
+    stage).
 - **Move fields** they use (`moves.Move`): `taunt` (Taunting Growl, Decoy,
   Mob Rule, Lightning Rod: for this round and the next, the foes'
   single-target moves go to the user), `keen` (Keen Edge, Apex Predator:
@@ -173,6 +180,48 @@ Paths: **Toxin** (poison, seeds and sleep: wearing enemies down); **Bloom** (gra
 | 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Solar Flare** *(needs 4)*: Solar Beam hits every enemy, at full power. *(Solar Beam)* | **World Tree** *(needs 4)*: Once a battle, a partner that would faint keeps 1 HP instead. *(**own**)* |
 | 12 | 75 | **Venom Garden** *(needs 6)*: All poison the user inflicts is bad poison, and Leech Seed poisons too. *(**own**)* | **Hyper Bloom** *(needs 6)*: Hyper Beam is a Grass move and needs no rest after knocking an enemy out. *(**own**)* | **Ancient Roots** *(needs 6)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
 
+### Charmander → Charmeleon → Charizard
+
+Moves: Scratch, Growl, Ember 9, Leer 15, Swords Dance 25 (Charmeleon), Slash 30, Flamethrower 38 (Charmeleon), Fire Spin 46, Fire Blast 50 (Charizard), Earthquake 55 (Charizard).
+
+Paths: **Cinder** (burns, and making them hurt); **Claw** (scratch and Slash: critical hits and wounds); **Inferno** (fire damage, on every enemy).
+
+| Tier | Lv | Cinder | Claw | Inferno |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Kindling**: Scratch has a 10% chance to burn. *(**own**)* | **Sharp Claws**: Scratch is 4× as likely to be a critical hit. *(Scratch)* | **Flame Claw**: Scratch becomes a Fire move (with STAB). *(**own**)* |
+| 2 | 10 | **Searing**: The user's Fire moves are 20% more likely to burn. *(Fire)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Ember Shower**: Ember hits every enemy, the others at 50% damage. *(Ember)* |
+| 3 | 14 | **Ash Cloud**: The user's Fire moves have a 20% chance to lower the target's accuracy 1 stage. *(Fire)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Blaze**: Below 1/3 HP, the user's Fire moves deal 1.5× damage. *(Fire)* |
+| 4 | 18 | **Scorch**: Burned enemies take 25% more damage from the user. *(Fire)* | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* | **Stoke the Flames**: Each Fire move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Fire)* |
+| 5 | 22 | **Smoulder**: The user's Fire moves wound the target: 1/16 of its max HP each round, for 3 rounds. *(Fire)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Fireball**: Ember hits harder: 60 power. *(Ember)* |
+| 6 | 27 | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* | **Blade Dance**: Swords Dance also makes the user's next damaging move deal 50% more. *(Swords Dance)* | **Feed the Flames**: Knocking an enemy out with a Fire move heals the user 1/4 of its max HP. *(Fire)* |
+| 7 | 32 | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Rend**: Slash wounds the target: 1/12 of its max HP each round, for 3 rounds. *(Slash)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 8 | 38 | **Scorching Breath**: Flamethrower is 20% more likely to burn. *(Flamethrower)* | **Sweeping Claw**: Slash hits every enemy, the others at 50% damage. *(Slash)* | **Blowtorch**: Flamethrower also hits one enemy next to the target, at half damage. *(Flamethrower)* |
+| 9 | 44 | **Wildfire**: Burns the user inflicts have a 30% chance each round to spread to an enemy next to it. *(Fire)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 10 | 50 | **Vortex**: Fire Spin's flames hurt twice as much: 1/8 of max HP each round. *(Fire Spin)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Firestorm**: Fire Spin hits every enemy. *(Fire Spin)* |
+| 11 | 60 | **Heat Haze** *(needs 4)*: At the start of each battle, each enemy has a 30% chance to be burned. *(Fire)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Fault Line** *(needs 4)*: Earthquake hits every enemy, the others at 60% damage. *(Earthquake)* |
+| 12 | 75 | **Pyre** *(needs 6)*: Enemies the user's side burned lose a further 1/8 of their max HP each round. *(**own**)* | **Dragon Claw** *(needs 6)*: Slash is always a critical hit. *(**own**)* | **Supernova** *(needs 6)*: Fire Blast hits every enemy at full damage, and burns 50% of the time. *(**own**)* |
+
+### Squirtle → Wartortle → Blastoise
+
+Moves: Tackle, Tail Whip, Bubble 8, Water Gun 15, Bite 22, Withdraw 28, Ice Beam 30 (Wartortle), Skull Bash 35 (Blastoise), Hydro Pump 42 (Blastoise), Blizzard 55 (Blastoise).
+
+Paths: **Torrent** (water damage); **Shell** (withdraw and shells: taking the hits, and shielding the party); **Tide** (slowing, freezing and wearing enemies down).
+
+| Tier | Lv | Torrent | Shell | Tide |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Splash Tackle**: Tackle becomes a Water move (with STAB). *(**own**)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* | **Wagging Tail**: Tail Whip works on every enemy. *(Tail Whip)* |
+| 2 | 10 | **Bubble Burst**: Bubble hits every enemy, the others at 60% damage. *(Bubble)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Froth**: Bubble is twice as likely to lower Speed. *(Bubble)* |
+| 3 | 14 | **Torrent**: Below 1/3 HP, the user's Water moves deal 1.5× damage. *(Water)* | **Rough Shell**: Whoever hits the user loses 1/16 of its max HP. *(**own**)* | **Tail Slap**: After Tail Whip, the user hits the target with its basic attack at 60% power. *(Tail Whip)* |
+| 4 | 18 | **Pressure Jet**: Water Gun hits harder: 60 power. *(Water Gun)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Undertow**: The user's Water moves have a 20% chance to lower the target's Speed 1 stage. *(Water)* |
+| 5 | 22 | **Rising Tide**: Each Water move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Water)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Crunch**: Bite has a 30% chance to lower the target's Defense 1 stage. *(Bite)* |
+| 6 | 27 | **Splash Zone**: The user's Water moves also hit one enemy next to the target, at half damage. *(Water)* | **Hydration**: At the end of each round, the user has a 30% chance to wash off its status. *(Water)* | **Riptide**: Enemies with lowered Speed take 30% more damage from the user's party. *(**own**)* |
+| 7 | 32 | **Rain Dish**: Knocking an enemy out with a Water move heals the user 1/4 of its max HP. *(Water)* | **Shell Shield**: Withdraw also halves the damage the user takes for 2 rounds. *(Withdraw)* | **Frostbite**: The user's Ice moves are 10% more likely to freeze. *(Ice)* |
+| 8 | 38 | **Headlong**: Once the user has used Withdraw in a battle, Skull Bash needs no charging. *(Skull Bash)* | **Turtle Wall**: Withdraw works on the whole party. *(Withdraw)* | **Frost Ray**: Ice Beam hits every enemy, the others at 50% damage. *(Ice Beam)* |
+| 9 | 44 | **Geyser**: Hydro Pump hits every enemy, the others at 50% damage. *(Hydro Pump)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Shatter**: Frozen enemies take 50% more damage from the user. *(Freeze)* |
+| 10 | 50 | **Hydro Cannon**: Hydro Pump never misses. *(Hydro Pump)* | **Shell Formation**: While the user stands, the whole party takes 15% less damage. *(**own**)* | **Chill**: The user's Ice moves have a 30% chance to lower the target's Speed 1 stage. *(Ice)* |
+| 11 | 60 | **Tsunami** *(needs 4)*: Hydro Pump hits every enemy at full damage. *(**own**)* | **Iron Turtle** *(needs 4)*: The first hit the user takes in each battle deals no damage, and Withdraw heals the user 1/4 of its max HP. *(**own**)* | **Whiteout** *(needs 4)*: Blizzard never misses and hits every enemy, the others at 60% damage. *(Blizzard)* |
+| 12 | 75 | **Tidal Force** *(needs 6)*: The user's Water moves are always critical hits on a target below half HP. *(**own**)* | **Fortress** *(needs 6)*: While the user stands, the whole party takes 25% less damage. *(**own**)* | **Absolute Zero** *(needs 6)*: At the start of each battle, each enemy has a 20% chance to be frozen. *(**own**)* |
+
 ### Spearow → Fearow
 
 Moves: Peck, Growl, Leer 9, Fury Attack 15, Swift 20, Whirlwind 22, Drill Peck 29 (Fearow), Agility 36, Hyper Beam 45 (Fearow).
@@ -191,7 +240,7 @@ Paths: **Talon** (pecks and Drill Peck: hard Flying strikes); **Flock** (fury At
 | 8 | 38 | **Fearsome Beak**: Drill Peck has a 30% chance to make the target flinch. *(**own**)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
 | 9 | 44 | **Bird of Prey**: Knocking an enemy out with a Flying move heals the user 1/4 of its max HP. *(Flying)* | **Tailwind**: Agility works on the whole party. *(Agility)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
 | 10 | 50 | **Overdrive**: Hyper Beam needs no rest after knocking an enemy out. *(Hyper Beam)* | **Tempest**: Whirlwind lowers Speed 2 stages. *(Whirlwind)* | **Intimidate**: At the start of each battle, every enemy's Attack falls 1 stage. *(**own**)* |
-| 11 | 60 | **Sky Tyrant** *(needs 4)*: The user's Flying moves deal 30% more to a target that hasn't moved yet this round, and always go first. *(**own**)* | **Murder of Crows** *(needs 4)*: The user's moves deal 50% more to a target a partner already hit this round. *(**own**)* | **Spiteful** *(needs 4)*: Enemies with lowered Attack take 30% more damage from the user's party. *(**own**)* |
+| 11 | 60 | **Sky Tyrant** *(needs 4)*: The user's Flying moves always go first, and its moves deal 50% more to a target that hasn't moved yet this round. *(**own**)* | **Murder of Crows** *(needs 4)*: The user's moves deal 50% more to a target a partner already hit this round. *(**own**)* | **Spiteful** *(needs 4)*: Enemies with lowered Attack take 30% more damage from the user's party. *(**own**)* |
 | 12 | 75 | **Apex Predator** *(needs 6)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Storm of Beaks** *(needs 6)*: Fury Attack hits every enemy, at full damage. *(**own**)* | **Reign of Terror** *(needs 6)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
 
 ### Nidoran F → Nidorina

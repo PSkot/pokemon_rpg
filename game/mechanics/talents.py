@@ -276,7 +276,7 @@ class Talent:
         kind, _, what = self.pool.partition(":")
         if kind == "move":
             return f"Shared by lines with {what}"
-        verbs = {"sleep": "put to sleep", "paralysis": "paralyze", "confusion": "confuse"}
+        verbs = {"sleep": "put to sleep", "paralysis": "paralyze", "confusion": "confuse", "freeze": "freeze"}
         if self.pool in verbs:
             return f"Shared by lines that {verbs[self.pool]}"
         return f"Shared by {self.pool.capitalize()} lines"
@@ -309,6 +309,7 @@ def _harvest(name: str, kind: str, what: str) -> Talent:
 #   spot:<stat>      the holder's side deals + value to enemies with that stat lowered
 #   prey:<status>    + value on a target with that status ("confused" too)
 #   aura:<status>    % chance per foe at the battle's start to give it the status
+#   pyre             burned foes of the holder's side lose this share of max HP more a round
 #   intimidate       the foes' Attack falls this many stages at the battle's start
 #   thorns           whoever hits the user loses this share of its max HP
 #   party_regen      the holder's side heals this % of max HP at each round's end
@@ -317,6 +318,7 @@ def _harvest(name: str, kind: str, what: str) -> Talent:
 #   retaliate:<status>  % chance that whoever hits the user gets the status
 #   shed             % chance at each round's end to shake off its status
 #   sapping, ancient_roots, sturdy, second_wind, world_tree: see their talents
+# Talents with the same effect don't add up: the strongest counts (`Monster.talent`).
 #   first, crit, endure, regen, status:<status>: added to the gear mods of that name
 #                    (see items.MOD_TEXT)
 TALENTS = {t.key: t for t in [
@@ -384,6 +386,35 @@ TALENTS = {t.key: t for t in [
        ("status:sleep", {"nightmare": 1 / 8})),
     _t("Mind Games", "confusion", "Enemies the user confuses hurt themselves 75% of the time (not 50%).",
        ("confuse", {"madness": 75})),
+    # Fire lines: burns that bite, and fire that spreads.
+    _pinch("Blaze", "fire"),
+    _t("Stoke the Flames", "fire", "Each Fire move in a row deals 20% more than the last, up to +60%. "
+       "Any other move starts it over.", streak__fire=0.2),
+    _t("Searing", "fire", "The user's Fire moves are 20% more likely to burn.", ("type:fire", {"status_chance": 20})),
+    _t("Scorch", "fire", "Burned enemies take 25% more damage from the user.", prey__burn=0.25),
+    _t("Smoulder", "fire", "The user's Fire moves wound the target: 1/16 of its max HP each round, for 3 rounds.",
+       ("type:fire", {"bleed": 1 / 16})),
+    _t("Ash Cloud", "fire", "The user's Fire moves have a 20% chance to lower the target's accuracy 1 stage.",
+       ("type:fire", {"stages": (("accuracy", -1),), "stage_chance": 20})),
+    _t("Wildfire", "fire", "Burns the user inflicts have a 30% chance each round to spread to an enemy next to it.",
+       ("status:burn", {"contagious": 30})),
+    _harvest("Feed the Flames", "fire", "heals the user"),
+    _t("Heat Haze", "fire", "At the start of each battle, each enemy has a 30% chance to be burned.", aura__burn=30),
+    # Water lines: pressure, tides and staying cool.
+    _pinch("Torrent", "water"),
+    _t("Rising Tide", "water", "Each Water move in a row deals 20% more than the last, up to +60%. "
+       "Any other move starts it over.", streak__water=0.2),
+    _t("Undertow", "water", "The user's Water moves have a 20% chance to lower the target's Speed 1 stage.",
+       ("type:water", {"stages": (("speed", -1),), "stage_chance": 20})),
+    _t("Splash Zone", "water", "The user's Water moves also hit one enemy next to the target, at half damage.",
+       ("type:water", {"reach": 0.5})),
+    _harvest("Rain Dish", "water", "heals the user"),
+    _t("Hydration", "water", "At the end of each round, the user has a 30% chance to wash off its status.", shed=30),
+    # Lines with Ice moves.
+    _t("Frostbite", "ice", "The user's Ice moves are 10% more likely to freeze.", ("type:ice", {"status_chance": 10})),
+    _t("Shatter", "freeze", "Frozen enemies take 50% more damage from the user.", prey__freeze=0.5),
+    _t("Chill", "ice", "The user's Ice moves have a 30% chance to lower the target's Speed 1 stage.",
+       ("type:ice", {"stages": (("speed", -1),), "stage_chance": 30})),
     # --- Move pools.
     _t("Echoing Growl", "move:Growl", "Growl works on every enemy.", ("Growl", {"spread": True})),
     _t("Taunting Growl", "move:Growl", "Growl also makes every enemy attack the user, this round and the next.",
@@ -483,7 +514,62 @@ TALENTS = {t.key: t for t in [
     _t("Drowsy Dust", "move:Sleep Powder", "Sleep Powder works on every enemy.", ("Sleep Powder", {"spread": True})),
     _t("Solar Flare", "move:Solar Beam", "Solar Beam hits every enemy, at full power.",
        ("Solar Beam", {"spread": True})),
+    _t("Sharp Claws", "move:Scratch", "Scratch is 4× as likely to be a critical hit.", ("Scratch", {"crit_ratio": 3.0})),
+    _t("Rend", "move:Slash", "Slash wounds the target: 1/12 of its max HP each round, for 3 rounds.",
+       ("Slash", {"bleed": 1 / 12})),
+    _t("Sweeping Claw", "move:Slash", "Slash hits every enemy, the others at 50% damage.",
+       ("Slash", {"spread": True, "spread_share": 0.5})),
+    _t("Ember Shower", "move:Ember", "Ember hits every enemy, the others at 50% damage.",
+       ("Ember", {"spread": True, "spread_share": 0.5})),
+    _t("Fireball", "move:Ember", "Ember hits harder: 60 power.", ("Ember", {"power": 60})),
+    _t("Scorching Breath", "move:Flamethrower", "Flamethrower is 20% more likely to burn.",
+       ("Flamethrower", {"status_chance": 20})),
+    _t("Blowtorch", "move:Flamethrower", "Flamethrower also hits one enemy next to the target, at half damage.",
+       ("Flamethrower", {"reach": 0.5})),
+    _t("Firestorm", "move:Fire Spin", "Fire Spin hits every enemy.", ("Fire Spin", {"spread": True})),
+    _t("Vortex", "move:Fire Spin", "Fire Spin's flames hurt twice as much: 1/8 of max HP each round.",
+       ("Fire Spin", {"bind": 1 / 16})),
+    _t("Fault Line", "move:Earthquake", "Earthquake hits every enemy, the others at 60% damage.",
+       ("Earthquake", {"spread": True, "spread_share": 0.6})),
+    _t("Bubble Burst", "move:Bubble", "Bubble hits every enemy, the others at 60% damage.",
+       ("Bubble", {"spread": True, "spread_share": 0.6})),
+    _t("Froth", "move:Bubble", "Bubble is twice as likely to lower Speed.", ("Bubble", {"stage_chance": 33})),
+    _t("Pressure Jet", "move:Water Gun", "Water Gun hits harder: 60 power.", ("Water Gun", {"power": 60})),
+    _t("Shell Shield", "move:Withdraw", "Withdraw also halves the damage the user takes for 2 rounds.",
+       ("Withdraw", {"shield": 2})),
+    _t("Turtle Wall", "move:Withdraw", "Withdraw works on the whole party.", ("Withdraw", {"rally": True})),
+    _t("Headlong", "move:Skull Bash", "Once the user has used Withdraw in a battle, Skull Bash needs no charging.",
+       ("Skull Bash", {"charge_skip": "Withdraw"})),
+    _t("Geyser", "move:Hydro Pump", "Hydro Pump hits every enemy, the others at 50% damage.",
+       ("Hydro Pump", {"spread": True, "spread_share": 0.5})),
+    _t("Hydro Cannon", "move:Hydro Pump", "Hydro Pump never misses.", ("Hydro Pump", {"sure_hit": True})),
+    _t("Frost Ray", "move:Ice Beam", "Ice Beam hits every enemy, the others at 50% damage.",
+       ("Ice Beam", {"spread": True, "spread_share": 0.5})),
+    _t("Whiteout", "move:Blizzard", "Blizzard never misses and hits every enemy, the others at 60% damage.",
+       ("Blizzard", {"sure_hit": True, "spread": True, "spread_share": 0.6})),
     # --- Lines' own.
+    # Charmander
+    _t("Kindling", "own", "Scratch has a 10% chance to burn.", ("Scratch", {"status": "burn", "status_chance": 10})),
+    _t("Flame Claw", "own", "Scratch becomes a Fire move (with STAB).", ("Scratch", {"type": "fire"})),
+    _t("Dragon Claw", "own", "Slash is always a critical hit.", ("Slash", {"crit_ratio": 8.0})),
+    _t("Pyre", "own", "Enemies the user's side burned lose a further 1/8 of their max HP each round.", pyre=1 / 8),
+    _t("Supernova", "own", "Fire Blast hits every enemy at full damage, and burns 50% of the time.",
+       ("Fire Blast", {"spread": True, "status_chance": 20})),
+    # Squirtle
+    _t("Splash Tackle", "own", "Tackle becomes a Water move (with STAB).", ("Tackle", {"type": "water"})),
+    _t("Rough Shell", "own", "Whoever hits the user loses 1/16 of its max HP.", thorns=1 / 16),
+    _t("Riptide", "own", "Enemies with lowered Speed take 30% more damage from the user's party.", spot__speed=0.3),
+    _t("Shell Formation", "own", "While the user stands, the whole party takes 15% less damage.",
+       ancient_roots=0.15),
+    _t("Iron Turtle", "own", "The first hit the user takes in each battle deals no damage, and Withdraw heals the "
+       "user 1/4 of its max HP.", ("Withdraw", {"heal": 0.25}), sturdy=1.0),
+    _t("Fortress", "own", "While the user stands, the whole party takes 25% less damage.", ancient_roots=0.25),
+    _t("Tsunami", "own", "Hydro Pump hits every enemy at full damage.",
+       ("Hydro Pump", {"spread": True, "spread_share": 1.0})),
+    _t("Tidal Force", "own", "The user's Water moves are always critical hits on a target below half HP.",
+       ("type:water", {"keen": 0.5})),
+    _t("Absolute Zero", "own", "At the start of each battle, each enemy has a 20% chance to be frozen.",
+       aura__freeze=20),
     # Bulbasaur
     _t("Thorned Whip", "own", "Vine Whip has a 30% chance to poison.",
        ("Vine Whip", {"status": "poison", "status_chance": 30})),
@@ -543,8 +629,8 @@ TALENTS = {t.key: t for t in [
     _t("Mob Rule", "own", "Leer also makes every enemy attack the user, this round and the next.",
        ("Leer", {"taunt": 2})),
     _t("Fearsome Beak", "own", "Drill Peck has a 30% chance to make the target flinch.", ("Drill Peck", {"flinch": 30})),
-    _t("Sky Tyrant", "own", "The user's Flying moves deal 30% more to a target that hasn't moved yet this "
-       "round, and always go first.", ("type:flying", {"priority": 1}), ambush=0.3),
+    _t("Sky Tyrant", "own", "The user's Flying moves always go first, and its moves deal 50% more to a target "
+       "that hasn't moved yet this round.", ("type:flying", {"priority": 1}), ambush=0.5),
     _t("Murder of Crows", "own", "The user's moves deal 50% more to a target a partner already hit this round.",
        gang=0.5),
     # Nidoran F
@@ -747,6 +833,40 @@ TALENT_TREES = {
                ("Spore Storm", "Sunlit", "Photosynthesis"),
                ("Miasma", "Solar Flare", "World Tree"),
                ("Venom Garden", "Hyper Bloom", "Ancient Roots")),
+    ),
+    "charmander": (
+        (Path("Cinder", "Burns, and making them hurt.", RED),
+         Path("Claw", "Scratch and Slash: critical hits and wounds.", SAND),
+         Path("Inferno", "Fire damage, on every enemy.", GOLD)),
+        _tiers(("Kindling", "Sharp Claws", "Flame Claw"),
+               ("Searing", "Lucky Strikes", "Ember Shower"),
+               ("Ash Cloud", "Head Start", "Blaze"),
+               ("Scorch", "Piercing Gaze", "Stoke the Flames"),
+               ("Smoulder", "Gang Up", "Fireball"),
+               ("Sturdy", "Blade Dance", "Feed the Flames"),
+               ("Tenacity", "Rend", "Second Wind"),
+               ("Scorching Breath", "Sweeping Claw", "Blowtorch"),
+               ("Wildfire", "Ambush", "Unbreakable"),
+               ("Vortex", "Apex Predator", "Firestorm"),
+               ("Heat Haze", "Blur", "Fault Line"),
+               ("Pyre", "Dragon Claw", "Supernova")),
+    ),
+    "squirtle": (
+        (Path("Torrent", "Water damage.", SKY),
+         Path("Shell", "Withdraw and shells: taking the hits, and shielding the party.", GREEN),
+         Path("Tide", "Slowing, freezing and wearing enemies down.", PINK)),
+        _tiers(("Splash Tackle", "Sturdy", "Wagging Tail"),
+               ("Bubble Burst", "Tenacity", "Froth"),
+               ("Torrent", "Rough Shell", "Tail Slap"),
+               ("Pressure Jet", "Second Wind", "Undertow"),
+               ("Rising Tide", "Guardian", "Crunch"),
+               ("Splash Zone", "Hydration", "Riptide"),
+               ("Rain Dish", "Shell Shield", "Frostbite"),
+               ("Headlong", "Turtle Wall", "Frost Ray"),
+               ("Geyser", "Unbreakable", "Shatter"),
+               ("Hydro Cannon", "Shell Formation", "Chill"),
+               ("Tsunami", "Iron Turtle", "Whiteout"),
+               ("Tidal Force", "Fortress", "Absolute Zero")),
     ),
     "pidgey": (
         (Path("Gale", "Wind that hits every enemy.", SKY),

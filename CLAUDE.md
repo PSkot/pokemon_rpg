@@ -163,9 +163,10 @@ non-commercial project.
   (`TALENT_MODS`); Second Wind, Shed Skin, Nurturing, Dream Eater in
   `_regen`; harvest, Guardian/World Tree, retaliate, thorns in `_hit`;
   aura and Intimidate at the start, `_auras`; Move fields `taunt`, `keen`,
-  `charge_skip`, `ko_no_recharge`, `soothe`). Lines with talents
-  (`TALENT_TREES`): Bulbasaur, Pidgey, Rattata, Spearow, Nidoran F/M,
-  Caterpie, Weedle, Pikachu; the rest have just their moves. `Monster.create`
+  `charge_skip`, `ko_no_recharge`, `soothe`; same-effect talents don't
+  add up, the strongest counts). Lines with talents (`TALENT_TREES`): the
+  starters, Pidgey, Rattata, Spearow, Nidoran F/M, Caterpie, Weedle,
+  Pikachu; the rest have just their moves. `Monster.create`
   picks for wild/trainer Pokémon (mostly one random path). The talent
   screen (`scenes/talent_screen.py`, party screen → S): a grid (tiers ×
   paths, scrolls), info on the right with the known moves; Enter picks

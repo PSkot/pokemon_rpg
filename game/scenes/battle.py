@@ -961,6 +961,9 @@ class BattleScene(Scene):
             if not c.alive or c.status not in ROUND_DAMAGE or (DEV.god_mode and not c.enemy):
                 continue
             share = c.toxic / 16 if c.status == "poison" and c.toxic else ROUND_DAMAGE[c.status]
+            if c.status == "burn":  # (Pyre: the burner's side makes it hurt more)
+                share += max((o.monster.talent("pyre") for o in (self.party if c.enemy else self.enemies)
+                              if o.alive), default=0)
             if c.toxic:
                 c.toxic += 1
             amount = min(c.monster.hp, max(1, round(c.monster.max_hp * share)))

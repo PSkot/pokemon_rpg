@@ -383,7 +383,8 @@ last HP keeps 1).
 
 After all actions, in this order:
 
-1. **Burn and poison damage** (see below), then healing berries may be eaten.
+1. **Burn and poison damage** (see below; Pyre: burned foes of its side lose
+   a further 1/8), then healing berries may be eaten.
 2. **Leech Seed:** each seeded Pokémon loses its seed's share of its max
    HP (1/16; min 1), and whoever seeded it
    gets that much back (if it's still standing).

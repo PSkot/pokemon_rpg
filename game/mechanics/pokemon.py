@@ -393,8 +393,10 @@ class Monster:
         self.talents = []
 
     def talent(self, flag: str) -> float:
-        """The value of a talent's battle effect (`Talent.flags`), 0 if it has none."""
-        return sum(v for t in self.tree.chosen_talents(self.talents) for f, v in t.flags if f == flag)
+        """The value of a talent's battle effect (`Talent.flags`), 0 if it has
+        none. Talents with the same effect don't add up: the strongest counts
+        (Fortress after Shell Formation, Unbreakable after Tenacity, ...)."""
+        return max((v for t in self.tree.chosen_talents(self.talents) for f, v in t.flags if f == flag), default=0)
 
     def move(self, key: str) -> Move:
         """Move `key`, as its talents change it."""
