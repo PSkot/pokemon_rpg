@@ -136,8 +136,8 @@ they can't be sold, used or dropped.
 - **Starts:** automatically when quest 1 is done (Oak: "Your rival went
   west, to Route 22. He wants to battle you!").
 - **Steps:**
-  1. Defeat your **rival** at the end of Route 22 (Pidgey Lv9 and his
-     starter Lv8, as now).
+  1. Defeat your **rival** at the end of Route 22 (Pidgey Lv7 and his
+     starter Lv6: Gen 1's team two levels down, as both attack at once).
 - **Rewards:** ₽600, 300 XP, 2 Super Potions and an Uncommon gear piece
   (item level 9), on top of the trainer battle's reward roll.
 - **Unlocks:** **Route 22** opens when the quest *starts* (its doorway is

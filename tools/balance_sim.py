@@ -198,8 +198,7 @@ def run_story(runs: int, talents: bool = True) -> None:
 
 def run_duels(runs: int, level: int) -> None:
     lines = [k for k, t in TREES.items() if t.tiers]
-    print(f"\n## 1v1 duels at Lv{level} ({runs} runs per pair, both sides playing the same; with talents, "
-          f"and talents vs none)\n")
+    print(f"\n## 1v1 duels at Lv{level} ({runs} runs per pair, both sides playing the same)\n")
     score = {k: [] for k in lines}
     for i, a in enumerate(lines):
         for b_ in lines[i + 1:]:
@@ -210,17 +209,20 @@ def run_duels(runs: int, level: int) -> None:
                 wins += won
             score[a].append(wins / runs)
             score[b_].append(1 - wins / runs)
-    print("Average win rate against every other line (50% = middle of the pack):")
+    print("\nTalents' worth: each line's win rate against the field (every other line, with talents),")
+    print("with its talents and without them:")
     for k in sorted(lines, key=lambda k: -mean(score[k])):
-        print(f"  {form(k, level):<11} {mean(score[k]):5.0%}")
-    print("\nTalents' worth: the same line with talents vs without (mirror match):")
-    for k in lines:
-        wins = 0
-        for r in range(runs):
-            random.seed(hash((k, r, level, "mirror")) & 0xFFFFFFFF)
-            won, _ = fight([member(k, level, True)], [member(k, level, False)], smart_enemies=True)
-            wins += won
-        print(f"  {form(k, level):<11} {wins / runs:5.0%}")
+        bare = []
+        for b_ in lines:
+            if b_ == k:
+                continue
+            wins = 0
+            for r in range(runs):
+                random.seed(hash((k, b_, r, level, "bare")) & 0xFFFFFFFF)
+                won, _ = fight([member(k, level, False)], [member(b_, level)], smart_enemies=True)
+                wins += won
+            bare.append(wins / runs)
+        print(f"  {form(k, level):<11} {mean(score[k]):5.0%} with, {mean(bare):5.0%} without")
 
 
 def main() -> None:

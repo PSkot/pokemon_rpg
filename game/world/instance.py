@@ -140,7 +140,9 @@ ROUTES = {r.key: r for r in [
           blocked="An old man is lying in the road. He hasn't had his coffee yet, and won't let anyone pass."),
     # A side trip from Viridian and back (Gen 1's first rival battle at its end).
     Route("route_22", "Route 22", ROUTE_22, maps=2, towns=("viridian", "viridian"), boss=True,
-          boss_group=(("pidgey", 9), (RIVAL_STARTER, 8)), trainer="Rival", boss_chest="battle",
+          # (Gen 1's Pidgey 9 and starter 8, two levels down: here both attack the
+          # starter at once, which fights alone at this point; balance_sim.py)
+          boss_group=(("pidgey", 7), (RIVAL_STARTER, 6)), trainer="Rival", boss_chest="battle",
           needs=("rival_22", "started"), blocked="A guard says there's nothing to see on Route 22 for now.",
           boss_after=("rival_22", (("pidgey", 9), ("spearow", 9))), prize=35),
     # The Pewter Gym, from its building: a short walk up to the arena, where

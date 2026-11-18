@@ -793,8 +793,10 @@ Route 22 (2 maps, from Viridian City and back):
 Route 22 opens once the quest "Rival on Route 22" starts, and Viridian
 Forest once "Oak's Parcel" is done (see `quests.md`).
 
-**Boss:** the rival (a trainer battle, see below): Pidgey Lv9 and his
-starter Lv8, Gen 1's first rival team. Once he's beaten (the quest is
+**Boss:** the rival (a trainer battle, see below): Pidgey Lv7 and his
+starter Lv6: Gen 1's first rival team, two levels down, as here both
+attack the player's starter at once (and it fights alone at this point;
+`tools/balance_sim.py`: a Lv9 starter wins about 40–70%). Once he's beaten (the quest is
 done), the boss is a wild Pidgey Lv9 and Spearow Lv9 instead (no trainer;
 the reward roll stays). His starter beats the player's
 (Bulbasaur → Charmander, Charmander → Squirtle, Squirtle → Bulbasaur).
@@ -983,7 +985,7 @@ always the same spot), with its team in a row.
 | Route 25, map 1 | Picnic Party (Picnicker) | Pidgey 21, Nidoran F 21, Nidoran M 21 | ₽157 |
 | Route 25, map 2 | Camping Crew (Camper) | Rattata 22, Ekans 22, Spearow 22 | ₽165 |
 | Route 25, map 2 | Garden Club (Lass) | Oddish 22, Bellsprout 22 | ₽165 |
-| Route 22 (boss) | the rival | Pidgey 9, starter 8 | ₽140 |
+| Route 22 (boss) | the rival | Pidgey 7, starter 6 | ₽105 |
 
 ---
 
