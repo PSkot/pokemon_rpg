@@ -780,7 +780,9 @@ class OverworldScene(MapScene):
     def _battle(self, wild: WildPokemon, party: list[Monster], encounter: list[tuple[str, int]],
                 trainer: str, prize: int, boss: bool, **extra) -> BattleScene:
         """A battle against `encounter` (the battle `wild` is fought for)."""
-        enemies = [Monster.create(species, level) for species, level in encounter]
+        # Trainers' and bosses' Pokémon have some talents (every other open tier); wild ones none.
+        enemies = [Monster.create(species, level, talents="half" if boss or trainer else "none")
+                   for species, level in encounter]
         if boss:
             for enemy, scale in zip(enemies, wild.scales):
                 enemy.scale = scale

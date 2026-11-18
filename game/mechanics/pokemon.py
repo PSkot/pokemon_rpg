@@ -35,6 +35,7 @@ class Species:
     base_attack: int
     base_defense: int
     base_speed: int
+    base_special: int    # Gen 1's Special: attack and defense for Fire, Water, Grass, Electric, Ice and Psychic moves
     types: tuple[str, ...]  # one or two of type_chart.TYPES
     fight_anim: str         # animation for moves without their own
     anims: dict[str, AnimSpec] = field(hash=False, compare=False)
@@ -78,12 +79,12 @@ class Species:
 SPECIES: dict[str, Species] = {}  # filled in below (`_animated`, `_placeholder`)
 
 
-def _placeholder(icon: str, name: str, stats: tuple[int, int, int, int], types: tuple[str, ...],
+def _placeholder(icon: str, name: str, stats: tuple[int, int, int, int, int], types: tuple[str, ...],
                  exp: int) -> Species:
     return Species(name, *stats, types, fight_anim="attack", anims={}, icon=icon, base_exp=exp)
 
 
-def _animated(key: str, name: str, stats: tuple[int, int, int, int], types: tuple[str, ...], exp: int,
+def _animated(key: str, name: str, stats: tuple[int, int, int, int, int], types: tuple[str, ...], exp: int,
               hit: int, size: float = 1.0) -> Species:
     """A species with a PixelLab sheet `<key>.png` (64 px cells): rows idle,
     walk and run (8 frames, looping), attack (9 frames: the still pose,
@@ -106,59 +107,56 @@ def _animated(key: str, name: str, stats: tuple[int, int, int, int], types: tupl
 # a reference icon so far.
 SPECIES.update({
     # The starters' lines and the Pidgey line.
-    "bulbasaur": _animated("bulbasaur", "Bulbasaur", (45, 49, 49, 45), ("grass", "poison"), exp=64, hit=4),
-    "ivysaur": _animated("ivysaur", "Ivysaur", (60, 62, 63, 60), ("grass", "poison"), exp=141, hit=5),
-    "venusaur": _animated("venusaur", "Venusaur", (80, 82, 83, 80), ("grass", "poison"), exp=208, hit=6),
-    "charmander": _animated("charmander", "Charmander", (39, 52, 43, 65), ("fire",), exp=65, hit=4),
-    "charmeleon": _animated("charmeleon", "Charmeleon", (58, 64, 58, 80), ("fire",), exp=142, hit=3),
-    "charizard": _animated("charizard", "Charizard", (78, 84, 78, 100), ("fire", "flying"), exp=209, hit=4),
-    "squirtle": _animated("squirtle", "Squirtle", (44, 48, 65, 43), ("water",), exp=66, hit=5),
-    "wartortle": _animated("wartortle", "Wartortle", (59, 63, 80, 58), ("water",), exp=143, hit=3),
-    "blastoise": _animated("blastoise", "Blastoise", (79, 83, 100, 78), ("water",), exp=210, hit=4),
-    "pidgey": _animated("pidgey", "Pidgey", (40, 45, 40, 56), ("normal", "flying"), exp=55, hit=5),
-    "pidgeotto": _animated("pidgeotto", "Pidgeotto", (63, 60, 55, 71), ("normal", "flying"), exp=113, hit=3),
-    "pidgeot": _animated("pidgeot", "Pidgeot", (83, 80, 75, 91), ("normal", "flying"), exp=172, hit=3),
-    "spearow": _animated("spearow", "Spearow", (40, 60, 30, 70), ("normal", "flying"), exp=58, hit=4),
-    "fearow": _animated("fearow", "Fearow", (65, 90, 65, 100), ("normal", "flying"), exp=162, hit=3),
+    "bulbasaur": _animated("bulbasaur", "Bulbasaur", (45, 49, 49, 45, 65), ("grass", "poison"), exp=64, hit=4),
+    "ivysaur": _animated("ivysaur", "Ivysaur", (60, 62, 63, 60, 80), ("grass", "poison"), exp=141, hit=5),
+    "venusaur": _animated("venusaur", "Venusaur", (80, 82, 83, 80, 100), ("grass", "poison"), exp=208, hit=6),
+    "charmander": _animated("charmander", "Charmander", (39, 52, 43, 65, 50), ("fire",), exp=65, hit=4),
+    "charmeleon": _animated("charmeleon", "Charmeleon", (58, 64, 58, 80, 65), ("fire",), exp=142, hit=3),
+    "charizard": _animated("charizard", "Charizard", (78, 84, 78, 100, 85), ("fire", "flying"), exp=209, hit=4),
+    "squirtle": _animated("squirtle", "Squirtle", (44, 48, 65, 43, 50), ("water",), exp=66, hit=5),
+    "wartortle": _animated("wartortle", "Wartortle", (59, 63, 80, 58, 65), ("water",), exp=143, hit=3),
+    "blastoise": _animated("blastoise", "Blastoise", (79, 83, 100, 78, 85), ("water",), exp=210, hit=4),
+    "pidgey": _animated("pidgey", "Pidgey", (40, 45, 40, 56, 35), ("normal", "flying"), exp=55, hit=5),
+    "pidgeotto": _animated("pidgeotto", "Pidgeotto", (63, 60, 55, 71, 50), ("normal", "flying"), exp=113, hit=3),
+    "pidgeot": _animated("pidgeot", "Pidgeot", (83, 80, 75, 91, 70), ("normal", "flying"), exp=172, hit=3),
+    "spearow": _animated("spearow", "Spearow", (40, 60, 30, 70, 31), ("normal", "flying"), exp=58, hit=4),
+    "fearow": _animated("fearow", "Fearow", (65, 90, 65, 100, 61), ("normal", "flying"), exp=162, hit=3),
     # (The game's font has no ♀/♂ symbols.)
-    "nidoran_f": _animated("nidoran_f", "Nidoran F", (55, 47, 52, 41), ("poison",), exp=59, hit=4),
-    "nidoran_m": _animated("nidoran_m", "Nidoran M", (46, 57, 40, 50), ("poison",), exp=60, hit=4),
-    "nidorina": _animated("nidorina", "Nidorina", (70, 62, 67, 56), ("poison",), exp=117, hit=5),
-    "nidorino": _animated("nidorino", "Nidorino", (61, 72, 57, 65), ("poison",), exp=118, hit=4),
-    "rattata": _animated("rattata", "Rattata", (30, 56, 35, 72), ("normal",), exp=57, hit=5),
-    "caterpie": _animated("caterpie", "Caterpie", (45, 30, 35, 45), ("bug",), exp=53, hit=5),
-    "metapod": _animated("metapod", "Metapod", (50, 20, 55, 30), ("bug",), exp=72, hit=2),
-    # Butterfree hits with its Special (80), as Abra does: its moves are Confusion and powders.
-    "butterfree": _animated("butterfree", "Butterfree", (60, 80, 50, 70), ("bug", "flying"), exp=160, hit=3),
-    "weedle": _animated("weedle", "Weedle", (40, 35, 30, 50), ("bug", "poison"), exp=52, hit=4),
-    "kakuna": _animated("kakuna", "Kakuna", (45, 25, 50, 35), ("bug", "poison"), exp=71, hit=5),
-    "beedrill": _animated("beedrill", "Beedrill", (65, 80, 40, 75), ("bug", "poison"), exp=159, hit=5),
-    "raticate": _animated("raticate", "Raticate", (55, 81, 60, 97), ("normal",), exp=116, hit=5),
-    "oddish": _animated("oddish", "Oddish", (45, 50, 55, 30), ("grass", "poison"), exp=78, hit=4),
-    "bellsprout": _animated("bellsprout", "Bellsprout", (50, 75, 35, 40), ("grass", "poison"), exp=84, hit=4),
-    # Psychic Pokémon hit with Gen 1's Special, so Abra's Attack is its
-    # Special (105) rather than its Attack (20); Kadabra's is 120.
-    "abra": _animated("abra", "Abra", (25, 105, 15, 90), ("psychic",), exp=73, hit=5),
-    "kadabra": _animated("kadabra", "Kadabra", (40, 120, 30, 105), ("psychic",), exp=145, hit=5),
-    "venonat": _animated("venonat", "Venonat", (60, 55, 50, 45), ("bug", "poison"), exp=75, hit=5),
-    "pikachu": _animated("pikachu", "Pikachu", (35, 55, 30, 90), ("electric",), exp=82, hit=5),
-    "shellder": _animated("shellder", "Shellder", (30, 65, 100, 40), ("water",), exp=97, hit=4),
-    "psyduck": _animated("psyduck", "Psyduck", (50, 52, 48, 55), ("water",), exp=80, hit=3),
-    "goldeen": _animated("goldeen", "Goldeen", (45, 67, 60, 63), ("water",), exp=111, hit=4),
-    "staryu": _animated("staryu", "Staryu", (30, 45, 55, 85), ("water",), exp=106, hit=5),
-    "starmie": _animated("starmie", "Starmie", (60, 75, 85, 115), ("water", "psychic"), exp=207, hit=6),
-    "horsea": _animated("horsea", "Horsea", (30, 40, 70, 60), ("water",), exp=83, hit=3),
+    "nidoran_f": _animated("nidoran_f", "Nidoran F", (55, 47, 52, 41, 40), ("poison",), exp=59, hit=4),
+    "nidoran_m": _animated("nidoran_m", "Nidoran M", (46, 57, 40, 50, 40), ("poison",), exp=60, hit=4),
+    "nidorina": _animated("nidorina", "Nidorina", (70, 62, 67, 56, 55), ("poison",), exp=117, hit=5),
+    "nidorino": _animated("nidorino", "Nidorino", (61, 72, 57, 65, 55), ("poison",), exp=118, hit=4),
+    "rattata": _animated("rattata", "Rattata", (30, 56, 35, 72, 25), ("normal",), exp=57, hit=5),
+    "caterpie": _animated("caterpie", "Caterpie", (45, 30, 35, 45, 20), ("bug",), exp=53, hit=5),
+    "metapod": _animated("metapod", "Metapod", (50, 20, 55, 30, 25), ("bug",), exp=72, hit=2),
+    "butterfree": _animated("butterfree", "Butterfree", (60, 45, 50, 70, 80), ("bug", "flying"), exp=160, hit=3),
+    "weedle": _animated("weedle", "Weedle", (40, 35, 30, 50, 20), ("bug", "poison"), exp=52, hit=4),
+    "kakuna": _animated("kakuna", "Kakuna", (45, 25, 50, 35, 25), ("bug", "poison"), exp=71, hit=5),
+    "beedrill": _animated("beedrill", "Beedrill", (65, 80, 40, 75, 45), ("bug", "poison"), exp=159, hit=5),
+    "raticate": _animated("raticate", "Raticate", (55, 81, 60, 97, 50), ("normal",), exp=116, hit=5),
+    "oddish": _animated("oddish", "Oddish", (45, 50, 55, 30, 75), ("grass", "poison"), exp=78, hit=4),
+    "bellsprout": _animated("bellsprout", "Bellsprout", (50, 75, 35, 40, 70), ("grass", "poison"), exp=84, hit=4),
+    "abra": _animated("abra", "Abra", (25, 20, 15, 90, 105), ("psychic",), exp=73, hit=5),
+    "kadabra": _animated("kadabra", "Kadabra", (40, 35, 30, 105, 120), ("psychic",), exp=145, hit=5),
+    "venonat": _animated("venonat", "Venonat", (60, 55, 50, 45, 40), ("bug", "poison"), exp=75, hit=5),
+    "pikachu": _animated("pikachu", "Pikachu", (35, 55, 30, 90, 50), ("electric",), exp=82, hit=5),
+    "shellder": _animated("shellder", "Shellder", (30, 65, 100, 40, 45), ("water",), exp=97, hit=4),
+    "psyduck": _animated("psyduck", "Psyduck", (50, 52, 48, 55, 50), ("water",), exp=80, hit=3),
+    "goldeen": _animated("goldeen", "Goldeen", (45, 67, 60, 63, 50), ("water",), exp=111, hit=4),
+    "staryu": _animated("staryu", "Staryu", (30, 45, 55, 85, 70), ("water",), exp=106, hit=5),
+    "starmie": _animated("starmie", "Starmie", (60, 75, 85, 115, 100), ("water", "psychic"), exp=207, hit=6),
+    "horsea": _animated("horsea", "Horsea", (30, 40, 70, 60, 70), ("water",), exp=83, hit=3),
     # The Pewter Gym and Route 3.
-    "geodude": _animated("geodude", "Geodude", (40, 80, 100, 20), ("rock", "ground"), exp=86, hit=5),
-    "onix": _animated("onix", "Onix", (35, 45, 160, 70), ("rock", "ground"), exp=108, hit=5, size=1.5),
-    "diglett": _animated("diglett", "Diglett", (10, 55, 25, 95), ("ground",), exp=81, hit=4),
-    "sandshrew": _animated("sandshrew", "Sandshrew", (50, 75, 85, 40), ("ground",), exp=93, hit=5),
-    "ekans": _animated("ekans", "Ekans", (35, 60, 44, 55), ("poison",), exp=62, hit=4),
-    "jigglypuff": _animated("jigglypuff", "Jigglypuff", (115, 45, 20, 20), ("normal",), exp=76, hit=4),
+    "geodude": _animated("geodude", "Geodude", (40, 80, 100, 20, 30), ("rock", "ground"), exp=86, hit=5),
+    "onix": _animated("onix", "Onix", (35, 45, 160, 70, 30), ("rock", "ground"), exp=108, hit=5, size=1.5),
+    "diglett": _animated("diglett", "Diglett", (10, 55, 25, 95, 45), ("ground",), exp=81, hit=4),
+    "sandshrew": _animated("sandshrew", "Sandshrew", (50, 75, 85, 40, 30), ("ground",), exp=93, hit=5),
+    "ekans": _animated("ekans", "Ekans", (35, 60, 44, 55, 40), ("poison",), exp=62, hit=4),
+    "jigglypuff": _animated("jigglypuff", "Jigglypuff", (115, 45, 20, 20, 25), ("normal",), exp=76, hit=4),
     # Mt. Moon.
-    "zubat": _animated("zubat", "Zubat", (40, 45, 35, 55), ("poison", "flying"), exp=54, hit=5),
-    "paras": _animated("paras", "Paras", (35, 70, 55, 25), ("bug", "grass"), exp=70, hit=4),
-    "clefairy": _animated("clefairy", "Clefairy", (70, 45, 48, 35), ("normal",), exp=68, hit=3),
+    "zubat": _animated("zubat", "Zubat", (40, 45, 35, 55, 40), ("poison", "flying"), exp=54, hit=5),
+    "paras": _animated("paras", "Paras", (35, 70, 55, 25, 55), ("bug", "grass"), exp=70, hit=4),
+    "clefairy": _animated("clefairy", "Clefairy", (70, 45, 48, 35, 60), ("normal",), exp=68, hit=3),
 })
 
 _KEYS = {species: key for key, species in SPECIES.items()}
@@ -314,17 +312,20 @@ class Monster:
         self.talents = [k for k in self.talents if self.tree.tier_of(k)]
 
     @classmethod
-    def create(cls, species: str, level: int) -> "Monster":
-        """A Pokémon that builds itself (wild ones, trainers', the starter):
-        its last 4 moves equipped (as in Gen 1), and a talent in every open
-        tier, mostly along one path (picked at random)."""
+    def create(cls, species: str, level: int, talents: str = "none") -> "Monster":
+        """A Pokémon that builds itself: its last 4 moves equipped (as in
+        Gen 1), and `talents`: "none" (wild ones; and ones that join the
+        player, who picks them), "half" (trainers' and bosses' Pokémon: a
+        talent in every other open tier) or "all" (every open tier), mostly
+        along one path (picked at random)."""
         monster = cls(SPECIES[species], level)
         known = monster.known[1:]
         monster.equipped = known[-MAX_EQUIPPED:]
         tree = monster.tree
-        if tree.paths:
+        if tree.paths and talents != "none":
             main = random.randrange(len(tree.paths))
-            for tier in range(tree.open_tiers(level)):
+            step = 2 if talents == "half" else 1
+            for tier in range(0, tree.open_tiers(level), step):
                 path = main if random.random() < 0.75 else random.randrange(len(tree.paths))
                 for p in (path, main, *range(len(tree.paths))):
                     if not tree.why_not(monster.talents, tier, p, level):
@@ -508,6 +509,10 @@ class Monster:
     def base_speed(self) -> int:
         return _stat(self.species.base_speed, self.level)
 
+    @property
+    def base_special(self) -> int:
+        return _stat(self.species.base_special, self.level)
+
     # Stats with gear: what battles use.
     @property
     def max_hp(self) -> int:
@@ -520,6 +525,16 @@ class Monster:
     @property
     def defense(self) -> int:
         return boosted(self.base_defense, self.gear_bonus("defense"))
+
+    # Special moves (`combat.SPECIAL_TYPES`) use Special both ways; gear's
+    # Attack and Defense bonuses go on whichever stat a move uses.
+    @property
+    def special_attack(self) -> int:
+        return boosted(self.base_special, self.gear_bonus("attack"))
+
+    @property
+    def special_defense(self) -> int:
+        return boosted(self.base_special, self.gear_bonus("defense"))
 
     @property
     def speed(self) -> int:

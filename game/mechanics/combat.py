@@ -22,6 +22,9 @@ STAGE_STATS = ("attack", "defense", "speed", "accuracy")
 FOCUS_CRIT = 4       # Focus Energy: crit chance × this
 CRIT_CHANCE = 6.25   # % (1 in 16, as in Gen 2+); gear adds to it
 CRIT_FACTOR = 1.5
+# Gen 1's special types: their moves use the user's and the target's Special
+# instead of Attack and Defense. (The rest are physical, typeless ones too.)
+SPECIAL_TYPES = frozenset(("fire", "water", "grass", "electric", "ice", "psychic", "dragon"))
 STAB = 1.5           # same-type attack bonus: a move of one of the user's own types
 
 
@@ -49,6 +52,11 @@ class Hit:
         return self.damage + sum(amount for _, amount in self.added)
 
 
+def is_special(move: Move) -> bool:
+    """Whether `move` uses Special (Gen 1: by its type)."""
+    return move.type in SPECIAL_TYPES
+
+
 def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.0) -> Hit:
     """The Gen 1 damage formula, simplified (misses are rolled first, by
     BattleScene._misses), plus talents
@@ -58,10 +66,12 @@ def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.
     if move.halve:  # Super Fang: half the target's HP, whatever the stats
         multiplier = effectiveness(move.type, types)
         return Hit(max(1, target.monster.hp // 2) if multiplier else 0, False, multiplier, [])
-    attack = m.attack * stage_factor(user.stages["attack"])
-    if user.status == "burn":
+    special = is_special(move)  # (Gen 1: these types use Special, attacking and defending)
+    attack = (m.special_attack if special else m.attack) * stage_factor(user.stages["attack"])
+    if user.status == "burn" and not special:  # (a burn weakens physical moves only)
         attack *= BURN_ATTACK
-    defense = target.monster.defense * stage_factor(target.stages["defense"])
+    target_m = target.monster
+    defense = (target_m.special_defense if special else target_m.defense) * stage_factor(target.stages["defense"])
     power = move.power * move.scale + m.gear_bonus("power")
     level_factor = 2 * m.level / 5 + 2
     base = level_factor * power * attack / defense / 50 + 2

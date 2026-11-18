@@ -13,18 +13,23 @@ the game deliberately differs from Gen 1, that's called out.
 
 `game/mechanics/pokemon.py` (`Monster`)
 
-Each species has four Gen 1 base stats: HP, Attack, Defense and Speed.
-There's no Special stat, no IVs/EVs and no natures (Abra, a pure
-Special attacker, uses its Special, 105, as its Attack; so do Kadabra,
-120, and Butterfree, 80). Its stats at level
+Each species has Gen 1's five base stats: HP, Attack, Defense, Speed and
+**Special** (`Species.base_special`). As in Red/Blue, Special is one stat
+used both ways: **Fire, Water, Grass, Electric, Ice, Psychic and Dragon
+moves** (`combat.SPECIAL_TYPES`) use the user's Special instead of its
+Attack and the target's Special instead of its Defense; every other move
+(and a typeless one) is physical. So Geodude (Defense 100, Special 30)
+shrugs off Tackle but not Water Gun or Ember. No IVs/EVs, no natures.
+Its stats at level
 `L` are worked out using whole-number division (`//`, rounding down):
 
 | Stat | Formula |
 | --- | --- |
 | Max HP | `base_hp × 2 × L // 100 + L + 10` |
-| Attack, Defense, Speed | `base × 2 × L // 100 + 5` |
+| Attack, Defense, Speed, Special | `base × 2 × L // 100 + 5` |
 
-Example: Bulbasaur (45 / 49 / 49 / 45) at Lv5 has 19 HP and 9 Attack.
+Example: Bulbasaur (45 / 49 / 49 / 45, Special 65) at Lv5 has 19 HP,
+9 Attack and 11 Special.
 
 ### Gear on stats
 
@@ -41,6 +46,9 @@ final  = max(1, stat + change)
 
 The "at least 1" keeps small bonuses meaningful at low levels. In code,
 `Monster.attack` etc. include gear; `Monster.base_attack` etc. don't.
+Gear has no Special bonus: its **Attack** bonus also counts when the
+Pokémon attacks with a special move (`Monster.special_attack`), its
+**Defense** bonus when it's hit by one (`special_defense`).
 
 Changing gear keeps the **damage taken**: a Pokémon at full HP stays at
 full HP when its max HP goes up or down.
@@ -168,7 +176,10 @@ per use (a multi-hit or spread move hits all or nothing). A hit is worked
 out in these steps:
 
 1. **Attack:** the user's Attack (with gear) × its **Attack stage**
-   multiplier (see *Stat stages*). Halved if the user is **burned**.
+   multiplier (see *Stat stages*); for a special move (Fire, Water,
+   Grass, Electric, Ice, Psychic, Dragon), its Special instead (with
+   gear's Attack bonus). Halved if the user is **burned** (physical moves
+   only, as in Gen 1).
 2. **Power:** the move's power × its `scale` (talents: Double Lash 0.6
    for its two hits), + the user's gear `power` bonus. Fight uses the
    Pokémon's basic attack (see `talents.md`).
@@ -179,7 +190,8 @@ out in these steps:
    ```
 
    `L` is the user's level, `defense` the target's Defense with gear ×
-   its **Defense stage** multiplier.
+   its **Defense stage** multiplier (a special move: its Special, with
+   gear's Defense bonus, × the same stage).
 4. **Critical hit:** a 6.25% chance (1 in 16) × the move's crit ratio
    (×8 for Razor Leaf, Gen 1's "high critical-hit ratio": 50%), plus the
    user's gear `crit` (and Lucky Strikes) in percentage points (e.g. +5 →
@@ -241,7 +253,8 @@ Normal vs Normal/Flying = ×1, no STAB (Bulbasaur is Grass/Poison)
 → 6 or 7 damage (crit: 8–10)
 ```
 
-With Sprout Strike, Tackle is a Grass move: ×1.5 STAB → 8–10.
+With Sprout Strike, Tackle is a Grass move: it uses Bulbasaur's Special (and Pidgey's) and gets
+×1.5 STAB. (Talents that change a move's type change whether it's special.)
 
 ### Effects that happen when a hit lands
 
@@ -339,8 +352,9 @@ for the rest of the battle (Gen 1's multipliers):
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | × | 1/4 | 2/7 | 1/3 | 2/5 | 1/2 | 2/3 | 1 | 1.5 | 2 | 2.5 | 3 | 3.5 | 4 |
 
-Growl lowers Attack, Growth raises Attack (and Defense at R3), Poison
-Powder R2/R3 lowers Speed, a Liechi Berry raises Attack.
+Growl lowers Attack, Growth raises Attack, a Liechi Berry raises Attack.
+The Attack and Defense stages also count for special moves (there's no
+separate Special stage).
 
 **Accuracy** is only ever lowered (Sand-Attack, Smokescreen) and doesn't
 use the multipliers above: a Pokémon with lowered accuracy hits with a

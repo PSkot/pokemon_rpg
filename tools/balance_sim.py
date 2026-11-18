@@ -46,9 +46,7 @@ def form(line: str, level: int) -> str:
 
 
 def member(line: str, level: int, talents: bool = True, berry: bool = False) -> Monster:
-    m = Monster.create(form(line, level), level)
-    if not talents:
-        m.talents = []
+    m = Monster.create(form(line, level), level, talents="all" if talents else "none")  # (the player's: all picked)
     if berry:  # (the starter's Common Oran Berry)
         m.equip(Gear.roll("Oran Berry", "Common", level=min(level, 5)))
     return m
@@ -129,9 +127,7 @@ def enemy_team(group, boss_rarities, rival_starter: str, boss: bool, trainer: bo
     for i, (species, level) in enumerate(group):
         species = {RIVAL_STARTER: rival_starter, RIVAL_STARTER_EVOLVED: EVOLUTIONS[rival_starter].into}.get(species,
                                                                                                           species)
-        m = Monster.create(species, level)
-        if not talents:
-            m.talents = []
+        m = Monster.create(species, level, talents="half" if (boss or trainer) and talents else "none")
         if boss or trainer:
             dress(m, boss_rarities, BOSS_GEAR if boss and i == 0 else TRAINER_GEAR)
         team.append(m)
@@ -154,7 +150,6 @@ PARTNERS = ["pidgey", "rattata", "nidoran_m", "spearow", "caterpie", "pikachu"]
 def story_battles(route_key: str, starter: str, levels, solo: bool, talents: bool) -> list:
     """The battles the route's major fight is made of (gym: waves, then the boss)."""
     route = ROUTES[route_key]
-    rival = RIVAL_OF[starter]
     if route_key == "mt_moon_cave":
         room = next(r for r in route.rooms if r.boss_group)
         return [(list(room.boss_group), room.trainer, True)]

@@ -219,7 +219,12 @@ non-commercial project.
   one per Pokémon, stored on `Monster` and kept after battle; cleared on
   fainting. Asleep/frozen party members skip the menu. Cured by medicine.
 - Types (`type_chart.py`): the 15 Gen 1 types and chart (Ghost→Psychic fixed to
-  2×). Species have 1–2 types, moves one (or none). STAB ×1.5.
+  2×). Species have 1–2 types, moves one (or none). STAB ×1.5. Gen 1's
+  Special stat (`Species.base_special`): Fire/Water/Grass/Electric/Ice/
+  Psychic/Dragon moves (`combat.SPECIAL_TYPES`) use Special for attack and
+  defense (`Monster.special_attack`/`special_defense`: gear's Attack and
+  Defense bonuses apply); burns only weaken physical moves. The party
+  screen and the starter choice show it.
 - Maps (`level.py`): a tile grid (16 px tiles; "#" solid, "=" one-way
   platform) generated from a seed and a theme (`themes.py`: tile palette,
   weighted encounter pool with level ranges, group sizes, battle backdrop,

@@ -31,7 +31,7 @@ PAD = 9
 PARTY_ROW = 35  # a party member's two lines in the party window
 
 PARTY_WINDOW = pygame.Rect(6, 6, 150, 348)
-STATS_WINDOW = pygame.Rect(162, 6, 472, PAD * 2 + ROW_H * 8 - 4)
+STATS_WINDOW = pygame.Rect(162, 6, 472, PAD * 2 + ROW_H * 9 - 4)
 GEAR_WINDOW = pygame.Rect(162, STATS_WINDOW.bottom + 6, 472, PAD * 2 + ROW_H * len(SLOTS))
 INFO_WINDOW = pygame.Rect(162, GEAR_WINDOW.bottom + 6, 472, 354 - GEAR_WINDOW.bottom - 6)
 SPRITE_BOX = pygame.Rect(STATS_WINDOW.x + 8, STATS_WINDOW.y + 8, 128, STATS_WINDOW.h - 16)
@@ -299,6 +299,12 @@ class SummaryScene(Scene):
                 row(STAT_NAMES[stat], str(base), ui.GREY, gear, _bonus_color(percent),
                     str(total), _bonus_color(total - base) if total != base else ui.WHITE)
 
+        # Special (Gen 1: Fire, Water, Grass, Electric, Ice and Psychic moves,
+        # both ways): no gear of its own; Attack and Defense gear count for it.
+        if after:
+            row("Special", str(m.base_special), ui.WHITE, "-", ui.GREY, str(after.base_special), ui.WHITE, "-")
+        else:
+            row("Special", str(m.base_special), ui.GREY, "-", ui.GREY, str(m.base_special), ui.WHITE)
         crit_now, crit = m.gear_bonus("crit"), shown.gear_bonus("crit")
         power_now, power = m.gear_bonus("power"), shown.gear_bonus("power")
         for name, unit, base, value_now, value in (("Crit chance", "%", CRIT_CHANCE, crit_now, crit),

@@ -16,7 +16,7 @@ from ..world.towns import TOWNS
 from .town import TownScene
 
 PAD = 9
-PANEL_W, PANEL_H = 196, 236
+PANEL_W, PANEL_H = 196, 250
 PANELS = [pygame.Rect(14 + i * (PANEL_W + 12), 66, PANEL_W, PANEL_H) for i in range(len(STARTERS))]
 SPRITE_BOX = 92  # height of the sprite area at the top of a panel
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
@@ -26,7 +26,8 @@ BLURB = {  # what each is good against, as Professor Oak might put it
     "charmander": "A Fire type: strong against Grass Pokémon.",
     "squirtle": "A Water type: strong against Fire Pokémon.",
 }
-STATS = (("HP", "base_hp"), ("Attack", "base_attack"), ("Defense", "base_defense"), ("Speed", "base_speed"))
+STATS = (("HP", "base_hp"), ("Attack", "base_attack"), ("Defense", "base_defense"), ("Speed", "base_speed"),
+         ("Special", "base_special"))
 
 
 class StarterScene(Scene):
