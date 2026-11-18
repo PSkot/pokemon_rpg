@@ -438,7 +438,9 @@ non-commercial project.
   desktop. Turning the phone remakes the window. Saved in the
   player's settings (`saves.load_prefs`/`save_prefs`: `saves/settings.json`,
   mirrored to localStorage like saves; key "touch").
-- `tools/` holds standalone helper scripts. `tools/anim_viewer.py` uses only
+- `tools/` holds standalone helper scripts. `tools/balance_sim.py` simulates battles
+  for balance (the story's major fights at the expected levels, with or
+  without talents; 1v1 duels between every line; greedy party AI). `tools/anim_viewer.py` uses only
   the standard library (it renders an HTML page and opens it in the browser).
 - Firefox on this machine is a snap and cannot open files under `/tmp`;
   write files it needs to open inside the project (e.g. `build/`).
