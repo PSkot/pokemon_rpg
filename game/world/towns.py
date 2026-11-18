@@ -183,7 +183,7 @@ TOWNS = {t.key: t for t in [
         Building("Cerulean Gym", (FUNCTIONAL, 1), 44),
         Building("Recruitment Center", (HOUSES, 3), 57, inside="recruit"),
         Building("", (HOUSES, 0), 70),
-    ), exits=(("left", "route_4_east"),), home_col=22, board_col=41,
+    ), exits=(("left", "route_4_east"), ("right", "nugget_bridge")), home_col=22, board_col=41,
        mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal",
              "Ice Heal"),
        folk=(

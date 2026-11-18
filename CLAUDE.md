@@ -288,7 +288,7 @@ non-commercial project.
   "route_4_east" (2 maps), leads down to Cerulean City (Center, Mart,
   Recruitment Center, and the Cerulean Gym: the Cascade Crew's waves of
   Water Pokémon, then Starmie and Staryu, for the Cascade Badge; Starmie
-  takes Staryu's moves via `pokemon.LATER_FORMS`). North of Cerulean:
+  takes Staryu's moves via `pokemon.LATER_FORMS`). North of Cerulean (its right-edge doorway):
   route "nugget_bridge" (Route 24: five bands on the bridge, a Rocket,
   the rival's second battle, `RIVAL_STARTER_EVOLVED`) → stop town
   "route_24" → route "route_25" → town "sea_cottage" (quest "bill":
