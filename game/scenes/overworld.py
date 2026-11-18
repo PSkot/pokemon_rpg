@@ -47,7 +47,15 @@ OUTLINE = (48, 28, 16)
 TRACKED = 3  # active quests shown under the location
 EXTRA_FOE_CHANCE = 0.5  # with two fighting: a wild group's chance of one more Pokémon
 LADDER_SEGMENT = pygame.Rect(8, 16, 16, 16)  # a repeating stretch of the ladder prop
-GROUP_SPACING = 30  # px between the members of a wild group, standing in a row
+# A wild group stands as a loose cluster, not a line: each member a share
+# of their widths behind the one before (so they overlap), every other one
+# in a back row (a little higher, dimmed, drawn behind), with a few px of
+# jitter per group (from the map's seed).
+GROUP_OVERLAP = 0.55   # × the two members' half-widths added: the step from one to the next
+BACK_ROW_LIFT = 5      # px the back row stands higher
+BACK_ROW_SHADE = 0.8   # its colours × this
+GROUP_JITTER = 3       # px, either way
+MIN_SQUEEZE = 0.6      # a group squeezes to as little as this of its spacing to stay on level ground
 # A wild group also catches the player this high above its feet (an invisible
 # column over it), up to the first tile overhead: so it can't be jumped over
 # from the ground, only passed on a platform over it (or jumped from one).
@@ -71,13 +79,14 @@ def draw_prompt(surface: pygame.Surface, x: float, top: float, t: float) -> None
 
 
 class WildPokemon:
-    """A group of wild Pokémon on the map, all shown, standing in a row
-    behind the first. Touching them starts a battle against `encounter`:
+    """A group of wild Pokémon on the map, all shown, standing together
+    behind the first (a loose cluster: `_placed`). Touching them starts a battle against `encounter`:
     a list of (species, level). A boss group's leader (the first) can be
     drawn `scale` times bigger (on the map and in battle)."""
 
-    def __init__(self, spawn: Spawn, boss: bool = False, scale: int = 1):
+    def __init__(self, spawn: Spawn, boss: bool = False, scale: int = 1, level: Level | None = None):
         self.spawn = spawn
+        self.level = level  # (each member stands on the ground under it)
         self.x, self.ground_y = spawn.x, spawn.feet_y
         self.encounter = spawn.encounter
         self.boss = boss
@@ -88,21 +97,70 @@ class WildPokemon:
         # running away) while still touching them doesn't start another one.
         self.armed = True
         self.trainer: Trainer | None = None  # a route trainer's team, or None (wild)
+        rng = random.Random(round(spawn.x * 31 + spawn.feet_y))
+        self.jitter = [0.0] + [rng.uniform(-GROUP_JITTER, GROUP_JITTER) for _ in self.members[1:]]
+        self._layout: list | None = None  # (worked out once: `_lay_out`)
 
     def _placed(self):
-        """(species, idle animation, x, feet y) per member, the back ones first."""
-        behind = -self.facing  # the others stand further from the player
-        offsets = [0.0]  # each one a spacing behind the one before (more next to a big one)
-        for a, b in zip(self.scales, self.scales[1:]):
-            offsets.append(offsets[-1] + GROUP_SPACING * (a + b) / 2)
-        for i in reversed(range(len(self.members))):
-            species, scale = self.members[i], self.scales[i]
-            x = self.x + behind * offsets[i]
-            yield species, animations(species, scale)["idle"], x, self.ground_y + species.foot_sink * scale
+        """(species, idle animation, x, feet y, back row?) per member, in
+        drawing order: the back row first, the leader last (in front; a
+        boss first, behind its escort)."""
+        if self._layout is None:
+            self._layout = self._lay_out()
+        return self._layout
+
+    def _lay_out(self) -> list[tuple]:
+        """A loose cluster around the leader: the others beside it, by turns
+        on either side, every other one in the back row, each a share of
+        their widths from the next (`GROUP_OVERLAP`), with a little jitter;
+        slid along (and if need be squeezed onto) the level ground under
+        the leader, so the group doesn't straddle a step."""
+        anims = [animations(sp, scale)["idle"] for sp, scale in zip(self.members, self.scales)]
+        widths = [a.frames[0].get_bounding_rect().w for a in anims]
+        order = [0]  # members from left to right: the leader in the middle, the others by turns beside it
+        for i in range(1, len(anims)):
+            order = order + [i] if i % 2 else [i] + order
+        xs = [0.0]
+        for a, b in zip(order, order[1:]):
+            xs.append(xs[-1] + GROUP_OVERLAP * (widths[a] + widths[b]) / 2 + self.jitter[b])
+        lead = order.index(0)
+        xs = [x - xs[lead] for x in xs]  # the leader at 0
+        left, right = xs[0] - widths[order[0]] / 2, xs[-1] + widths[order[-1]] / 2
+        lo, hi = self._flat_run()
+        if right - left > hi - lo:  # squeeze it (no closer than MIN_SQUEEZE)
+            k = max(MIN_SQUEEZE, (hi - lo) / (right - left))
+            xs, left, right = [x * k for x in xs], left * k, right * k
+        if right - left <= hi - lo:  # slide it onto the level stretch
+            shift = min(max(0.0, lo - left), hi - right)
+        else:  # (too wide even so: centred on it)
+            shift = (lo + hi) / 2 - (left + right) / 2
+        spots = []
+        for pos, i in enumerate(order):
+            x = self.x + xs[pos] + shift
+            ground = self.level.ground_y(x) if self.level and not self.boss else self.ground_y
+            # The leader's neighbours stand behind it; a boss looms behind its escort instead.
+            back = abs(pos - lead) % 2 == 1 and not self.boss
+            feet = ground + self.members[i].foot_sink * self.scales[i] - (BACK_ROW_LIFT if back else 0)
+            spots.append((back, (i == 0) != self.boss, self.members[i], anims[i], x, feet))
+        spots.sort(key=lambda s: (not s[0], s[1]))
+        return [(sp, anim, x, feet, back) for back, _, sp, anim, x, feet in spots]
+
+    def _flat_run(self) -> tuple[float, float]:
+        """The stretch around the leader (px from its x) where the ground is
+        level with its own (a map with no level: unbounded)."""
+        if not self.level:
+            return -math.inf, math.inf
+        ends = []
+        for d in (-1, 1):
+            x = self.x
+            while abs(x - self.x) < 10 * TILE and abs(self.level.ground_y(x + d * TILE / 2) - self.ground_y) < 1:
+                x += d * TILE / 2
+            ends.append(x - self.x)
+        return ends[0], ends[1]
 
     @property
     def body_rect(self) -> pygame.Rect:
-        rects = [anim.body_rect(0, x, y, self.facing < 0) for _, anim, x, y in self._placed()]
+        rects = [anim.body_rect(0, x, y, self.facing < 0) for _, anim, x, y, _ in self._placed()]
         return rects[0].unionall(rects[1:])
 
     def reach_rects(self, level: Level) -> list[pygame.Rect]:
@@ -135,12 +193,27 @@ class WildPokemon:
 
     def draw(self, surface: pygame.Surface, level: Level, debug: bool = False) -> None:
         flip = self.facing < 0
-        for _, anim, x, y in self._placed():
-            surface.blit(anim.frame(0, flip), anim.place(0, x, y, flip))
+        for _, anim, x, y, back in self._placed():
+            frame = anim.frame(0, flip)
+            surface.blit(_shaded(frame) if back else frame, anim.place(0, x, y, flip))
         if debug:
             color = (255, 0, 0) if self.boss else (255, 255, 0)
             for rect in self.reach_rects(level):
                 pygame.draw.rect(surface, color, rect, 1)
+
+
+_SHADED: dict[int, pygame.Surface] = {}
+
+
+def _shaded(frame: pygame.Surface) -> pygame.Surface:
+    """`frame` a little darker (a back-row member), cached."""
+    key = id(frame)
+    if key not in _SHADED:
+        shade = round(255 * BACK_ROW_SHADE)
+        dark = frame.copy()
+        dark.fill((shade, shade, shade, 255), special_flags=pygame.BLEND_RGBA_MULT)
+        _SHADED[key] = dark
+    return _SHADED[key]
 
 
 class Chest:
@@ -485,7 +558,7 @@ class OverworldScene(MapScene):
         for i, spawn in enumerate(level.spawns):
             trainer = placed.get(i)
             if (trainer and not quests.trainer_beaten(game, trainer.key)) or (not trainer and route.wild):
-                self.wild.append(WildPokemon(spawn))
+                self.wild.append(WildPokemon(spawn, level=level))
                 self.wild[-1].trainer = trainer
         room = instance.room
         self.trainer = room.trainer if room else route.trainer  # whose team the boss group is ("" = wild)
@@ -495,7 +568,8 @@ class OverworldScene(MapScene):
             level.boss.encounter, self.trainer = list(route.boss_after[1]), ""  # the quest's boss is beaten
         if level.boss:  # the rival's starter depends on the player's
             level.boss.encounter = [(rival.get(species, species), lv) for species, lv in level.boss.encounter]
-        self.boss = WildPokemon(level.boss, boss=True, scale=instance.route.boss_scale) if level.boss else None
+        self.boss = (WildPokemon(level.boss, boss=True, scale=instance.route.boss_scale, level=level)
+                     if level.boss else None)
         if self.boss:
             self.wild.append(self.boss)
         # No roadside chests (the map still has spots for them): chests are

@@ -220,7 +220,11 @@ non-commercial project.
   platform) generated from a seed and a theme (`themes.py`: tile palette,
   weighted encounter pool with level ranges, group sizes, battle backdrop,
   cave ceiling). Maps scroll sideways and end at a doorway (Up) to the next
-  map. Wild groups are shown in full and stay gone once beaten. A group
+  map. Wild groups are shown in full and stay gone once beaten. A group stands
+  as a loose cluster around its leader (`WildPokemon._lay_out`: the others
+  by turns on either side, overlapping, every other one in a dimmed back
+  row; slid and squeezed onto the level ground under it; a boss looms
+  behind its escort). A group
   can't be jumped over: it also catches the player in a column up to
   `GROUP_REACH` above it, stopped by a platform or ceiling overhead
   (`WildPokemon.reach_rects`), so platforms still get past. With two
