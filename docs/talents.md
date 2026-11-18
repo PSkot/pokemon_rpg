@@ -27,9 +27,11 @@ Pokémon, each one written by hand.
 
 ## Talents
 
-- **Paths.** Each line has 3 paths, each a way to play it. Bulbasaur's:
-  **Toxin** (poison, seeds and sleep: wearing enemies down), **Bloom**
-  (Grass damage) and **Bulwark** (staying up, and keeping the partner up).
+- **Paths.** Each line has 3 paths, each a way to play it (Bulbasaur:
+  **Toxin**, **Bloom**, **Bulwark**; Pidgey: **Gale**, **Raptor**,
+  **Scout**; see *Lines*). Lines with talents so far: Bulbasaur, and the
+  early routes' Pidgey, Rattata, Spearow, Nidoran ♀ and ♂, Caterpie,
+  Weedle and Pikachu.
 - **Tiers.** 12 tiers open at **Lv6, 10, 14, 18, 22, 27, 32, 38, 44, 50,
   60, 75** (`TIER_LEVELS`). At each tier the player picks **1 of its 3
   talents**, one per path. Paths can be mixed freely. Tier 11's talents
@@ -44,12 +46,19 @@ Pokémon, each one written by hand.
   and placed in any line's tiers that fit it:
   - **type or status pools**: for lines of that type, or with moves that
     inflict that status (Grass: Overgrow, Harvest, ...; Poison: Sapping,
-    Contagion, ...; sleep: Nightmare). Each type's pool is written for
-    that type, not one set renamed per type, so types still play
-    differently;
-  - **move pools**: for lines that learn that move (Growl: Taunting Growl;
-    Leech Seed: Creeping Seed, Seed Bomb, ...);
-  - **any**: any line can have them (Sturdy, Second Wind, World Tree);
+    Contagion, Poison Point, ...; Normal: Cornered, Momentum; Flying:
+    Riding the Wind, Aerial Ace; Bug: Swarm, Shed Skin; Electric: Static,
+    Charge Up; sleep: Nightmare; paralysis: Conductor; confusion: Mind
+    Games). A type's "low HP", "in a row" and "knockout heals" talents
+    share one mechanism (Overgrow / Cornered / Swarm / Surge; Ripening /
+    Momentum / Hive Mind / Charge Up; Harvest / Scavenger / Bird of Prey /
+    Feeding Frenzy / Discharge); the rest of each pool is the type's own;
+  - **move pools**: for lines that learn that move (Growl: Taunting Growl,
+    Echoing Growl; Quick Attack: Lightning Reflexes, Hit and Run,
+    Lightning Speed; Leech Seed: Creeping Seed, Seed Bomb, ...);
+  - **any**: any line can have them (Sturdy, Second Wind, Guardian, Head
+    Start, Lucky Strikes, Tenacity, Unbreakable, Ambush, Gang Up, Blur,
+    Apex Predator);
   - **own**: one line's signature talents, mostly its capstones.
 
   A line places shared talents at the tiers that suit its moves, so the
@@ -64,36 +73,62 @@ Pokémon, each one written by hand.
 
 A talent changes moves and/or works in battle by itself:
 
-- **Move changes** (`Talent.moves`): Move field changes for the basic
-  attack, one move, the user's damaging moves of a type
-  (`"type:grass"`) or its moves that inflict a status
-  (`"status:poison"`), applied in tier order (`talents.apply_changes`:
-  numbers add up, chances to at most 100%). So Sprout Strike's Grass
-  Tackle also gets Flower Power, and Toxic Touch's poison also gets
-  Contagion and Siphon. Changed moves show a "*" on the talent screen.
-- **Battle effects** (`Talent.flags`, `Monster.talent(flag)`):
-  - damage (`BattleScene._talent_factor`, multiplying the hit):
-    **Overgrow** (the user's Grass moves ×1.5 below ⅓ HP), **Ripening**
-    (+20% per Grass move used in a row before it, up to +60%; any other
-    move starts it over), **Sapping** (a poisoned attacker deals 20% less
-    to the holder's side), **Ancient Roots** (the holder's side takes 15%
-    less while it stands), **Sturdy** (the holder's first hit taken each
-    battle deals half);
-  - **Second Wind**: once a battle, ending a round below ⅓ HP heals ¼ of
-    max HP. **Photosynthesis**: 1/16 of max HP each round end (with gear
-    regen). **Harvest**: knocking an enemy out with a Grass move heals ¼;
-  - **World Tree**: once a battle, a partner hit for the last of its HP
-    keeps 1 HP;
-  - **Miasma**: at the start of each battle, each foe has a 50% chance to
-    be poisoned (with the holder's poison move's extras).
-- **New move fields** they use (`moves.Move`): `taunt` (Taunting Growl:
-  for this round and the next, the foes' single-target moves go to the
-  user), `keen` (Keen Edge: always a critical hit on a target below half
-  HP), `charge_skip` (Sunlit: Solar Beam needs no charging once Growth was
-  used in the battle), `ko_no_recharge` (Hyper Bloom), `soothe`
-  (Soothing Spores: cures the user's side's statuses). A damaging move
-  with `seed` (Seed Bomb) seeds what it hits; poison from a damaging
-  move carries its Contagion/Siphon.
+- **Move changes** (`Talent.moves`): Move field changes for a selector,
+  applied in tier order (`talents.apply_changes`: numbers add up, chances
+  to at most 100%; `power`, `type`, `hits` are set): `"basic"` (the basic
+  attack), a move's name, `"type:grass"` (the user's damaging moves of
+  that type), `"status:poison"` (its moves that inflict it), `"confuse"`,
+  `"damaging"`, `"status_moves"`, `"spread"` (moves that hit every target
+  by then). So Sprout Strike's Grass Tackle also gets Flower Power, and
+  Toxic Touch's poison also gets Contagion and Siphon. Changed moves show
+  a "*" on the talent screen.
+- **Battle effects** (`Talent.flags`, `Monster.talent(flag)`; the list is
+  in `talents.py` above `TALENTS`):
+  - damage (`BattleScene._talent_factor`, multiplying the hit): the
+    user's **pinch:<type>** (×1.5 for that type's moves below ⅓ HP:
+    Overgrow, Cornered, Swarm, Surge, Eye of the Storm), **streak:<type>**
+    (+20% per move of that type used in a row before it, up to 3: Ripening,
+    Hive Mind, Charge Up; Momentum +15%, Rampage +25%; any other move
+    starts it over), **ambush** (+30% on a target that hasn't moved yet
+    this round), **gang** (+30% on a target a partner already hit this
+    round; Murder of Crows +50%), **wide** (Gale Force: +25% for moves
+    that hit every enemy), **prey:<status>** (+% on a poisoned/paralyzed/
+    confused target: Queen's Venom, Venom Queen, Supercharged, Mind Crush);
+    its side's **spot:<stat>** (+30% on an enemy with that stat lowered:
+    Blind Spot, Spiteful); **Sapping** (a poisoned attacker deals 20% less
+    to the holder's side), **Ancient Roots** and its copies (the holder's
+    side takes 15% less while it stands), **Sturdy** (the holder's first
+    hit taken each battle: half; Juggernaut: none);
+  - like gear mods (`Monster.gear_bonus`): `first` (Head Start: 30% to
+    act first), `crit` (Lucky Strikes: +10 points), `endure` (Tenacity
+    25%, Unbreakable 50%), `regen` (Photosynthesis, Preening, Nesting:
+    1/16 a round), `status:<status>` (Plague Rat, Venom Lord: every hit's
+    chance to inflict it);
+  - **Second Wind** (and Cheek Pouch; Metamorphosis heals ½): once a
+    battle, ending a round below ⅓ HP heals ¼ of max HP. **harvest:<type>**:
+    knocking an enemy out with a move of that type heals ¼. **Nurturing**:
+    the holder's side heals 1/16 a round. **Dream Eater**: 1/8 a round per
+    sleeping foe. **Shed Skin**: 30% each round end to shake off its
+    status;
+  - **Guardian** / **World Tree** / **Hive Queen**: once a battle, a
+    partner hit for the last of its HP keeps 1 HP (Queen's Guard: and
+    heals ¼);
+  - when hit: **retaliate:<status>** (Static, Poison Point: 25% that the
+    attacker gets the status), **thorns** (Thorny Hide: the attacker loses
+    1/16 of its max HP, as Thornskin's spikes do);
+  - at the start of each battle: **aura:<status>** (Miasma: 50% per foe to
+    be poisoned; Thunder Cloud: 30% paralyzed), **intimidate** (every
+    foe's Attack −1 stage).
+- **Move fields** they use (`moves.Move`): `taunt` (Taunting Growl, Decoy,
+  Mob Rule, Lightning Rod: for this round and the next, the foes'
+  single-target moves go to the user), `keen` (Keen Edge, Apex Predator:
+  always a critical hit on a target below that share of its HP),
+  `charge_skip` (Sunlit, Ascend: no charging once that move was used in
+  the battle), `ko_no_recharge` (Overdrive), `soothe` (Soothing Spores),
+  and the older `follow_up`, `expose`, `empower`, `rally`, `spikes`,
+  `reach`, `shield`, `heal`, `self_stages`, `priority`, `triggers`, ...
+  A damaging move with `seed` (Seed Bomb) seeds what it hits; poison from
+  a damaging move carries its Contagion/Siphon.
 
 ## The talent screen
 
@@ -135,5 +170,173 @@ Paths: **Toxin** (poison, seeds and sleep: wearing enemies down); **Bloom** (gra
 | 8 | 38 | **Siphon**: The user heals half the poison damage of the enemies it poisoned. *(Poison)* | **Full Bloom**: Growth also makes the user's next damaging move deal 50% more. *(Growth)* | **Shared Sun**: Growth works on the whole party. *(Growth)* |
 | 9 | 44 | **Nightmare**: Enemies the user puts to sleep lose 1/8 of their max HP each round. *(Sleep)* | **Harvest**: Knocking an enemy out with a Grass move heals the user 1/4 of its max HP. *(Grass)* | **Soothing Spores**: Sleep Powder also cures the party's status conditions. *(Sleep Powder)* |
 | 10 | 50 | **Spore Storm**: Razor Leaf has a 15% chance to set off Poison Powder and a 10% chance to set off Sleep Powder on its target. *(**own**)* | **Sunlit**: Once the user has used Growth in a battle, Solar Beam needs no charging. *(**own**)* | **Photosynthesis**: The user heals 1/16 of its max HP at the end of each round. *(Grass)* |
-| 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Solar Flare** *(needs 4)*: Solar Beam hits every enemy, at full power. *(Solar Beam)* | **World Tree** *(needs 4)*: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Solar Flare** *(needs 4)*: Solar Beam hits every enemy, at full power. *(Solar Beam)* | **World Tree** *(needs 4)*: Once a battle, a partner that would faint keeps 1 HP instead. *(**own**)* |
 | 12 | 75 | **Venom Garden** *(needs 6)*: All poison the user inflicts is bad poison, and Leech Seed poisons too. *(**own**)* | **Hyper Bloom** *(needs 6)*: Hyper Beam is a Grass move and needs no rest after knocking an enemy out. *(**own**)* | **Ancient Roots** *(needs 6)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
+
+### Spearow → Fearow
+
+Moves: Peck, Growl, Leer 9, Fury Attack 15, Swift 20, Whirlwind 22, Drill Peck 29 (Fearow), Agility 36, Hyper Beam 45 (Fearow).
+
+Paths: **Talon** (pecks and Drill Peck: hard Flying strikes); **Flock** (fury Attack and ganging up); **Bully** (growl and Leer: weakening and scaring the enemies).
+
+| Tier | Lv | Talon | Flock | Bully |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Pecking Order**: Peck has a 30% chance to make the target flinch. *(**own**)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Taunting Growl**: Growl also makes every enemy attack the user, this round and the next. *(Growl)* |
+| 2 | 10 | **Rapid Pecks**: Peck hits twice, at 60% power each. *(**own**)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* |
+| 3 | 14 | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* |
+| 4 | 18 | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Frenzy**: Fury Attack always hits at least 3 times. *(Fury Attack)* | **Screech Growl**: Growl lowers Attack 2 stages. *(**own**)* |
+| 5 | 22 | **Riding the Wind**: The user's Flying moves raise its Speed 1 stage. *(Flying)* | **Harrier**: Fury Attack becomes a Flying move. *(**own**)* | **Mob Rule**: Leer also makes every enemy attack the user, this round and the next. *(**own**)* |
+| 6 | 27 | **Aerial Ace**: The user's Flying moves never miss and are twice as likely to be critical hits. *(Flying)* | **Star Shower**: Swift hits every enemy, the others at 60% damage. *(Swift)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 7 | 32 | **Drill Run**: Drill Peck also hits one enemy next to the target, at half damage. *(Drill Peck)* | **Howling Wind**: Whirlwind also deals damage (Normal, 30 power) to every enemy. *(Whirlwind)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 8 | 38 | **Fearsome Beak**: Drill Peck has a 30% chance to make the target flinch. *(**own**)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 9 | 44 | **Bird of Prey**: Knocking an enemy out with a Flying move heals the user 1/4 of its max HP. *(Flying)* | **Tailwind**: Agility works on the whole party. *(Agility)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 10 | 50 | **Overdrive**: Hyper Beam needs no rest after knocking an enemy out. *(Hyper Beam)* | **Tempest**: Whirlwind lowers Speed 2 stages. *(Whirlwind)* | **Intimidate**: At the start of each battle, every enemy's Attack falls 1 stage. *(**own**)* |
+| 11 | 60 | **Sky Tyrant** *(needs 4)*: The user's Flying moves deal 30% more to a target that hasn't moved yet this round, and always go first. *(**own**)* | **Murder of Crows** *(needs 4)*: The user's moves deal 50% more to a target a partner already hit this round. *(**own**)* | **Spiteful** *(needs 4)*: Enemies with lowered Attack take 30% more damage from the user's party. *(**own**)* |
+| 12 | 75 | **Apex Predator** *(needs 6)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Storm of Beaks** *(needs 6)*: Fury Attack hits every enemy, at full damage. *(**own**)* | **Reign of Terror** *(needs 6)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
+
+### Nidoran F → Nidorina
+
+Moves: Tackle, Growl, Scratch 8, Poison Sting 14, Tail Whip 21, Body Slam 25 (Nidorina), Bite 29, Fury Swipes 36, Double Kick 43.
+
+Paths: **Venom** (poison, and making it worse); **Claw** (scratching, biting and kicking); **Matriarch** (keeping the partner safe).
+
+| Tier | Lv | Venom | Claw | Matriarch |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Taunting Growl**: Growl also makes every enemy attack the user, this round and the next. *(Growl)* |
+| 2 | 10 | **Poison Point**: Whoever hits the user has a 25% chance to be poisoned. *(Poison)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 3 | 14 | **Barbed Sting**: Poison Sting is 30% more likely to poison. *(Poison Sting)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Thorny Hide**: Whoever hits the user loses 1/16 of its max HP. *(**own**)* |
+| 4 | 18 | **Sapping**: Poisoned enemies deal 20% less damage. *(Poison)* | **Venom Claws**: Scratch has a 30% chance to poison. *(**own**)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 5 | 22 | **Venom Needle**: Poison Sting wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Poison Sting)* | **Tail Slap**: After Tail Whip, the user hits the target with its basic attack at 60% power. *(Tail Whip)* | **Wagging Tail**: Tail Whip works on every enemy. *(Tail Whip)* |
+| 6 | 27 | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 7 | 32 | **Siphon**: The user heals half the poison damage of the enemies it poisoned. *(Poison)* | **Crunch**: Bite has a 30% chance to lower the target's Defense 1 stage. *(Bite)* | **Echoing Growl**: Growl works on every enemy. *(Growl)* |
+| 8 | 38 | **Virulent**: The user's poison is bad poison: it gets worse every round. *(Poison)* | **Raking Claws**: Fury Swipes wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Fury Swipes)* | **Nurturing**: While the user stands, the whole party heals 1/16 of its max HP at the end of each round. *(**own**)* |
+| 9 | 44 | **Toxic Fangs**: Bite has a 30% chance to poison. *(**own**)* | **Rapid Kicks**: Each of Double Kick's hits has a 30% chance to make the target flinch. *(Double Kick)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 10 | 50 | **Toxic Swipes**: Fury Swipes has a 20% chance per hit to poison. *(**own**)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* |
+| 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Apex Predator** *(needs 4)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Den Mother** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
+| 12 | 75 | **Venom Queen** *(needs 6)*: All poison the user inflicts is bad poison, and poisoned enemies take 25% more damage from it. *(**own**)* | **Fury Queen** *(needs 6)*: Fury Swipes always hits 5 times. *(**own**)* | **Queen's Guard** *(needs 6)*: Once a battle, a partner that would faint keeps 1 HP, and the user heals it 1/4 of its max HP. *(**own**)* |
+
+### Nidoran M → Nidorino
+
+Moves: Tackle, Leer, Horn Attack 8, Poison Sting 14, Focus Energy 21, Body Slam 25 (Nidorino), Fury Attack 29, Double Kick 43.
+
+Paths: **Venom** (poison, and making it worse); **Horn** (horn Attack: critical hits and piercing); **Brawler** (focus, charging and momentum).
+
+| Tier | Lv | Venom | Horn | Brawler |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Charge**: Tackle hits harder: 50 power. *(**own**)* |
+| 2 | 10 | **Poison Point**: Whoever hits the user has a 25% chance to be poisoned. *(Poison)* | **Gore**: Horn Attack is 8× as likely to be a critical hit. *(Horn Attack)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* |
+| 3 | 14 | **Barbed Sting**: Poison Sting is 30% more likely to poison. *(Poison Sting)* | **Piercing Horn**: Horn Attack also hits one enemy next to the target, at half damage. *(**own**)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* |
+| 4 | 18 | **Sapping**: Poisoned enemies deal 20% less damage. *(Poison)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* |
+| 5 | 22 | **Horn Drill**: Horn Attack has a 30% chance to poison. *(**own**)* | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* | **Keen Focus**: Focus Energy also raises the user's Attack 1 stage. *(Focus Energy)* |
+| 6 | 27 | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* |
+| 7 | 32 | **Siphon**: The user heals half the poison damage of the enemies it poisoned. *(Poison)* | **Frenzy**: Fury Attack always hits at least 3 times. *(Fury Attack)* | **Battle Focus**: Focus Energy also makes the user's next damaging move deal 50% more. *(**own**)* |
+| 8 | 38 | **Virulent**: The user's poison is bad poison: it gets worse every round. *(Poison)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Rampage**: Each Normal move in a row deals 25% more than the last, up to +75%. *(**own**)* |
+| 9 | 44 | **Venom Needle**: Poison Sting wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Poison Sting)* | **Rapid Kicks**: Each of Double Kick's hits has a 30% chance to make the target flinch. *(Double Kick)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 10 | 50 | **Toxic Horn**: Horn Attack is a Poison move, and poisons 30% of the time. *(**own**)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Apex Predator** *(needs 4)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Shared Focus** *(needs 4)*: Focus Energy works on the whole party. *(Focus Energy)* |
+| 12 | 75 | **Venom Lord** *(needs 6)*: All poison the user inflicts is bad poison, and the user's hits have a 20% chance to poison. *(**own**)* | **Megahorn** *(needs 6)*: Horn Attack hits much harder: 100 power. *(**own**)* | **Juggernaut** *(needs 6)*: The first hit the user takes in each battle deals no damage, and its Normal moves never miss. *(**own**)* |
+
+### Pidgey → Pidgeotto → Pidgeot
+
+Moves: Gust, Sand-Attack 5, Quick Attack 12, Whirlwind 19, Wing Attack 28, Double-Edge 35 (Pidgeot), Agility 36, Sky Attack 44 (Pidgeot).
+
+Paths: **Gale** (wind that hits every enemy); **Raptor** (fast, hard strikes on one target); **Scout** (sand in the eyes, decoys, and keeping the partner up).
+
+| Tier | Lv | Gale | Raptor | Scout |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Squall**: Gust hits every enemy, the others at 50% damage. *(**own**)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Sandstorm**: Sand-Attack works on every enemy. *(Sand-Attack)* |
+| 2 | 10 | **Buffeting Winds**: Gust has a 30% chance to lower the target's Speed 1 stage. *(**own**)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Blinding Grit**: Sand-Attack lowers accuracy 2 stages. *(Sand-Attack)* |
+| 3 | 14 | **Cyclone**: Gust has a 10% chance to confuse. *(**own**)* | **Lightning Reflexes**: Quick Attack has a 30% chance to make the target flinch. *(Quick Attack)* | **Kick Up Dust**: After Sand-Attack, the user hits the target with its basic attack at 60% power. *(Sand-Attack)* |
+| 4 | 18 | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Hit and Run**: Quick Attack also raises the user's Speed 1 stage. *(Quick Attack)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 5 | 22 | **Howling Wind**: Whirlwind also deals damage (Normal, 30 power) to every enemy. *(Whirlwind)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Dust Devil**: Sand-Attack also makes the target take 20% more damage from everyone, for 3 rounds. *(**own**)* |
+| 6 | 27 | **Tempest**: Whirlwind lowers Speed 2 stages. *(Whirlwind)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 7 | 32 | **Riding the Wind**: The user's Flying moves raise its Speed 1 stage. *(Flying)* | **Gale Wings**: Wing Attack always goes first. *(Wing Attack)* | **Decoy**: Sand-Attack also makes every enemy attack the user, this round and the next. *(**own**)* |
+| 8 | 38 | **Downdraft**: Wing Attack hits every enemy, the others at 60% damage. *(**own**)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* | **Tailwind**: Agility works on the whole party. *(Agility)* |
+| 9 | 44 | **Eye of the Storm**: Below 1/3 HP, the user's Normal and Flying moves deal 1.5× damage. *(**own**)* | **Ascend**: Once the user has used Agility in a battle, Sky Attack needs no charging. *(Sky Attack)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 10 | 50 | **Gale Force**: The user's moves that hit every enemy deal 25% more. *(**own**)* | **Bird of Prey**: Knocking an enemy out with a Flying move heals the user 1/4 of its max HP. *(Flying)* | **Preening**: The user heals 1/16 of its max HP at the end of each round. *(**own**)* |
+| 11 | 60 | **Wind Shear** *(needs 4)*: The user's moves that hit every enemy have a 20% chance to make each one flinch. *(**own**)* | **Aerial Ace** *(needs 4)*: The user's Flying moves never miss and are twice as likely to be critical hits. *(Flying)* | **Blind Spot** *(needs 4)*: Enemies with lowered accuracy take 30% more damage from the user's party. *(**own**)* |
+| 12 | 75 | **Hurricane** *(needs 6)*: Gust becomes a Flying move with 60 power, and hits every enemy at full damage. *(**own**)* | **Apex Predator** *(needs 6)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Sheltering Wings** *(needs 6)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
+
+### Rattata → Raticate
+
+Moves: Tackle, Tail Whip, Quick Attack 7, Focus Energy 23, Hyper Fang 25 (Raticate), Body Slam 25 (Raticate), Super Fang 35 (Raticate), Hyper Beam 45 (Raticate).
+
+Paths: **Fang** (biting: wounds, flinches and fangs); **Scurry** (speed: Quick Attack, and striking first); **Survivor** (scrappy: fighting on when cornered).
+
+| Tier | Lv | Fang | Scurry | Survivor |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Gnawing Tackle**: Tackle wounds the target: 1/16 of its max HP each round, for 3 rounds. *(**own**)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Wagging Tail**: Tail Whip works on every enemy. *(Tail Whip)* |
+| 2 | 10 | **Nip**: Tackle has a 20% chance to make the target flinch. *(**own**)* | **Lightning Reflexes**: Quick Attack has a 30% chance to make the target flinch. *(Quick Attack)* | **Scavenger**: Knocking an enemy out with a Normal move heals the user 1/4 of its max HP. *(Normal)* |
+| 3 | 14 | **Tail Slap**: After Tail Whip, the user hits the target with its basic attack at 60% power. *(Tail Whip)* | **Hit and Run**: Quick Attack also raises the user's Speed 1 stage. *(Quick Attack)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* |
+| 4 | 18 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 5 | 22 | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Overtake**: Quick Attack is 4× as likely to be a critical hit. *(**own**)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 6 | 27 | **Bone Crusher**: Hyper Fang is 20% more likely to make the target flinch. *(Hyper Fang)* | **Keen Focus**: Focus Energy also raises the user's Attack 1 stage. *(Focus Energy)* | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* |
+| 7 | 32 | **Crushing Fang**: Hyper Fang has a 50% chance to lower the target's Defense 1 stage. *(**own**)* | **Shared Focus**: Focus Energy works on the whole party. *(Focus Energy)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 8 | 38 | **Gnaw**: Super Fang also wounds: 1/12 of the target's max HP each round, for 3 rounds. *(Super Fang)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 9 | 44 | **Frenzied Bite**: Super Fang has a 50% chance to make the target flinch. *(**own**)* | **Sprinter**: Quick Attack hits twice, at 70% power each. *(**own**)* | **Nesting**: The user heals 1/16 of its max HP at the end of each round. *(**own**)* |
+| 10 | 50 | **Overdrive**: Hyper Beam needs no rest after knocking an enemy out. *(Hyper Beam)* | **Quick Claws**: Tackle always goes first. *(**own**)* | **Plague Rat**: The user's hits have a 15% chance to poison. *(**own**)* |
+| 11 | 60 | **Apex Predator** *(needs 4)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Unbreakable** *(needs 4)*: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 12 | 75 | **Hyper Gnasher** *(needs 6)*: Hyper Beam wounds: 1/8 of the target's max HP each round, for 3 rounds; no rest after a knockout. *(**own**)* | **Lightning Speed** *(needs 6)*: Quick Attack hits 3 times, at 70% power each. *(Quick Attack)* | **Pack Leader** *(needs 6)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
+
+### Caterpie → Metapod → Butterfree
+
+Moves: Tackle, String Shot, Harden 7 (Metapod), Confusion 12 (Butterfree), Poison Powder 15 (Butterfree), Stun Spore 16 (Butterfree), Sleep Powder 17 (Butterfree), Supersonic 21 (Butterfree), Mega Drain 25 (Butterfree), Whirlwind 26 (Butterfree), Psybeam 32 (Butterfree).
+
+Paths: **Psychic** (confusion and Psybeam: muddled minds); **Powder** (string Shot and powders: status on every enemy); **Cocoon** (harden and shells: lasting, and shielding the partner).
+
+| Tier | Lv | Psychic | Powder | Cocoon |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Web**: String Shot works on every enemy. *(String Shot)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 2 | 10 | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* | **Sticky Silk**: String Shot also makes the target take 20% more damage from everyone, for 3 rounds. *(String Shot)* | **Iron Shell**: Harden also halves the damage the user takes for 2 rounds. *(Harden)* |
+| 3 | 14 | **Psychic Wings**: Confusion and Psybeam are 20% more likely to confuse. *(**own**)* | **Silk Strike**: After String Shot, the user hits the target with its basic attack at 60% power. *(**own**)* | **Cocoon**: Harden heals the user 1/4 of its max HP. *(**own**)* |
+| 4 | 18 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Numbing Cloud**: Stun Spore works on every enemy. *(Stun Spore)* | **Shed Skin**: At the end of each round, the user has a 30% chance to shake off its status. *(Bug)* |
+| 5 | 22 | **Echo**: Supersonic works on every enemy. *(Supersonic)* | **Toxic Spores**: Poison Powder badly poisons: it gets worse every round. *(Poison Powder)* | **Shell Wall**: Harden works on the whole party. *(Harden)* |
+| 6 | 27 | **Howling Wind**: Whirlwind also deals damage (Normal, 30 power) to every enemy. *(Whirlwind)* | **Drowsy Dust**: Sleep Powder works on every enemy. *(Sleep Powder)* | **Gluttony**: Mega Drain heals the user all the damage it deals (not half). *(Mega Drain)* |
+| 7 | 32 | **Butterfly Dance**: The user's status moves also raise its Speed 1 stage. *(**own**)* | **Pollen Cloud**: Poison Powder hits every enemy. *(Poison Powder)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 8 | 38 | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Conductor**: Enemies the user paralyzes take 30% more damage from everyone. *(Paralysis)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 9 | 44 | **Swarm**: Below 1/3 HP, the user's Bug moves deal 1.5× damage. *(Bug)* | **Scale Dust**: Stun Spore, Poison Powder and Sleep Powder never miss and work 25% more often. *(**own**)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 10 | 50 | **Tempest**: Whirlwind lowers Speed 2 stages. *(Whirlwind)* | **Nightmare**: Enemies the user puts to sleep lose 1/8 of their max HP each round. *(Sleep)* | **Soothing Spores**: Sleep Powder also cures the party's status conditions. *(Sleep Powder)* |
+| 11 | 60 | **Psychic Mastery** *(needs 4)*: Psybeam hits every enemy, the others at 60% damage. *(**own**)* | **Powder Storm** *(needs 4)*: Psybeam has a 20% chance to set off Stun Spore, Poison Powder or Sleep Powder. *(**own**)* | **Monarch** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
+| 12 | 75 | **Mind Crush** *(needs 6)*: Confused enemies take 30% more damage from the user. *(**own**)* | **Dream Eater** *(needs 6)*: The user heals 1/8 of its max HP each round for each sleeping enemy. *(**own**)* | **Metamorphosis** *(needs 6)*: Once a battle, ending a round below 1/3 HP heals the user half its max HP. *(**own**)* |
+
+### Weedle → Kakuna → Beedrill
+
+Moves: Poison Sting, String Shot, Harden 7 (Kakuna), Fury Attack 12 (Beedrill), Focus Energy 16 (Beedrill), Twineedle 20 (Beedrill), Swords Dance 25 (Beedrill), Pin Missile 30 (Beedrill), Agility 35 (Beedrill).
+
+Paths: **Venom** (poison, and making it worse); **Swarm** (many quick stings); **Hive** (harden, silk and guarding the partner).
+
+| Tier | Lv | Venom | Swarm | Hive |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Barbed Sting**: Poison Sting is 30% more likely to poison. *(Poison Sting)* | **Stinger**: Poison Sting hits harder: 30 power. *(**own**)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 2 | 10 | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Iron Shell**: Harden also halves the damage the user takes for 2 rounds. *(Harden)* |
+| 3 | 14 | **Poison Point**: Whoever hits the user has a 25% chance to be poisoned. *(Poison)* | **Frenzy**: Fury Attack always hits at least 3 times. *(Fury Attack)* | **Web**: String Shot works on every enemy. *(String Shot)* |
+| 4 | 18 | **Sapping**: Poisoned enemies deal 20% less damage. *(Poison)* | **Swarm**: Below 1/3 HP, the user's Bug moves deal 1.5× damage. *(Bug)* | **Shed Skin**: At the end of each round, the user has a 30% chance to shake off its status. *(Bug)* |
+| 5 | 22 | **Envenom**: Twineedle is 30% more likely to poison. *(Twineedle)* | **Hive Mind**: Each Bug move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Bug)* | **Shell Wall**: Harden works on the whole party. *(Harden)* |
+| 6 | 27 | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* | **Blade Dance**: Swords Dance also makes the user's next damaging move deal 50% more. *(Swords Dance)* | **Sticky Silk**: String Shot also makes the target take 20% more damage from everyone, for 3 rounds. *(String Shot)* |
+| 7 | 32 | **Siphon**: The user heals half the poison damage of the enemies it poisoned. *(Poison)* | **Needle Storm**: Pin Missile always hits at least 3 times. *(Pin Missile)* | **Shared Focus**: Focus Energy works on the whole party. *(Focus Energy)* |
+| 8 | 38 | **Virulent**: The user's poison is bad poison: it gets worse every round. *(Poison)* | **Twin Stingers**: Twineedle hits 3 times. *(**own**)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 9 | 44 | **Venom Needle**: Poison Sting wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Poison Sting)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* | **Tailwind**: Agility works on the whole party. *(Agility)* |
+| 10 | 50 | **Killer Bee**: Pin Missile has a 20% chance per hit to poison. *(**own**)* | **Feeding Frenzy**: Knocking an enemy out with a Bug move heals the user 1/4 of its max HP. *(Bug)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Barrage** *(needs 4)*: Pin Missile always hits 5 times. *(**own**)* | **Hornet's Nest** *(needs 4)*: Whoever hits the user has a 25% chance to be poisoned, and takes 1/16 of its max HP. *(**own**)* |
+| 12 | 75 | **Queen's Venom** *(needs 6)*: The user's moves deal 30% more to poisoned enemies. *(**own**)* | **Stinging Swarm** *(needs 6)*: Fury Attack and Pin Missile hit every enemy, the others at 50% damage. *(**own**)* | **Hive Queen** *(needs 6)*: Once a battle, a partner that would faint keeps 1 HP instead. *(**own**)* |
+
+### Pikachu
+
+Moves: Thunder Shock, Growl, Thunder Wave 9, Quick Attack 16, Swift 26, Thunderbolt 30, Agility 33, Thunder 43.
+
+Paths: **Spark** (paralysis: slowing and stopping enemies); **Bolt** (raw Electric damage); **Agile** (quick Attack, speed and dodging trouble).
+
+| Tier | Lv | Spark | Bolt | Agile |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Spark**: Thunder Shock is 20% more likely to paralyze. *(**own**)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 2 | 10 | **Static**: Whoever hits the user has a 25% chance to be paralyzed. *(Electric)* | **Surge**: Below 1/3 HP, the user's Electric moves deal 1.5× damage. *(Electric)* | **Cheek Pouch**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(**own**)* |
+| 3 | 14 | **Live Wire**: The user's Electric moves are 20% more likely to paralyze. *(Electric)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 4 | 18 | **Conductor**: Enemies the user paralyzes take 30% more damage from everyone. *(Paralysis)* | **Charge Up**: Each Electric move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Electric)* | **Lightning Reflexes**: Quick Attack has a 30% chance to make the target flinch. *(Quick Attack)* |
+| 5 | 22 | **Chain Lightning**: Thunder Wave works on every enemy. *(Thunder Wave)* | **Discharge**: Knocking an enemy out with a Electric move heals the user 1/4 of its max HP. *(Electric)* | **Hit and Run**: Quick Attack also raises the user's Speed 1 stage. *(Quick Attack)* |
+| 6 | 27 | **Arc Flash**: Thunder Shock also hits one enemy next to the target, at half damage. *(**own**)* | **Star Shower**: Swift hits every enemy, the others at 60% damage. *(Swift)* | **Volt Tackle**: Quick Attack becomes an Electric move with 60 power. *(**own**)* |
+| 7 | 32 | **Lightning Rod**: Thunder Wave also makes every enemy attack the user, this round and the next. *(**own**)* | **High Voltage**: Thunderbolt is 4× as likely to be a critical hit. *(**own**)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
+| 8 | 38 | **Taunting Growl**: Growl also makes every enemy attack the user, this round and the next. *(Growl)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* |
+| 9 | 44 | **Thunderstorm**: Thunder never misses, and paralyzes 30% of the time. *(**own**)* | **Overload**: Thunderbolt and Thunder hit every enemy, the others at 50% damage. *(**own**)* | **Tailwind**: Agility works on the whole party. *(Agility)* |
+| 10 | 50 | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Thunderclap**: Thunder always goes first. *(**own**)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 11 | 60 | **Thunder Cloud** *(needs 4)*: At the start of each battle, each enemy has a 30% chance to be paralyzed. *(**own**)* | **Gigavolt** *(needs 4)*: Thunder hits every enemy, at full damage. *(**own**)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
+| 12 | 75 | **Supercharged** *(needs 6)*: The user's Electric moves deal 50% more to paralyzed enemies. *(**own**)* | **Thunder God** *(needs 6)*: Thunderbolt and Thunder never miss, and are always critical hits on a target below half HP. *(**own**)* | **Lightning Speed** *(needs 6)*: Quick Attack hits 3 times, at 70% power each. *(Quick Attack)* |

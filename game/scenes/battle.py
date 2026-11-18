@@ -21,7 +21,7 @@ from ..engine.scene import Scene, Transition
 from ..mechanics.combat import MAX_STAGE, STAGE_STATS, Hit, damage, hit_chance, stage_factor
 from ..mechanics.items import MEDICINE, Bag, Medicine
 from ..mechanics.loot import LootTable, Reward, merge, wild_loot, worn_drops
-from ..mechanics.moves import MOVES, Move
+from ..mechanics.moves import Move
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, animations
 from ..mechanics.status import FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES, THAW_CHANCE
 from ..mechanics.type_chart import COLORS
@@ -157,7 +157,9 @@ class Combatant:
         # Talents' battle state (talents.py):
         self.sturdy_used = self.second_wind_used = self.world_tree_used = False  # once a battle
         self.taunt = 0     # rounds left drawing the enemies' attacks (Taunting Growl)
-        self.streak = 0    # Grass moves used in a row (Ripening)
+        self.streak, self.streak_type = 0, ""  # moves of one type used in a row (Ripening, Momentum, ...)
+        self.acted = False  # it has moved this round (Ambush)
+        self.hit_by: set = set()  # who hit it this round (Gang Up)
         self.used: set[str] = set()  # moves used this battle (Sunlit: Growth)
         self.berry_regen = 0     # rounds left of a Lingering berry's healing ...
         self.berry_regen_hp = 0  # ... HP a round
@@ -672,26 +674,37 @@ class BattleScene(Scene):
             self.message = "Wild Pokémon appeared!"
         yield 1.2
         self.message = ""
-        yield from self._miasma()
+        yield from self._auras()
         for c in self.everyone:  # e.g. a status from the last battle, cured by a berry
             yield from self._berry(c)
         self.message = ""
         self._start_round()
 
-    def _miasma(self):
-        """The battle's start: Pokémon with Miasma may poison each foe."""
+    def _auras(self):
+        """The battle's start: talents that may give each foe a status
+        (Miasma, Thunder Cloud) or lower their Attack (Intimidate)."""
         for holder in self.everyone:
-            chance = holder.monster.talent("miasma")
-            if not chance or not holder.alive:
-                continue
             m = holder.monster
-            move = next((mv for mv in map(m.move, m.known) if mv.status == "poison"), MOVES["Poison Powder"])
+            if not holder.alive or not m.talents:
+                continue
             foes = [c for c in (self.party if holder.enemy else self.enemies) if c.alive]
-            hit = [c for c in foes if random.random() * 100 < chance and self._inflict(c, "poison", move)]
-            for c in hit:
-                self._mark(holder, move, c)
-            if hit:
-                self.message = f"{holder.label}'s miasma poisons {' and '.join(c.label for c in hit)}!"
+            for status in STATUSES:
+                chance = m.talent(f"aura:{status}")
+                if not chance:
+                    continue
+                move = next((mv for mv in map(m.move, m.known) if mv.status == status), SELF_HIT)
+                hit = [c for c in foes if random.random() * 100 < chance and self._inflict(c, status, move)]
+                for c in hit:
+                    self._mark(holder, move, c)
+                if hit:
+                    self.message = " ".join([f"{holder.label}'s aura spreads!"]
+                                            + [STATUSES[status].inflicted.format(c.label) for c in hit])
+                    yield STATUS_MESSAGE_TIME
+            stages = round(m.talent("intimidate"))
+            if stages and foes:
+                for c in foes:
+                    self._change_stage(c, "attack", -stages)
+                self.message = f"{holder.label} intimidates the enemies! Their Attack fell!"
                 yield STATUS_MESSAGE_TIME
 
     def _enemy_action(self, enemy: Combatant) -> Action:
@@ -701,6 +714,8 @@ class BattleScene(Scene):
 
     def _run_round(self) -> None:
         actions = list(self.actions)  # the party's choices
+        for c in self.everyone:
+            c.acted, c.hit_by = False, set()
         for c in self.everyone:
             if not c.alive:
                 continue
@@ -862,8 +877,19 @@ class BattleScene(Scene):
                 amount = self._heal(c, max(1, round(c.monster.max_hp * share)))
                 self.message = f"{c.label} gets a second wind! It restored {amount} HP."
                 yield REGEN_MESSAGE_TIME
+        for c in self.everyone:  # Shed Skin
+            chance = c.monster.talent("shed")
+            if chance and c.alive and c.monster.status and random.random() * 100 < chance:
+                self.message = f"{c.label} shed its skin! " + STATUSES[c.monster.status].cured.format(c.label)
+                c.monster.cure()
+                c.toxic = 0
+                yield REGEN_MESSAGE_TIME
         for c in self.everyone:
-            percent = c.monster.gear_bonus("regen") + c.monster.talent("regen") * 100  # (Photosynthesis)
+            side = self.enemies if c.enemy else self.party
+            percent = c.monster.gear_bonus("regen")  # (gear, and talents: Photosynthesis, ...)
+            percent += max((o.monster.talent("party_regen") for o in side if o.alive), default=0)  # (Nurturing)
+            sleepers = sum(1 for o in (self.party if c.enemy else self.enemies) if o.alive and o.status == "sleep")
+            percent += c.monster.talent("dream") * 100 * sleepers  # (Dream Eater)
             amount = max(1, round(c.monster.max_hp * percent / 100)) if percent else 0
             if c.berry_regen and c.alive:
                 c.berry_regen -= 1
@@ -1107,6 +1133,7 @@ class BattleScene(Scene):
 
     def _perform(self, action: Action):
         user, move = action.user, action.choice
+        user.acted = True
         if user.recharging:
             user.recharging = False
             self.message = f"{user.label} must recharge!"
@@ -1159,7 +1186,10 @@ class BattleScene(Scene):
             else:
                 self._apply(user, move, targets)
             user.used.add(move.name)
-            user.streak = user.streak + 1 if move.type == "grass" else 0  # (Ripening: after this one)
+            if move.type == user.streak_type:  # (Ripening, Momentum, ...: after this one)
+                user.streak += 1
+            else:
+                user.streak, user.streak_type = 1, move.type
         yield anim.duration - impact + IMPACT_HOLD  # finish, and hold the last frame
         if charging:
             user.play(anim.sub(len(anim.frames) - 1, len(anim.frames), loop=True))  # stay charged
@@ -1347,8 +1377,11 @@ class BattleScene(Scene):
         target.monster.hp -= dealt
         if hit.total:
             target.hit_time = HIT_TIME
-        if target.spikes and dealt and user.alive and user.enemy != target.enemy and not (DEV.god_mode and not user.enemy):
-            spiked = min(user.monster.hp, max(1, round(user.monster.max_hp * target.spikes_share)))
+        if dealt and user.enemy != target.enemy:
+            target.hit_by.add(user)
+        thorns = max(target.spikes_share if target.spikes else 0, target.monster.talent("thorns"))
+        if thorns and dealt and user.alive and user.enemy != target.enemy and not (DEV.god_mode and not user.enemy):
+            spiked = min(user.monster.hp, max(1, round(user.monster.max_hp * thorns)))
             user.monster.hp -= spiked
             user.hit_time = HIT_TIME
             self._popup(user, str(spiked), WOUND_COLOR, offset=(0, -10), delay=0.2)
@@ -1369,9 +1402,19 @@ class BattleScene(Scene):
         if endured:
             notes.append(f"{target.label} endured the hit!")
         if guard:
-            notes.append(f"{guard.label}'s roots hold {target.label} up!")
-        harvest = user.monster.talent("harvest")
-        if harvest and not target.alive and move.type == "grass" and user.alive and user.monster.hp < user.monster.max_hp:
+            notes.append(f"{guard.label} holds {target.label} up!")
+            share = guard.monster.talent("guard_heal")  # (Queen's Guard)
+            if share:
+                notes.append(f"{target.label} restored {self._heal(target, max(1, round(target.monster.max_hp * share)))} HP!")
+        if dealt and user.alive and user.enemy != target.enemy and target.alive:  # Static, Poison Point, ...
+            for status in STATUSES:
+                chance = target.monster.talent(f"retaliate:{status}")
+                if chance and random.random() * 100 < chance:
+                    inflicted = self._inflict(user, status, SELF_HIT)
+                    if inflicted:
+                        notes.append(inflicted)
+        harvest = user.monster.talent(f"harvest:{move.type}")
+        if harvest and not target.alive and user.alive and user.monster.hp < user.monster.max_hp:
             amount = self._heal(user, max(1, round(user.monster.max_hp * harvest)))
             notes.append(f"{user.label} harvests {amount} HP!")
         drain = user.monster.gear_bonus("drain") / 100 + move.drain
@@ -1486,14 +1529,33 @@ class BattleScene(Scene):
         return f"{target.label} was seeded!"
 
     def _talent_factor(self, user: Combatant, move: Move, target: Combatant) -> float:
-        """How talents change a hit's damage: Overgrow and Ripening (the
-        user's), Sapping (a poisoned user's foes'), Ancient Roots (the
-        target's side) and Sturdy (the target's first hit)."""
+        """How talents change a hit's damage. The user's: pinch (Overgrow:
+        at low HP), streak (Ripening: moves of the type in a row before
+        this one), Ambush, Gang Up, Gale Force (moves that hit every enemy),
+        prey (a target with a status). Its side's: spot (a target with a
+        lowered stat). The target side's: Ancient Roots; its foes': Sapping
+        (against a poisoned user); the target's own Sturdy (its first hit)."""
         m, factor = user.monster, 1.0
-        if move.type == "grass":
-            if m.hp * 3 < m.max_hp:
-                factor *= 1 + m.talent("overgrow")
-            factor *= 1 + m.talent("ripening") * min(3, user.streak)  # (Grass moves before this one)
+        if not m.talents and not any(c.monster.talents for c in self.everyone):
+            return factor
+        if m.hp * 3 < m.max_hp:
+            factor *= 1 + m.talent(f"pinch:{move.type}")
+        if user.streak_type == move.type:
+            factor *= 1 + m.talent(f"streak:{move.type}") * min(3, user.streak)
+        if not target.acted:
+            factor *= 1 + m.talent("ambush")
+        if any(h is not user and h.enemy == user.enemy for h in target.hit_by):
+            factor *= 1 + m.talent("gang")
+        if move.spread:
+            factor *= 1 + m.talent("wide")
+        if target.status:
+            factor *= 1 + m.talent(f"prey:{target.status}")
+        if target.confused:
+            factor *= 1 + m.talent("prey:confused")
+        own = [c for c in (self.enemies if user.enemy else self.party) if c.alive]
+        for stat, stage in target.stages.items():
+            if stage < 0:
+                factor *= 1 + max((c.monster.talent(f"spot:{stat}") for c in own), default=0)
         foes = self.party if user.enemy else self.enemies
         if user.status == "poison":
             factor *= 1 - max((c.monster.talent("sapping") for c in foes if c.alive), default=0)
@@ -1502,7 +1564,7 @@ class BattleScene(Scene):
         sturdy = target.monster.talent("sturdy")
         if sturdy and not target.sturdy_used:
             target.sturdy_used = True
-            factor *= 1 - sturdy
+            factor *= 1 - min(1.0, sturdy)
         return factor
 
     @staticmethod

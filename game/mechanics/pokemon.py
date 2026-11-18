@@ -11,7 +11,7 @@ from ..engine import hats
 from ..engine.animation import Animation, load_sheet
 from .items import SLOTS, Gear, boosted
 from .moves import Move
-from .talents import MAX_EQUIPPED, TREES, TalentTree, stand_in_tree
+from .talents import MAX_EQUIPPED, TALENT_MODS, TREES, TalentTree, stand_in_tree
 from .status import SLEEP_ROUNDS, STATUSES
 
 
@@ -485,9 +485,13 @@ class Monster:
         if self.alive:
             self.hp = max(1, self.max_hp - missing)
 
-    def gear_bonus(self, mod: str) -> int:
-        """Total of `mod` (see `items.MOD_TEXT`) from equipped gear."""
-        return sum(self.gear[slot].mods.get(mod, 0) for slot in SLOTS if slot in self.gear)
+    def gear_bonus(self, mod: str) -> float:
+        """Total of `mod` (see `items.MOD_TEXT`) from equipped gear, and for a
+        few battle mods also from talents (Head Start: "first", ...)."""
+        total = sum(self.gear[slot].mods.get(mod, 0) for slot in SLOTS if slot in self.gear)
+        if self.talents and (mod in TALENT_MODS or mod.startswith("status:")):
+            total += self.talent(mod)
+        return total
 
     # Stats without gear.
     @property

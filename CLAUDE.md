@@ -152,14 +152,20 @@ non-commercial project.
   pools (`Talent.pool`: a type/status, a move ("move:Growl"), "any", or
   "own" = the line's signatures; each type's pool written for that type).
   A talent changes moves (`Talent.moves`: (selector, Move field changes),
-  selector "basic", a move name, "type:grass" or "status:poison";
-  `apply_changes`, in tier order; `Monster.move(key)`) and/or works in
-  battle (`Talent.flags`, `Monster.talent(flag)`: Overgrow, Ripening,
-  Sapping, Ancient Roots, Sturdy in `BattleScene._talent_factor`; Second
-  Wind/Photosynthesis in `_regen`; Harvest, World Tree in `_hit`; Miasma
-  at the start, `_miasma`; Move fields `taunt`, `keen`, `charge_skip`,
-  `ko_no_recharge`, `soothe`). Only Bulbasaur's line has talents so far
-  (`TALENT_TREES`); the rest have just their moves. `Monster.create`
+  selector "basic", a move name, "type:grass", "status:poison",
+  "confuse", "damaging", "status_moves" or "spread"; `apply_changes`, in
+  tier order; `Monster.move(key)`) and/or works in battle (`Talent.flags`,
+  listed above `TALENTS`, `Monster.talent(flag)`; per-type ones like
+  "pinch:grass" (Overgrow/Cornered/Swarm share it), "streak:<type>",
+  "harvest:<type>"; damage ones in `BattleScene._talent_factor` (pinch,
+  streak, ambush, gang, wide, prey, spot, Sapping, Ancient Roots, Sturdy);
+  `first`/`crit`/`endure`/`regen`/`status:<s>` add to `Monster.gear_bonus`
+  (`TALENT_MODS`); Second Wind, Shed Skin, Nurturing, Dream Eater in
+  `_regen`; harvest, Guardian/World Tree, retaliate, thorns in `_hit`;
+  aura and Intimidate at the start, `_auras`; Move fields `taunt`, `keen`,
+  `charge_skip`, `ko_no_recharge`, `soothe`). Lines with talents
+  (`TALENT_TREES`): Bulbasaur, Pidgey, Rattata, Spearow, Nidoran F/M,
+  Caterpie, Weedle, Pikachu; the rest have just their moves. `Monster.create`
   picks for wild/trainer Pokémon (mostly one random path). The talent
   screen (`scenes/talent_screen.py`, party screen → S): a grid (tiers ×
   paths, scrolls), info on the right with the known moves; Enter picks

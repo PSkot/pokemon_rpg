@@ -183,8 +183,9 @@ out in these steps:
    its **Defense stage** multiplier.
 4. **Critical hit:** a 6.25% chance (1 in 16) × the move's crit ratio
    (×8 for Razor Leaf, Gen 1's "high critical-hit ratio": 50%), plus the
-   user's gear `crit` in percentage points (e.g. +5 → 11.25%). Always a
-   crit with Keen Edge on a target below half HP. A crit
+   user's gear `crit` (and Lucky Strikes) in percentage points (e.g. +5 →
+   11.25%). Always a crit with Keen Edge on a target below half HP (Apex
+   Predator: below ⅓). A crit
    multiplies `base` by **×1.5** (Gen 2+ style; *not* Gen 1's level-based
    crits).
 5. **Leaf Shield:** if the target is shielded, `base` × **0.5**.
@@ -204,11 +205,16 @@ out in these steps:
     target is immune (×0).
 
 12. **Talents** (`BattleScene._talent_factor`, applied with step 6's
-    share): Overgrow (×1.5 for the user's Grass moves below ⅓ HP),
-    Ripening (+20% per Grass move in a row before it, up to +60%), Sapping
-    (×0.8 for a poisoned attacker against a Sapping Pokémon's side),
-    Ancient Roots (×0.85 on its side), Sturdy (×0.5 on its first hit taken
-    in a battle). See `talents.md`.
+    share): pinch (Overgrow, Cornered, Swarm, Surge: ×1.5 for the user's
+    moves of that type below ⅓ HP), streak (Ripening, Momentum, ...: +15–25%
+    per move of the type in a row before it, up to 3), Ambush (+30% on a
+    target that hasn't moved this round), Gang Up (+30% on a target a
+    partner already hit this round), Gale Force (+25% for spread moves),
+    prey (+25–50% on a target with a status), spot (+30% on a target with
+    a lowered stat), Sapping (×0.8 for a poisoned attacker against a
+    Sapping Pokémon's side), Ancient Roots and its copies (×0.85 on its
+    side), Sturdy (×0.5 on its first hit taken in a battle; Juggernaut
+    ×0). See `talents.md`.
 
 Steps 7–10 all multiply together; their order doesn't matter.
 
@@ -366,6 +372,13 @@ the user must rest the next round (with Hyper Bloom, not after a knockout).
 **Taunting Growl:** for the round it's used and the next, the foes'
 single-target moves go to the user (`Combatant.taunt`).
 
+**Talents at the battle's start** (`BattleScene._auras`): Miasma (50% per
+foe: poisoned), Thunder Cloud (30%: paralyzed), Intimidate (every foe's
+Attack −1). **When hit** (`_hit`): Static / Poison Point (25%: the
+attacker is paralyzed / poisoned), Thorny Hide (the attacker loses 1/16 of
+its max HP); Guardian and its copies (once a battle, a partner hit for its
+last HP keeps 1).
+
 ### End of round
 
 After all actions, in this order:
@@ -378,9 +391,11 @@ After all actions, in this order:
 4. **Wounds** (`Move.bleed`): wounded Pokémon lose their
    wound's share of max HP (min 1), for 3 rounds.
 5. **Regen:** first **Second Wind** (once a battle, below ⅓ HP: ¼ of max
-   HP). Then gear `regen` (Leftovers, Nightcap, "of the Chansey") and the
-   Photosynthesis talent (1/16): heals that share of max HP (min 1), plus
-   a Lingering berry's HP (3 rounds after it's eaten). Then each cure berry whose holder has its status gets its
+   HP), then Shed Skin (30%: cures its status). Then gear `regen`
+   (Leftovers, Nightcap, "of the Chansey") and talents (Photosynthesis
+   and the like: 1/16; Nurturing: the whole side 1/16; Dream Eater: 1/8
+   per sleeping foe): heals that share of max HP (min 1), plus a
+   Lingering berry's HP (3 rounds after it's eaten). Then each cure berry whose holder has its status gets its
    chance (`berry_cure`).
 6. **Lasting effects** (`BattleScene._afflictions`): Nightmare (a
    sleeper loses its share of max HP), Contagion (its chance for the
