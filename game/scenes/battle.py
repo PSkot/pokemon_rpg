@@ -175,6 +175,11 @@ class Combatant:
         return self.monster.alive
 
     @property
+    def guarded(self) -> bool:
+        """Magic Guard: no damage from status, seeds, binds, wounds or nightmares."""
+        return bool(self.monster.talents) and bool(self.monster.talent("magic_guard"))
+
+    @property
     def status(self) -> str:
         return self.monster.status
 
@@ -964,7 +969,7 @@ class BattleScene(Scene):
     def _status_damage(self):
         """End of the round: burned and poisoned Pokémon lose HP."""
         for c in self.everyone:
-            if not c.alive or c.status not in ROUND_DAMAGE or (DEV.god_mode and not c.enemy):
+            if not c.alive or c.status not in ROUND_DAMAGE or (DEV.god_mode and not c.enemy) or c.guarded:
                 continue
             share = c.toxic / 16 if c.status == "poison" and c.toxic else ROUND_DAMAGE[c.status]
             if c.status == "burn":  # (Pyre: the burner's side makes it hurt more)
@@ -994,7 +999,7 @@ class BattleScene(Scene):
         """End of the round: Leech Seed drains the seeded, and heals whoever
         seeded them (if they're still standing)."""
         for c in self.everyone:
-            if not c.alive or not c.seeded_by or (DEV.god_mode and not c.enemy):
+            if not c.alive or not c.seeded_by or (DEV.god_mode and not c.enemy) or c.guarded:
                 continue
             amount = min(c.monster.hp, max(1, round(c.monster.max_hp * c.seed)))
             c.monster.hp -= amount
@@ -1067,7 +1072,7 @@ class BattleScene(Scene):
             if not c.alive or not c.bound:
                 continue
             c.bound -= 1
-            if DEV.god_mode and not c.enemy:
+            if (DEV.god_mode and not c.enemy) or c.guarded:
                 continue
             amount = min(c.monster.hp, max(1, round(c.monster.max_hp * c.bind_share)))
             c.monster.hp -= amount
@@ -1088,7 +1093,7 @@ class BattleScene(Scene):
         for c in self.everyone:
             if not c.alive:
                 continue
-            if c.nightmare and c.status == "sleep" and not (DEV.god_mode and not c.enemy):
+            if c.nightmare and c.status == "sleep" and not (DEV.god_mode and not c.enemy) and not c.guarded:
                 amount = min(c.monster.hp, max(1, round(c.monster.max_hp * c.nightmare)))
                 c.monster.hp -= amount
                 c.hit_time = HIT_TIME
@@ -1126,7 +1131,7 @@ class BattleScene(Scene):
             if not c.alive or not c.bleed:
                 continue
             c.bleed -= 1
-            if DEV.god_mode and not c.enemy:
+            if (DEV.god_mode and not c.enemy) or c.guarded:
                 continue
             amount = min(c.monster.hp, max(1, round(c.monster.max_hp * c.bleed_share)))
             c.monster.hp -= amount

@@ -205,7 +205,9 @@ def _add_stages(old: tuple, extra: tuple) -> tuple:
 
 def apply_changes(move: Move, changes: dict) -> Move:
     """`move` with a talent's changes: numbers add up (chances to at most
-    100%), stage changes add per stat, triggers join; other fields are set.
+    100%), stage changes add per stat, triggers join; `keen`, `power` and
+    a spreading move's `spread_share` keep the higher value; other fields
+    are set.
     A status only lands on a move without one (or adds to the same one's
     chance)."""
     new = {}
@@ -220,6 +222,8 @@ def apply_changes(move: Move, changes: dict) -> Move:
             new[name] = value
         elif name in ADDED:
             new[name] = old + value
+        elif name in ("keen", "power") or (name == "spread_share" and move.spread):
+            new[name] = max(old, value)  # (a later talent never weakens an earlier one's: Apex Predator, Keen Edge)
         elif name in ("stages", "self_stages"):
             new[name] = _add_stages(old, value)
         elif name == "triggers":
@@ -310,6 +314,7 @@ def _harvest(name: str, kind: str, what: str) -> Talent:
 #   prey:<status>    + value on a target with that status ("confused" too)
 #   aura:<status>    % chance per foe at the battle's start to give it the status ("confused" too)
 #   sniper           critical hits deal this much more (on top of ×1.5)
+#   magic_guard      no damage from status, seeds, binds, wounds or nightmares
 #   pyre             burned foes of the holder's side lose this share of max HP more a round
 #   lower:<stat>     the foes' stat falls this many stages at the battle's start (Intimidate, Sand Veil)
 #   filter           super-effective hits on the user deal this share less
@@ -449,6 +454,14 @@ TALENTS = {t.key: t for t in [
        ("status:sleep", {"sleep_bonus": 1})),
     _t("Hysteria", "confusion", "Confusion the user causes has a 30% chance each round to spread to an enemy "
        "next to it.", ("confuse", {"contagious": 30})),
+    # Psychic lines: a mind that never misses, and hard to wear down.
+    _t("Telepathy", "psychic", "The user's Psychic moves never miss.", ("type:psychic", {"sure_hit": True})),
+    _pinch("Mind Over Matter", "psychic"),
+    _t("Focus Mind", "psychic", "Each Psychic move in a row deals 20% more than the last, up to +60%. "
+       "Any other move starts it over.", streak__psychic=0.2),
+    _harvest("Mind Feast", "psychic", "heals the user"),
+    _t("Magic Guard", "psychic", "The user takes no damage from poison, burns, seeds, binds, wounds or nightmares.",
+       magic_guard=1),
     # Lines with Ice moves.
     _t("Frostbite", "ice", "The user's Ice moves are 10% more likely to freeze.", ("type:ice", {"status_chance": 10})),
     _t("Shatter", "freeze", "Frozen enemies take 50% more damage from the user.", prey__freeze=0.5),
@@ -634,6 +647,20 @@ TALENTS = {t.key: t for t in [
     _t("Mind Blast", "move:Psychic", "Psychic hits every enemy, the others at 50% damage.",
        ("Psychic", {"spread": True, "spread_share": 0.5})),
     _t("Dizzying Mind", "move:Confusion", "Confusion is 20% more likely to confuse.", ("Confusion", {"confuse": 20})),
+    _t("Root Drink", "move:Absorb", "Absorb hits harder: 40 power.", ("Absorb", {"power": 40})),
+    _t("Sap", "move:Absorb", "Absorb heals the user all the damage it deals (not half).", ("Absorb", {"drain": 0.5})),
+    _t("Acid Rain", "move:Acid", "Acid hits every enemy, the others at 50% damage.",
+       ("Acid", {"spread": True, "spread_share": 0.5})),
+    _t("Calm Petals", "move:Petal Dance", "Petal Dance no longer confuses the user.", ("Petal Dance", {"self_confuse": False})),
+    _t("Petal Storm", "move:Petal Dance", "Petal Dance's other targets take 60% damage (not 35%).",
+       ("Petal Dance", {"spread_share": 0.6})),
+    _t("Bend Spoons", "move:Kinesis", "Kinesis works on every enemy.", ("Kinesis", {"spread": True})),
+    _t("Spoon Strike", "move:Kinesis", "After Kinesis, the user hits the target with its basic attack at 60% power.",
+       ("Kinesis", {"follow_up": 0.6})),
+    _t("Barrier", "move:Reflect", "Reflect covers the whole party.", ("Reflect", {"spread": True})),
+    _t("Mirror Shards", "move:Reflect", "For 3 rounds, whoever hits a Pokémon behind Reflect loses 1/16 of its max HP.",
+       ("Reflect", {"spikes": 1 / 16})),
+    _t("Psycho Cut", "move:Psychic", "Psychic is 4× as likely to be a critical hit.", ("Psychic", {"crit_ratio": 3.0})),
     # --- Lines' own.
     # Geodude
     _t("Heavy Stone", "own", "Rock Throw hits harder: 80 power.", ("Rock Throw", {"power": 80})),
@@ -685,7 +712,7 @@ TALENTS = {t.key: t for t in [
     _t("Bat Swarm", "own", "Leech Life hits every enemy, the others at 50% damage.",
        ("Leech Life", {"spread": True, "spread_share": 0.5})),
     _t("Blood Feast", "own", "The user heals 30% of the damage it deals.", drain=30),
-    _t("Bedlam", "own", "Enemies the user confuses always hurt themselves.", ("confuse", {"madness": 100})),
+    _t("Bedlam", "confusion", "Enemies the user confuses always hurt themselves.", ("confuse", {"madness": 100})),
     _t("Supersonic Wave", "own", "Supersonic and Confuse Ray never miss.",
        ("Supersonic", {"sure_hit": True}), ("Confuse Ray", {"sure_hit": True})),
     _t("Night Flight", "own", "The user's Flying moves always go first and deal 30% more.",
@@ -731,6 +758,32 @@ TALENTS = {t.key: t for t in [
        pinch__water=0.5, pinch__normal=0.5, pinch__psychic=0.5),
     _t("Psychic Surge", "own", "Confusion hits every enemy at full damage, and confuses half the time.",
        ("Confusion", {"spread": True, "confuse": 20})),
+    # Oddish
+    _t("Toxic Bloom", "own", "At the start of each battle, each enemy has a 30% chance to be poisoned, and "
+       "30% to be paralyzed.", aura__poison=30, aura__paralysis=30),
+    _t("Last Bloom", "own", "Below 1/3 HP, the user's Grass moves deal double damage.", pinch__grass=1.0),
+    _t("Petal Blizzard", "own", "Petal Dance hits every enemy at full damage.", ("Petal Dance", {"spread_share": 1.0})),
+    _t("Rafflesia", "own", "While the user stands, the whole party heals 1/8 of its max HP at the end of each round.",
+       party_regen=12.5),
+    # Bellsprout
+    _t("Lashing Vines", "own", "Vine Whip hits every enemy, the others at 50% damage.",
+       ("Vine Whip", {"spread": True, "spread_share": 0.5})),
+    _t("Leaf Storm", "own", "Razor Leaf hits every enemy, the others at 60% damage.",
+       ("Razor Leaf", {"spread": True, "spread_share": 0.6})),
+    _t("Strangler Fig", "own", "Enemies caught in a bind take 50% more damage from the user.", prey__bound=0.5),
+    _t("Digest", "own", "Acid hits every enemy at full damage, and lowers Defense 2 stages.",
+       ("Acid", {"spread": True, "spread_share": 1.0, "stages": (("defense", -1),)})),
+    _t("Razor Wind", "own", "Razor Leaf is always a critical hit.", ("Razor Leaf", {"crit_ratio": 8.0})),
+    # Abra
+    _t("Precognition", "own", "Psychic always goes first.", ("Psychic", {"priority": 1})),
+    _t("Spoon Bender", "own", "At the start of each battle, every enemy's accuracy falls 1 stage.", lower__accuracy=1),
+    _t("Mind Storm", "own", "Psychic hits every enemy at full damage.", ("Psychic", {"spread": True, "spread_share": 1.0})),
+    _t("Kinetic Crush", "own", "Enemies with lowered accuracy take 50% more damage from the user's party.",
+       spot__accuracy=0.5),
+    # Venonat
+    _t("Compound Eyes", "own", "The user's damaging moves never miss.", ("damaging", {"sure_hit": True})),
+    _t("Venom Swarm", "own", "Leech Life hits every enemy at full damage.",
+       ("Leech Life", {"spread": True, "spread_share": 1.0})),
     # Charmander
     _t("Kindling", "own", "Scratch has a 10% chance to burn.", ("Scratch", {"status": "burn", "status_chance": 10})),
     _t("Flame Claw", "own", "Scratch becomes a Fire move (with STAB).", ("Scratch", {"type": "fire"})),
@@ -754,7 +807,7 @@ TALENTS = {t.key: t for t in [
     _t("Absolute Zero", "freeze", "At the start of each battle, each enemy has a 20% chance to be frozen.",
        aura__freeze=20),
     # Bulbasaur
-    _t("Thorned Whip", "own", "Vine Whip has a 30% chance to poison.",
+    _t("Thorned Whip", "move:Vine Whip", "Vine Whip has a 30% chance to poison.",
        ("Vine Whip", {"status": "poison", "status_chance": 30})),
     _t("Spore Storm", "own", "Razor Leaf has a 15% chance to set off Poison Powder and a 10% chance to set "
        "off Sleep Powder on its target.",
@@ -844,18 +897,18 @@ TALENTS = {t.key: t for t in [
     _t("Silk Strike", "own", "After String Shot, the user hits the target with its basic attack at 60% power.",
        ("String Shot", {"follow_up": 0.6})),
     _t("Cocoon", "own", "Harden heals the user 1/4 of its max HP.", ("Harden", {"heal": 0.25})),
-    _t("Psychic Wings", "own", "Confusion and Psybeam are 20% more likely to confuse.",
+    _t("Psychic Wings", "move:Confusion", "Confusion and Psybeam are 20% more likely to confuse.",
        ("Confusion", {"confuse": 20}), ("Psybeam", {"confuse": 20})),
-    _t("Scale Dust", "own", "Stun Spore, Poison Powder and Sleep Powder never miss and work 25% more often.",
+    _t("Scale Dust", "move:Stun Spore", "Stun Spore, Poison Powder and Sleep Powder never miss and work 25% more often.",
        ("Stun Spore", {"status_chance": 25, "sure_hit": True}),
        ("Poison Powder", {"status_chance": 25, "sure_hit": True}),
        ("Sleep Powder", {"status_chance": 25, "sure_hit": True})),
     _t("Butterfly Dance", "own", "The user's status moves also raise its Speed 1 stage.",
        ("status_moves", {"self_stages": (("speed", 1),)})),
-    _t("Powder Storm", "own", "Psybeam has a 20% chance to set off Stun Spore, Poison Powder or Sleep Powder.",
+    _t("Powder Storm", "move:Psybeam", "Psybeam has a 20% chance to set off Stun Spore, Poison Powder or Sleep Powder.",
        ("Psybeam", {"triggers": (("stun_spore", "Stun Spore", 7), ("poison_powder", "Poison Powder", 7),
                                  ("sleep_powder", "Sleep Powder", 6))})),
-    _t("Psychic Mastery", "own", "Psybeam hits every enemy, the others at 60% damage.",
+    _t("Psychic Mastery", "move:Psybeam", "Psybeam hits every enemy, the others at 60% damage.",
        ("Psybeam", {"spread": True, "spread_share": 0.6})),
     _t("Monarch", "own", "While the user stands, the whole party takes 15% less damage.", ancient_roots=0.15),
     _t("Dream Eater", "sleep", "The user heals 1/8 of its max HP each round for each sleeping enemy.", dream=1 / 8),
@@ -896,7 +949,7 @@ TALENTS = {t.key: t for t in [
        spot__attack=0.3),
     _t("Reign of Terror", "own", "While the user stands, the whole party takes 15% less damage.",
        ancient_roots=0.15),
-    _t("Nurturing", "own", "While the user stands, the whole party heals 1/16 of its max HP at the end of each "
+    _t("Nurturing", "any", "While the user stands, the whole party heals 1/16 of its max HP at the end of each "
        "round.", party_regen=6.25),
     _t("Frenzy Claws", "move:Fury Swipes", "Fury Swipes always hits 5 times.", ("Fury Swipes", {"hits": (5, 5)})),
     _t("Megahorn", "move:Horn Attack", "Horn Attack hits much harder: 100 power.", ("Horn Attack", {"power": 100})),
@@ -1272,6 +1325,74 @@ TALENT_TREES = {
                ("Mind Games", "Hydration", "Frenzy Claws"),
                ("Mind Crush", "Tidal Force", "Apex Predator"),
                ("Psychic Surge", "Whirlpool", "Blur")),
+    ),
+    "oddish": (
+        (Path("Spore", "Powders: poison, paralysis and sleep.", PURPLE),
+         Path("Bloom", "Absorb and Petal Dance: Grass damage.", GREEN),
+         Path("Root", "Draining, healing, and keeping the party up.", GOLD)),
+        _tiers(("Toxic Touch", "Root Drink", "Sturdy"),
+               ("Sapping", "Overgrow", "Sap"),
+               ("Poison Point", "Ripening", "Second Wind"),
+               ("Toxic Spores", "Flower Power", "Tenacity"),
+               ("Numbing Cloud", "Harvest", "Soothing Spores"),
+               ("Drowsy Dust", "Corrode", "Photosynthesis"),
+               ("Pollen Cloud", "Acid Rain", "Guardian"),
+               ("Nightmare", "Calm Petals", "Resilience"),
+               ("Scale Dust", "Petal Storm", "Nurturing"),
+               ("Contagion", "Apex Predator", "Wish"),
+               ("Miasma", "Petal Blizzard", "Bulwark Stance"),
+               ("Toxic Bloom", "Last Bloom", "Rafflesia")),
+    ),
+    "bellsprout": (
+        (Path("Vine", "Vine Whip and Wrap: whipping and binding.", GREEN),
+         Path("Pitcher", "Acid and poison: digesting enemies.", PURPLE),
+         Path("Leaf", "Growth and Razor Leaf: sharp Grass damage.", GOLD)),
+        _tiers(("Double Lash", "Toxic Touch", "Full Bloom"),
+               ("Thirsty Vines", "Sapping", "Overgrow"),
+               ("Constrict", "Poison Point", "Ripening"),
+               ("Crushing Coils", "Toxic Spores", "Shared Sun"),
+               ("Squeeze", "Drowsy Dust", "Lucky Strikes"),
+               ("Thorned Whip", "Corrode", "Head Start"),
+               ("Gang Up", "Acid Rain", "Harvest"),
+               ("Coil Crush", "Contagion", "Keen Edge"),
+               ("Lashing Vines", "Siphon", "Flower Power"),
+               ("Ambush", "Virulent", "Apex Predator"),
+               ("Constrictor", "Miasma", "Leaf Storm"),
+               ("Strangler Fig", "Digest", "Razor Wind")),
+    ),
+    "abra": (
+        (Path("Mind", "Confusion, Psybeam and Psychic: Psychic damage.", PINK),
+         Path("Spoon", "Kinesis and Thunder Wave: blinding and stopping enemies.", GOLD),
+         Path("Ward", "Reflect and Recover: shielding itself and the party.", SKY)),
+        _tiers(("Telepathy", "Bend Spoons", "Sturdy"),
+               ("Dizzying Mind", "Spoon Strike", "Tenacity"),
+               ("Mind Over Matter", "Conductor", "Second Wind"),
+               ("Focus Mind", "Chain Lightning", "Resilience"),
+               ("Mind Games", "Blind Spot", "Guardian"),
+               ("Psychic Wings", "Head Start", "Heavy Body"),
+               ("Psychic Mastery", "Lucky Strikes", "Natural Cure"),
+               ("Mind Blast", "Ambush", "Magic Guard"),
+               ("Psycho Cut", "Mind Crush", "Barrier"),
+               ("Mind Feast", "Apex Predator", "Mirror Shards"),
+               ("Precognition", "Spoon Bender", "Bulwark Stance"),
+               ("Mind Storm", "Kinetic Crush", "Fortress")),
+    ),
+    "venonat": (
+        (Path("Eyes", "Compound eyes: never missing, and muddling minds.", PINK),
+         Path("Powder", "Poison, and powders on every enemy.", PURPLE),
+         Path("Swarm", "Leech Life: a bug that won't go down.", RED)),
+        _tiers(("Compound Eyes", "Toxic Touch", "Swarm"),
+               ("Lucky Strikes", "Sapping", "Tenacity"),
+               ("Head Start", "Poison Point", "Second Wind"),
+               ("Ambush", "Contagion", "Gang Up"),
+               ("Cornered", "Siphon", "Hive Mind"),
+               ("Echo", "Virulent", "Shed Skin"),
+               ("Mind Games", "Toxic Spores", "Guardian"),
+               ("Dizzying Mind", "Pollen Cloud", "Bloodsucker"),
+               ("Mind Crush", "Numbing Cloud", "Vampire Fangs"),
+               ("Psychic Mastery", "Drowsy Dust", "Feeding Frenzy"),
+               ("Hysteria", "Miasma", "Unbreakable"),
+               ("Bedlam", "Powder Storm", "Venom Swarm")),
     ),
     "pidgey": (
         (Path("Gale", "Wind that hits every enemy.", SKY),

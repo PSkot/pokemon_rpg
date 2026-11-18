@@ -34,9 +34,11 @@ Pokémon, each one written by hand.
   Spearow, Nidoran ♀ and ♂, Caterpie, Weedle and Pikachu; the Pewter Gym's
   Geodude and Onix, Route 3's Jigglypuff, Sandshrew and Ekans, and Mt.
   Moon's Zubat, Paras and Clefairy, and the Cerulean Gym's Goldeen, Staryu
-  (and Starmie), Horsea, Shellder and Psyduck. (Graveler, Sandslash,
-  Arbok, Golbat, Parasect, Seaking, Seadra and Golduck aren't in the game
-  yet, and Staryu doesn't evolve in it, so those lines can't learn their
+  (and Starmie), Horsea, Shellder and Psyduck, and Routes 24 and 25's
+  Oddish, Bellsprout, Abra (and Kadabra) and Venonat. (Graveler,
+  Sandslash, Arbok, Golbat, Parasect, Seaking, Seadra, Golduck, Gloom,
+  Weepinbell, Venomoth and Alakazam aren't in the game yet, and Staryu
+  doesn't evolve in it, so those lines can't learn their
   evolved forms' moves; their trees are built on the moves they can.)
 - **Tiers.** 12 tiers open at **Lv6, 10, 14, 18, 22, 27, 32, 38, 44, 50,
   60, 75** (`TIER_LEVELS`). At each tier the player picks **1 of its 3
@@ -55,7 +57,8 @@ Pokémon, each one written by hand.
     Contagion, Poison Point, ...; Normal: Cornered, Momentum; Flying:
     Riding the Wind, Aerial Ace; Bug: Swarm, Shed Skin; Electric: Static,
     Charge Up; Rock: Stone Fist, Landslide, Sharp Rocks, Rockfall,
-    Stone Edge, Jagged Hide; Ground: Sand Veil, Sand Force; Fire: Blaze, Searing, Scorch, Smoulder, Ash Cloud, Wildfire,
+    Stone Edge, Jagged Hide; Ground: Sand Veil, Sand Force; Psychic:
+    Telepathy, Mind Over Matter, Focus Mind, Mind Feast, Magic Guard; Fire: Blaze, Searing, Scorch, Smoulder, Ash Cloud, Wildfire,
     Heat Haze; Water: Torrent, Undertow, Splash Zone, Hydration; Ice:
     Frostbite, Chill; sleep: Nightmare, Deep Sleep, Lull, Yawn, Dream
     Eater, Bedtime Story; paralysis: Conductor; freezing: Shatter;
@@ -86,7 +89,9 @@ A talent changes moves and/or works in battle by itself:
 
 - **Move changes** (`Talent.moves`): Move field changes for a selector,
   applied in tier order (`talents.apply_changes`: numbers add up, chances
-  to at most 100%; `power`, `type`, `hits` are set): `"basic"` (the basic
+  to at most 100%; `keen`, `power` and a spreading move's `spread_share`
+  keep the higher value, so a later talent never weakens an earlier one;
+  `type`, `hits` are set): `"basic"` (the basic
   attack), a move's name, `"type:grass"` (the user's damaging moves of
   that type), `"status:poison"` (its moves that inflict it), `"confuse"`,
   `"damaging"`, `"status_moves"`, `"spread"` (moves that hit every target
@@ -115,7 +120,9 @@ A talent changes moves and/or works in battle by itself:
     hit taken each battle: half; Juggernaut, Iron Turtle: none); **filter**
     (Solid Rock: super-effective hits on the holder deal 25% less);
     **prey:bound** (Squeeze: +30% on a bound target); **sniper** (the
-    holder's critical hits deal ×2, not ×1.5); **Pyre**
+    holder's critical hits deal ×2, not ×1.5); **magic_guard** (Magic
+    Guard: no damage from poison, burns, seeds, binds, wounds or
+    nightmares); **Pyre**
     (burned foes of its side lose a further 1/8 of max HP each round);
   - like gear mods (`Monster.gear_bonus`): `first` (Head Start: 30% to
     act first), `crit` (Lucky Strikes: +10 points), `endure` (Tenacity
@@ -181,7 +188,7 @@ Paths: **Toxin** (poison, seeds and sleep: wearing enemies down); **Bloom** (gra
 | --- | --- | --- | --- | --- |
 | 1 | 6 | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Sprout Strike**: The basic attack becomes a Grass move (with STAB). *(Grass)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
 | 2 | 10 | **Creeping Seed**: When a seeded enemy faints, its seed jumps to an enemy next to it. *(Leech Seed)* | **Seed Bomb**: Leech Seed also deals damage (Grass, 30 power) when it lands. *(Leech Seed)* | **Taunting Growl**: Growl also makes every enemy attack the user, this round and the next. *(Growl)* |
-| 3 | 14 | **Thorned Whip**: Vine Whip has a 30% chance to poison. *(**own**)* | **Double Lash**: Vine Whip hits twice, at 60% power each. *(Vine Whip)* | **Thirsty Vines**: Vine Whip heals the user half the damage it deals. *(Vine Whip)* |
+| 3 | 14 | **Thorned Whip**: Vine Whip has a 30% chance to poison. *(Vine Whip)* | **Double Lash**: Vine Whip hits twice, at 60% power each. *(Vine Whip)* | **Thirsty Vines**: Vine Whip heals the user half the damage it deals. *(Vine Whip)* |
 | 4 | 18 | **Sapping**: Poisoned enemies deal 20% less damage. *(Poison)* | **Overgrow**: Below 1/3 HP, the user's Grass moves deal 1.5× damage. *(Grass)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
 | 5 | 22 | **Toxic Spores**: Poison Powder badly poisons: it gets worse every round. *(Poison Powder)* | **Ripening**: Each Grass move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Grass)* | **Canopy**: Leaf Shield covers the whole party. *(Leaf Shield)* |
 | 6 | 27 | **Pollen Cloud**: Poison Powder hits every enemy. *(Poison Powder)* | **Keen Edge**: Razor Leaf is always a critical hit on a target below half HP. *(Razor Leaf)* | **Thornskin**: For 3 rounds, whoever hits a Pokémon behind Leaf Shield loses 1/16 of its max HP. *(Leaf Shield)* |
@@ -270,7 +277,7 @@ Paths: **Venom** (poison, and making it worse); **Claw** (scratching, biting and
 | 5 | 22 | **Venom Needle**: Poison Sting wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Poison Sting)* | **Tail Slap**: After Tail Whip, the user hits the target with its basic attack at 60% power. *(Tail Whip)* | **Wagging Tail**: Tail Whip works on every enemy. *(Tail Whip)* |
 | 6 | 27 | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
 | 7 | 32 | **Siphon**: The user heals half the poison damage of the enemies it poisoned. *(Poison)* | **Crunch**: Bite has a 30% chance to lower the target's Defense 1 stage. *(Bite)* | **Echoing Growl**: Growl works on every enemy. *(Growl)* |
-| 8 | 38 | **Virulent**: The user's poison is bad poison: it gets worse every round. *(Poison)* | **Raking Claws**: Fury Swipes wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Fury Swipes)* | **Nurturing**: While the user stands, the whole party heals 1/16 of its max HP at the end of each round. *(**own**)* |
+| 8 | 38 | **Virulent**: The user's poison is bad poison: it gets worse every round. *(Poison)* | **Raking Claws**: Fury Swipes wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Fury Swipes)* | **Nurturing**: While the user stands, the whole party heals 1/16 of its max HP at the end of each round. *(Any)* |
 | 9 | 44 | **Toxic Fangs**: Bite has a 30% chance to poison. *(Bite)* | **Rapid Kicks**: Each of Double Kick's hits has a 30% chance to make the target flinch. *(Double Kick)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
 | 10 | 50 | **Toxic Swipes**: Fury Swipes has a 20% chance per hit to poison. *(**own**)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* |
 | 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Apex Predator** *(needs 4)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Den Mother** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
@@ -349,15 +356,15 @@ Paths: **Psychic** (confusion and Psybeam: muddled minds); **Powder** (string Sh
 | --- | --- | --- | --- | --- |
 | 1 | 6 | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Web**: String Shot works on every enemy. *(String Shot)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
 | 2 | 10 | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* | **Sticky Silk**: String Shot also makes the target take 20% more damage from everyone, for 3 rounds. *(String Shot)* | **Iron Shell**: Harden also halves the damage the user takes for 2 rounds. *(Harden)* |
-| 3 | 14 | **Psychic Wings**: Confusion and Psybeam are 20% more likely to confuse. *(**own**)* | **Silk Strike**: After String Shot, the user hits the target with its basic attack at 60% power. *(**own**)* | **Cocoon**: Harden heals the user 1/4 of its max HP. *(**own**)* |
+| 3 | 14 | **Psychic Wings**: Confusion and Psybeam are 20% more likely to confuse. *(Confusion)* | **Silk Strike**: After String Shot, the user hits the target with its basic attack at 60% power. *(**own**)* | **Cocoon**: Harden heals the user 1/4 of its max HP. *(**own**)* |
 | 4 | 18 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Numbing Cloud**: Stun Spore works on every enemy. *(Stun Spore)* | **Shed Skin**: At the end of each round, the user has a 30% chance to shake off its status. *(Bug)* |
 | 5 | 22 | **Echo**: Supersonic works on every enemy. *(Supersonic)* | **Toxic Spores**: Poison Powder badly poisons: it gets worse every round. *(Poison Powder)* | **Shell Wall**: Harden works on the whole party. *(Harden)* |
 | 6 | 27 | **Howling Wind**: Whirlwind also deals damage (Normal, 30 power) to every enemy. *(Whirlwind)* | **Drowsy Dust**: Sleep Powder works on every enemy. *(Sleep Powder)* | **Gluttony**: Mega Drain heals the user all the damage it deals (not half). *(Mega Drain)* |
 | 7 | 32 | **Butterfly Dance**: The user's status moves also raise its Speed 1 stage. *(**own**)* | **Pollen Cloud**: Poison Powder hits every enemy. *(Poison Powder)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
 | 8 | 38 | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Conductor**: Enemies the user paralyzes take 30% more damage from everyone. *(Paralysis)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
-| 9 | 44 | **Swarm**: Below 1/3 HP, the user's Bug moves deal 1.5× damage. *(Bug)* | **Scale Dust**: Stun Spore, Poison Powder and Sleep Powder never miss and work 25% more often. *(**own**)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 9 | 44 | **Swarm**: Below 1/3 HP, the user's Bug moves deal 1.5× damage. *(Bug)* | **Scale Dust**: Stun Spore, Poison Powder and Sleep Powder never miss and work 25% more often. *(Stun Spore)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
 | 10 | 50 | **Tempest**: Whirlwind lowers Speed 2 stages. *(Whirlwind)* | **Nightmare**: Enemies the user puts to sleep lose 1/8 of their max HP each round. *(Sleep)* | **Soothing Spores**: Sleep Powder also cures the party's status conditions. *(Sleep Powder)* |
-| 11 | 60 | **Psychic Mastery** *(needs 4)*: Psybeam hits every enemy, the others at 60% damage. *(**own**)* | **Powder Storm** *(needs 4)*: Psybeam has a 20% chance to set off Stun Spore, Poison Powder or Sleep Powder. *(**own**)* | **Monarch** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
+| 11 | 60 | **Psychic Mastery** *(needs 4)*: Psybeam hits every enemy, the others at 60% damage. *(Psybeam)* | **Powder Storm** *(needs 4)*: Psybeam has a 20% chance to set off Stun Spore, Poison Powder or Sleep Powder. *(Psybeam)* | **Monarch** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
 | 12 | 75 | **Mind Crush** *(needs 6)*: Confused enemies take 30% more damage from the user. *(Confusion)* | **Dream Eater** *(needs 6)*: The user heals 1/8 of its max HP each round for each sleeping enemy. *(Sleep)* | **Metamorphosis** *(needs 6)*: Once a battle, ending a round below 1/3 HP heals the user half its max HP. *(**own**)* |
 
 ### Weedle → Kakuna → Beedrill
@@ -380,6 +387,27 @@ Paths: **Venom** (poison, and making it worse); **Swarm** (many quick stings); *
 | 10 | 50 | **Killer Bee**: Pin Missile has a 20% chance per hit to poison. *(**own**)* | **Feeding Frenzy**: Knocking an enemy out with a Bug move heals the user 1/4 of its max HP. *(Bug)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
 | 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Barrage** *(needs 4)*: Pin Missile always hits 5 times. *(**own**)* | **Hornet's Nest** *(needs 4)*: Whoever hits the user has a 25% chance to be poisoned, and takes 1/16 of its max HP. *(**own**)* |
 | 12 | 75 | **Queen's Venom** *(needs 6)*: The user's moves deal 30% more to poisoned enemies. *(**own**)* | **Stinging Swarm** *(needs 6)*: Fury Attack and Pin Missile hit every enemy, the others at 50% damage. *(**own**)* | **Hive Queen** *(needs 6)*: Once a battle, a partner that would faint keeps 1 HP instead. *(**own**)* |
+
+### Oddish → Gloom → Vileplume
+
+Moves: Absorb, Poison Powder 15, Stun Spore 17, Sleep Powder 19, Acid 24, Mega Drain 25 (Gloom), Petal Dance 33, Solar Beam 46 (Vileplume).
+
+Paths: **Spore** (powders: poison, paralysis and sleep); **Bloom** (absorb and Petal Dance: Grass damage); **Root** (draining, healing, and keeping the party up).
+
+| Tier | Lv | Spore | Bloom | Root |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Root Drink**: Absorb hits harder: 40 power. *(Absorb)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 2 | 10 | **Sapping**: Poisoned enemies deal 20% less damage. *(Poison)* | **Overgrow**: Below 1/3 HP, the user's Grass moves deal 1.5× damage. *(Grass)* | **Sap**: Absorb heals the user all the damage it deals (not half). *(Absorb)* |
+| 3 | 14 | **Poison Point**: Whoever hits the user has a 25% chance to be poisoned. *(Poison)* | **Ripening**: Each Grass move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Grass)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 4 | 18 | **Toxic Spores**: Poison Powder badly poisons: it gets worse every round. *(Poison Powder)* | **Flower Power**: The user's Grass moves also hit one enemy next to the target, at half damage. *(Grass)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 5 | 22 | **Numbing Cloud**: Stun Spore works on every enemy. *(Stun Spore)* | **Harvest**: Knocking an enemy out with a Grass move heals the user 1/4 of its max HP. *(Grass)* | **Soothing Spores**: Sleep Powder also cures the party's status conditions. *(Sleep Powder)* |
+| 6 | 27 | **Drowsy Dust**: Sleep Powder works on every enemy. *(Sleep Powder)* | **Corrode**: Acid is twice as likely to lower Defense. *(Acid)* | **Photosynthesis**: The user heals 1/16 of its max HP at the end of each round. *(Grass)* |
+| 7 | 32 | **Pollen Cloud**: Poison Powder hits every enemy. *(Poison Powder)* | **Acid Rain**: Acid hits every enemy, the others at 50% damage. *(Acid)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 8 | 38 | **Nightmare**: Enemies the user puts to sleep lose 1/8 of their max HP each round. *(Sleep)* | **Calm Petals**: Petal Dance no longer confuses the user. *(Petal Dance)* | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* |
+| 9 | 44 | **Scale Dust**: Stun Spore, Poison Powder and Sleep Powder never miss and work 25% more often. *(Stun Spore)* | **Petal Storm**: Petal Dance's other targets take 60% damage (not 35%). *(Petal Dance)* | **Nurturing**: While the user stands, the whole party heals 1/16 of its max HP at the end of each round. *(Any)* |
+| 10 | 50 | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Wish**: Once a battle, a partner that would faint keeps 1 HP, and the user heals it half its max HP. *(Any)* |
+| 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Petal Blizzard** *(needs 4)*: Petal Dance hits every enemy at full damage. *(**own**)* | **Bulwark Stance** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(Any)* |
+| 12 | 75 | **Toxic Bloom** *(needs 6)*: At the start of each battle, each enemy has a 30% chance to be poisoned, and 30% to be paralyzed. *(**own**)* | **Last Bloom** *(needs 6)*: Below 1/3 HP, the user's Grass moves deal double damage. *(**own**)* | **Rafflesia** *(needs 6)*: While the user stands, the whole party heals 1/8 of its max HP at the end of each round. *(**own**)* |
 
 ### Goldeen → Seaking
 
@@ -422,6 +450,69 @@ Paths: **Core** (harden and Recover: a star that keeps coming back); **Prism** (
 | 10 | 50 | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Hydration**: At the end of each round, the user has a 30% chance to wash off its status. *(Water)* |
 | 11 | 60 | **Bulwark Stance** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(Any)* | **Sandblast** *(needs 4)*: Swift has a 50% chance to lower the target's accuracy 1 stage. *(Swift)* | **Tidal Force** *(needs 4)*: The user's Water moves are always critical hits on a target below half HP. *(Water)* |
 | 12 | 75 | **Star Core** *(needs 6)*: Recover heals all the user's HP. *(**own**)* | **Rainbow Beam** *(needs 6)*: Swift hits every enemy at full damage. *(**own**)* | **Whirlpool** *(needs 6)*: Bubble Beam hits every enemy at full damage. *(Bubble Beam)* |
+
+### Abra → Kadabra → Alakazam
+
+Moves: Confusion, Kinesis, Thunder Wave 12, Body Slam 25 (Kadabra), Psybeam 27 (Kadabra), Recover 31 (Kadabra), Psychic 38 (Kadabra), Reflect 42, Hyper Beam 50 (Alakazam).
+
+Paths: **Mind** (confusion, Psybeam and Psychic: Psychic damage); **Spoon** (kinesis and Thunder Wave: blinding and stopping enemies); **Ward** (reflect and Recover: shielding itself and the party).
+
+| Tier | Lv | Mind | Spoon | Ward |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Telepathy**: The user's Psychic moves never miss. *(Psychic)* | **Bend Spoons**: Kinesis works on every enemy. *(Kinesis)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 2 | 10 | **Dizzying Mind**: Confusion is 20% more likely to confuse. *(Confusion)* | **Spoon Strike**: After Kinesis, the user hits the target with its basic attack at 60% power. *(Kinesis)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 3 | 14 | **Mind Over Matter**: Below 1/3 HP, the user's Psychic moves deal 1.5× damage. *(Psychic)* | **Conductor**: Enemies the user paralyzes take 30% more damage from everyone. *(Paralysis)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 4 | 18 | **Focus Mind**: Each Psychic move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Psychic)* | **Chain Lightning**: Thunder Wave works on every enemy. *(Thunder Wave)* | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* |
+| 5 | 22 | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* | **Blind Spot**: Enemies with lowered accuracy take 30% more damage from the user's party. *(Any)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 6 | 27 | **Psychic Wings**: Confusion and Psybeam are 20% more likely to confuse. *(Confusion)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* |
+| 7 | 32 | **Psychic Mastery**: Psybeam hits every enemy, the others at 60% damage. *(Psybeam)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Natural Cure**: Recover also cures the user's status. *(Recover)* |
+| 8 | 38 | **Mind Blast**: Psychic hits every enemy, the others at 50% damage. *(Psychic)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Magic Guard**: The user takes no damage from poison, burns, seeds, binds, wounds or nightmares. *(Psychic)* |
+| 9 | 44 | **Psycho Cut**: Psychic is 4× as likely to be a critical hit. *(Psychic)* | **Mind Crush**: Confused enemies take 30% more damage from the user. *(Confusion)* | **Barrier**: Reflect covers the whole party. *(Reflect)* |
+| 10 | 50 | **Mind Feast**: Knocking an enemy out with a Psychic move heals the user 1/4 of its max HP. *(Psychic)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Mirror Shards**: For 3 rounds, whoever hits a Pokémon behind Reflect loses 1/16 of its max HP. *(Reflect)* |
+| 11 | 60 | **Precognition** *(needs 4)*: Psychic always goes first. *(**own**)* | **Spoon Bender** *(needs 4)*: At the start of each battle, every enemy's accuracy falls 1 stage. *(**own**)* | **Bulwark Stance** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(Any)* |
+| 12 | 75 | **Mind Storm** *(needs 6)*: Psychic hits every enemy at full damage. *(**own**)* | **Kinetic Crush** *(needs 6)*: Enemies with lowered accuracy take 50% more damage from the user's party. *(**own**)* | **Fortress** *(needs 6)*: While the user stands, the whole party takes 25% less damage. *(Any)* |
+
+### Venonat → Venomoth
+
+Moves: Tackle, Supersonic 24, Confusion 27, Poison Powder 30, Leech Life 35, Double-Edge 36 (Venomoth), Stun Spore 38, Psybeam 43, Sleep Powder 46, Psychic 51 (Venomoth).
+
+Paths: **Eyes** (compound eyes: never missing, and muddling minds); **Powder** (poison, and powders on every enemy); **Swarm** (leech Life: a bug that won't go down).
+
+| Tier | Lv | Eyes | Powder | Swarm |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Compound Eyes**: The user's damaging moves never miss. *(**own**)* | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Swarm**: Below 1/3 HP, the user's Bug moves deal 1.5× damage. *(Bug)* |
+| 2 | 10 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Sapping**: Poisoned enemies deal 20% less damage. *(Poison)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 3 | 14 | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Poison Point**: Whoever hits the user has a 25% chance to be poisoned. *(Poison)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 4 | 18 | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* |
+| 5 | 22 | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Siphon**: The user heals half the poison damage of the enemies it poisoned. *(Poison)* | **Hive Mind**: Each Bug move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Bug)* |
+| 6 | 27 | **Echo**: Supersonic works on every enemy. *(Supersonic)* | **Virulent**: The user's poison is bad poison: it gets worse every round. *(Poison)* | **Shed Skin**: At the end of each round, the user has a 30% chance to shake off its status. *(Bug)* |
+| 7 | 32 | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* | **Toxic Spores**: Poison Powder badly poisons: it gets worse every round. *(Poison Powder)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 8 | 38 | **Dizzying Mind**: Confusion is 20% more likely to confuse. *(Confusion)* | **Pollen Cloud**: Poison Powder hits every enemy. *(Poison Powder)* | **Bloodsucker**: Leech Life heals the user all the damage it deals (not half). *(Leech Life)* |
+| 9 | 44 | **Mind Crush**: Confused enemies take 30% more damage from the user. *(Confusion)* | **Numbing Cloud**: Stun Spore works on every enemy. *(Stun Spore)* | **Vampire Fangs**: Leech Life hits harder: 40 power. *(Leech Life)* |
+| 10 | 50 | **Psychic Mastery**: Psybeam hits every enemy, the others at 60% damage. *(Psybeam)* | **Drowsy Dust**: Sleep Powder works on every enemy. *(Sleep Powder)* | **Feeding Frenzy**: Knocking an enemy out with a Bug move heals the user 1/4 of its max HP. *(Bug)* |
+| 11 | 60 | **Hysteria** *(needs 4)*: Confusion the user causes has a 30% chance each round to spread to an enemy next to it. *(Confusion)* | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Unbreakable** *(needs 4)*: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 12 | 75 | **Bedlam** *(needs 6)*: Enemies the user confuses always hurt themselves. *(Confusion)* | **Powder Storm** *(needs 6)*: Psybeam has a 20% chance to set off Stun Spore, Poison Powder or Sleep Powder. *(Psybeam)* | **Venom Swarm** *(needs 6)*: Leech Life hits every enemy at full damage. *(**own**)* |
+
+### Bellsprout → Weepinbell → Victreebel
+
+Moves: Vine Whip, Growth, Wrap 13, Poison Powder 15, Sleep Powder 18, Stun Spore 21, Acid 26, Swords Dance 30 (Weepinbell), Razor Leaf 33, Slam 42 (Weepinbell).
+
+Paths: **Vine** (vine Whip and Wrap: whipping and binding); **Pitcher** (acid and poison: digesting enemies); **Leaf** (growth and Razor Leaf: sharp Grass damage).
+
+| Tier | Lv | Vine | Pitcher | Leaf |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Double Lash**: Vine Whip hits twice, at 60% power each. *(Vine Whip)* | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Full Bloom**: Growth also makes the user's next damaging move deal 50% more. *(Growth)* |
+| 2 | 10 | **Thirsty Vines**: Vine Whip heals the user half the damage it deals. *(Vine Whip)* | **Sapping**: Poisoned enemies deal 20% less damage. *(Poison)* | **Overgrow**: Below 1/3 HP, the user's Grass moves deal 1.5× damage. *(Grass)* |
+| 3 | 14 | **Constrict**: Wrap and Bind squeeze twice as hard: 1/8 of max HP each round. *(Bind)* | **Poison Point**: Whoever hits the user has a 25% chance to be poisoned. *(Poison)* | **Ripening**: Each Grass move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Grass)* |
+| 4 | 18 | **Crushing Coils**: Wrap and Bind have a 30% chance to paralyze. *(Bind)* | **Toxic Spores**: Poison Powder badly poisons: it gets worse every round. *(Poison Powder)* | **Shared Sun**: Growth works on the whole party. *(Growth)* |
+| 5 | 22 | **Squeeze**: Enemies caught in a bind take 30% more damage from the user. *(Any)* | **Drowsy Dust**: Sleep Powder works on every enemy. *(Sleep Powder)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* |
+| 6 | 27 | **Thorned Whip**: Vine Whip has a 30% chance to poison. *(Vine Whip)* | **Corrode**: Acid is twice as likely to lower Defense. *(Acid)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 7 | 32 | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Acid Rain**: Acid hits every enemy, the others at 50% damage. *(Acid)* | **Harvest**: Knocking an enemy out with a Grass move heals the user 1/4 of its max HP. *(Grass)* |
+| 8 | 38 | **Coil Crush**: Wrap and Bind catch every enemy. *(Bind)* | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* | **Keen Edge**: Razor Leaf is always a critical hit on a target below half HP. *(Razor Leaf)* |
+| 9 | 44 | **Lashing Vines**: Vine Whip hits every enemy, the others at 50% damage. *(**own**)* | **Siphon**: The user heals half the poison damage of the enemies it poisoned. *(Poison)* | **Flower Power**: The user's Grass moves also hit one enemy next to the target, at half damage. *(Grass)* |
+| 10 | 50 | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Virulent**: The user's poison is bad poison: it gets worse every round. *(Poison)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* |
+| 11 | 60 | **Constrictor** *(needs 4)*: Wrap's and Bind's grip hurts far more: a further 1/8 of max HP each round. *(**own**)* | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Leaf Storm** *(needs 4)*: Razor Leaf hits every enemy, the others at 60% damage. *(**own**)* |
+| 12 | 75 | **Strangler Fig** *(needs 6)*: Enemies caught in a bind take 50% more damage from the user. *(**own**)* | **Digest** *(needs 6)*: Acid hits every enemy at full damage, and lowers Defense 2 stages. *(**own**)* | **Razor Wind** *(needs 6)*: Razor Leaf is always a critical hit. *(**own**)* |
 
 ### Pikachu
 
@@ -630,7 +721,7 @@ Paths: **Fang** (leech Life and Bite: feeding on enemies); **Echo** (supersonic 
 | 8 | 38 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* | **Gale Wings**: Wing Attack always goes first. *(Wing Attack)* |
 | 9 | 44 | **Night Feeder**: The user heals 15% of the damage it deals. *(**own**)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Aerial Ace**: The user's Flying moves never miss and are twice as likely to be critical hits. *(Flying)* |
 | 10 | 50 | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* | **Bird of Prey**: Knocking an enemy out with a Flying move heals the user 1/4 of its max HP. *(Flying)* |
-| 11 | 60 | **Bat Swarm** *(needs 4)*: Leech Life hits every enemy, the others at 50% damage. *(**own**)* | **Bedlam** *(needs 4)*: Enemies the user confuses always hurt themselves. *(**own**)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
+| 11 | 60 | **Bat Swarm** *(needs 4)*: Leech Life hits every enemy, the others at 50% damage. *(**own**)* | **Bedlam** *(needs 4)*: Enemies the user confuses always hurt themselves. *(Confusion)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
 | 12 | 75 | **Blood Feast** *(needs 6)*: The user heals 30% of the damage it deals. *(**own**)* | **Supersonic Wave** *(needs 6)*: Supersonic and Confuse Ray never miss. *(**own**)* | **Night Flight** *(needs 6)*: The user's Flying moves always go first and deal 30% more. *(**own**)* |
 
 ### Paras → Parasect
