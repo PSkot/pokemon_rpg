@@ -24,7 +24,7 @@ from ..mechanics.loot import LootTable, Reward, merge, wild_loot, worn_drops
 from ..mechanics.moves import Move
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, animations
 from ..mechanics.status import FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES, THAW_CHANCE
-from ..mechanics.type_chart import COLORS
+from ..mechanics.type_chart import COLORS, effectiveness
 from ..mechanics.type_chart import name as type_name
 from ..world.themes import MEADOW_BACKDROP, Backdrop
 
@@ -700,12 +700,13 @@ class BattleScene(Scene):
                     self.message = " ".join([f"{holder.label}'s aura spreads!"]
                                             + [STATUSES[status].inflicted.format(c.label) for c in hit])
                     yield STATUS_MESSAGE_TIME
-            stages = round(m.talent("intimidate"))
-            if stages and foes:
-                for c in foes:
-                    self._change_stage(c, "attack", -stages)
-                self.message = f"{holder.label} intimidates the enemies! Their Attack fell!"
-                yield STATUS_MESSAGE_TIME
+            for stat in STAGE_STATS:  # (Intimidate: Attack; Sand Veil: accuracy)
+                stages = round(m.talent(f"lower:{stat}"))
+                if stages and foes:
+                    for c in foes:
+                        self._change_stage(c, stat, -stages)
+                    self.message = f"{holder.label} unnerves the enemies! Their {STAT_NAMES[stat]} fell!"
+                    yield STATUS_MESSAGE_TIME
 
     def _enemy_action(self, enemy: Combatant) -> Action:
         # Random for now; smarter choices can go here later.
@@ -1555,6 +1556,11 @@ class BattleScene(Scene):
             factor *= 1 + m.talent(f"prey:{target.status}")
         if target.confused:
             factor *= 1 + m.talent("prey:confused")
+        if target.bound:
+            factor *= 1 + m.talent("prey:bound")
+        filtering = target.monster.talent("filter")  # (Solid Rock: super-effective hits on it deal less)
+        if filtering and move.type and effectiveness(move.type, target.monster.species.types) > 1:
+            factor *= 1 - filtering
         own = [c for c in (self.enemies if user.enemy else self.party) if c.alive]
         for stat, stage in target.stages.items():
             if stage < 0:

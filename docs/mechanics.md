@@ -214,7 +214,8 @@ out in these steps:
     a lowered stat), Sapping (×0.8 for a poisoned attacker against a
     Sapping Pokémon's side), Ancient Roots and its copies (×0.85 on its
     side), Sturdy (×0.5 on its first hit taken in a battle; Juggernaut
-    ×0). See `talents.md`.
+    ×0), Solid Rock (×0.75 for super-effective hits on it), Squeeze (+30%
+    on a bound target). See `talents.md`.
 
 Steps 7–10 all multiply together; their order doesn't matter.
 
@@ -373,8 +374,9 @@ the user must rest the next round (with Hyper Bloom, not after a knockout).
 single-target moves go to the user (`Combatant.taunt`).
 
 **Talents at the battle's start** (`BattleScene._auras`): Miasma (50% per
-foe: poisoned), Thunder Cloud (30%: paralyzed), Intimidate (every foe's
-Attack −1). **When hit** (`_hit`): Static / Poison Point (25%: the
+foe: poisoned), Thunder Cloud (30%: paralyzed), Heat Haze, Absolute Zero,
+Bedtime Story and the like (burned, frozen, asleep), Intimidate (every
+foe's Attack −1), Sand Veil (every foe's accuracy −1). **When hit** (`_hit`): Static / Poison Point (25%: the
 attacker is paralyzed / poisoned), Thorny Hide (the attacker loses 1/16 of
 its max HP); Guardian and its copies (once a battle, a partner hit for its
 last HP keeps 1).

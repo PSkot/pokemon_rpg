@@ -166,7 +166,8 @@ non-commercial project.
   `charge_skip`, `ko_no_recharge`, `soothe`; same-effect talents don't
   add up, the strongest counts). Lines with talents (`TALENT_TREES`): the
   starters, Pidgey, Rattata, Spearow, Nidoran F/M, Caterpie, Weedle,
-  Pikachu; the rest have just their moves. `Monster.create`
+  Pikachu, Geodude, Onix, Jigglypuff, Sandshrew, Ekans, Zubat, Paras,
+  Clefairy; the rest have just their moves. `Monster.create`
   picks for wild/trainer Pokémon (mostly one random path). The talent
   screen (`scenes/talent_screen.py`, party screen → S): a grid (tiers ×
   paths, scrolls), info on the right with the known moves; Enter picks
