@@ -748,7 +748,8 @@ more Pokémon from the pool, rolled from the map's seed so it's the same
 each time the map is shown. A **boss** (areas with
 one) guards the last map's exit: the group the area names (`Route.boss_group`),
 or else 4–5 Pokémon from the pool at the same levels; its leader (the
-first) can be drawn bigger (`Route.boss_scale`).
+first) can be drawn bigger (`Route.boss_scale`). With two fighting, a
+boss group can bring more escorts (`Route.boss_extra`: Viridian Forest).
 
 **Touching a group** starts the battle. Besides the Pokémon themselves,
 each group catches the player in an invisible column over it, up to
@@ -776,10 +777,13 @@ forest Pokémon together):
 | Kakuna | 20 | 5–7 |
 | Pikachu | 5 | 4–6 |
 
-**Boss:** a Lv10 Caterpie drawn at double size, escorted by a Lv8 Metapod
-and a Lv8 Kakuna (only the leader, the first of a boss group, is drawn
-bigger). Beating them opens the way to Pewter City and leaves a plain
-chest (the chest table at the boss rarities, item level 10).
+**Boss:** a Lv12 Caterpie drawn at double size, escorted by a Lv10 Weedle
+and a Lv9 Kakuna (only the leader, the first of a boss group, is drawn
+bigger); with two fighting (once the Route 22 rival is beaten), two more
+Lv11 Weedle join it (`Route.boss_extra`). Tuned with
+`tools/balance_sim.py`: a lone Lv11 starter, or a Lv11 + Lv10 pair, wins
+about 70%. Beating them opens the way to Pewter City and leaves a plain
+chest (the chest table at the boss rarities, item level 12).
 
 Route 22 (2 maps, from Viridian City and back):
 

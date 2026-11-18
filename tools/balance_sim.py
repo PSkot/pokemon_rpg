@@ -157,7 +157,7 @@ def story_battles(route_key: str, starter: str, levels, solo: bool, talents: boo
         t = next(t for t in route.trainers if t.key == "nugget_rival")
         return [(list(t.team), "Rival", False)]
     out = [(list(w.team), w.name, False) for w in route.waves]
-    out.append((list(route.boss_group), route.trainer, True))
+    out.append((list(route.boss_group) + (list(route.boss_extra) if not solo else []), route.trainer, True))
     return out
 
 

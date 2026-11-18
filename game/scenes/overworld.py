@@ -566,6 +566,8 @@ class OverworldScene(MapScene):
                                                 or (route.boss_after[0] in quests.QUESTS
                                                     and quests.is_done(game, route.boss_after[0]))):
             level.boss.encounter, self.trainer = list(route.boss_after[1]), ""  # the quest's boss is beaten
+        elif level.boss and route.boss_extra and quests.active_limit(game) >= 2:
+            level.boss.encounter = list(level.boss.encounter) + list(route.boss_extra)  # (more of them for a pair)
         if level.boss:  # the rival's starter depends on the player's
             level.boss.encounter = [(rival.get(species, species), lv) for species, lv in level.boss.encounter]
         self.boss = (WildPokemon(level.boss, boss=True, scale=instance.route.boss_scale, level=level)

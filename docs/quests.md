@@ -149,8 +149,8 @@ they can't be sold, used or dropped.
 
 - **Starts:** taken from the Viridian City quest board, once Oak's Parcel
   is done.
-- **Steps:** defeat the giant Caterpie (and its escort) in Viridian
-  Forest.
+- **Steps:** defeat the giant Caterpie (Lv12, with Weedle 10 and Kakuna 9;
+  two more Weedle with two fighting) in Viridian Forest.
 - **Rewards:** ₽500, 350 XP, 2 Super Potions and a Common gear piece
   (item level 10).
 

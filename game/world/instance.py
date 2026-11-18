@@ -113,6 +113,7 @@ class Route:
     # `boss_key`), the boss is this group instead (no trainer).
     boss_after: tuple[str, tuple[tuple[str, int], ...]] | None = None
     boss_key: str = ""   # saved in Game.trainers once the boss is beaten (a one-time boss trainer)
+    boss_extra: tuple[tuple[str, int], ...] = ()  # with two (or more) fighting, these join the boss group
     boss_gift: str = ""  # an item (in MEDICINE) the boss gives the first time it's beaten (the Nugget)
     boss_dialogue: tuple[tuple[str, str], ...] = ()  # what it says then
     prize: int = 0                      # a boss trainer's base prize (as Trainer.prize)
@@ -135,7 +136,10 @@ class Route:
 ROUTES = {r.key: r for r in [
     Route("route_1", "Route 1", MEADOW, maps=2, towns=("pallet", "viridian")),
     Route("viridian_forest", "Viridian Forest", FOREST, maps=3, towns=("viridian", "pewter"), boss=True,
-          boss_group=(("caterpie", 10), ("metapod", 8), ("kakuna", 8)), boss_scale=2,
+          # (tuned with tools/balance_sim.py: a lone Lv11 starter wins about 70%, and
+          # a pair, which meets two more Weedle, about the same)
+          boss_group=(("caterpie", 12), ("weedle", 10), ("kakuna", 9)), boss_scale=2,
+          boss_extra=(("weedle", 11), ("weedle", 11)),
           needs=("oaks_parcel", "done"),
           blocked="An old man is lying in the road. He hasn't had his coffee yet, and won't let anyone pass."),
     # A side trip from Viridian and back (Gen 1's first rival battle at its end).
