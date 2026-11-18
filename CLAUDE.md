@@ -204,7 +204,9 @@ non-commercial project.
   takes the lead Pokémon's species (`Player.become`).
 - Medicine (`items.MEDICINE`: potions, Revive, status cures) is counted in
   `Bag.medicine` and used from the battle's Item menu (taking the user's
-  turn; items act before moves) or from the bag. The Escape Rope is in
+  turn; items act before all moves and always work: no status,
+  confusion or flinch stops them, `_perform`; an asleep user's sleep still
+  counts down, `_doze`) or from the bag. The Escape Rope is in
   `MEDICINE` too (`Medicine.escape`: not in battle; from the bag on an
   instance map → `TownScene` of `Game.town`). An item is only used up
   when it has an effect (`Medicine.has_effect`: Revive only on the
@@ -219,7 +221,8 @@ non-commercial project.
   `loaded` switches scene.
 - Status conditions (`status.py`): burn, poison, paralysis, sleep, freeze;
   one per Pokémon, stored on `Monster` and kept after battle; cleared on
-  fainting. Asleep/frozen party members skip the menu. Cured by medicine.
+  fainting. Asleep/frozen party members only
+  get to use items (Fight/Skills skip the turn, `Combatant.dozing`). Cured by medicine.
 - Types (`type_chart.py`): the 15 Gen 1 types and chart (Ghost→Psychic fixed to
   2×). Species have 1–2 types, moves one (or none). STAB ×1.5. Gen 1's
   Special stat (`Species.base_special`): Fire/Water/Grass/Electric/Ice/

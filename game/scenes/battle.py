@@ -185,10 +185,14 @@ class Combatant:
 
     @property
     def can_choose(self) -> bool:
-        """Alive, not busy charging a move or recharging, and awake (asleep
-        or frozen Pokémon don't get to pick anything)."""
-        return (self.alive and self.charging is None and not self.recharging
-                and self.status not in ("sleep", "freeze"))
+        """Alive and not busy charging a move or recharging. (Asleep or
+        frozen Pokémon choose too, but only items work: `dozing`.)"""
+        return self.alive and self.charging is None and not self.recharging
+
+    @property
+    def dozing(self) -> bool:
+        """Asleep or frozen: it can use an item, but not a move."""
+        return self.status in ("sleep", "freeze")
 
     @property
     def speed(self) -> float:
@@ -575,7 +579,7 @@ class BattleScene(Scene):
         c = None if drag else self._tapped(pos)
         if c is None:
             return
-        if self.menu == "command" and c.enemy and c.alive:
+        if self.menu == "command" and c.enemy and c.alive and not self.actor.dozing:
             self.actor.last_command = 0  # (Fight)
             self._choose(self.actor.monster.basic_attack)  # (aims, unless it hits everyone)
             if self.menu == "target" and c in self._targets():
@@ -601,7 +605,10 @@ class BattleScene(Scene):
                 command = COMMANDS[self.command]
                 if command != "Run":
                     self.actor.last_command = self.command
-                if command == "Fight":
+                if command in ("Fight", "Skills") and self.actor.dozing:  # it sleeps through the turn
+                    self.actions.append(Action(self.actor, None, self.actor))
+                    self._next_actor()
+                elif command == "Fight":
                     self._choose(self.actor.monster.basic_attack)
                 elif command == "Skills" and self.actor.monster.moves:
                     self.menu = "skills"
@@ -734,7 +741,7 @@ class BattleScene(Scene):
             if c.charging:
                 actions.append(c.charging)
             elif not c.can_choose:
-                actions.append(Action(c, None, c))  # asleep, frozen or recharging
+                actions.append(Action(c, None, c))  # recharging
             elif c.enemy:
                 actions.append(self._enemy_action(c))
         # Items first, as in the main games; then those whose gear lets them
@@ -1042,6 +1049,20 @@ class BattleScene(Scene):
         yield STATUS_MESSAGE_TIME
         return False
 
+    def _doze(self, user: Combatant):
+        """A script: an asleep or frozen `user` that used an item still
+        spends the turn sleeping (its sleep counts down) or may thaw."""
+        if user.status == "sleep":
+            user.monster.sleep_rounds -= 1
+            if user.monster.sleep_rounds <= 0:
+                user.monster.cure()
+                self.message = f"{user.label} woke up!"
+                yield STATUS_MESSAGE_TIME
+        elif user.status == "freeze" and random.random() < THAW_CHANCE:
+            user.monster.cure()
+            self.message = f"{user.label} thawed out!"
+            yield STATUS_MESSAGE_TIME
+
     def _confusion(self, user: Combatant):
         """A script: whether a confused `user` acts (it may hurt itself instead)."""
         if not user.confused:
@@ -1149,6 +1170,14 @@ class BattleScene(Scene):
     def _perform(self, action: Action):
         user, move = action.user, action.choice
         user.acted = True
+        if isinstance(move, Medicine):  # items always work: no status, confusion or flinch stops them
+            candidates = self._candidates(user, move)
+            if candidates:
+                # The planned target may have fainted since; aim at someone else.
+                target = action.target if action.target in candidates else random.choice(candidates)
+                yield from self._use_item(user, move, target)
+            yield from self._doze(user)
+            return
         if user.recharging:
             user.recharging = False
             self.message = f"{user.label} must recharge!"
@@ -1163,11 +1192,6 @@ class BattleScene(Scene):
             return  # (an action without a choice only ever wakes up or thaws)
         candidates = self._candidates(user, move)
         if not candidates:
-            return
-        if isinstance(move, Medicine):
-            # The planned target may have fainted since; aim at someone else.
-            target = action.target if action.target in candidates else random.choice(candidates)
-            yield from self._use_item(user, move, target)
             return
         main = action.target if action.target in candidates else random.choice(candidates)
         if move.target == "enemy" and not move.spread:  # Taunting Growl: drawn to the taunter
@@ -1757,6 +1781,9 @@ class BattleScene(Scene):
         if self.menu == "target" and self._splashed:
             share = round(self.aim.spread_share * 100)
             return f"Arrows or tap: main target (the others take {share}%)   Enter / tap again: confirm   X: back"
+        if self.menu == "command" and self.choosing and self.actor.dozing:
+            what = "asleep" if self.actor.status == "sleep" else "frozen"
+            return f"{self.actor.label} is {what}: only items work (Fight / Skills: skip the turn)   X: back"
         return {
             "command": "Up/Down: choose   Enter: confirm   X: back",
             "skills": "Up/Down: choose skill   Enter: confirm   O: reorder   X: back",
@@ -1885,7 +1912,8 @@ class BattleScene(Scene):
                             align="right")
             for i, name in enumerate(COMMANDS):
                 unavailable = ((name == "Item" and not self._medicine()) or (name == "Run" and self.trainer)
-                               or (name == "Skills" and self.choosing and not self.actor.monster.moves))
+                               or (name == "Skills" and self.choosing and not self.actor.monster.moves)
+                               or (name in ("Fight", "Skills") and self.choosing and self.actor.dozing))
                 color = ui.GREY if unavailable else ui.WHITE
                 y = COMMAND_WINDOW.y + PAD + i * ROW_H
                 ui.text(window, name, (COMMAND_WINDOW.x + 22, y), color)

@@ -448,7 +448,8 @@ cured, it faints (fainting clears it), or the party reaches a town.
 
 Waking up or thawing out still uses up that turn; the Pokémon acts again
 from the next round. Burn/poison damage is at least 1 HP. Asleep or frozen
-party members skip the menu.
+party members still get the menu, but only items work: Fight and Skills
+(greyed) sleep through the turn (`Combatant.dozing`).
 
 ---
 
@@ -461,7 +462,11 @@ party members skip the menu.
   Mt. Moon is the Pokémon Center stop at the end of Route 3.
 - **Medicine** (`game/mechanics/items.py`, `MEDICINE`) is used from the
   battle's Item menu (it takes the user's turn) or from the **bag**
-  outside battle (I on a map: pick the item, then
+  outside battle. In battle an item always goes first (before any move,
+  priority ones too) and always works: sleep, freezing, paralysis,
+  confusion or a flinch never stop it. An asleep user's sleep still counts
+  down that turn, and a frozen one may still thaw (`BattleScene._doze`).
+  Outside battle, from the **bag** (I on a map: pick the item, then
   the party member). It's only used up if it has an effect: Revive only
   works on a fainted Pokémon, everything else only on one still standing.
 
