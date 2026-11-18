@@ -168,7 +168,8 @@ non-commercial project.
   starters, Pidgey, Rattata, Spearow, Nidoran F/M, Caterpie, Weedle,
   Pikachu, Geodude, Onix, Jigglypuff, Sandshrew, Ekans, Zubat, Paras,
   Clefairy, Goldeen, Staryu (Starmie), Horsea, Shellder, Psyduck, Oddish,
-  Bellsprout, Abra, Venonat; the rest have just their moves. `Monster.create`
+  Bellsprout, Abra, Venonat, Diglett: every line in the game (a new
+  line without `TALENT_TREES` would have just its moves). `Monster.create`
   picks for wild/trainer Pokémon (mostly one random path). The talent
   screen (`scenes/talent_screen.py`, party screen → S): a grid (tiers ×
   paths, scrolls), info on the right with the known moves; Enter picks

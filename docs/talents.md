@@ -35,7 +35,8 @@ Pokémon, each one written by hand.
   Geodude and Onix, Route 3's Jigglypuff, Sandshrew and Ekans, and Mt.
   Moon's Zubat, Paras and Clefairy, and the Cerulean Gym's Goldeen, Staryu
   (and Starmie), Horsea, Shellder and Psyduck, and Routes 24 and 25's
-  Oddish, Bellsprout, Abra (and Kadabra) and Venonat. (Graveler,
+  Oddish, Bellsprout, Abra (and Kadabra) and Venonat; and Diglett, from
+  the Pewter Gym's waves. Every line in the game now has talents. (Dugtrio, Graveler,
   Sandslash, Arbok, Golbat, Parasect, Seaking, Seadra, Golduck, Gloom,
   Weepinbell, Venomoth and Alakazam aren't in the game yet, and Staryu
   doesn't evolve in it, so those lines can't learn their
@@ -57,7 +58,8 @@ Pokémon, each one written by hand.
     Contagion, Poison Point, ...; Normal: Cornered, Momentum; Flying:
     Riding the Wind, Aerial Ace; Bug: Swarm, Shed Skin; Electric: Static,
     Charge Up; Rock: Stone Fist, Landslide, Sharp Rocks, Rockfall,
-    Stone Edge, Jagged Hide; Ground: Sand Veil, Sand Force; Psychic:
+    Stone Edge, Jagged Hide; Ground: Mud Claws, Groundswell, Tremor, Burrow
+    Feast, Sand Veil, Sand Force, Sand Stream; Psychic:
     Telepathy, Mind Over Matter, Focus Mind, Mind Feast, Magic Guard; Fire: Blaze, Searing, Scorch, Smoulder, Ash Cloud, Wildfire,
     Heat Haze; Water: Torrent, Undertow, Splash Zone, Hydration; Ice:
     Frostbite, Chill; sleep: Nightmare, Deep Sleep, Lull, Yawn, Dream
@@ -89,8 +91,8 @@ A talent changes moves and/or works in battle by itself:
 
 - **Move changes** (`Talent.moves`): Move field changes for a selector,
   applied in tier order (`talents.apply_changes`: numbers add up, chances
-  to at most 100%; `keen`, `power` and a spreading move's `spread_share`
-  keep the higher value, so a later talent never weakens an earlier one;
+  to at most 100%; `keen`, `power`, `bleed` (wounds) and a spreading
+  move's `spread_share` keep the higher value, so a later talent never weakens an earlier one;
   `type`, `hits` are set): `"basic"` (the basic
   attack), a move's name, `"type:grass"` (the user's damaging moves of
   that type), `"status:poison"` (its moves that inflict it), `"confuse"`,
@@ -596,7 +598,7 @@ Paths: **Ink** (smokescreen: blinding enemies, and punishing the blind); **Curre
 | 9 | 44 | **Menacing Leer**: Leer works on every enemy. *(Leer)* | **Rain Dish**: Knocking an enemy out with a Water move heals the user 1/4 of its max HP. *(Water)* | **Tailwind**: Agility works on the whole party. *(Agility)* |
 | 10 | 50 | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Pressure Jet**: Water Gun hits harder: 60 power. *(Water Gun)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* |
 | 11 | 60 | **Smoke Bomb** *(needs 4)*: At the start of each battle, every enemy's accuracy falls 1 stage. *(**own**)* | **Tidal Force** *(needs 4)*: The user's Water moves are always critical hits on a target below half HP. *(Water)* | **Unbreakable** *(needs 4)*: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
-| 12 | 75 | **Phantom Ink** *(needs 6)*: Enemies with lowered accuracy take 50% more damage from the user's party. *(**own**)* | **Whirlpool** *(needs 6)*: Bubble Beam hits every enemy at full damage. *(Bubble Beam)* | **Sniper** *(needs 6)*: The user's critical hits deal double damage (not 1.5×). *(**own**)* |
+| 12 | 75 | **Phantom Ink** *(needs 6)*: Enemies with lowered accuracy take 50% more damage from the user's party. *(Any)* | **Whirlpool** *(needs 6)*: Bubble Beam hits every enemy at full damage. *(Bubble Beam)* | **Sniper** *(needs 6)*: The user's critical hits deal double damage (not 1.5×). *(**own**)* |
 
 ### Geodude → Graveler → Golem
 
@@ -640,6 +642,27 @@ Paths: **Quake** (rock Slide and Earthquake: Rock and Ground damage); **Coil** (
 | 11 | 60 | **Rock Storm** *(needs 4)*: Rock Slide hits every enemy, the others at 60% damage. *(**own**)* | **Coil Crush** *(needs 4)*: Wrap and Bind catch every enemy. *(Bind)* | **Bulwark Stance** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(Any)* |
 | 12 | 75 | **Magnitude 10** *(needs 6)*: Earthquake hits every enemy at full damage. *(**own**)* | **Constrictor** *(needs 6)*: Wrap's and Bind's grip hurts far more: a further 1/8 of max HP each round. *(**own**)* | **Living Mountain** *(needs 6)*: The first hit the user takes in each battle deals no damage, and while it stands the whole party takes 25% less damage. *(**own**)* |
 
+### Diglett → Dugtrio
+
+Moves: Scratch, Growl 15, Sand-Attack 24, Slash 31, Dig 35 (Dugtrio), Rock Slide 35 (Dugtrio), Earthquake 40 (Dugtrio).
+
+Paths: **Burrow** (popping up first, and striking before anyone else); **Claw** (scratch and Slash, and Ground power); **Sand** (growl and Sand-Attack: blinding and slowing the enemies).
+
+| Tier | Lv | Burrow | Claw | Sand |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Sharp Claws**: Scratch is 4× as likely to be a critical hit. *(Scratch)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 2 | 10 | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* |
+| 3 | 14 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Mud Claws**: The basic attack becomes a Ground move (with STAB). *(Ground)* | **Sand Veil**: At the start of each battle, every enemy's accuracy falls 1 stage. *(Ground)* |
+| 4 | 18 | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Groundswell**: Below 1/3 HP, the user's Ground moves deal 1.5× damage. *(Ground)* | **Echoing Growl**: Growl works on every enemy. *(Growl)* |
+| 5 | 22 | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Tremor**: Each Ground move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Ground)* | **Taunting Growl**: Growl also makes every enemy attack the user, this round and the next. *(Growl)* |
+| 6 | 27 | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Scavenger**: Knocking an enemy out with a Normal move heals the user 1/4 of its max HP. *(Normal)* | **Sandstorm**: Sand-Attack works on every enemy. *(Sand-Attack)* |
+| 7 | 32 | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Rend**: Slash wounds the target: 1/12 of its max HP each round, for 3 rounds. *(Slash)* | **Blinding Grit**: Sand-Attack lowers accuracy 2 stages. *(Sand-Attack)* |
+| 8 | 38 | **Pop Up**: The user's moves deal 50% more to a target that hasn't moved yet this round. *(**own**)* | **Sweeping Claw**: Slash hits every enemy, the others at 50% damage. *(Slash)* | **Sand Force**: Enemies with lowered accuracy take 30% more damage from the user's party. *(Ground)* |
+| 9 | 44 | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Crush Claw**: Slash has a 50% chance to lower the target's Defense 1 stage. *(Slash)* | **Kick Up Dust**: After Sand-Attack, the user hits the target with its basic attack at 60% power. *(Sand-Attack)* |
+| 10 | 50 | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Burrow Feast**: Knocking an enemy out with a Ground move heals the user 1/4 of its max HP. *(Ground)* | **Dust Devil**: Sand-Attack also makes the target take 20% more damage from everyone, for 3 rounds. *(Sand-Attack)* |
+| 11 | 60 | **Unbreakable** *(needs 4)*: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Rending Claws** *(needs 4)*: Slash and Fury Swipes wound the target: 1/8 of its max HP each round, for 3 rounds. *(Slash)* | **Sand Stream** *(needs 4)*: At the start of each battle, every enemy's accuracy falls 2 stages. *(Ground)* |
+| 12 | 75 | **Triple Strike** *(needs 6)*: The basic attack hits 3 times, at 50% power each. *(**own**)* | **Dragon Claw** *(needs 6)*: Slash is always a critical hit. *(Slash)* | **Phantom Ink** *(needs 6)*: Enemies with lowered accuracy take 50% more damage from the user's party. *(Any)* |
+
 ### Sandshrew → Sandslash
 
 Moves: Scratch, Sand-Attack 10, Slash 17, Poison Sting 24, Swift 31, Dig 35 (Sandslash), Fury Swipes 38, Rock Slide 40 (Sandslash), Earthquake 45 (Sandslash).
@@ -658,8 +681,8 @@ Paths: **Sand** (sand-Attack: blinding enemies, and punishing the blind); **Claw
 | 8 | 38 | **Star Shower**: Swift hits every enemy, the others at 60% damage. *(Swift)* | **Raking Claws**: Fury Swipes wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Fury Swipes)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
 | 9 | 44 | **Decoy**: Sand-Attack also makes every enemy attack the user, this round and the next. *(Sand-Attack)* | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Dig In**: Once a battle, ending a round below 1/3 HP heals the user half its max HP. *(**own**)* |
 | 10 | 50 | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Frenzy Claws**: Fury Swipes always hits 5 times. *(Fury Swipes)* | **Bulwark Stance**: While the user stands, the whole party takes 15% less damage. *(Any)* |
-| 11 | 60 | **Sand Stream** *(needs 4)*: At the start of each battle, every enemy's accuracy falls 2 stages. *(**own**)* | **Crush Claw** *(needs 4)*: Slash has a 50% chance to lower the target's Defense 1 stage. *(**own**)* | **Spiked Armor** *(needs 4)*: Whoever hits the user loses 1/8 of its max HP. *(**own**)* |
-| 12 | 75 | **Sandblast** *(needs 6)*: Swift has a 50% chance to lower the target's accuracy 1 stage. *(Swift)* | **Rending Claws** *(needs 6)*: Slash and Fury Swipes wound the target: 1/8 of its max HP each round, for 3 rounds. *(**own**)* | **Impregnable** *(needs 6)*: The first hit the user takes in each battle deals no damage, and super-effective hits deal half. *(**own**)* |
+| 11 | 60 | **Sand Stream** *(needs 4)*: At the start of each battle, every enemy's accuracy falls 2 stages. *(Ground)* | **Crush Claw** *(needs 4)*: Slash has a 50% chance to lower the target's Defense 1 stage. *(Slash)* | **Spiked Armor** *(needs 4)*: Whoever hits the user loses 1/8 of its max HP. *(**own**)* |
+| 12 | 75 | **Sandblast** *(needs 6)*: Swift has a 50% chance to lower the target's accuracy 1 stage. *(Swift)* | **Rending Claws** *(needs 6)*: Slash and Fury Swipes wound the target: 1/8 of its max HP each round, for 3 rounds. *(Slash)* | **Impregnable** *(needs 6)*: The first hit the user takes in each battle deals no damage, and super-effective hits deal half. *(**own**)* |
 
 ### Ekans → Arbok
 

@@ -179,7 +179,7 @@ class LearnedMove:
 # --- changing a move ---------------------------------------------------------
 
 ADDED = {"status_chance", "stage_chance", "confuse", "flinch", "seed", "bind", "shield", "drain", "heal",
-         "priority", "sleep_bonus", "bleed", "scale", "crit_ratio", "recoil", "reach", "empower", "spikes",
+         "priority", "sleep_bonus", "scale", "crit_ratio", "recoil", "reach", "empower", "spikes",
          "contagious", "siphon", "nightmare"}
 CHANCES = {"status_chance", "stage_chance", "confuse", "flinch", "contagious"}
 
@@ -193,8 +193,8 @@ def _add_stages(old: tuple, extra: tuple) -> tuple:
 
 def apply_changes(move: Move, changes: dict) -> Move:
     """`move` with a talent's changes: numbers add up (chances to at most
-    100%), stage changes add per stat, triggers join; `keen`, `power` and
-    a spreading move's `spread_share` keep the higher value; other fields
+    100%), stage changes add per stat, triggers join; `keen`, `power`, `bleed`
+    and a spreading move's `spread_share` keep the higher value; other fields
     are set.
     A status only lands on a move without one (or adds to the same one's
     chance)."""
@@ -210,7 +210,7 @@ def apply_changes(move: Move, changes: dict) -> Move:
             new[name] = value
         elif name in ADDED:
             new[name] = old + value
-        elif name in ("keen", "power") or (name == "spread_share" and move.spread):
+        elif name in ("keen", "power", "bleed") or (name == "spread_share" and move.spread):
             new[name] = max(old, value)  # (a later talent never weakens an earlier one's: Apex Predator, Keen Edge)
         elif name in ("stages", "self_stages"):
             new[name] = _add_stages(old, value)
@@ -429,6 +429,11 @@ TALENTS = {t.key: t for t in [
     _t("Jagged Hide", "rock", "Whoever hits the user loses 1/16 of its max HP.", thorns=1 / 16),
     # Ground lines: sand in the eyes.
     _t("Sand Veil", "ground", "At the start of each battle, every enemy's accuracy falls 1 stage.", lower__accuracy=1),
+    _t("Mud Claws", "ground", "The basic attack becomes a Ground move (with STAB).", ("basic", {"type": "ground"})),
+    _pinch("Groundswell", "ground"),
+    _t("Tremor", "ground", "Each Ground move in a row deals 20% more than the last, up to +60%. "
+       "Any other move starts it over.", streak__ground=0.2),
+    _harvest("Burrow Feast", "ground", "heals the user"),
     _t("Sand Force", "ground", "Enemies with lowered accuracy take 30% more damage from the user's party.",
        spot__accuracy=0.3),
     # Lines with sleep moves.
@@ -681,11 +686,11 @@ TALENTS = {t.key: t for t in [
     _t("Dig In", "own", "Once a battle, ending a round below 1/3 HP heals the user half its max HP.", second_wind=0.5),
     _t("Sandblast", "move:Swift", "Swift has a 50% chance to lower the target's accuracy 1 stage.",
        ("Swift", {"stages": (("accuracy", -1),), "stage_chance": 50})),
-    _t("Sand Stream", "own", "At the start of each battle, every enemy's accuracy falls 2 stages.", lower__accuracy=2),
-    _t("Crush Claw", "own", "Slash has a 50% chance to lower the target's Defense 1 stage.",
+    _t("Sand Stream", "ground", "At the start of each battle, every enemy's accuracy falls 2 stages.", lower__accuracy=2),
+    _t("Crush Claw", "move:Slash", "Slash has a 50% chance to lower the target's Defense 1 stage.",
        ("Slash", {"stages": (("defense", -1),), "stage_chance": 50})),
     _t("Spiked Armor", "own", "Whoever hits the user loses 1/8 of its max HP.", thorns=1 / 8),
-    _t("Rending Claws", "own", "Slash and Fury Swipes wound the target: 1/8 of its max HP each round, for 3 rounds.",
+    _t("Rending Claws", "move:Slash", "Slash and Fury Swipes wound the target: 1/8 of its max HP each round, for 3 rounds.",
        ("Slash", {"bleed": 1 / 8}), ("Fury Swipes", {"bleed": 1 / 8})),
     _t("Impregnable", "own", "The first hit the user takes in each battle deals no damage, and super-effective hits "
        "deal half.", sturdy=1.0, filter=0.5),
@@ -734,7 +739,7 @@ TALENTS = {t.key: t for t in [
     _t("Murky Water", "own", "Bubble has a 20% chance to lower the target's accuracy 1 stage.",
        ("Bubble", {"stages": (("accuracy", -1),)})),
     _t("Smoke Bomb", "own", "At the start of each battle, every enemy's accuracy falls 1 stage.", lower__accuracy=1),
-    _t("Phantom Ink", "own", "Enemies with lowered accuracy take 50% more damage from the user's party.",
+    _t("Phantom Ink", "any", "Enemies with lowered accuracy take 50% more damage from the user's party.",
        spot__accuracy=0.5),
     _t("Sniper", "own", "The user's critical hits deal double damage (not 1.5×).", sniper=0.5),
     # Shellder
@@ -772,6 +777,10 @@ TALENTS = {t.key: t for t in [
     _t("Compound Eyes", "own", "The user's damaging moves never miss.", ("damaging", {"sure_hit": True})),
     _t("Venom Swarm", "own", "Leech Life hits every enemy at full damage.",
        ("Leech Life", {"spread": True, "spread_share": 1.0})),
+    # Diglett
+    _t("Pop Up", "own", "The user's moves deal 50% more to a target that hasn't moved yet this round.", ambush=0.5),
+    _t("Triple Strike", "own", "The basic attack hits 3 times, at 50% power each.",
+       ("basic", {"hits": (3, 3), "scale": -0.5})),
     # Charmander
     _t("Kindling", "own", "Scratch has a 10% chance to burn.", ("Scratch", {"status": "burn", "status_chance": 10})),
     _t("Flame Claw", "own", "Scratch becomes a Fire move (with STAB).", ("Scratch", {"type": "fire"})),
@@ -1381,6 +1390,23 @@ TALENT_TREES = {
                ("Psychic Mastery", "Drowsy Dust", "Feeding Frenzy"),
                ("Hysteria", "Miasma", "Unbreakable"),
                ("Bedlam", "Powder Storm", "Venom Swarm")),
+    ),
+    "diglett": (
+        (Path("Burrow", "Popping up first, and striking before anyone else.", SAND),
+         Path("Claw", "Scratch and Slash, and Ground power.", RED),
+         Path("Sand", "Growl and Sand-Attack: blinding and slowing the enemies.", STONE)),
+        _tiers(("Head Start", "Sharp Claws", "Sturdy"),
+               ("Ambush", "Momentum", "Resilience"),
+               ("Lucky Strikes", "Mud Claws", "Sand Veil"),
+               ("Cornered", "Groundswell", "Echoing Growl"),
+               ("Gang Up", "Tremor", "Taunting Growl"),
+               ("Tenacity", "Scavenger", "Sandstorm"),
+               ("Blur", "Rend", "Blinding Grit"),
+               ("Pop Up", "Sweeping Claw", "Sand Force"),
+               ("Second Wind", "Crush Claw", "Kick Up Dust"),
+               ("Apex Predator", "Burrow Feast", "Dust Devil"),
+               ("Unbreakable", "Rending Claws", "Sand Stream"),
+               ("Triple Strike", "Dragon Claw", "Phantom Ink")),
     ),
     "pidgey": (
         (Path("Gale", "Wind that hits every enemy.", SKY),
