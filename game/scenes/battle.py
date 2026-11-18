@@ -58,6 +58,7 @@ SELF_HIT = Move("its confusion", 40, "self")  # typeless, as in Gen 1
 BIND_ROUNDS = (2, 5)
 BLEED_ROUNDS = 3  # rounds a wound hurts (buffs that wound, Move.bleed)
 REST_ROUNDS = 2
+EFFECT_ROUNDS = 3  # rounds Exposing and Spiked last
 HEAL_COLOR = (120, 230, 120)
 XP_COLOR = (88, 168, 248)
 ENEMY_BAR = (30, 5)  # an enemy's HP bar under its feet (w, h)
@@ -141,6 +142,17 @@ class Combatant:
         self.bind_share = 0.0  # ... losing this share of max HP each round
         self.bleed = 0         # rounds left wounded ...
         self.bleed_share = 0.0  # ... losing this share of max HP each round
+        # Status moves' buffs: rounds left Exposed (taking more damage) / Spiked ...
+        self.exposed, self.expose_share = 0, 0.0
+        self.spikes, self.spikes_share = 0, 0.0
+        self.empowered = 0.0     # its next damaging move deals this much more
+        # ... and what came with its status or confusion (Siphoning: (who, share)).
+        self.siphon: tuple | None = None
+        self.nightmare = 0.0
+        self.shock = 0.0
+        self.madness = 0
+        self.contagion: tuple | None = None  # (% chance a round, who, the move) it spreads
+        self.seed_spread = False
         self.berry_used = False  # its berry can be eaten once per battle (Seedy: maybe more)
         self.berry_regen = 0     # rounds left of a Lingering berry's healing ...
         self.berry_regen_hp = 0  # ... HP a round
@@ -718,6 +730,8 @@ class BattleScene(Scene):
         if not self._over():
             yield from self._bleed()
         if not self._over():
+            yield from self._afflictions()
+        if not self._over():
             yield from self._regen()
         self.message = ""
         for c in self.everyone:
@@ -894,6 +908,10 @@ class BattleScene(Scene):
             self._popup(c, str(amount), status.color)
             what = "its burn" if c.status == "burn" else "poison"
             self.message = f"{c.label} is hurt by {what}!"
+            if c.status == "poison" and c.siphon and c.siphon[0].alive:  # Siphoning
+                who, part = c.siphon
+                if who.monster.hp < who.monster.max_hp:
+                    self.message += f" {who.label} drains {self._heal(who, max(1, round(amount * part)))} HP!"
             yield STATUS_MESSAGE_TIME
             yield from self._berry(c)
             if not c.alive:
@@ -953,13 +971,14 @@ class BattleScene(Scene):
             return True
         user.confused -= 1
         if not user.confused:
+            user.madness = 0
             self.message = f"{user.label} snapped out of confusion!"
             yield STATUS_MESSAGE_TIME
             return True
         self.message = f"{user.label} is confused!"
         self._popup(user, "CONF", CONFUSED_COLOR)
         yield STATUS_MESSAGE_TIME
-        if random.random() >= CONFUSION_SELF_HIT:
+        if random.random() >= (user.madness / 100 if user.madness else CONFUSION_SELF_HIT):
             return True
         hurt = 0 if DEV.god_mode and not user.enemy else min(user.monster.hp, damage(user, SELF_HIT, user).damage)
         user.monster.hp -= hurt
@@ -990,6 +1009,45 @@ class BattleScene(Scene):
                 yield from self._faint(c)
             if self._over():
                 return
+
+    def _afflictions(self):
+        """End of the round: status moves' lasting buffs. Nightmares hurt the
+        sleeping, Contagious statuses may spread to a neighbour, and
+        Exposing and Spiked count down."""
+        for c in self.everyone:
+            if not c.alive:
+                continue
+            if c.nightmare and c.status == "sleep" and not (DEV.god_mode and not c.enemy):
+                amount = min(c.monster.hp, max(1, round(c.monster.max_hp * c.nightmare)))
+                c.monster.hp -= amount
+                c.hit_time = HIT_TIME
+                self._popup(c, str(amount), STATUSES["sleep"].color)
+                self.message = f"{c.label} is tormented by a nightmare!"
+                yield STATUS_MESSAGE_TIME
+                if not c.alive:
+                    yield from self._faint(c)
+                    if self._over():
+                        return
+                    continue
+            if c.contagion and random.random() * 100 < c.contagion[0]:
+                chance, who, move = c.contagion
+                kind = "confusion" if move.confuse else move.status
+                still = c.confused if kind == "confusion" else c.status == kind
+                free = [n for n in self._neighbours(c)
+                        if not (n.confused if kind == "confusion" else n.status)]
+                if still and free:
+                    other = random.choice(free)
+                    note = self._confuse(other) if kind == "confusion" else self._inflict(other, kind, move)
+                    if note:
+                        self._mark(who, move, other)
+                        self.message = f"It spreads! {note}"
+                        yield STATUS_MESSAGE_TIME
+            c.exposed = max(0, c.exposed - 1)
+            c.spikes = max(0, c.spikes - 1)
+            if not c.exposed:
+                c.expose_share = 0.0
+            if not c.spikes:
+                c.spikes_share = 0.0
 
     def _bleed(self):
         """End of the round: wounded Pokémon (Move.bleed) lose HP."""
@@ -1036,6 +1094,8 @@ class BattleScene(Scene):
         main = action.target if action.target in candidates else random.choice(candidates)
         # A spread move hits them all; on enemies, the one aimed at comes first (it takes full damage).
         targets = [main] + [c for c in candidates if c is not main] if move.spread else [main]
+        if move.rally:  # Rallying: a move on the user works on its whole side
+            targets = [user] + [c for c in (self.enemies if user.enemy else self.party) if c.alive and c is not user]
 
         anim = user.anims[user.monster.anim_for(move)]
         charging = bool(move.charge) and user.charging is None
@@ -1082,8 +1142,19 @@ class BattleScene(Scene):
     def _faint(self, c: Combatant):
         """A script: `c` has just fainted (which clears its status and seed)."""
         c.monster.cure()
+        seeder, spread = c.seeded_by, c.seed_spread
         c.seeded_by, c.toxic, c.confused, c.bound, c.bleed = None, 0, 0, 0, 0
+        c.exposed = c.spikes = c.madness = 0
+        c.siphon = c.contagion = None
+        c.nightmare = c.shock = c.empowered = 0.0
         self.message = f"{c.label} fainted!"
+        if spread and seeder and seeder.alive:  # Leech Seed with Spreading
+            free = [n for n in self._neighbours(c) if not n.seeded_by]
+            if free:
+                other = random.choice(free)
+                other.seeded_by, other.seed, other.seed_spread = seeder, c.seed, True
+                self._popup(other, "SEED", SEED_COLOR)
+                self.message += f" The seed jumps to {other.label}!"
         yield HIT_TIME + FADE_TIME + 0.4
 
     def _use_item(self, user: Combatant, medicine: Medicine, target: Combatant):
@@ -1119,8 +1190,15 @@ class BattleScene(Scene):
         """The move lands on each of `targets`, then may set off others of
         the user's moves (Move.triggers); what happened goes in the message."""
         notes = self._land(user, move, targets)
+        if move.damaging:
+            user.empowered = 0.0  # (Empowering: spent on this move)
         if (move.reach or move.spill) and targets and targets[0].enemy != user.enemy:
             notes += self._beside(user, move, targets[0])
+        if move.follow_up and user.alive and targets and targets[0].alive and targets[0].enemy != user.enemy:
+            basic = user.monster.move(user.monster.tree.basic.key)
+            plain = replace(basic, reach=0.0, spill=(), triggers=(), spread=False, charge="", recharge=False)
+            self._popup(user, basic.name.upper(), TRIGGER_COLOR, offset=(0, -24), delay=0.2)
+            notes += [f"{user.label} follows up with {basic.name}!"] + self._hit(user, plain, targets[0], move.follow_up)
         for key, name, chance in move.triggers:
             if not user.alive or random.random() * 100 >= chance or key not in user.monster.skills:
                 continue
@@ -1208,6 +1286,11 @@ class BattleScene(Scene):
         target.monster.hp -= dealt
         if hit.total:
             target.hit_time = HIT_TIME
+        if target.spikes and dealt and user.alive and user.enemy != target.enemy and not (DEV.god_mode and not user.enemy):
+            spiked = min(user.monster.hp, max(1, round(user.monster.max_hp * target.spikes_share)))
+            user.monster.hp -= spiked
+            user.hit_time = HIT_TIME
+            self._popup(user, str(spiked), WOUND_COLOR, offset=(0, -10), delay=0.2)
         if hit.damage:
             self._popup(target, str(hit.damage), ui.YELLOW if hit.crit else ui.WHITE)
         for i, (t, amount) in enumerate(hit.added):  # beside the main number, just after it
@@ -1268,19 +1351,42 @@ class BattleScene(Scene):
         notes = []
         if move.status:
             if random.random() * 100 < move.status_chance:
-                notes.append(self._inflict(target, move.status, move) or f"It didn't affect {target.label}...")
+                inflicted = self._inflict(target, move.status, move)
+                notes.append(inflicted or f"It didn't affect {target.label}...")
+                if inflicted:
+                    self._mark(user, move, target)
             else:
                 notes.append(f"{target.label} avoided it!")
         if move.confuse:
-            notes.append(self._confuse(target) if random.random() * 100 < move.confuse
-                         else f"{target.label} avoided it!")
+            if random.random() * 100 < move.confuse:
+                was = target.confused
+                notes.append(self._confuse(target))
+                if not was:
+                    self._mark(user, move, target)
+            else:
+                notes.append(f"{target.label} avoided it!")
         for stat, change in move.stages:
             notes.append(self._change_stage(target, stat, change))
+        if move.expose and target.enemy != user.enemy:
+            target.exposed, target.expose_share = EFFECT_ROUNDS, max(move.expose, target.expose_share)
+            self._popup(target, "EXPOSED", WOUND_COLOR, offset=(0, -14), delay=0.3)
+            notes.append(f"{target.label} is exposed!")
+        if move.empower:
+            target.empowered = max(target.empowered, move.empower)
+            self._popup(target, "POWER UP", ui.YELLOW, offset=(0, -14), delay=0.3)
+            notes.append(f"{target.label} is powering up!")
+        if move.spikes:
+            target.spikes, target.spikes_share = EFFECT_ROUNDS, max(move.spikes, target.spikes_share)
+            notes.append(f"{target.label} bristles with spikes!")
+        if move.cleanse and target.monster.status:
+            notes.append(STATUSES[target.monster.status].cured.format(target.label))
+            target.monster.cure()
+            target.toxic = 0
         if move.seed:
             if target.seeded_by:
                 notes.append(f"{target.label} is already seeded!")
             else:
-                target.seeded_by, target.seed = user, move.seed
+                target.seeded_by, target.seed, target.seed_spread = user, move.seed, move.seed_spread
                 self._popup(target, "SEED", SEED_COLOR)
                 notes.append(f"{target.label} was seeded!")
         if move.bleed and target.enemy != user.enemy:
@@ -1297,12 +1403,26 @@ class BattleScene(Scene):
             m = target.monster
             m.cure()
             m.hp = m.max_hp
-            m.status, m.sleep_rounds = "sleep", REST_ROUNDS
+            m.status, m.sleep_rounds = "sleep", REST_ROUNDS - (1 if move.light_sleep else 0)
             target.toxic = 0
             target.heal_time = HEAL_TIME
             self._popup(target, "SLP", STATUSES["sleep"].color)
             notes.append(f"{target.label} slept and became healthy!")
         return notes
+
+    @staticmethod
+    def _mark(user: Combatant, move: Move, target: Combatant) -> None:
+        """What comes with a status move's status or confusion (its buffs):
+        Siphoning, Nightmare, Shocking, Maddening, Contagious."""
+        if move.status == "poison" and move.siphon:
+            target.siphon = (user, move.siphon)
+        if move.status == "sleep":
+            target.nightmare = move.nightmare
+        if move.status == "paralysis":
+            target.shock = move.shock
+        if move.confuse:
+            target.madness = move.madness
+        target.contagion = (move.contagious, user, move) if move.contagious else None
 
     def _confuse(self, c: Combatant) -> str:
         if c.confused:

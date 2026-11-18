@@ -163,7 +163,13 @@ non-commercial project.
   status/stat drop chance on the target's neighbours, `Move.spill`: Ember
   burns, Confusion confuses; `BattleScene._beside`); strong moves' at the
   last stage (`SWEEP_TIERS`, `_sweep_power` counts hits and crits), and no
-  two in a tree within `AREA_STEP` levels; strong links (setting
+  two in a tree (nor Wide/Contagious/Rallying, `GROUP_BUFFS`) within
+  `AREA_STEP` levels. Status moves' buffs make them worth a turn:
+  lowering moves Follow-up (`Move.follow_up`: then the basic attack) and
+  Exposing (`expose`), raising ones Empowering (`empower`), Rallying
+  (`rally`: the whole side) and Spiked (`spikes`), inflicting ones
+  Contagious (`contagious`) and per status Siphoning/Nightmare/Shocking/
+  Maddening (`BattleScene._mark`, `_afflictions`); strong links (setting
   off damage, sleep, paralysis, freeze, confusion or binding) from Lv25
   with at most 2 ranks, Wide on such disabling moves from Lv30; lines
   that don't evolve 5 levels later (`skills._gated`). A set-off move only

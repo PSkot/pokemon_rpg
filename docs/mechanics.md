@@ -290,6 +290,17 @@ stats; only type immunity stops it (Ghost).
   hits every target, whatever its buffs). One on the own side
   ("Shared") needs no target choice and works on each Pokémon there.
   Enemies using one aim at a random target.
+- **Status moves' buffs** (`docs/skill_trees.md`): *Follow-up* (after
+  a stat-lowering move lands, the user hits that enemy with its basic
+  attack at a share of its power); *Exposing* (the target takes +15/25%
+  damage from everyone for 3 rounds); *Empowering* (the user's next
+  damaging move deals +30/60%, spent by it); *Rallying* (a move on the
+  user works on its whole side); *Spiked* (for 3 rounds, whoever hits the
+  user loses 1/16 or 1/8 of its max HP); *Siphoning* (the poisoner heals a
+  share of the poison damage); *Shocking* (a paralyzed target takes
+  +15/25%); *Maddening* (confused: hurts itself 66/75% of the time);
+  *Cleansing* (Recover cures the user's status); *Light Sleep* (Rest
+  sleeps 1 round). The damage bonuses multiply the hit's damage.
 - **Area buffs that reach or spill** (`BattleScene._beside`): after the
   move lands on its target, a *reach* move also hits one random enemy
   standing next to it (the one before or after it in the line) at its
@@ -360,7 +371,11 @@ After all actions, in this order:
    `regen`% of max HP (min 1), plus a Lingering berry's HP (3 rounds after
    it's eaten). Then each cure berry whose holder has its status gets its
    chance (`berry_cure`).
-6. **Leaf Shield** counts down: it lasts the round it's used and the next
+6. **Status moves' lasting buffs** (`BattleScene._afflictions`):
+   Nightmare (a sleeper loses its share of max HP), Contagious (its
+   chance for the status or confusion to spread to a free neighbour, with
+   the same buffs), Exposing and Spiked count down (3 rounds).
+7. **Leaf Shield** counts down: it lasts the round it's used and the next
    (and more with Thick). Flinching wears off.
 
 ---

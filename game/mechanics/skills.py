@@ -38,6 +38,7 @@ SPREAD_LEVEL = 25        # Wide (a status move on every enemy) and strong links 
 # hard the move hits (`_sweep_power`): (lowest power, -, stage: 1 the
 # first evolution, 2 the line's last stage). Its level is its own.
 SWEEP_TIERS = ((71, 0, 2), (0, 0, 1))
+GROUP_BUFFS = ("Wide", "Contagious", "Rallying")  # status moves' buffs that reach more than one Pokémon
 AREA_STEP = 3            # area buffs in one tree open at least this many levels apart
 
 
@@ -385,6 +386,14 @@ def _buffs(move_skill: Skill, last_stage: int) -> list[Skill]:
         nodes.append(_node(k, "Deep-Rooted", name, base, (k,),
                            tuple({"seed": s} for s in (1 / 48, 1 / 24, 1 / 16)),
                            tuple(f"Drains {_frac(1 / 16 + s)} of its max HP." for s in (1 / 48, 1 / 24, 1 / 16))))
+        nodes.append(_node(k, "Spreading", name, base + 8, (nodes[-1].key,), ({"seed_spread": True},),
+                           ("When its target faints, the seed jumps to an enemy next to it.",)))
+    if m.heal and m.target == "self":
+        nodes.append(_node(k, "Cleansing", name, base + 6, (k,), ({"cleanse": True},),
+                           ("Also cures the user's status.",)))
+    if m.rest:
+        nodes.append(_node(k, "Light Sleep", name, base + 6, (k,), ({"light_sleep": True},),
+                           ("The user sleeps 1 round instead of 2.",)))
     if m.shield:
         nodes.append(_node(k, "Thick", name, base, (k,), ({"shield": 1}, {"shield": 2}),
                            ("Lasts 1 round longer.", "Lasts 2 rounds longer.")))
@@ -392,6 +401,8 @@ def _buffs(move_skill: Skill, last_stage: int) -> list[Skill]:
         nodes.append(_node(k, "Fired-Up", name, base, (k,), ({"self_stages": (("attack", 1),)},
                                                              {"self_stages": (("attack", 2),)}),
                            ("Also raises the user's Attack 1 stage.", "Also raises it 2 stages.")))
+        nodes.append(_empowering(k, name, base + 4))
+        nodes.append(_rallying(k, name, base + 10, "Works on the whole party."))
     first = nodes[0].key if nodes else k
     if m.target == "enemy" and not m.spread:
         nodes.append(_node(k, "Wide", name, base + 6, (first,), ({"spread": True},), ("Works on every enemy.",)))
@@ -484,23 +495,33 @@ def _lowering_buffs(k: str, m: Move, base: int) -> list[Skill]:
     name, (stat, _) = m.name, m.stages[0]
     deep = _node(k, "Deep", name, base, (k,), ({"stages": ((stat, -1),)}, {"stages": ((stat, -2),)}),
                  (_stages_text(stat, -1), _stages_text(stat, -2)))
-    nodes = [deep]
-    wide = None
+    follow = _node(k, "Follow-up", name, base + 4, (k,), tuple({"follow_up": v} for v in (0.5, 0.75)),
+                   tuple(f"Then the user strikes it with its basic attack, at {round(v * 100)}% power."
+                         for v in (0.5, 0.75)))
+    nodes = [deep, follow]
     if not m.spread:
-        wide = _node(k, "Wide", name, base + 4, (k,), ({"spread": True},), ("Works on every enemy.",))
-        nodes.append(wide)
-    lingering = _node(k, "Lingering", name, base + 8, (deep.key,), *_bleed_ranks(3))
-    nodes.append(lingering)
-    other = SECOND_STAT[stat]
-    nodes.append(_node(k, "Hexing", name, base + 12, ((wide or deep).key,),
-                       ({"stages": ((other, -1),)}, {"stages": ((other, -2),)}),
-                       (f"Also lowers its {STAT_WORDS[other]} 1 stage.", "2 stages.")))
+        nodes.append(_node(k, "Wide", name, base + 4, (k,), ({"spread": True},), ("Works on every enemy.",)))
+    else:  # Whirlwind: the wind itself hits
+        nodes.append(_node(k, "Gale", name, base + 6, (k,), ({"power": 20},),
+                           ("Also hits every enemy (20 power).",)))
+    nodes.append(_node(k, "Exposing", name, base + 6, (deep.key,), tuple({"expose": v} for v in (0.15, 0.25)),
+                       tuple(f"For 3 rounds it takes {round(v * 100)}% more damage from everyone."
+                             for v in (0.15, 0.25))))
     mine = MIRROR_STAT[stat]
-    nodes.append(_node(k, "Emboldening", name, base + 16, (lingering.key,),
+    nodes.append(_node(k, "Emboldening", name, base + 12, (deep.key,),
                        ({"self_stages": ((mine, 1),)}, {"self_stages": ((mine, 2),)}),
                        (f"Also raises the user's {STAT_WORDS[mine]} 1 stage.", "2 stages.")))
     nodes.append(_quick(k, name, base + 10, k))
     return nodes
+
+
+def _empowering(k: str, name: str, level: int) -> Skill:
+    return _node(k, "Empowering", name, level, (k,), tuple({"empower": v} for v in (0.3, 0.6)),
+                 tuple(f"The user's next damaging move deals {round(v * 100)}% more." for v in (0.3, 0.6)))
+
+
+def _rallying(k: str, name: str, level: int, text: str) -> Skill:
+    return _node(k, "Rallying", name, level, (k,), ({"rally": True},), (text,))
 
 
 def _raising_buffs(k: str, m: Move, base: int) -> list[Skill]:
@@ -510,13 +531,14 @@ def _raising_buffs(k: str, m: Move, base: int) -> list[Skill]:
                     (_stages_text(stat, 1), _stages_text(stat, 2)))
     renewing = _node(k, "Renewing", name, base + 6, (k,), tuple({"heal": h} for h in (1 / 16, 1 / 8, 1 / 4)),
                      tuple(f"Heals the user {_frac(h)} of its max HP." for h in (1 / 16, 1 / 8, 1 / 4)))
-    other = SECOND_STAT[stat] if stat != "accuracy" else "speed"
-    fortifying = _node(k, "Fortifying", name, base + 10, (greater.key,),
-                       ({"stages": ((other, 1),)}, {"stages": ((other, 2),)}),
-                       (f"Also raises its {STAT_WORDS[other]} 1 stage.", "2 stages."))
-    warding = _node(k, "Warding", name, base + 14, (renewing.key,), ({"shield": 2}, {"shield": 3}),
-                    ("Halves the damage it takes for 2 rounds.", "For 3 rounds."))
-    return [greater, renewing, fortifying, warding, _quick(k, name, base + 8, k)]
+    nodes = [greater, _empowering(k, name, base + 4), renewing]
+    if stat == "defense":
+        nodes.append(_node(k, "Spiked", name, base + 8, (k,), tuple({"spikes": v} for v in (1 / 16, 1 / 8)),
+                           tuple(f"For 3 rounds, whoever hits the user loses {_frac(v)} of its max HP."
+                                 for v in (1 / 16, 1 / 8))))
+    nodes.append(_rallying(k, name, base + 10, "Works on the whole party."))
+    nodes.append(_quick(k, name, base + 8, k))
+    return nodes
 
 
 def _inflicting_buffs(k: str, m: Move, base: int) -> list[Skill]:
@@ -532,21 +554,25 @@ def _inflicting_buffs(k: str, m: Move, base: int) -> list[Skill]:
     first = nodes[0].key if nodes else k
     if not m.spread:
         nodes.append(_node(k, "Wide", name, base + 6, (k,), ({"spread": True},), ("Works on every enemy.",)))
-    nodes.append(_node(k, "Lingering", name, base + 10, (first,), *_bleed_ranks(2)))
+    what = {"poison": "poison", "sleep": "sleep", "paralysis": "paralysis"}.get(m.status, "confusion")
+    nodes.append(_node(k, "Contagious", name, base + 10, (first,), tuple({"contagious": v} for v in (15, 30)),
+                       tuple(f"Each round, {v}% chance its {what} spreads to an enemy next to it." for v in (15, 30))))
     if m.status == "poison":
         nodes.append(_node(k, "Toxic", name, base + 12, (first,), ({"toxic": True},),
                            ("Its poison gets worse every round.",)))
+        nodes.append(_node(k, "Siphoning", name, base + 8, (first,), tuple({"siphon": v} for v in (0.5, 1.0)),
+                           tuple(f"The user heals {round(v * 100)}% of the poison damage." for v in (0.5, 1.0))))
     elif m.status == "sleep":
         nodes.append(_node(k, "Deep", name, base + 12, (first,), ({"sleep_bonus": 1}, {"sleep_bonus": 2}),
                            ("It sleeps 1 round longer.", "2 rounds longer.")))
+        nodes.append(_node(k, "Nightmare", name, base + 8, (first,), tuple({"nightmare": v} for v in (1 / 16, 1 / 8)),
+                           tuple(f"While asleep, it loses {_frac(v)} of its max HP each round." for v in (1 / 16, 1 / 8))))
     elif m.status == "paralysis":
-        nodes.append(_node(k, "Numbing", name, base + 12, (first,),
-                           ({"stages": (("speed", -1),)}, {"stages": (("speed", -2),)}),
-                           ("Also lowers its Speed 1 stage.", "2 stages.")))
+        nodes.append(_node(k, "Shocking", name, base + 8, (first,), tuple({"shock": v} for v in (0.15, 0.25)),
+                           tuple(f"While paralyzed, it takes {round(v * 100)}% more damage." for v in (0.15, 0.25))))
     elif m.confuse:
-        nodes.append(_node(k, "Dizzying", name, base + 12, (first,),
-                           ({"stages": (("accuracy", -1),)}, {"stages": (("accuracy", -2),)}),
-                           ("Also lowers its accuracy 1 stage.", "2 stages.")))
+        nodes.append(_node(k, "Maddening", name, base + 8, (first,), tuple({"madness": v} for v in (66, 75)),
+                           tuple(f"While confused, it hurts itself {v}% of the time." for v in (66, 75))))
     nodes.append(_quick(k, name, base + 8, k))
     return nodes
 
@@ -600,6 +626,8 @@ def _gated(skill: Skill, skills: dict[str, Skill], last_stage: int) -> Skill:
         _, _, stage = next(t for t in SWEEP_TIERS if _sweep_power(MOVES[skills[skill.move].move]) >= t[0])
         stage = {1: first, 2: last_stage}[stage]
         return replace(skill, level=skill.level + single, stage=max(skill.stage, stage))
+    if skill.kind == "buff" and skill.short in ("Contagious", "Rallying"):
+        return replace(skill, level=max(skill.level, SPREAD_LEVEL + single), stage=max(skill.stage, first))
     if skill.kind == "buff" and skill.short == "Wide":
         level = (DISABLE_WIDE_LEVEL if _disables(MOVES[skills[skill.move].move]) else SPREAD_LEVEL) + single
         return replace(skill, level=max(skill.level, level), stage=max(skill.stage, first))
@@ -663,9 +691,11 @@ def _tree(species: tuple[str, ...], *items: Skill | Link) -> SkillTree:
         if skill.kind == "move" and not skill.free and skill.move in gen1:
             skills[key] = replace(skill, level=max(skill.level, gen1[skill.move]))
     gated = {key: _gated(s, skills, last_stage) for key, s in skills.items()}
-    # No two area buffs open together: each at least AREA_STEP levels after
-    # the one before.
-    areas = sorted((s for s in gated.values() if s.kind == "buff" and _is_area(s, skills)),
+    # No two buffs that reach more than one Pokémon (area buffs, Wide,
+    # Contagious, Rallying) open together: each at least AREA_STEP levels
+    # after the one before.
+    areas = sorted((s for s in gated.values()
+                    if s.kind == "buff" and (_is_area(s, skills) or s.short in GROUP_BUFFS)),
                    key=lambda s: s.level)
     floor = 0
     for s in areas:

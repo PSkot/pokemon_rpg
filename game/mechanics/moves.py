@@ -56,6 +56,20 @@ class Move:
     scale: float = 1.0   # power × this (from buffs)
     bleed: float = 0.0   # wounds the target: it loses this share of its max HP each round, for 3 rounds
     self_stages: tuple[tuple[str, int], ...] = ()  # stat stage changes on the user, after the move
+    # Status-move buffs (skills._buffs):
+    follow_up: float = 0.0  # then the user hits the target with its basic attack, at this share
+    expose: float = 0.0     # the target takes this much more damage from everyone, for 3 rounds
+    empower: float = 0.0    # the user's next damaging move deals this much more
+    rally: bool = False     # a move on the user works on its whole side
+    spikes: float = 0.0     # for 3 rounds, whoever hits the user loses this share of its max HP
+    contagious: int = 0     # % chance a round its status (or confusion) spreads to a neighbour
+    siphon: float = 0.0     # poison: the user heals this share of the poison damage
+    nightmare: float = 0.0  # sleep: the sleeper loses this share of its max HP each round
+    shock: float = 0.0      # paralysis: the target takes this much more damage
+    madness: int = 0        # confusion: % chance it hurts itself (instead of 50%)
+    seed_spread: bool = False  # Leech Seed: jumps to a neighbour when its target faints
+    cleanse: bool = False   # Recover: also cures the user's status
+    light_sleep: bool = False  # Rest: sleeps 1 round instead of 2
     # Other moves of the user's this one sets off when it lands: (skill key,
     # move name, % chance); a set-off move doesn't set off more.
     triggers: tuple[tuple[str, str, int], ...] = ()
@@ -289,6 +303,33 @@ def describe(m: Move) -> str:
                      f"stage{'s' if n > 1 else ''}.")
     for _, name, chance in m.triggers:
         parts.append(f"{chance}% chance to set off {name}." if chance < 100 else f"Sets off {name}.")
+    # Status moves' buffs.
+    if m.rally:
+        parts.append("Works on the whole party.")
+    if m.follow_up:
+        parts.append(f"Then the user strikes with its basic attack ({round(m.follow_up * 100)}% power).")
+    if m.expose:
+        parts.append(f"For 3 rounds the target takes {round(m.expose * 100)}% more damage.")
+    if m.empower:
+        parts.append(f"The next damaging move deals {round(m.empower * 100)}% more.")
+    if m.spikes:
+        parts.append(f"For 3 rounds, attackers lose {_fraction(m.spikes)} of their max HP.")
+    if m.contagious:
+        parts.append(f"Spreads to a neighbour ({m.contagious}% a round).")
+    if m.siphon:
+        parts.append(f"The user heals {round(m.siphon * 100)}% of the poison damage.")
+    if m.nightmare:
+        parts.append(f"Sleepers lose {_fraction(m.nightmare)} of their max HP a round.")
+    if m.shock:
+        parts.append(f"Paralyzed, it takes {round(m.shock * 100)}% more damage.")
+    if m.madness:
+        parts.append(f"Confused, it hurts itself {m.madness}% of the time.")
+    if m.seed_spread:
+        parts.append("Jumps to a neighbour when its target faints.")
+    if m.cleanse:
+        parts.append("Cures the user's status.")
+    if m.light_sleep:
+        parts.append("Sleeps only 1 round.")
     # Its area buff, last.
     if m.reach:
         parts.append(f"Also hits one enemy next to the target, at {round(m.reach * 100)}% damage.")

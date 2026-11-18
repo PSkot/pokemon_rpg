@@ -81,6 +81,12 @@ def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.
         amount *= 1 + m.gear_bonus(f"power:{move.type}") / 100
     if multiplier > 1:
         amount *= 1 + m.gear_bonus("super") / 100
+    # Status moves' buffs: Empowering (the user), Exposing and Shocking (the target).
+    amount *= 1 + getattr(user, "empowered", 0.0)
+    if getattr(target, "exposed", 0):
+        amount *= 1 + target.expose_share
+    if target.monster.status == "paralysis":
+        amount *= 1 + getattr(target, "shock", 0.0)
     # Gear's added type damage: a share of the hit, with its own effectiveness.
     added = []
     for t in TYPES:
