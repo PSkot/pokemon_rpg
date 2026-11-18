@@ -72,29 +72,22 @@ def _load_gear(d: dict) -> Gear:
     return gear if d.get("v", 1) >= GEAR_VERSION else updated_gear(gear)  # (older saves: today's rules)
 
 
-SKILLS_VERSION = 7  # skills saved before this were bought under older rules (each point is given back)
+TALENTS_VERSION = 8  # saves from before talents (skill trees) keep their equipped moves, and no talents
 
 
 def _monster(m: Monster) -> dict:
     return {"species": m.species.key, "level": m.level, "xp": m.xp, "hp": m.hp, "status": m.status,
             "sleep_rounds": m.sleep_rounds, "gear": {slot: _gear(g) for slot, g in m.gear.items()},
-            "skills": m.skills, "equipped": m.equipped, "sv": SKILLS_VERSION}
+            "talents": m.talents, "equipped": m.equipped, "sv": TALENTS_VERSION}
 
 
 def _load_monster(d: dict) -> Monster:
     gear = {slot: _load_gear(g) for slot, g in d["gear"].items()}
-    species = SPECIES[d["species"]]
-    # Skills its tree no longer has are dropped (and ranks above a skill's
-    # max cut down); saves from before skill trees have none, so the
-    # Pokémon starts with its base attacks.
-    tree = species.tree.skills
-    skills = {key: min(rank, tree[key].max_rank) for key, rank in d.get("skills", {}).items() if key in tree}
-    equipped = [key for key in d.get("equipped", []) if key in skills]
-    monster = Monster(species, d["level"], hp=d["hp"], gear=gear, status=d["status"],
-                      sleep_rounds=d["sleep_rounds"], xp=d["xp"], skills=skills, equipped=equipped)
-    if d.get("sv", 1) < SKILLS_VERSION:  # spent under older costs: every point back, to spend again
-        monster.reset_skills()
-    return monster
+    # Talents and moves its line no longer has are dropped (`Monster.__post_init__`).
+    talents = d.get("talents", []) if d.get("sv", 1) >= TALENTS_VERSION else []
+    return Monster(SPECIES[d["species"]], d["level"], hp=d["hp"], gear=gear, status=d["status"],
+                   sleep_rounds=d["sleep_rounds"], xp=d["xp"], talents=list(talents),
+                   equipped=list(d.get("equipped", [])))
 
 
 def snapshot(scene) -> dict:

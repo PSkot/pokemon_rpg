@@ -105,8 +105,9 @@ they are. Trade and stone evolutions aren't in yet.
 - **Stopping it:** pressing **X** during the flashing stops the evolution
   (B in Red/Blue). It tries again the next time that Pokémon levels up.
 - **What changes:** the species, and with it base stats, types, sprite,
-  XP yield and its part of the skill tree (see `skill_trees.md`). The
-  level, XP, skills, gear and status stay. Stats are
+  XP yield, and the moves it now knows (see `talents.md`; the new moves
+  are equipped while there's room). The level, XP, talents, gear and
+  status stay. Stats are
   recalculated, and the HP gained is added to current HP (damage taken
   stays the same).
 - **Only into species that are in the game:** an evolution is skipped
@@ -169,9 +170,9 @@ out in these steps:
 
 1. **Attack:** the user's Attack (with gear) × its **Attack stage**
    multiplier (see *Stat stages*). Halved if the user is **burned**.
-2. **Power:** the move's power × its **buffs** (Potent: +10% per rank, up
-   to +30%; Twin: −30% for its two hits), + the user's gear `power` bonus.
-   Fight uses the Pokémon's basic attack (see `skill_trees.md`).
+2. **Power:** the move's power × its `scale` (talents: Double Lash 0.6
+   for its two hits), + the user's gear `power` bonus. Fight uses the
+   Pokémon's basic attack (see `talents.md`).
 3. **Base damage** (the Gen 1 formula):
 
    ```
@@ -182,12 +183,13 @@ out in these steps:
    its **Defense stage** multiplier.
 4. **Critical hit:** a 6.25% chance (1 in 16) × the move's crit ratio
    (×8 for Razor Leaf, Gen 1's "high critical-hit ratio": 50%), plus the
-   user's gear `crit` in percentage points (e.g. +5 → 11.25%). A crit
+   user's gear `crit` in percentage points (e.g. +5 → 11.25%). Always a
+   crit with Keen Edge on a target below half HP. A crit
    multiplies `base` by **×1.5** (Gen 2+ style; *not* Gen 1's level-based
    crits).
 5. **Leaf Shield:** if the target is shielded, `base` × **0.5**.
 6. **Random spread:** `base` × a random number from 0.85 to 1.0, × the
-   move's share if it hits several targets (area buffs: per move, `skills.AREAS`; Petal Dance 0.35), except
+   move's share if it hits several targets (Petal Dance 0.35), except
    for the enemy it was aimed at, which takes full damage.
 7. **Type effectiveness:** × the type chart multiplier for the move's type
    against each of the target's types (multiplied together: 0, ¼, ½, 1,
@@ -200,6 +202,13 @@ out in these steps:
     (Expert Belt, Mortarboard).
 11. The result is rounded, with a minimum of **1**, or **0** if the
     target is immune (×0).
+
+12. **Talents** (`BattleScene._talent_factor`, applied with step 6's
+    share): Overgrow (×1.5 for the user's Grass moves below ⅓ HP),
+    Ripening (+20% per Grass move in a row before it, up to +60%), Sapping
+    (×0.8 for a poisoned attacker against a Sapping Pokémon's side),
+    Ancient Roots (×0.85 on its side), Sturdy (×0.5 on its first hit taken
+    in a battle). See `talents.md`.
 
 Steps 7–10 all multiply together; their order doesn't matter.
 
@@ -226,7 +235,7 @@ Normal vs Normal/Flying = ×1, no STAB (Bulbasaur is Grass/Poison)
 → 6 or 7 damage (crit: 8–10)
 ```
 
-At Tackle rank 3 the power is 35 × 1.3 = 45.5, so `base` ≈ 8.2 → 7–8.
+With Sprout Strike, Tackle is a Grass move: ×1.5 STAB → 8–10.
 
 ### Effects that happen when a hit lands
 
@@ -283,30 +292,28 @@ stats; only type immunity stops it (Ghost).
   (Gen 1's intended effect; its real one was a bug).
 - **Rest:** the user's status is cured, it heals fully, and it falls
   asleep for exactly 2 turns.
-- Moves that **hit every target** (a sweep area buff, Wide, ...): one on
+- Moves that **hit every target** (Pollen Cloud, Solar Flare, ...): one on
   the enemies is still aimed at one of them (big arrow; the others get
   small ones), which takes full damage, the others the move's share; a
-  move it sets off (a link) goes to that one only (a set-off move never
-  hits every target, whatever its buffs). One on the own side
-  ("Shared") needs no target choice and works on each Pokémon there.
-  Enemies using one aim at a random target.
-- **Status moves' buffs** (`docs/skill_trees.md`): *Follow-up* (after
-  a stat-lowering move lands, the user hits that enemy with its basic
-  attack at a share of its power); *Exposing* (the target takes +15/25%
-  damage from everyone for 3 rounds); *Empowering* (the user's next
-  damaging move deals +30/60%, spent by it); *Rallying* (a move on the
-  user works on its whole side); *Spiked* (for 3 rounds, whoever hits the
-  user loses 1/16 or 1/8 of its max HP); *Siphoning* (the poisoner heals a
-  share of the poison damage); *Shocking* (a paralyzed target takes
-  +15/25%); *Maddening* (confused: hurts itself 66/75% of the time);
-  *Cleansing* (Recover cures the user's status); *Light Sleep* (Rest
-  sleeps 1 round). The damage bonuses multiply the hit's damage.
-- **Area buffs that reach or spill** (`BattleScene._beside`): after the
-  move lands on its target, a *reach* move also hits one random enemy
-  standing next to it (the one before or after it in the line) at its
-  share, with no added effects; a *spill* move rolls its chance for each
-  enemy next to the target to burn/poison it, lower a stat 1 stage or
-  confuse it. Neither carries into a set-off move.
+  move it sets off (Spore Storm) goes to that one only (a set-off move
+  never hits every target). One on the own side (Canopy) needs no target
+  choice and works on each Pokémon there. Enemies using one aim at a
+  random target.
+- **Extras talents add to moves** (`docs/talents.md`; the `Move` fields
+  stay from the skill trees, so more talents can use them): *Empowering*
+  (Full Bloom: the user's next damaging move deals +50%, spent by it);
+  *Rallying* (Shared Sun: a move on the user works on its whole side);
+  *Spiked* (Thornskin: for 3 rounds, whoever hits the protected Pokémon
+  loses 1/16 of its max HP); *Siphoning* (Siphon: the poisoner heals a
+  share of the poison damage); *Nightmare*, *Contagion* (see *End of
+  round*); also `follow_up`, `expose`, `shock`, `madness`, `cleanse`,
+  `light_sleep` (no talent uses them yet).
+- **Reach** (`BattleScene._beside`; Flower Power): after the move lands on
+  its target, it also hits one random enemy standing next to it (the one
+  before or after it in the line) at its share, with no added effects; a
+  *spill* move (`Move.spill`) rolls its chance for each enemy next to the
+  target to burn/poison it, lower a stat 1 stage or confuse it. Neither
+  carries into a set-off move.
 
 ### Confusion
 
@@ -345,16 +352,19 @@ where −6 hit only 1/4 of the time). Swift and Aerial Ace ignore it.
 Each round, everyone picks first, then all actions play out in this order:
 
 1. **Items** (medicine) before any move.
-2. Then moves with **priority** (Quick Attack, and moves given it by a
-   buff: Quick, Swift) before the rest.
+2. Then moves with **priority** (Quick Attack) before the rest.
 3. Then Pokémon whose **"act first"** gear roll succeeded (`first`: Quick
    Claw, Officer's Cap, "Hasty"; rolled every round).
 4. Then **fastest first** by Speed (with gear, × its Speed stage
    multiplier; **halved if paralyzed**).
 5. Ties are settled at random.
 
-**Solar Beam** spends one round charging and hits the next (unless its
-Instant buff is learned). After **Hyper Beam** the user must rest the next round.
+**Solar Beam** spends one round charging and hits the next (with Sunlit,
+not once the user has used Growth in the battle). After **Hyper Beam**
+the user must rest the next round (with Hyper Bloom, not after a knockout).
+
+**Taunting Growl:** for the round it's used and the next, the foes'
+single-target moves go to the user (`Combatant.taunt`).
 
 ### End of round
 
@@ -362,21 +372,22 @@ After all actions, in this order:
 
 1. **Burn and poison damage** (see below), then healing berries may be eaten.
 2. **Leech Seed:** each seeded Pokémon loses its seed's share of its max
-   HP (1/16; more with Deep-Rooted; min 1), and whoever seeded it
+   HP (1/16; min 1), and whoever seeded it
    gets that much back (if it's still standing).
 3. **Bind:** bound Pokémon lose their bind's share of max HP (min 1).
-4. **Wounds** (buffs: Wounding, Lingering): wounded Pokémon lose their
+4. **Wounds** (`Move.bleed`): wounded Pokémon lose their
    wound's share of max HP (min 1), for 3 rounds.
-5. **Regen** (gear `regen`: Leftovers, Nightcap, "of the Chansey"): heals
-   `regen`% of max HP (min 1), plus a Lingering berry's HP (3 rounds after
-   it's eaten). Then each cure berry whose holder has its status gets its
+5. **Regen:** first **Second Wind** (once a battle, below ⅓ HP: ¼ of max
+   HP). Then gear `regen` (Leftovers, Nightcap, "of the Chansey") and the
+   Photosynthesis talent (1/16): heals that share of max HP (min 1), plus
+   a Lingering berry's HP (3 rounds after it's eaten). Then each cure berry whose holder has its status gets its
    chance (`berry_cure`).
-6. **Status moves' lasting buffs** (`BattleScene._afflictions`):
-   Nightmare (a sleeper loses its share of max HP), Contagious (its
-   chance for the status or confusion to spread to a free neighbour, with
-   the same buffs), Exposing and Spiked count down (3 rounds).
+6. **Lasting effects** (`BattleScene._afflictions`): Nightmare (a
+   sleeper loses its share of max HP), Contagion (its chance for the
+   status to spread to a free neighbour, with the same extras), Exposing
+   and Spiked count down (3 rounds).
 7. **Leaf Shield** counts down: it lasts the round it's used and the next
-   (and more with Thick). Flinching wears off.
+   Taunts count down. Flinching wears off.
 
 ---
 
@@ -868,8 +879,8 @@ hall, drawn in code with a painted far wall; puddles on the tiles): the
 **Cascade Crew**'s two waves, then the crew itself (Starmie Lv25, Staryu
 Lv22: Misty's team in Gen 1, four levels up; the Starmie leads it); beating it finishes
 the Cascade Badge quest, and the gym then stays shut. Starmie evolves by
-Water Stone (not in yet); `pokemon.LATER_FORMS` gives it Staryu's skill
-tree, at stage 1.
+Water Stone (not in yet); `pokemon.LATER_FORMS` gives it Staryu's moves
+and talents, at stage 1.
 
 | Wave | Band | Team | Prize |
 | --- | --- | --- | --- |
@@ -884,8 +895,8 @@ a boss group) **2 pieces**, its escorts and every trainer's Pokémon
 random item at the enemy's level, at the area's rarities (`Route.boss_loot`
 for boss battles, `Route.loot` for map trainers and gym waves). It works
 as on the player's Pokémon (stats, effects, hats drawn, berries eaten),
-and each piece can drop when it's beaten (see Loot). Their skills are filled in for their level
-(see `skill_trees.md`), and each turn they pick at random between their
+and each piece can drop when it's beaten (see Loot). Their moves and talents are filled in for their level
+(see `talents.md`), and each turn they pick at random between their
 basic attack and their equipped moves, at a random target.
 
 ### Trainer battles

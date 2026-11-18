@@ -11,7 +11,7 @@ from ..engine import hats
 from ..engine.animation import Animation, load_sheet
 from .items import SLOTS, Gear, boosted
 from .moves import Move
-from .skills import MAX_EQUIPPED, TREES, SkillTree, stand_in_tree
+from .talents import MAX_EQUIPPED, TREES, TalentTree, stand_in_tree
 from .status import SLEEP_ROUNDS, STATUSES
 
 
@@ -67,8 +67,8 @@ class Species:
         return stage
 
     @property
-    def tree(self) -> SkillTree:
-        """Its line's skill tree."""
+    def tree(self) -> TalentTree:
+        """Its line's moves and talents."""
         key = self.key
         while key in _EVOLVES_FROM:
             key = _EVOLVES_FROM[key]
@@ -101,8 +101,8 @@ def _animated(key: str, name: str, stats: tuple[int, int, int, int], types: tupl
 
 
 # The other species: Gen 1 base stats (HP, Attack, Defense, Speed), types and
-# base experience yield. (Their moves come from their line's skill tree,
-# skills.TREES.) Those met up to Mt. Moon have PixelLab sheets; the rest only
+# base experience yield. (Their moves and talents come from their line's
+# talents.TREES.) Those met up to Mt. Moon have PixelLab sheets; the rest only
 # a reference icon so far.
 SPECIES.update({
     # The starters' lines and the Pidgey line.
@@ -227,7 +227,7 @@ EVOLUTIONS = {key: Evolution(into, level) for key, into, level in [
 
 # Stone and trade evolutions aren't in yet, but some later forms already
 # appear (Starmie leads the Cerulean Gym): this gives them their line's
-# skill tree and stage (they don't evolve from it).
+# moves, talents and stage (they don't evolve from it).
 LATER_FORMS = {"starmie": "staryu"}
 
 _EVOLVES_FROM = {e.into: key for key, e in EVOLUTIONS.items()} | LATER_FORMS
@@ -295,8 +295,8 @@ def _stat(base: int, level: int) -> int:
 @dataclass
 class Monster:
     """One Pokémon: its species, level, XP, current HP, status, equipped
-    gear, and skills (ranks in its line's skill tree, and the moves it has
-    equipped)."""
+    gear, the talents picked (keys, from its line's `TalentTree`) and the
+    moves it has equipped (its known moves come with its level)."""
     species: Species
     level: int
     hp: int = -1  # -1 = full
@@ -304,8 +304,8 @@ class Monster:
     status: str = ""       # a key of status.STATUSES, or "" for none
     sleep_rounds: int = 0  # rounds left asleep
     xp: int = -1  # total; -1 = just reached its level
-    skills: dict[str, int] = field(default_factory=dict)  # skill key -> rank
-    equipped: list[str] = field(default_factory=list)     # skill keys of the moves it uses, besides Fight
+    talents: list[str] = field(default_factory=list)   # talent keys picked (one per tier at most)
+    equipped: list[str] = field(default_factory=list)  # keys of the moves it uses, besides Fight
     scale: int = 1  # drawn this many times bigger (bosses); not saved
 
     def __post_init__(self):
@@ -313,15 +313,27 @@ class Monster:
             self.hp = self.max_hp
         if self.xp < 0:
             self.xp = xp_for_level(self.level)
-        if not self.skills:  # (a save from before skill trees, too) its base attacks
-            self.reset_skills()
+        known = self.known
+        self.equipped = [k for k in dict.fromkeys(self.equipped) if k in known and k != self.tree.basic.key]
+        self.talents = [k for k in self.talents if self.tree.tier_of(k)]
 
     @classmethod
     def create(cls, species: str, level: int) -> "Monster":
-        """A Pokémon whose skills are chosen for it (wild ones, and the
-        starter): see `SkillTree.auto_build`."""
+        """A Pokémon that builds itself (wild ones, trainers', the starter):
+        its last 4 moves equipped (as in Gen 1), and a talent in every open
+        tier, mostly along one path (picked at random)."""
         monster = cls(SPECIES[species], level)
-        monster.skills, monster.equipped = monster.tree.auto_build(level, monster.species.stage)
+        known = monster.known[1:]
+        monster.equipped = known[-MAX_EQUIPPED:]
+        tree = monster.tree
+        if tree.paths:
+            main = random.randrange(len(tree.paths))
+            for tier in range(tree.open_tiers(level)):
+                path = main if random.random() < 0.75 else random.randrange(len(tree.paths))
+                for p in (path, main, *range(len(tree.paths))):
+                    if not tree.why_not(monster.talents, tier, p, level):
+                        monster.talents.append(tree.tiers[tier][p].key)
+                        break
         return monster
 
     @property
@@ -332,52 +344,72 @@ class Monster:
     def alive(self) -> bool:
         return self.hp > 0
 
-    # ----------------------------------------------------------- skills
+    # ------------------------------------------------------ moves and talents
 
     @property
-    def tree(self) -> SkillTree:
+    def tree(self) -> TalentTree:
         return self.species.tree
 
     @property
-    def skill_points(self) -> int:
-        """Points not spent yet."""
-        return self.tree.total_points(self.level) - self.tree.spent(self.skills)
+    def known(self) -> list[str]:
+        """The keys of the moves it knows (by its level and evolution stage)."""
+        return self.tree.known(self.level, self.species.stage)
 
-    def why_not(self, key: str) -> str:
-        """Why skill `key` can't be ranked up now ("" if it can)."""
-        return self.tree.why_not(self.skills, key, self.level, self.species.stage)
+    def _learn_new(self, before: list[str]) -> list[str]:
+        """Moves known now but not in `before`: equipped while there's room.
+        Returns their names."""
+        new = [k for k in self.known if k not in before]
+        for key in new:
+            if len(self.equipped) < MAX_EQUIPPED and key != self.tree.basic.key:
+                self.equipped.append(key)
+        return [self.tree.learned(k).name for k in new]
 
-    def rank_up(self, key: str) -> bool:
-        """Spend a point on skill `key` (learning it at rank 1). A move
-        learned while there's a free slot is equipped."""
-        if self.why_not(key):
+    @property
+    def open_picks(self) -> int:
+        """Open tiers without a talent picked (a reminder on the party screen)."""
+        picked = self.tree.picks(self.talents)
+        return sum(1 for t in range(self.tree.open_tiers(self.level)) if t not in picked)
+
+    def why_not(self, tier: int, path: int) -> str:
+        """Why the talent at (`tier`, `path`) can't be picked ("" if it can)."""
+        return self.tree.why_not(self.talents, tier, path, self.level)
+
+    def pick(self, tier: int, path: int) -> bool:
+        """Pick a tier's talent (in place of the tier's other pick). Picks
+        in later tiers that need this path's earlier talents and no longer
+        have them are taken back."""
+        if self.why_not(tier, path):
             return False
-        self.skills[key] = self.skills.get(key, 0) + 1
-        skill = self.tree.skills[key]
-        if (self.skills[key] == 1 and skill.kind == "move" and key not in self.equipped
-                and len(self.equipped) < MAX_EQUIPPED):
-            self.equipped.append(key)
-        return True
-
-    def reset_skills(self) -> None:
-        """Take back every point: only the base attacks are left, equipped."""
         tree = self.tree
-        self.skills = {s.key: 1 for s in tree.base}
-        self.equipped = [s.key for s in tree.base[1:]][:MAX_EQUIPPED]
+        self.talents = [k for k in self.talents if tree.tier_of(k)[0] != tier] + [tree.tiers[tier][path].key]
+        while True:  # (taking one back can leave another without what it needs)
+            bad = [k for k in self.talents if tree.why_not([o for o in self.talents if o != k], *tree.tier_of(k),
+                                                           self.level)]
+            if not bad:
+                return True
+            self.talents.remove(bad[0])
+
+    def reset_talents(self) -> None:
+        self.talents = []
+
+    def talent(self, flag: str) -> float:
+        """The value of a talent's battle effect (`Talent.flags`), 0 if it has none."""
+        return sum(v for t in self.tree.chosen_talents(self.talents) for f, v in t.flags if f == flag)
 
     def move(self, key: str) -> Move:
-        """Skill `key`'s move, with its learned buffs and links."""
-        return self.tree.effective_move(self.skills, key)
+        """Move `key`, as its talents change it."""
+        return self.tree.effective_move(self.talents, key)
 
     @property
     def basic_attack(self) -> Move:
-        """What Fight does: the first base attack."""
+        """What Fight does: the first move it knows."""
         return self.move(self.tree.basic.key)
 
     @property
     def moves(self) -> list[Move]:
         """The equipped moves (the battle's Skills menu)."""
-        return [self.move(key) for key in self.equipped if key in self.skills]
+        known = self.known
+        return [self.move(key) for key in self.equipped if key in known]
 
     @property
     def xp_yield(self) -> int:
@@ -401,19 +433,21 @@ class Monster:
         evolution = self.species.evolution
         return bool(evolution) and self.level >= evolution.level
 
-    def evolve(self) -> None:
+    def evolve(self) -> list[str]:
         """Become what its species evolves into. Like a level up, the HP it
         gains is added to its current HP."""
-        missing = self.max_hp - self.hp
+        missing, before = self.max_hp - self.hp, self.known
         self.species = SPECIES[self.species.evolution.into]
         self._set_missing_hp(missing)
+        return self._learn_new(before)
 
-    def level_up(self) -> None:
+    def level_up(self) -> list[str]:
         """One level up. The HP it gains is added to its current HP, so the
-        damage taken stays the same."""
-        missing = self.max_hp - self.hp
+        damage taken stays the same. Returns the names of moves it learns."""
+        missing, before = self.max_hp - self.hp, self.known
         self.level += 1
         self._set_missing_hp(missing)
+        return self._learn_new(before)
 
     def inflict(self, status: str) -> bool:
         """Give it `status`, unless it already has one or its type is immune."""

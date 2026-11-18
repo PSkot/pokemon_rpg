@@ -51,7 +51,7 @@ class Hit:
 
 def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.0) -> Hit:
     """The Gen 1 damage formula, simplified (misses are rolled first, by
-    BattleScene._misses), plus skill ranks
+    BattleScene._misses), plus talents
     and gear. `share`: the part of the damage each target takes (a move
     that hits every enemy)."""
     m, types = user.monster, target.monster.species.types
@@ -67,6 +67,8 @@ def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.
     base = level_factor * power * attack / defense / 50 + 2
     focus = FOCUS_CRIT if user.focused else 1
     crit = random.random() * 100 < CRIT_CHANCE * move.crit_ratio * focus + m.gear_bonus("crit")
+    if move.keen and target.monster.hp < target.monster.max_hp * move.keen:  # (Keen Edge)
+        crit = True
     if crit:
         base *= CRIT_FACTOR
     if target.shield:

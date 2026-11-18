@@ -865,12 +865,13 @@ def _give_xp(game, done: Finished) -> None:
     for m in game.party:
         if m.level >= MAX_LEVEL:
             continue
-        start = m.level
+        start, learned = m.level, []
         m.xp += xp
         while m.can_level_up:
-            m.level_up()
+            learned += m.level_up()
         if m.level > start:
             done.level_ups.append(f"{m.name} grew to Lv{m.level}!")
+        done.level_ups += [f"{m.name} learned {name}!" for name in learned]
 
 
 def reward_text(quest: Quest) -> str:

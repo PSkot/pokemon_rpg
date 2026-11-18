@@ -1,9 +1,9 @@
 """Moves: what a Pokémon does in battle.
 
-A move here is its Gen 1 base form. The buff and link skills learned in
-its skill tree (skills.py) make a changed copy of it for a particular
-Pokémon (`skills.apply_changes`), so every effect is a field.
-`describe` puts a move into words for the skill tree screen.
+A move here is its Gen 1 base form. A Pokémon's talents (talents.py)
+make a changed copy of it for that Pokémon (`talents.apply_changes`), so
+every effect is a field. `describe` puts a move into words for the
+talent screen.
 """
 
 from dataclasses import dataclass, replace
@@ -56,7 +56,7 @@ class Move:
     scale: float = 1.0   # power × this (from buffs)
     bleed: float = 0.0   # wounds the target: it loses this share of its max HP each round, for 3 rounds
     self_stages: tuple[tuple[str, int], ...] = ()  # stat stage changes on the user, after the move
-    # Status-move buffs (skills._buffs):
+    # Status moves' extras (talents):
     follow_up: float = 0.0  # then the user hits the target with its basic attack, at this share
     expose: float = 0.0     # the target takes this much more damage from everyone, for 3 rounds
     empower: float = 0.0    # the user's next damaging move deals this much more
@@ -70,6 +70,12 @@ class Move:
     seed_spread: bool = False  # Leech Seed: jumps to a neighbour when its target faints
     cleanse: bool = False   # Recover: also cures the user's status
     light_sleep: bool = False  # Rest: sleeps 1 round instead of 2
+    # From talents (talents.py):
+    taunt: int = 0          # enemies attack the user for this many rounds (this one included)
+    keen: float = 0.0       # always a critical hit on a target below this share of its max HP
+    charge_skip: str = ""   # no charging once the user has used this move in the battle
+    ko_no_recharge: bool = False  # no recharge after knocking an enemy out
+    soothe: bool = False    # also cures the user's side's status conditions
     # Other moves of the user's this one sets off when it lands: (skill key,
     # move name, % chance); a set-off move doesn't set off more.
     triggers: tuple[tuple[str, str, int], ...] = ()
@@ -328,6 +334,16 @@ def describe(m: Move) -> str:
         parts.append("Jumps to a neighbour when its target faints.")
     if m.cleanse:
         parts.append("Cures the user's status.")
+    if m.taunt:
+        parts.append("Enemies attack the user this round and the next.")
+    if m.keen:
+        parts.append(f"Always a critical hit on a target below {_fraction(m.keen)} HP.")
+    if m.charge_skip:
+        parts.append(f"No charging once the user has used {m.charge_skip}.")
+    if m.ko_no_recharge:
+        parts.append("No rest needed after a knockout.")
+    if m.soothe:
+        parts.append("Cures the party's status conditions.")
     if m.light_sleep:
         parts.append("Sleeps only 1 round.")
     # Its area buff, last.

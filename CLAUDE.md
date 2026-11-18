@@ -36,7 +36,7 @@ non-commercial project.
     (`ui.py`), sprite animation (`animation.py`), hats on sprites (`hats.py`),
     touch controls (`touch.py`)
   - `mechanics/`: game rules and data: species and stats (`pokemon.py`),
-    moves (`moves.py`), skill trees (`skills.py`), damage (`combat.py`),
+    moves (`moves.py`), talents (`talents.py`), damage (`combat.py`),
     types, status conditions, items and gear (`items.py`), loot
   - `world/`: maps (`level.py`), themes, placeholder map art
     (`tileset.py`), towns, routes/instances, the player character,
@@ -139,59 +139,44 @@ non-commercial project.
   enemies (`BattleScene._give_xp`; ×0.5 wild, ×1.5 trainer), filling the
   XP bar and leveling up (keeping the damage taken). Quests are the main
   XP source.
-- Skills (`skills.py`, `docs/skill_trees.md`): moves come from skill trees
-  (one per evolution line, `TREES`), not learn levels. Skill points =
-  level − 3; a skill opens by level + all its parents + evolution stage.
-  No move in a line's Red/Blue level-up learnset opens before the earliest
-  level that line learns it at (`skills.GEN1_LEVELS`, enforced in
-  `_tree`; TM-only moves keep their tree level).
-  Kinds: moves (each Gen 1 move one 1-point skill, linked by paths; the
-  free ones are base attacks, the first = Fight; 4 equipped,
-  `Monster.equipped`), buffs (1–5 ranks, branches off one move, generated
-  per kind of move by `skills._buffs`: Potent, riders, Wounding, area
-  buffs, capstones, ...) and links (`Link`: two moves; the first sets off the
-  second, `Move.triggers`). A rank is a dict of `Move` field changes,
-  added up by `apply_changes`; `SkillTree.effective_move` applies them
-  (`Monster.move(key)`). Moves cost points by power (`POWER_TIERS`: 1–4;
-  71+ power also needs Lv25 and the first evolution, 100+ Lv35 and the last
-  stage), links 2 a rank and open from Lv20 at the first evolution,
-  Wide from Lv25 at the first evolution. A damaging move has at most one
-  area buff of its own (`skills.AREAS`, each with its own level and
-  numbers; most basic attacks none): sweep (every enemy, the others at a
-  share: Slash, Gust, Bubble, Earthquake), reach (one enemy next to the
-  target, `Move.reach`: Thunder Shock, Water Gun, Body Slam) or spill (a
-  status/stat drop chance on the target's neighbours, `Move.spill`: Ember
-  burns, Confusion confuses; `BattleScene._beside`); strong moves' at the
-  last stage (`SWEEP_TIERS`, `_sweep_power` counts hits and crits), and no
-  two in a tree (nor Wide/Contagious/Rallying, `GROUP_BUFFS`) within
-  `AREA_STEP` levels. Status moves' buffs make them worth a turn:
-  lowering moves Follow-up (`Move.follow_up`: then the basic attack) and
-  Exposing (`expose`), raising ones Empowering (`empower`), Rallying
-  (`rally`: the whole side) and Spiked (`spikes`), inflicting ones
-  Contagious (`contagious`) and per status Siphoning/Nightmare/Shocking/
-  Maddening (`BattleScene._mark`, `_afflictions`); strong links (setting
-  off damage, sleep, paralysis, freeze, confusion or binding) from Lv25
-  with at most 2 ranks, Wide on such disabling moves from Lv30; lines
-  that don't evolve 5 levels later (`skills._gated`). A set-off move only
-  hits the target aimed at (no area buff/Wide); Potent
-  has 3 ranks, Keen 2, weak moves (≤ 40) no Wounding/Keen. Trees cost
-  87–202 points (97 at Lv100): builds choose. Saves from before these
-  costs refund every point once (`saves.SKILLS_VERSION`). Every line in the game has a tree (`docs/skill_trees.md`'s
-  tables are generated: `python tools/skill_docs.py`). `Monster.create` auto-builds skills (wild Pokémon,
-  starter). The skill
-  tree screen (`scenes/skill_tree.py`, party screen → S: a panning node
-  map, `layout`, with a mini-map (M; tap/drag on it to jump); arrows go
-  to the nearest node that way, taps pick a node, Q/W switch Pokémon) spends points,
-  equips moves (E; with all 4 slots full it asks which one the move
-  replaces, as does learning a move then, X: leave it unequipped), orders them (O; both in `scenes/moves_panel.MovesPanel`)
-  and resets points (towns only, `Scene.in_town`). A species
-  without a tree gets Tackle (`stand_in_tree`). Battle: stat stages
+- Talents (`talents.py`, `docs/talents.md`): moves come by level
+  (`LEARNSETS`: per line (move, level, evolution stage); Red/Blue's
+  levels, strong moves and TMs later; `Monster.known`); the first is the
+  basic attack (Fight), 4 more equipped (`Monster.equipped`; new moves
+  equip while there's room, `_learn_new`; level-ups say "learned").
+  Builds are talents: a line's `TalentTree` has 3 paths (Bulbasaur: Toxin,
+  Bloom, Bulwark) and 12 tiers (`TIER_LEVELS` Lv6–75); each tier, pick 1
+  of 3 (one per path; tiers 11/12 need 4/6 earlier picks in that path,
+  `DEEP`); `Monster.talents` (keys), `pick`, `why_not`. No ranks or plain
+  stat bonuses: each talent is hand-written (`TALENTS`) and shared through
+  pools (`Talent.pool`: a type/status, a move ("move:Growl"), "any", or
+  "own" = the line's signatures; each type's pool written for that type).
+  A talent changes moves (`Talent.moves`: (selector, Move field changes),
+  selector "basic", a move name, "type:grass" or "status:poison";
+  `apply_changes`, in tier order; `Monster.move(key)`) and/or works in
+  battle (`Talent.flags`, `Monster.talent(flag)`: Overgrow, Ripening,
+  Sapping, Ancient Roots, Sturdy in `BattleScene._talent_factor`; Second
+  Wind/Photosynthesis in `_regen`; Harvest, World Tree in `_hit`; Miasma
+  at the start, `_miasma`; Move fields `taunt`, `keen`, `charge_skip`,
+  `ko_no_recharge`, `soothe`). Only Bulbasaur's line has talents so far
+  (`TALENT_TREES`); the rest have just their moves. `Monster.create`
+  picks for wild/trainer Pokémon (mostly one random path). The talent
+  screen (`scenes/talent_screen.py`, party screen → S): a grid (tiers ×
+  paths, scrolls), info on the right with the known moves; Enter picks
+  (first picks anywhere; changing picks and R reset only in towns,
+  `Scene.in_town`), M the moves list (equip, `MovesList`; with 4 equipped
+  it asks which to replace), O orders them (`scenes/moves_panel.MovesPanel`),
+  Q/W switch Pokémon; taps choose / pick. Tables in `docs/talents.md` are
+  generated: `python tools/talent_docs.py`. Saves from the skill trees
+  keep their equipped moves, no talents (`saves.TALENTS_VERSION`). A
+  species without moves gets Tackle (`stand_in_tree`). Battle: stat stages
   incl. accuracy (`Combatant.stages`; moves miss by their Gen 1 accuracy,
   `Move.accuracy`/`moves.GEN1_ACCURACY`, × lowered accuracy's
   `hit_chance`; `BattleScene._misses`), priority, multi-hit, flinch, confusion, bind, Leech Seed,
   spread moves, recoil, recharge, drain, Rest, Focus Energy, Toxic,
   wounds (`Move.bleed`), stages on the user (`self_stages`), set-off
-  moves (`BattleScene._apply`).
+  moves (`Move.triggers`, `BattleScene._apply`), reach/spill
+  (`_beside`).
 - Evolution (`pokemon.py`): `EVOLUTIONS` lists every Red/Blue level
   evolution (species key → `Evolution(into, level)`); trade/stone
   evolutions aren't in yet. An evolution is only active once its target
@@ -297,7 +282,7 @@ non-commercial project.
   "route_4_east" (2 maps), leads down to Cerulean City (Center, Mart,
   Recruitment Center, and the Cerulean Gym: the Cascade Crew's waves of
   Water Pokémon, then Starmie and Staryu, for the Cascade Badge; Starmie
-  takes Staryu's tree via `pokemon.LATER_FORMS`). North of Cerulean:
+  takes Staryu's moves via `pokemon.LATER_FORMS`). North of Cerulean:
   route "nugget_bridge" (Route 24: five bands on the bridge, a Rocket,
   the rival's second battle, `RIVAL_STARTER_EVOLVED`) → stop town
   "route_24" → route "route_25" → town "sea_cottage" (quest "bill":
@@ -386,7 +371,7 @@ non-commercial project.
 - Tab on the map opens the party screen (`summary.py`): stats and gear;
   Enter on a slot lists the bag's gear for it (or Remove), previewing the
   stat changes (Now / Gear / New / Change) and each mod's difference from
-  the worn item (mods it would lose struck through), and equips it. S opens the skill tree screen.
+  the worn item (mods it would lose struck through), and equips it. S opens the talent screen ("N talents to pick" shows when tiers are open).
 - Dev mode (`dev.py`, `DEV`): switched on in the pause menu; not saved.
   XP boost (×1/3/5/10/20, `DEV.xp_multiplier` in `_give_xp`), god mode
   (`DEV.god_mode`: the party takes no damage, every hit knocks an enemy
@@ -407,11 +392,11 @@ non-commercial project.
   keyboard; held keys are read with `touch.pressed()` (instead of
   `pygame.key.get_pressed()`). Presses (fingers, or the mouse) on the game
   that miss the buttons become taps for the scene (`touch.taps` →
-  `Scene.tap(pos, drag)`, logical px; the skill tree uses them).
+  `Scene.tap(pos, drag)`, logical px; the talent screen uses them).
   D-pad (arrows), A = Space (jump/confirm),
   B = X (back), Menu = Esc, Party = Tab; on maps (`Scene.touch_map`) also
   Run (a toggle); scenes add their own keys as pills
-  (`Scene.touch_keys`: party screen S, skill tree Equip move / Reorder moves / Reset; pills under
+  (`Scene.touch_keys`: party screen Talents, talent screen Moves / Reorder moves / Reset; pills under
   Party). On for touch screens in the browser (decided before the window
   is made), or with `POKEMON_TOUCH=1` (mouse = finger) on desktop.
   The player sets the layout (`touch.Layout`: button size, panel width

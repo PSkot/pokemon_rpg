@@ -1,4 +1,4 @@
-"""The equipped moves' panel (skill tree screen): reorder them, or pick the
+"""The equipped moves' panel (talent screen): reorder them, or pick the
 one a newly equipped move replaces when every slot is full.
 
     order    Up/Down choose, Enter pick up (then Up/Down carry it, Enter
@@ -29,7 +29,7 @@ def move_equipped(monster: Monster, index: int, step: int) -> int:
 
 
 class MovesPanel:
-    RECT = pygame.Rect(40, 90, 330, 150)  # (inside the skill tree window)
+    RECT = pygame.Rect(40, 90, 330, 150)  # (over the talent grid)
     ROW_H = 18
     PAD = 9
 
@@ -43,7 +43,7 @@ class MovesPanel:
     @property
     def title(self) -> str:
         if self.replace_with:
-            return f"Equip {self.monster.tree.skills[self.replace_with].name}: which move does it replace?"
+            return f"Equip {self.monster.tree.learned(self.replace_with).name}: which move does it replace?"
         return "Reorder moves (keys 2-5 in battle)"
 
     def handle_key(self, key: int) -> bool:
@@ -57,10 +57,10 @@ class MovesPanel:
                 self.choice = (self.choice + step) % n
         elif key in CONFIRM_KEYS and n:
             if self.replace_with:
-                old = m.tree.skills[m.equipped[self.choice]].name
+                old = m.tree.learned(m.equipped[self.choice]).name
                 m.equipped[self.choice] = self.replace_with
-                self.message = (f"{m.tree.skills[self.replace_with].name} equipped in place of {old} "
-                                f"(key {self.choice + 2}). {old} is still learned.")
+                self.message = (f"{m.tree.learned(self.replace_with).name} equipped in place of {old} "
+                                f"(key {self.choice + 2}). {old} is still known.")
                 return True
             self.carrying = not self.carrying
         elif key in BACK_KEYS:
@@ -68,8 +68,8 @@ class MovesPanel:
                 self.carrying = False
             else:
                 if self.replace_with:
-                    name = m.tree.skills[self.replace_with].name
-                    self.message = f"{name} is learned but not used in battle (E: equip move, later)."
+                    name = m.tree.learned(self.replace_with).name
+                    self.message = f"{name} is known but not used in battle (E: equip move, later)."
                 return True
         return False
 
