@@ -720,8 +720,8 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
   `quests.md`), **trainer battles** (prize money, see *Trainer battles*),
   Pay Day, and selling medicine and gear.
 - **Spent at Poké Marts** (`game/scenes/mart.py`): medicine from Meowth
-  at the counter, gear from Persian by the door (see *Gear counter*
-  below). Medicine prices are `Medicine.price`, **half of Gen 1's**
+  at the counter, gear from Persian in its den behind the shop (a curtained
+  doorway at the back; see *Gear counter* below). Medicine prices are `Medicine.price`, **half of Gen 1's**
   (money only comes from quests so far); selling pays half the price
   (`Medicine.sell_price`, as in Gen 1). Up to 99 at a time.
 - The font has no ₽ sign, so `ui.text` draws it as a P with a bar.

@@ -2,11 +2,13 @@
 
 Up at the counter talks to Meowth: a quest step at the Poké Mart if there
 is one, else the shop (`ShopMenu`: buy the town's medicine, sell the bag's
-for half). Up at Persian, lazing on a pile of gear by the door, opens the gear counter (`GearShop`:
-buy the pieces on offer, `towns.gear_stock`, restocked each time the player
-arrives in the town from a route; sell the bag's gear for half its price).
-Up at the glass door goes back out into the town. Saving here saves the
-player outside, at the shop's door.
+for half). In towns with a gear counter, a curtained doorway at the back
+leads to Persian's den (`DenScene`): Persian lazes on a pile of gear there,
+and Up at it opens the gear counter (`GearShop`: buy the pieces on offer,
+`towns.gear_stock`, restocked each time the player arrives in the town from
+a route; sell the bag's gear for half its worth). Up at the glass door goes
+back out into the town. Saving in either room saves the player outside, at
+the shop's door.
 """
 
 import zlib
@@ -32,7 +34,7 @@ MEOWTH_LIFT = 0     # Meowth stands on the floor: it peeps over the counter
 MEOWTH_FPS = 6         # Meowth's idle animation
 SHELVES = [232, 328, 424]
 DOOR_X = 592
-PERSIAN_X = 530     # the gear counter: Persian on its pile, between the last shelf and the door
+BACK_X = 532        # the curtained doorway to Persian's den, between the last shelf and the glass door
 PERSIAN_FPS = 5
 PERSIAN_W = 80      # its frames' width (lying on its pile of gear)
 REACH = 24          # how close the player must be to the counter or door
@@ -49,15 +51,18 @@ def _level(town: Town) -> Level:
 class MartScene(MapScene):
     in_town = True
 
-    def __init__(self, game: Game, town: Town):
+    def __init__(self, game: Game, town: Town, from_den: bool = False):
         super().__init__(game, _level(town))
         self.town = town
         self.ground = round(self.level.ground_y(0))
         self.tiles = pygame.Surface((1, 1), pygame.SRCALPHA)  # the floor is part of the room
-        self.backgrounds = [(tileset.room("mart", self.level.width, self.ground, SHELVES, DOOR_X), 0.0)]
+        doors = (("den_curtain", BACK_X),) if town.gear else ()
+        self.backgrounds = [(tileset.room("mart", self.level.width, self.ground, SHELVES, DOOR_X, doors), 0.0)]
         self.meowth_frames = tileset.npc_frames("meowth")
-        self.persian_frames = tileset.npc_frames("persian", PERSIAN_W) if town.gear else []
-        self.place_player(DOOR_X - 36, -1)
+        if from_den:
+            self.place_player(BACK_X, -1)
+        else:
+            self.place_player(DOOR_X - 36, -1)
 
     def where(self) -> str:
         return f"{self.town.name} {NAME}"
@@ -73,12 +78,8 @@ class MartScene(MapScene):
     def _at_door(self) -> bool:
         return abs(self.player.x - DOOR_X) < REACH
 
-    def _at_persian(self) -> bool:
-        return bool(self.persian_frames) and abs(self.player.x - PERSIAN_X) < REACH and not self._at_door()
-
-    @property
-    def persian(self) -> pygame.Surface:
-        return self.persian_frames[int(self.t * PERSIAN_FPS) % len(self.persian_frames)]
+    def _at_back(self) -> bool:
+        return bool(self.town.gear) and abs(self.player.x - BACK_X) < REACH and not self._at_door()
 
     @property
     def meowth(self) -> pygame.Surface:
@@ -96,8 +97,8 @@ class MartScene(MapScene):
                 saves.autosave(self)
             else:
                 self.show(ShopMenu(self.town, self.bag))
-        elif self._at_persian():
-            self.show(GearShop(self.town, self.game))
+        elif self._at_back():
+            self.next_scene = Transition(self, DenScene(self.game, self.town), flashes=0)
         elif self._at_door():
             from .town import TownScene  # (town.py enters this scene)
             self.next_scene = Transition(self, TownScene(self.game, self.town, arrive=NAME), flashes=0)
@@ -105,8 +106,8 @@ class MartScene(MapScene):
     def prompt(self) -> tuple[float, float] | None:
         if self._at_counter():
             return MEOWTH_X, self._meowth_top - 12
-        if self._at_persian():
-            return PERSIAN_X, self.ground - self.persian.get_height() - 12
+        if self._at_back():
+            return BACK_X, self.ground - 84
         if self._at_door():
             return DOOR_X, self.ground - 84
         return None
@@ -123,13 +124,68 @@ class MartScene(MapScene):
         layer.blit(image, (MEOWTH_X - image.get_width() // 2, self._meowth_top))
         tileset.mart_counter(layer, COUNTER_X, self.ground, COUNTER_W)
         tileset.mart_sign(layer, COUNTER_X + COUNTER_W // 2, 70)
-        if self.persian_frames:
-            image = self.persian
-            layer.blit(image, (PERSIAN_X - image.get_width() // 2, self.ground - image.get_height()))
 
     def draw_overlay(self, window: pygame.Surface) -> None:
         ui.text(window, "POKé MART", (COUNTER_X + COUNTER_W / 2, 74), ui.WHITE, size=26, align="center")
         super().draw_overlay(window)
+
+
+DEN_CURTAIN_X = 56            # the way back into the mart
+DEN_PERSIAN_X = 320          # Persian on its pile, under its own portrait
+DEN_STANDS = (("gear_stand", 172), ("gear_stand_2", 468))  # gilded stands showing off gear
+PERSIAN_REACH = 44           # (its pile is wide)
+
+
+class DenScene(MapScene):
+    """Persian's den behind a Poké Mart: a lavish one-screen room where
+    Persian lazes on its pile of gear and coins. Up at Persian opens the gear
+    counter (`GearShop`); Up at the curtain goes back into the mart."""
+    in_town = True
+
+    def __init__(self, game: Game, town: Town):
+        super().__init__(game, _level(town))
+        self.town = town
+        self.ground = round(self.level.ground_y(0))
+        self.tiles = pygame.Surface((1, 1), pygame.SRCALPHA)
+        room = tileset.room("den", self.level.width, self.ground, [], None, (("den_curtain", DEN_CURTAIN_X),))
+        for stand, x in DEN_STANDS:
+            tileset.draw_prop(room, stand, x, self.ground)
+        self.backgrounds = [(room, 0.0)]
+        self.persian_frames = tileset.npc_frames("persian", PERSIAN_W)
+        self.place_player(DEN_CURTAIN_X + 36, 1)
+
+    def where(self) -> str:
+        return f"{self.town.name} {NAME}: Persian's den"
+
+    def location(self) -> dict:
+        return MartScene.location(self)
+
+    @property
+    def persian(self) -> pygame.Surface:
+        return self.persian_frames[int(self.t * PERSIAN_FPS) % len(self.persian_frames)]
+
+    def _at_persian(self) -> bool:
+        return abs(self.player.x - DEN_PERSIAN_X) < PERSIAN_REACH
+
+    def _at_curtain(self) -> bool:
+        return abs(self.player.x - DEN_CURTAIN_X) < REACH
+
+    def interact(self) -> None:
+        if self._at_persian():
+            self.show(GearShop(self.town, self.game))
+        elif self._at_curtain():
+            self.next_scene = Transition(self, MartScene(self.game, self.town, from_den=True), flashes=0)
+
+    def prompt(self) -> tuple[float, float] | None:
+        if self._at_persian():
+            return DEN_PERSIAN_X, self.ground - self.persian.get_height() - 12
+        if self._at_curtain():
+            return DEN_CURTAIN_X, self.ground - 84
+        return None
+
+    def draw_things(self, layer: pygame.Surface) -> None:
+        image = self.persian
+        layer.blit(image, (DEN_PERSIAN_X - image.get_width() // 2, self.ground - image.get_height()))
 
 
 class ShopMenu:

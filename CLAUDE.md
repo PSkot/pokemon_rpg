@@ -259,14 +259,17 @@ non-commercial project.
   props; run by a Meowth: an idle
   animation, `props/meowth.png`, `tileset.npc_frames`): Up at the counter does a quest step there,
   else opens the shop (`ShopMenu`: buy the town's stock, `Town.mart`;
-  sell medicine for half; `Medicine.price`); Up at Persian, lying on a pile of
-  gear by the door (`props/persian.png`: 80 px frames, `npc_frames(name,
-  width)`; towns with `Town.gear`) opens the gear counter
+  sell medicine for half; `Medicine.price`); in towns with `Town.gear`,
+  a curtained doorway at the back (`props/den_curtain.png`) leads to
+  Persian's den (`DenScene`: `rooms/den_wall.png`/`den_floor.png`, gilded
+  gear stands `props/gear_stand*.png`; `tileset.room(..., doors=)`), where
+  Persian lies on a pile of gear (`props/persian.png`: 80 px frames,
+  `npc_frames(name, width)`); Up at it opens the gear counter
   (`GearShop`: 6 pieces, `towns.gear_stock`, rolled from `Game.seed` and
   the visit, restocked on arriving from a route, `Game.arrive`; buy at
   `Gear.price` = 5× `Gear.value`, `GEAR_MARKUP`, sell bag gear for half
   the value); Up at the door goes back
-  out (`TownScene(arrive=building name)`). Saving inside saves the player
+  out (`TownScene(arrive=building name)`). Saving inside (the den too) saves the player
   outside the shop. The user
   makes the PixelLab art themselves: don't generate it unasked.
   A new game starts in Pallet Town; arriving in

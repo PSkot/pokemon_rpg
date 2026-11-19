@@ -621,10 +621,11 @@ MART_BLUE, MART_BLUE_DARK = (64, 104, 184), (36, 60, 120)  # the sign
 SHELF_W = 72
 
 
-def room(name: str, width: int, ground: int, shelves: list[int], door_x: int) -> pygame.Surface:
+def room(name: str, width: int, ground: int, shelves: list[int], door_x: int | None,
+         doors: tuple[tuple[str, int], ...] = ()) -> pygame.Surface:
     """A room (drawn once): `name`'s wall above `ground` and floor below it,
-    repeated across `width`; shelves (left edges in `shelves`) and the glass
-    door out at `door_x`."""
+    repeated across `width`; shelves (left edges in `shelves`), the glass
+    door out at `door_x` (None: none), and more doorways (`doors`: (prop, centre x))."""
     s = pygame.Surface((width, settings.LOGICAL_SIZE[1]))
     wall, floor = (pygame.transform.scale_by(pygame.image.load(ART / "rooms" / f"{name}_{part}.png").convert(), 2)
                    for part in ("wall", "floor"))
@@ -633,7 +634,10 @@ def room(name: str, width: int, ground: int, shelves: list[int], door_x: int) ->
         s.blit(floor, (x, ground))
     for i, x in enumerate(shelves):
         draw_prop(s, "mart_shelf", x + SHELF_W // 2, ground, flip=i % 2 == 1)  # (not all alike)
-    draw_prop(s, "glass_door", door_x, ground + 3)  # its mat lies on the floor
+    if door_x is not None:
+        draw_prop(s, "glass_door", door_x, ground + 3)  # its mat lies on the floor
+    for prop_name, x in doors:
+        draw_prop(s, prop_name, x, ground)
     return s
 
 
