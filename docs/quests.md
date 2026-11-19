@@ -78,7 +78,7 @@ wild groups have one more Pokémon (see `mechanics.md`, *Wild Pokémon*).
 | **Defeat** | You beat a route's boss (a boss group or a trainer). |
 | **Reach** | You arrive in a town (or on a route's last map). |
 | **Hunt** (`hunt(species, count, where)`) | You've beaten `count` of a species in won battles, anywhere (wild or a trainer's). Shown as "Defeat 6 Rattata (Route 1): 3/6". |
-| **Collect** (`collect(item, count, route, species, chance, where)`) | You've collected `count` quest items. In every won battle on `route` (wild or trainer), each defeated Pokémon of `species` drops one with `chance` %. Only while the quest is active; they're not bag items, just the count. |
+| **Collect** (`collect(item, count, route, species, chance, where)`) | You've collected `count` quest items. In every won battle on `route` **or any route after it** in the story (`instance.STORY_ORDER`; wild or trainer), each defeated Pokémon of `species` drops one with `chance` %: so the player needn't stay on one route, and can't farm an earlier, easier one. (Recruitment maps and the evolution quests' one-off maps don't count.) Shown as "(Pidgey on Route 1 or later)". Only while the quest is active; they're not bag items, just the count. |
 | **Evolve** (`Step("evolve", species)`) | You evolve a Pokémon of that species from the party screen (E), once it has the level. |
 | **Hand in** (`HAND_IN`) | You press Up at **any** town's quest board (for now): every quest waiting there is handed in, then the board opens. Board jobs end with it. |
 | *Later:* **Catch**, **Bring an item** | Once catching and key items are used more. |

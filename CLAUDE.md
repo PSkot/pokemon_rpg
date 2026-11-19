@@ -419,7 +419,8 @@ non-commercial project.
   town's quest board (`Town.board_col`) or started automatically once their
   prerequisites are done (`Quest.starts_in`: only on arriving in that
   town, e.g. the Boulder Badge in Pewter). Board jobs: hunt (defeat N of a species) and
-  collect (N quest items dropped by species on a route,
+  collect (N quest items dropped by species on a route or any later one,
+  `instance.STORY_ORDER`/`from_route`,
   `quests.won_battle` via `BattleScene.on_win`), handed in at any board
   (`HAND_IN`); counts in `Game.quest_counts`. Quests are the main XP
   source, about ¾ (wild battles ×0.15, `WILD_XP`; trainers ×0.45; split). Every quest pays Poké Dollars and XP

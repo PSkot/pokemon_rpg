@@ -27,7 +27,7 @@ from ..dev import DEV
 from ..mechanics.items import ITEMS, RIBBON, STACKING, Gear, money_text
 from ..mechanics.loot import Reward
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, line_base
-from .instance import RECRUITS, Recruit
+from .instance import RECRUITS, Recruit, from_route
 from .progress import MAX_PARTY
 
 Line = tuple[str, str]  # (speaker, text) of a dialogue page
@@ -68,9 +68,9 @@ def hunt(species: str, count: int, where: str) -> Step:
 def collect(item: str, count: int, route: str, species: tuple[str, ...], chance: int, where: str,
             plural: str = "") -> Step:
     """Collect `count` of `item` (`plural`: its plural, if not just + "s"),
-    dropped by `species` on `route`."""
-    return Step("collect", item, f"Collect {count} {plural or item + 's'} ({where})", count=count, route=route,
-                species=species, chance=chance)
+    dropped by `species` on `route` or any route after it (`instance.STORY_ORDER`)."""
+    return Step("collect", item, f"Collect {count} {plural or item + 's'} ({where} or later)", count=count,
+                route=route, species=species, chance=chance)
 
 
 HAND_IN = Step("hand_in", "", "Hand it in at any quest board")
@@ -984,7 +984,7 @@ def won_battle(game, route: str, defeated: list[str], event: Event | None = None
         if s.kind == "hunt":
             got = defeated.count(s.target)
             label = f"{SPECIES[s.target].name} defeated"
-        elif s.kind == "collect" and s.route == route:
+        elif s.kind == "collect" and (s.route == route or from_route(s.route, route)):
             got = sum(random.random() * 100 < s.chance for species in defeated if species in s.species)
             label = s.target
         else:

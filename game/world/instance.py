@@ -491,6 +491,20 @@ class Recruit:
         return self.level + 3
 
 
+# The story's routes with wild Pokémon, in the order the story walks them:
+# a collect step's items drop on its route and on every later one
+# (`quests.won_battle`), so they don't need one route, and earlier
+# (easier) ones don't count.
+STORY_ORDER = ("route_1", "route_22", "viridian_forest", "route_3", "mt_moon_cave", "route_4_east", "nugget_bridge",
+               "route_25", "route_5_south", "underground_path", "route_6_south", "route_11", "digletts_cave",
+               "route_9", "rock_tunnel")
+
+
+def from_route(first: str, route: str) -> bool:
+    """Whether `route` is `first` or comes after it in `STORY_ORDER`."""
+    return route in STORY_ORDER and first in STORY_ORDER and STORY_ORDER.index(route) >= STORY_ORDER.index(first)
+
+
 RECRUIT_BUILDING = "Recruitment Center"
 
 # Every line met up to Pewter City, on Route 3, in Mt. Moon and on Routes
