@@ -102,7 +102,7 @@ Pokémon evolve at the levels from Red/Blue, but **only once a quest
 unlocks the evolution** (see `quests.md`, *Evolution quests*). Without its
 quest, a line doesn't evolve, whatever its level. For now only Caterpie →
 Metapod and Weedle → Kakuna have quests; Pokémon already evolved stay as
-they are. Trade and stone evolutions aren't in yet.
+they are. Trade evolutions aren't in yet; stone evolutions are below.
 
 - **First time (the quest):** with the quest's item, a party member of
   that species at or above the evolution level shows "Evolve!" on the
@@ -158,6 +158,25 @@ changes how the player looks.
 | Dragonair | Dragonite | 55 | | Kabuto | Kabutops | 40 |
 
 **Bold** = in the game now.
+
+### Evolution stones
+
+`pokemon.STONE_EVOLUTIONS`, `scenes/bag.py`, `scenes/summary.py` (`stone`)
+
+Stones are **key items**, each from its own quest (`quests.md` → *The
+evolution stones*). Bag → Key items → Enter on a stone → pick a party
+member: if the stone works on that species, the party screen shows it
+evolving (the same flashing), and **the stone is used up**. Any level
+will do. A stone has no effect on other species: the bag says which ones
+it works on. Only evolutions into species already in the game count.
+
+| Stone | Evolves | Its quest |
+| --- | --- | --- |
+| Leaf Stone | Gloom → Vileplume, Weepinbell → Victreebel, Exeggcute → Exeggutor | *The Overgrown Wing* |
+| Moon Stone | Nidorina → Nidoqueen, Nidorino → Nidoking, Clefairy → Clefable, Jigglypuff → Wigglytuff | *The Moonlit Dance* |
+| Thunder Stone | Pikachu → Raichu | *Live Wires* |
+| Fire Stone | Growlithe → Arcanine | (later, with Cinnabar) |
+| Water Stone | Shellder → Cloyster, Staryu → Starmie | (later, with the coast) |
 
 ---
 
@@ -1236,6 +1255,11 @@ each at its own pace (a cycle of 3.2–4.6 s).
 - The statuses carry into the gym's waves (no healing in between): cure
   them from the bag first, or jump over the low clouds, slip under the
   high ones and wait for gaps.
+
+**The Power Plant's sparks** (`Route.puzzle` "sparks", the Thunder
+Stone's quest) work the same way with balls of **loose current**: 8 of
+them, all paralysing (Electric types are immune), drawn as crackling
+yellow glows. The Leaf Stone's Overgrown Wing has the gym's spores.
 
 The starters' **trials** (`instance._trial`, quest *Coming of Age* in
 `quests.md`) work the same way, with one Pokémon (`wave_team=1`) that

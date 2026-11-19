@@ -300,9 +300,20 @@ EVOLUTIONS = {key: Evolution(into, level) for key, into, level in [
     ("dratini", "dragonair", 30), ("dragonair", "dragonite", 55),
 ]}
 
-# Stone and trade evolutions aren't in yet, but some later forms already
-# appear (Starmie leads the Cerulean Gym): this gives them their line's
-# moves, talents and stage (they don't evolve from it).
+# Evolution stones (Gen 1's): a stone, used from the bag, evolves these
+# (from -> into, at any level). Stones come from quests, one each, and are
+# used up. Trade evolutions aren't in yet.
+STONE_EVOLUTIONS = {
+    "Leaf Stone": {"gloom": "vileplume", "weepinbell": "victreebel", "exeggcute": "exeggutor"},
+    "Moon Stone": {"nidorina": "nidoqueen", "nidorino": "nidoking", "clefairy": "clefable",
+                   "jigglypuff": "wigglytuff"},
+    "Thunder Stone": {"pikachu": "raichu"},
+    "Fire Stone": {"growlithe": "arcanine"},
+    "Water Stone": {"shellder": "cloyster", "staryu": "starmie"},
+}
+
+# Some later forms (Starmie leads the Cerulean Gym) aren't level
+# evolutions: this gives them their line's moves, talents and stage.
 LATER_FORMS = {"starmie": "staryu", "raichu": "pikachu"}
 
 _EVOLVES_FROM = {e.into: key for key, e in EVOLUTIONS.items()} | LATER_FORMS
@@ -531,11 +542,11 @@ class Monster:
         evolution = self.species.evolution
         return bool(evolution) and self.level >= evolution.level
 
-    def evolve(self) -> list[str]:
-        """Become what its species evolves into. Like a level up, the HP it
-        gains is added to its current HP."""
+    def evolve(self, into: str = "") -> list[str]:
+        """Become what its species evolves into (or `into`: a stone's
+        evolution). Like a level up, the HP it gains is added to its current HP."""
         missing, before = self.max_hp - self.hp, self.known
-        self.species = SPECIES[self.species.evolution.into]
+        self.species = SPECIES[into or self.species.evolution.into]
         self._set_missing_hp(missing)
         return self._learn_new(before)
 

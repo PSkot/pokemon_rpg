@@ -201,8 +201,15 @@ non-commercial project.
   moves (`Move.triggers`, `BattleScene._apply`), reach/spill
   (`_beside`).
 - Evolution (`pokemon.py`): `EVOLUTIONS` lists every Red/Blue level
-  evolution (species key → `Evolution(into, level)`); trade/stone
-  evolutions aren't in yet. An evolution is only active once its target
+  evolution (species key → `Evolution(into, level)`); trade evolutions
+  aren't in yet. Stones (`STONE_EVOLUTIONS`: stone → {from: into}, any
+  level) are key items from one quest each ("leaf_stone": Celadon
+  Square's Oddish → route "celadon_garden", the gym's back wing with
+  spores and waves; "moon_stone": the Mt. Moon Center's Clefairy → dark
+  route "mt_moon_crater"; "thunder_stone": the Route 10 Voltorb → route
+  "power_plant", `puzzle` "sparks"; Fire/Water later), used from the bag
+  on a party member (`SummaryScene.stone`: evolves via
+  `Monster.evolve(into)`, the stone is used up). An evolution is only active once its target
   is in `SPECIES` (`Species.evolution`) and its evolution quest unlocks it
   (`quests.can_evolve`: a quest whose step is "evolve" that species; no
   quest = no evolution). Evolution quests don't come from boards: they

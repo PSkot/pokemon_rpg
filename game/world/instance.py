@@ -499,6 +499,48 @@ ROUTES.update({r.key: r for r in [
 ]})
 
 
+# --- evolution stones ----------------------------------------------------------
+# One quest per stone (quests leaf_stone, moon_stone, thunder_stone), each
+# walked by talking to its giver, after the Rainbow Badge. Each place is
+# themed on its stone and fights a giant leader's band at the end.
+
+ROUTES.update({r.key: r for r in [
+    # The Leaf Stone: the Celadon Gym's overgrown back wing, thick with
+    # spores (as in the gym, more of them), two waves of Grass Pokémon fought
+    # by three with no healing, then a giant Exeggutor's band.
+    Route("celadon_garden", "Overgrown Wing", replace(CELADON_GYM, key="celadon_garden", decor="celadon_gym"),
+          maps=1, towns=("celadon_square", "celadon_square"), boss=True,
+          boss_group=(("exeggutor", 40), ("victreebel", 38), ("vileplume", 38)), boss_scale=2, trainer="Overgrowth",
+          boss_chest="battle", prize=40, boss_loot=MID_BOSS,
+          waves=(Wave("Tangled Vines", (("tangela", 36), ("weepinbell", 36), ("gloom", 36)), 0),
+                 Wave("Spore Patch", (("parasect", 37), ("exeggcute", 37), ("gloom", 37)), 0)),
+          wave_team=3, wild=False, cols=64, puzzle="spores", folk="celadon_oddish"),
+    # The Moon Stone: Mt. Moon's crater, under the night sky, pitch dark but
+    # for Flash's light; Clefairy everywhere (Sing, Metronome...), and a giant
+    # Clefable dancing round the stone with its two Clefairy.
+    Route("mt_moon_crater", "Moonlit Crater",
+          replace(MT_MOON, key="mt_moon_crater", decor="mt_moon", dark=True,
+                  pool=(PoolEntry("clefairy", 5, (36, 38)), PoolEntry("golbat", 2, (36, 38)),
+                        PoolEntry("graveler", 1, (36, 38))),
+                  group_sizes=((2, 50), (3, 50))),
+          maps=1, towns=("mt_moon", "mt_moon"), boss=True,
+          boss_group=(("clefable", 45), ("clefairy", 42), ("clefairy", 42), ("clefairy", 41)), boss_scale=2, trainer="Moon Dancers",
+          boss_chest="battle", prize=40, boss_loot=MID_BOSS, cols=70, folk="mt_moon_clefairy"),
+    # The Thunder Stone: the abandoned Power Plant, its loose current
+    # crackling over the floor (`puzzle` "sparks": paralysis), full of wild
+    # Electric Pokémon, and a giant Electabuzz's gang at the generator.
+    Route("power_plant", "Power Plant",
+          replace(VERMILION_GYM, key="power_plant", name="Power Plant", decor="vermilion_gym",
+                  pool=(PoolEntry("voltorb", 3, (36, 38)), PoolEntry("magnemite", 3, (36, 38)),
+                        PoolEntry("magneton", 1, (37, 39)), PoolEntry("electrode", 1, (37, 39))),
+                  group_sizes=((2, 50), (3, 50))),
+          maps=1, towns=("route_10", "route_10"), boss=True,
+          boss_group=(("electabuzz", 45), ("magneton", 41), ("electrode", 41)), boss_scale=2,
+          trainer="Live Wire Gang", boss_chest="battle", prize=40, boss_loot=MID_BOSS, cols=70, puzzle="sparks",
+          folk="route_10_voltorb"),
+]})
+
+
 # --- recruitment -------------------------------------------------------------
 
 @dataclass(frozen=True)

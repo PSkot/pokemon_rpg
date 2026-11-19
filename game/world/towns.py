@@ -217,7 +217,11 @@ TOWNS = {t.key: t for t in [
     # Route 3 ends: the last stop before the cave.
     Town("mt_moon", "Mt. Moon Pokémon Center", 44, (
         Building("Pokémon Center", (FUNCTIONAL, 0), 18),
-    ), exits=(("left", "route_3"), ("right", "mt_moon_cave")), home_col=14),
+    ), exits=(("left", "route_3"), ("right", "mt_moon_cave")), home_col=14,
+       folk=(Folk("mt_moon_clefairy", "Clefairy", "clefairy", 32, (
+           "Clefairy! Clefairy come from the moon, you know. Up in the crater, on clear nights, we dance.",
+           "Fairy... The cave's Zubat are so rude. They never come to the dances.",
+       )),)),
     # Route 4, out of Mt. Moon's far side: a stop at the cave's exit, where
     # the road on (route_4_east) runs down to Cerulean City.
     Town("route_4", "Route 4", 40, (), exits=(("left", "mt_moon_cave"), ("right", "route_4_east")), home_col=8),

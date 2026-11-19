@@ -18,7 +18,7 @@ from ..engine import hats, ui
 from ..engine.scene import Scene
 from ..mechanics.combat import CRIT_CHANCE
 from ..mechanics.items import EFFECT_COLOR, RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text, money_text
-from ..mechanics.pokemon import SPECIES, Monster, animations
+from ..mechanics.pokemon import SPECIES, STONE_EVOLUTIONS, Monster, animations
 from ..mechanics.status import STATUSES
 from ..mechanics.type_chart import COLORS
 from ..mechanics.type_chart import name as type_name
@@ -82,6 +82,7 @@ class SummaryScene(Scene):
         self.choice = 0      # cursor in the gear list
         self.top = 0         # first row shown, when the list scrolls
         self.evolve_time = 0.0  # while evolving
+        self.stone = ""  # evolving by this evolution stone (the bag sets it; used up when it's done)
         self.note = ""          # e.g. "Caterpie evolved into Metapod!" (in the info window)
 
     @property
@@ -170,8 +171,13 @@ class SummaryScene(Scene):
         self.evolve_time += dt
         if self.evolve_time >= EVOLVE_TIME:
             m, old = self.monster, self.monster.name
-            event = quests.evolve(self.return_to.game, m)
-            self.return_to.show_event(event)  # (shown back on the map)
+            if self.stone:  # (a stone: used up)
+                m.evolve(STONE_EVOLUTIONS[self.stone][m.species.key])
+                self.bag.key_items.remove(self.stone)
+                self.stone = ""
+            else:
+                event = quests.evolve(self.return_to.game, m)
+                self.return_to.show_event(event)  # (shown back on the map)
             self.note = f"{old} evolved into {m.name}!"
             self.mode = "slots"
 
@@ -188,7 +194,9 @@ class SummaryScene(Scene):
         hats.draw_worn(frame, self._preview() or self.monster, idle, 0, frame.get_rect(), False)
         if self.mode == "evolving":  # (as in battle) a white silhouette switching forms, faster and faster
             t = self.evolve_time
-            into = animations(SPECIES[self.monster.species.evolution.into])["idle"]
+            target = (STONE_EVOLUTIONS[self.stone][self.monster.species.key] if self.stone
+                      else self.monster.species.evolution.into)
+            into = animations(SPECIES[target])["idle"]
             frame = _silhouette((into if math.sin((t + 1.125 * t * t) * 2 * math.pi) > 0 else idle).frame(0, False))
         sprite = pygame.transform.scale_by(frame, 2)
         canvas.blit(sprite, sprite.get_rect(center=SPRITE_BOX.center))

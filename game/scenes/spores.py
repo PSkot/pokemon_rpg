@@ -6,6 +6,10 @@ isn't immune), and it carries on into the gym's waves, which come with no
 healing in between. Each cloud then settles for a moment before it can
 strike again. Jump over the low ones, slip under the high ones, or wait for
 a gap.
+
+The Power Plant's sparks (`Route.puzzle` "sparks", the Thunder Stone's
+quest) work the same way: crackling balls of loose current that paralyse
+(`SPARKS`).
 """
 
 from __future__ import annotations
@@ -29,12 +33,14 @@ TOAST_TIME = 2.6
 # The three powders: (status, name, colour).
 POWDERS = (("sleep", "Sleep Powder", (120, 180, 250)), ("poison", "Poison Powder", (180, 80, 210)),
            ("paralysis", "Stun Spore", (240, 200, 50)))
+SPARKS = (("paralysis", "loose current", (255, 236, 90)),)
 
 
 class Cloud:
-    def __init__(self, x: float, ground: float, kind: str, powder: int, rng: random.Random):
+    def __init__(self, x: float, ground: float, kind: str, powder: tuple, rng: random.Random, spark: bool = False):
         self.x0, self.ground, self.kind = x, ground, kind  # kind: "sweep" or "rise"
-        self.status, self.name, self.color = POWDERS[powder]
+        self.status, self.name, self.color = powder
+        self.spark = spark
         self.period = rng.uniform(3.2, 4.6)
         self.phase = rng.uniform(0, math.tau)
         self.rest = 0.0  # > 0 while settling after a hit
@@ -53,6 +59,9 @@ class Cloud:
         return ((nx - x) / RADIUS[0]) ** 2 + ((ny - y) / RADIUS[1]) ** 2 <= 1
 
     def draw(self, layer: pygame.Surface, t: float) -> None:
+        if self.spark:
+            self._draw_spark(layer, t)
+            return
         x, y = self.pos(t)
         faded = 0.4 if self.rest > 0 else 1.0
         puff = pygame.Surface((56, 44), pygame.SRCALPHA)
@@ -76,14 +85,37 @@ class Cloud:
             layer.set_at((round(mx), round(my)), (255, 255, 255) if faded == 1 else (r, g, b))
 
 
+    def _draw_spark(self, layer: pygame.Surface, t: float) -> None:
+        """A crackling ball of current: a glow, a bright core and jagged arcs."""
+        x, y = self.pos(t)
+        faded = 0.35 if self.rest > 0 else 1.0
+        glow = pygame.Surface((56, 44), pygame.SRCALPHA)
+        for rad, a in ((22, 70), (17, 110), (11, 170)):
+            pygame.draw.ellipse(glow, (255, 220, 60, int(a * faded)), (28 - rad, 22 - rad * 0.75, rad * 2, rad * 1.5))
+        pygame.draw.circle(glow, (255, 255, 235, int(240 * faded)), (28, 22), 6)
+        layer.blit(glow, (round(x - 28), round(y - 22)))
+        rng = random.Random(int(t * 14) * 31 + int(self.x0))  # (the arcs flicker, a new shape 14 times a second)
+        for _ in range(6 if faded == 1 else 1):
+            angle, px, py = rng.uniform(0, math.tau), x, y
+            points = [(px, py)]
+            for step in range(5):
+                angle += rng.uniform(-0.9, 0.9)
+                px, py = px + math.cos(angle) * 5, py + math.sin(angle) * 4
+                points.append((px, py))
+            pygame.draw.lines(layer, (255, 255, 200), False, points)
+
+
 class SporeGarden:
-    def __init__(self, level: Level, rng: random.Random):
+    def __init__(self, level: Level, rng: random.Random, sparks: bool = False, count: int = CLOUDS):
+        """`sparks`: the Power Plant's loose current instead of spores."""
         boss_x = level.boss.x if level.boss else level.width - 8 * TILE
         first, last = START, boss_x - ARENA_GAP
+        kinds = SPARKS if sparks else POWDERS
         self.clouds = []
-        for i in range(CLOUDS):
-            x = first + (last - first) * i / (CLOUDS - 1)
-            self.clouds.append(Cloud(x, level.ground_y(x), "rise" if i % 2 else "sweep", i % 3, rng))
+        for i in range(count):
+            x = first + (last - first) * i / (count - 1)
+            self.clouds.append(Cloud(x, level.ground_y(x), "rise" if i % 2 else "sweep", kinds[i % len(kinds)], rng,
+                                     spark=sparks))
         self.toast, self.toast_t = "", 0.0
         self.flash = 0.0  # the player blinks after a hit
 
@@ -100,11 +132,13 @@ class SporeGarden:
             status = STATUSES[cloud.status]
             open_ = [m for m in party if m.alive and not m.status and status.immune not in m.species.types]
             if not open_:
-                self._say(f"A cloud of {cloud.name}! Your team shrugs it off.")
+                self._say(f"A crackle of {cloud.name}! Your team shrugs it off." if cloud.spark
+                          else f"A cloud of {cloud.name}! Your team shrugs it off.")
                 continue
             victim = rng.choice(open_)
             victim.inflict(cloud.status)
-            self._say(f"{victim.name} breathed in the {cloud.name}! " + status.inflicted.format(victim.name))
+            verb = "was zapped by" if cloud.spark else "breathed in"
+            self._say(f"{victim.name} {verb} the {cloud.name}! " + status.inflicted.format(victim.name))
 
     def _say(self, text: str) -> None:
         self.toast, self.toast_t = text, TOAST_TIME

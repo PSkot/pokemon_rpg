@@ -709,6 +709,56 @@ QUESTS = {q.key: q for q in [
         done_dialogue=(("", "Word of your badge spreads fast. Out in Celadon's west end, the Battle Tower throws "
                             "open its doors!"),),
     ),
+    # The evolution stones: one quest each, from after the Rainbow Badge (the
+    # Fire and Water Stones come later, with Cinnabar and the coast). A stone
+    # evolves one Pokémon and is used up (bag: Key items).
+    Quest(
+        "leaf_stone", "The Overgrown Wing",
+        "Celadon Square's Oddish says the Celadon Gym's back wing has run wild: an Exeggutor has taken root "
+        "there, around a Leaf Stone. Spores everywhere, and no way back out for a breather.",
+        giver="celadon_oddish", requires=("rainbow_badge",),
+        offer=(("Oddish", "Oddish... The gym's back wing is all overgrown! Nobody goes in any more."),
+               ("Oddish", "A huge Exeggutor grew in there, right over a Leaf Stone. And the spores... achoo!"),
+               ("Oddish", "Talk to me when you're ready, and I'll show you the way in.")),
+        steps=(Step("defeat", "celadon_garden", "Clear the gym's Overgrown Wing (talk to Oddish, Celadon Square)",
+                    dialogue=(("Oddish", "You did it! The Exeggutor dropped this. Oddish thinks you should have it."),
+                              ("", "You received a Leaf Stone! (It evolves Gloom, Weepinbell or Exeggcute: one, "
+                                   "and it's used up.)")),
+                    gives=("Leaf Stone",)),),
+        money=1500, xp=1400,
+    ),
+    Quest(
+        "moon_stone", "The Moonlit Dance",
+        "A Clefairy at the Mt. Moon Pokémon Center says its kin dance in the mountain's crater on clear nights, "
+        "around a Moon Stone. The crater is pitch dark, and the dancers don't like to be interrupted.",
+        giver="mt_moon_clefairy", requires=("rainbow_badge",),
+        offer=(("Clefairy", "Clefairy! Tonight's a clear night. The great Clefable will be dancing in the crater."),
+               ("Clefairy", "It dances round the Moon Stone, and it won't share it with anyone who can't keep up!"),
+               ("Clefairy", "It's pitch dark up there, so bring Flash. Talk to me when you're ready.")),
+        steps=(Step("defeat", "mt_moon_crater", "Win the Moonlit Dance in Mt. Moon's crater (talk to Clefairy, "
+                                                "Mt. Moon Pokémon Center)",
+                    dialogue=(("Clefairy", "Clefa! The great Clefable bowed to you! It left you the Moon Stone."),
+                              ("", "You received a Moon Stone! (It evolves Nidorina, Nidorino, Clefairy or "
+                                   "Jigglypuff: one, and it's used up.)")),
+                    gives=("Moon Stone",)),),
+        money=1500, xp=1400,
+    ),
+    Quest(
+        "thunder_stone", "Live Wires",
+        "The Route 10 Voltorb says the old Power Plant is running wild: loose current crackles across the floor, "
+        "and an Electabuzz guards a Thunder Stone at the generator.",
+        giver="route_10_voltorb", requires=("rainbow_badge",),
+        offer=(("Voltorb", "Bzzt! The Power Plant down the river switched itself back on! Sparks everywhere!"),
+               ("Voltorb", "An Electabuzz gang moved in. Their boss sits on a Thunder Stone, and it's charging "
+                           "the whole plant. Bzzt!"),
+               ("Voltorb", "Mind the loose current: one touch and you're numb. Talk to me when you're ready.")),
+        steps=(Step("defeat", "power_plant", "Defeat the Live Wire Gang at the Power Plant (talk to Voltorb, "
+                                             "Route 10 Pokémon Center)",
+                    dialogue=(("Voltorb", "Bzzt! The plant's quiet again. And look: the Thunder Stone!"),
+                              ("", "You received a Thunder Stone! (It evolves Pikachu: one, and it's used up.)")),
+                    gives=("Thunder Stone",)),),
+        money=1500, xp=1400,
+    ),
     Quest(
         "hot_dogs", "Hot Dogs",
         "Growlithe on Route 8 keep chasing travellers' Pokémon up the trees. Calm a few of them down.",

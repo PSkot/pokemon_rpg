@@ -638,6 +638,12 @@ KEY_ITEMS = {
     "Cascade Badge": "The Cascade Crew's badge, from the Cerulean Gym.",
     "Thunder Badge": "The Thunder Battalion's badge, from the Vermilion Gym.",
     "Rainbow Badge": "The Blossom Troupe's badge, from the Celadon Gym.",
+    "Leaf Stone": "A stone with a leaf pattern. It evolves Gloom, Weepinbell and Exeggcute. Used up.",
+    "Moon Stone": "A stone as black as the night sky, faintly glittering. It evolves Nidorina, Nidorino, "
+                  "Clefairy and Jigglypuff. Used up.",
+    "Thunder Stone": "A stone with a lightning-bolt pattern, warm to the touch. It evolves Pikachu. Used up.",
+    "Fire Stone": "A stone that glows like embers. It evolves Growlithe. Used up.",
+    "Water Stone": "A clear blue stone, cool as a mountain spring. It evolves Shellder and Staryu. Used up.",
     "S.S. Ticket": "A ticket for the S.S. Anne, from Bill. The ship docks at Vermilion City.",
     "HM01 Cut": "A hidden machine from the S.S. Anne's Captain. Its technique, Cut, clears small trees out of the "
                 "way, like the one over the Vermilion Gym's door.",

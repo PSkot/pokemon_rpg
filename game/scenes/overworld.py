@@ -636,7 +636,9 @@ class OverworldScene(MapScene):
         self.grid = (PowerGrid(level, random.Random(instance.seed), self._puzzle_key() in game.trainers)
                      if route.puzzle == "trash_cans" and self.boss else None)
         # The Celadon Gym's drifting spore clouds.
-        self.spores = SporeGarden(level, random.Random(instance.seed)) if route.puzzle == "spores" else None
+        # (the Power Plant's loose sparks work the same way; both need the arena's boss)
+        self.spores = (SporeGarden(level, random.Random(instance.seed), sparks=route.puzzle == "sparks")
+                       if route.puzzle in ("spores", "sparks") and level.boss else None)
         # The doorways in and out; a dungeon room has its stairs instead.
         art = level.theme.doorway
         self.entry = Doorway(level.entry_x, level.ground_y(level.entry_x), palette, art=art)

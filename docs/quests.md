@@ -532,6 +532,40 @@ yet.
 
 ---
 
+## The evolution stones
+
+Each stone has one quest, given by a townsperson once the **Rainbow
+Badge** is won (`Quest.giver`). Talking to the giver again sends the
+party to the place (`Route.folk`). There a giant leader's band waits at
+the end. Beating it gives the stone, a key item that evolves one Pokémon
+and is then used up (`mechanics.md` → *Evolution stones*). The battle
+odds below are for three at Lv39/38 (`tools/balance_sim.py`), not
+counting the way there.
+
+- **The Overgrown Wing** (`leaf_stone`, Celadon Square's **Oddish**): the
+  Celadon Gym's back wing (route "celadon_garden"), a 64-tile greenhouse
+  thick with the gym's **spore clouds**. Three fight two waves with no
+  healing (Tangela 36, Weepinbell 36, Gloom 36; Parasect 37, Exeggcute 37,
+  Gloom 37), then the **Overgrowth**: a giant Exeggutor 40 with Victreebel
+  38 and Vileplume 38. About 60% won: the hardest of the three.
+  **Leaf Stone**.
+- **The Moonlit Dance** (`moon_stone`, the **Clefairy** at the Mt. Moon
+  Pokémon Center): Mt. Moon's crater (route "mt_moon_crater", 70 tiles),
+  **pitch dark** but for Flash's light, with wild Clefairy (Sing,
+  Metronome), Golbat and Graveler (Lv36–38) in groups of 2–3, then the
+  **Moon Dancers**: a giant Clefable 45 with three Clefairy (42, 42, 41).
+  About 81% won. **Moon Stone**.
+- **Live Wires** (`thunder_stone`, the Route 10 **Voltorb**): the
+  abandoned **Power Plant** (route "power_plant", 70 tiles, the Vermilion
+  Gym's steel look), its **loose current** paralysing on touch, wild
+  Voltorb, Magnemite, Magneton and Electrode (Lv36–39), then the **Live
+  Wire Gang**: a giant Electabuzz 45 with Magneton 41 and Electrode 41.
+  About 78% won. **Thunder Stone**.
+- Rewards: ₽1,500 and 1,400 XP each, besides the stone.
+- **Fire Stone** and **Water Stone**: later, with Cinnabar and the coast.
+
+---
+
 ## Evolution quests
 
 Every evolution is unlocked by a quest (`quests.can_evolve`); a line

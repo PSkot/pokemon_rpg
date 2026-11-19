@@ -19,7 +19,7 @@ from .. import settings
 from ..engine import ui
 from ..mechanics.items import (EFFECT_COLOR, KEY_ITEMS, MEDICINE, RARITIES, RIBBON, SLOT_NAMES, SLOTS, Bag, Gear, mod_text,
                                money_text)
-from ..mechanics.pokemon import SPECIES
+from ..mechanics.pokemon import SPECIES, STONE_EVOLUTIONS
 from ..mechanics.status import STATUSES
 from ..world import quests
 from ..world.progress import MAX_PARTY
@@ -131,7 +131,7 @@ class BagScreen:
             entries = self._entries()  # (it's used up)
             self.choice = min(self.choice, max(0, len(entries) - 1))
             return
-        if POCKETS[self.pocket] == "Key items" and not quests.evolution_target(item):
+        if POCKETS[self.pocket] == "Key items" and not quests.evolution_target(item) and item not in STONE_EVOLUTIONS:
             self.message = "There's no use for it right now."
             return
         self.picking, self.member = True, 0
@@ -153,6 +153,18 @@ class BagScreen:
             old = m.gear.get(gear.slot)
             self.bag.equip(m, gear)
             self.message = f"{m.name} put on the {gear.name}." + (f" ({old.name} back in the bag.)" if old else "")
+        elif item in STONE_EVOLUTIONS:  # an evolution stone: used up
+            into = _stone_into(item, m)
+            if not into:
+                names = ", ".join(SPECIES[k].name for k in STONE_EVOLUTIONS[item] if k in SPECIES)
+                self.message = f"It has no effect on {m.name}. It works on: {names}."
+                return
+            from .summary import SummaryScene
+            summary = SummaryScene(self.scene, self.party, self.bag)
+            summary.member, summary.mode, summary.evolve_time = self.member, "evolving", 0.0
+            summary.stone = item
+            self.loaded = summary
+            return
         else:
             if not quests.item_evolves(self.game, item, m):
                 target = SPECIES[quests.evolution_target(item)]
@@ -287,10 +299,16 @@ class BagScreen:
                 side, color = ((f"needs Lv{item.level}", RED) if not item.usable_by(m)
                                else (_fit(worn.name, 20, 120), worn.rarity.color) if worn else ("-", ui.GREY))
             else:
-                ok = quests.item_evolves(self.game, item, m)
+                ok = _stone_into(item, m) if item in STONE_EVOLUTIONS else quests.item_evolves(self.game, item, m)
                 side, color = ("can evolve!", GREEN) if ok else ("", ui.GREY)
             ui.text(window, side, (right, y + 2), color, size=20, align="right")
             y += ROW_H + 2
+
+
+def _stone_into(stone: str, m) -> str:
+    """What `stone` evolves `m` into ("" if nothing; the form must be in the game)."""
+    into = STONE_EVOLUTIONS[stone].get(m.species.key, "")
+    return into if into in SPECIES else ""
 
 
 def _fit(s: str, size: int, width: float) -> str:
