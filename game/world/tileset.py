@@ -452,12 +452,16 @@ def _layer_width(level: Level, factor: float) -> int:
     return round(settings.LOGICAL_SIZE[0] + (level.width - settings.LOGICAL_SIZE[0]) * factor) + 1
 
 
-def _strip_layer(art: StripArt, level: Level, rng: random.Random, surface: pygame.Surface | None = None):
+def _strip_layer(art: StripArt, level: Level, rng: random.Random, surface: pygame.Surface | None = None,
+                 tint=None):
     """The layer for `art` (drawn onto `surface` if given): its strip at its
-    height, and its bottom colour filled down to the bottom of the screen."""
+    height (multiplied by `tint`), and its bottom colour filled down to the
+    bottom of the screen."""
     w, h = _layer_width(level, art.parallax), settings.LOGICAL_SIZE[1]
     layer = surface or pygame.Surface((w, h), pygame.SRCALPHA)
     strip = _strip(art, rng, w)
+    if tint:
+        strip = _tinted(strip, tint)
     layer.blit(strip, (0, art.top))
     bottom = strip.get_height() - 1
     layer.fill(strip.get_at((next(x for x in range(strip.get_width()) if strip.get_at((x, bottom)).a), bottom)),
@@ -472,16 +476,27 @@ def _meadow(level: Level, rng: random.Random) -> list[tuple[pygame.Surface, floa
         far = pygame.Surface((_layer_width(level, FAR), settings.LOGICAL_SIZE[1]))
         _painting(far, "far/" + level.theme.far)
         return [(far, FAR), _strip_layer(MEADOW_STRIPS[-1], level, rng)]
-    far_art = MEADOW_STRIPS[0]
+    far_art, tint = MEADOW_STRIPS[0], level.theme.tint
     sky = pygame.Surface((_layer_width(level, far_art.parallax), settings.LOGICAL_SIZE[1]))
-    _gradient(sky, *MEADOW_SKY)
+    _gradient(sky, *(level.theme.sky or MEADOW_SKY))
     clouds = [cell.subsurface(cell.get_bounding_rect()) for cell in (_cells(CLOUDS[0])[i] for i in CLOUDS[1])]
+    if tint:  # (dusk: rosier, dimmer clouds)
+        clouds = [_tinted(cloud, tint) for cloud in clouds]
     x = rng.randint(0, 60)
     while x < sky.get_width():
         cloud = rng.choice(clouds)
         sky.blit(cloud, (x, rng.randint(14, 100)))
         x += cloud.get_width() + rng.randint(40, 140)
-    return [_strip_layer(far_art, level, rng, sky)] + [_strip_layer(art, level, rng) for art in MEADOW_STRIPS[1:]]
+    layers = [_strip_layer(far_art, level, rng, sky, tint)] + [_strip_layer(art, level, rng, tint=tint)
+                                                                for art in MEADOW_STRIPS[1:]]
+    return layers
+
+
+def _tinted(image: pygame.Surface, tint) -> pygame.Surface:
+    """`image` multiplied by `tint` (its alpha kept)."""
+    out = image.copy()
+    out.fill((*tint, 255), special_flags=pygame.BLEND_RGBA_MULT)
+    return out
 
 
 def backgrounds(level: Level) -> list[tuple[pygame.Surface, float]]:

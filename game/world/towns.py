@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from ..mechanics.items import ITEMS, Gear, Range
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import EMPTY, ROWS, SOLID, TILE, Level
-from .themes import MEADOW, Theme
+from .themes import LAVENDER, MEADOW, Theme
 
 GROUND = 4  # tiles of ground
 
@@ -336,7 +336,7 @@ TOWNS = {t.key: t for t in [
                       "Something moves inside, but you can't make out what. You'd need a way to see it."),
         Building("Mr. Fuji's House", (HOUSES, 0), 44,
                  note="Nobody's home. A note on the door: \"Gone to the Tower. Back soon. - Mr. Fuji\""),
-    ), exits=(("left", "rock_tunnel"),), home_col=14, board_col=41,
+    ), exits=(("left", "rock_tunnel"),), home_col=14, board_col=41, theme=LAVENDER,
        mart=("Potion", "Super Potion", "Hyper Potion", "Revive", "Escape Rope", "Antidote", "Burn Heal", "Awakening",
              "Paralyze Heal", "Ice Heal"),
        gear=((30, 34), (("Common", 40), ("Uncommon", 45), ("Rare", 15))),

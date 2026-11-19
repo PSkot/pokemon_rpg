@@ -1,6 +1,6 @@
 """Area themes: what a generated map looks like and which Pokémon live there."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from ..mechanics.items import Range
 
@@ -81,6 +81,11 @@ class Theme:
     far: str = ""                       # "woods" maps: a painted far layer (pixellab/far/) instead of sky and hills
     built: bool = False                 # a built interior (the S.S. Anne): flat floors and ceilings, of planks
     dark: bool = False                  # pitch dark (Rock Tunnel): only Flash's light around the player shows
+    # "woods" maps: the sky's gradient (top, bottom; None = the meadow's
+    # blue), and a colour the clouds and background strips are multiplied by
+    # (Lavender Town's dusk).
+    sky: tuple[Color, Color] | None = None
+    tint: Color | None = None
 
     @property
     def decor_key(self) -> str:
@@ -106,6 +111,11 @@ MEADOW = Theme(
     backdrop=MEADOW_BACKDROP,
     group_sizes=((1, 80), (2, 20)),  # mostly one at a time: the starter starts out alone
 )
+
+# Lavender Town: the meadow at dusk, under a purple sky (a town: its pool
+# is never met).
+LAVENDER = replace(MEADOW, key="lavender", name="Lavender Town",
+                   sky=((58, 40, 96), (206, 140, 164)), tint=(176, 146, 200))
 
 # Viridian Forest: Red's and Blue's forest Pokémon together, at their Gen 1
 # levels. (Same map art as the meadow for now; a darker battle backdrop.)

@@ -393,7 +393,9 @@ non-commercial project.
   still drawn in code. The
   meadow's background (towns and routes) is Pixellab art: a sky gradient
   with clouds, then three parallax strips (`MEADOW_STRIPS`: far mountains,
-  mid hills, near tree line; 20/35/50% of the camera). `backgrounds()`
+  mid hills, near tree line; 20/35/50% of the camera); a theme can give its
+  own sky gradient and a tint multiplied into the clouds and strips
+  (`Theme.sky`/`tint`: Lavender Town's dusk, `themes.LAVENDER`, `Town.theme`). `backgrounds()`
   returns (layer, parallax) pairs. The player collides with a fixed hitbox.
 - Saves (`saves.py`): JSON files in `saves/`: one `autosave.json` (written
   after every won battle, opened chest, party faint and leaving a map) and
