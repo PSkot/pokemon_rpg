@@ -1367,9 +1367,9 @@ tower works, and Leave. Up at the stairs also starts a climb.
   then **waves** of challengers one after another, then the floor master's
   band. Every run **starts on floor 1**, and Mew heals the team first.
 - **Gates:** floors 1–5 open with the tower (the Rainbow Badge, the 4th
-  badge). Each next five needs one more badge, in any order
-  (`tower.GATES`, `top_floor`): floors 6–10 at 5 badges, 11–15 at 6 and
-  16–20 at 7. Floors 21–25 open once you're the Champion
+  badge). The next fives need more badges, in any order
+  (`tower.GATES`, `top_floor`): floors 6–10 at 6 badges, 11–15 at 7 and
+  16–20 at all 8. Floors 21–25 open once you're the Champion
   (`tower.LEAGUE`). In dev mode every floor is open. On the last open
   floor, the way up is sealed and you can only claim the chest.
 - **No healing** between waves or floors. Losing any battle ends the run

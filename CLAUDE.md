@@ -418,7 +418,7 @@ non-commercial project.
   (`floor_level`), five tiers (`TIER_NAMES`, `POOLS`, `WAVES`, `BAND`,
   `WORN`, `TALENTS`; themes `TOWER_THEMES`, walls and backdrops
   `tower_1..5.png`; giant masters on every fifth, `BOSS_FLOORS`), opening
-  five at a time (`GATES`: 4/5/6/7 badges of `BADGES`, counted in any
+  five at a time (`GATES`: 4/6/7/8 badges of `BADGES`, counted in any
   order, then `LEAGUE`; `top_floor`, `tier_open`). Tower
   battles: `tower.dress_up`, `drops=False`, no prize; masters every run
   (no boss-once). After a floor, `TowerChoice` (climb on, no healing, or

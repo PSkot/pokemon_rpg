@@ -267,7 +267,7 @@ class MewMenu:
     CONFIRM, BACK = ShopMenu.CONFIRM, ShopMenu.BACK
     GREETING = "Mew! ♪  (Mew loops around you, giggling. It seems to run this place.)"
     HELP = ("Twenty-five floors, each a hall of waves and a master's band; every fifth master is a giant.",
-            "Floors 1-5 are open; each next five opens with one more badge (5, 6, then 7), and the last five "
+            "Floors 1-5 are open; the next fives open at 6, 7 and 8 badges, and the last five "
             "once you're the Champion.",
             "Every run starts on floor 1. No healing between floors, and losing ends the run.",
             "After each floor: climb on, or stop and claim a chest (medicine, gear and gems).",

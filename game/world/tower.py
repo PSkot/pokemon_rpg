@@ -9,8 +9,8 @@ and grander the higher it goes.
   clearing the last floor open) gives the run's chest (`chest`): gems,
   medicine and gear for the floors cleared.
 - Floors open five at a time (`GATES`): 1-5 with the tower (the Rainbow
-  Badge, the 4th), then one more badge for each next five (5, 6, 7
-  badges, in any order), and 21-25 once the player is Champion.
+  Badge, the 4th), 6-10 at 6 badges, 11-15 at 7, 16-20 at 8 (in any
+  order), and 21-25 once the player is Champion.
 - Its battles give XP (as trainers'), no drops or prize money.
 - Enemies' level climbs from Lv35 (floor 1) to Lv65 (floor 25); with each
   tier of five floors they come in more waves and bigger bands, wear more
@@ -43,7 +43,7 @@ BADGES = ("boulder_badge", "cascade_badge", "thunder_badge", "rainbow_badge", "s
           "volcano_badge", "earth_badge")
 LEAGUE = "pokemon_league"
 # What opens each tier's floors: badges won (any of them), or "league".
-GATES = (4, 5, 6, 7, "league")
+GATES = (4, 6, 7, 8, "league")
 
 # What each tier's bands are made of: strong Pokémon, the strongest at the top.
 POOLS = (
