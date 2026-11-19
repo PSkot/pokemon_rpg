@@ -21,6 +21,9 @@ GROUND = 4  # tiles of ground
 
 
 HOUSES, FUNCTIONAL = "houses.png", "functional_buildings.png"  # Pixellab sheets, 2×2 cells of 128×128
+DEPT_STORE, MANSION = "dept_store.png", "celadon_mansion.png"  # Celadon's big buildings: 160×160 cells
+GAME_CORNER = "game_corner.png"   # 128×128
+BATTLE_TOWER = "battle_tower.png"  # 160×256
 TOWER = "pokemon_tower.png"  # Lavender's Pokémon Tower: one 160×256 cell (tileset.BUILDING_CELLS)
 
 
@@ -370,36 +373,61 @@ TOWNS = {t.key: t for t in [
              "Saffron City is shut. Nobody in, nobody out. I'm so thirsty I could drink a Psyduck...",
              "Want to go west? Take the Underground Path. It comes out on Route 7, right by Celadon City.",
          )),)),
-    # Celadon City, the city of rainbow dreams (as in Red/Blue): the
-    # Department Store, the Game Corner (Team Rocket's, later), Erika's gym
-    # (the next part), the Celadon Mansion and the smith.
-    Town("celadon", "Celadon City", 104, (
+    # Celadon City, the city of rainbow dreams (as in Red/Blue), in three
+    # parts joined by doorways ("town:<key>" exits): the east end, where the
+    # Underground Path comes up (the Pokémon Center and the huge Department
+    # Store, its floors in scenes/dept_store.py); the square (the Game
+    # Corner, Team Rocket's later; Erika's gym, the next part; the
+    # Recruitment Center and the smith); and the west end (the Celadon
+    # Mansion and the Battle Tower, opening later).
+    Town("celadon", "Celadon City", 64, (
         Building("Pokémon Center", (FUNCTIONAL, 0), 6),
-        Building("Department Store", (FUNCTIONAL, 2), 18, inside="mart"),
-        Building("Game Corner", (HOUSES, 3), 32,
-                 note="The Game Corner. Slot machines jingle and clatter inside. A grumpy-looking poster by the "
-                      "door is half torn down."),
-        Building("Celadon Gym", (FUNCTIONAL, 1), 46,
-                 note="The Celadon Gym, overgrown with flowers. A sign on the door: \"Closed for watering. "
-                      "- Erika\""),
-        Building("Recruitment Center", (HOUSES, 1), 58, inside="recruit"),
-        Building("Celadon Mansion", (HOUSES, 0), 70,
-                 note="The Celadon Mansion. A sign: \"Residents only. The Pokémon here are very well fed.\""),
-    ), exits=(("right", "underground_west"),), home_col=12, board_col=83,
+        Building("Department Store", (DEPT_STORE, 0), 19, inside="dept"),
+    ), exits=(("right", "underground_west"), ("left", "town:celadon_square")), home_col=12, board_col=34,
        mart=("Potion", "Super Potion", "Hyper Potion", "Revive", "Escape Rope", "Antidote", "Burn Heal", "Awakening",
              "Paralyze Heal", "Ice Heal"),
        gear=((34, 38), (("Common", 30), ("Uncommon", 45), ("Rare", 25))),
        folk=(
-           Folk("celadon_meowth", "Meowth", "meowth", 41, (
+           Folk("celadon_bellsprout", "Bellsprout", "bellsprout", 40, (
+               "Sprout! The Department Store sells everything! Well, everything a Bellsprout needs. Water.",
+               "Erika's gym is on the square, past the Game Corner. She waters every one of her Pokémon herself.",
+           )),
+           Folk("celadon_pidgeotto", "Pidgeotto", "pidgeotto", 52, (
+               "Kaw! From the store's roof you can see all of Celadon. Even the Battle Tower out west!",
+               "The drinks on the roof are the best in Kanto. Kaw! Thirsty gate guards would kill for one.",
+           )),
+       )),
+    Town("celadon_square", "Celadon Square", 72, (
+        Building("Game Corner", (GAME_CORNER, 0), 6,
+                 note="The Game Corner. Slot machines jingle and clatter inside. A grumpy-looking man in black "
+                      "stands by a poster at the back..."),
+        Building("Celadon Gym", (FUNCTIONAL, 1), 22,
+                 note="The Celadon Gym, overgrown with flowers. A sign on the door: \"Closed for watering. "
+                      "- Erika\""),
+        Building("Recruitment Center", (HOUSES, 1), 36, inside="recruit"),
+    ), exits=(("right", "town:celadon"), ("left", "town:celadon_west")), home_col=48,
+       folk=(
+           Folk("celadon_meowth", "Meowth", "meowth", 18, (
                "Meowth! The Game Corner pays out in coins. I've never seen anyone win, though...",
                "Mrrr. The men in black by the Game Corner don't smile much. Meowth doesn't like them.",
            )),
-           Folk("celadon_bellsprout", "Bellsprout", "bellsprout", 67, (
-               "Sprout! Erika's gym is full of Grass Pokémon. She waters every one of them herself.",
-               "The Department Store sells everything! Well, everything a Bellsprout needs. Water.",
+           Folk("celadon_oddish", "Oddish", "oddish", 46, (
+               "Oddish! Erika's gym smells wonderful. All those flowers... Oddish could nap there forever.",
+               "Ish... The square is the heart of Celadon. The rich folk live out west, by the Mansion.",
            )),
-           smith(93),
+           smith(60),
        )),
+    Town("celadon_west", "Celadon West End", 56, (
+        Building("Celadon Mansion", (MANSION, 0), 6,
+                 note="The Celadon Mansion. A sign: \"Residents only. The Pokémon here are very well fed.\""),
+        Building("Battle Tower", (BATTLE_TOWER, 0), 30,
+                 note="The Battle Tower. A banner over its doors: \"GRAND OPENING SOON! Twenty floors of the "
+                      "toughest battles in Kanto!\""),
+    ), exits=(("right", "town:celadon_square"),), home_col=24,
+       folk=(Folk("celadon_clefairy", "Clefairy", "clefairy", 24, (
+           "Clefairy! The Battle Tower goes up and up. They say only the strongest teams reach the top.",
+           "Fairy... Someone pink and tiny was floating around the tower last night. Clefairy saw it!",
+       )),)),
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a
     # Clefairy in his teleporter (quest "bill").
     Town("sea_cottage", "Sea Cottage", 40, (

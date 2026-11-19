@@ -215,14 +215,17 @@ class ShopMenu:
     BACK = (pygame.K_x, pygame.K_BACKSPACE, pygame.K_ESCAPE)
     GREETING = "Meowth! Welcome to the Poké Mart, meow! What'll it be?"
 
-    def __init__(self, town: Town, bag: Bag):
-        self.stock, self.bag = list(town.mart), bag
+    def __init__(self, town: Town, bag: Bag, stock: tuple[str, ...] | None = None, greeting: str = "",
+                 title: str = "Poké Mart"):
+        """`stock`: what it sells, if not the town's (`Town.mart`); `title`: the panel's."""
+        self.title = title
+        self.stock, self.bag = list(town.mart if stock is None else stock), bag
         self.mode = "main"  # "main", "buy", "sell" or "amount" (how many, of `self.list_mode`'s item)
         self.list_mode = "buy"
         self.choice = 0     # in the main menu
         self.item = 0       # in the buy / sell list
         self.amount = 1
-        self.message = self.GREETING
+        self.message = greeting or self.GREETING
 
     # ---------------------------------------------------------------- state
 
@@ -323,7 +326,7 @@ class ShopMenu:
     def draw_overlay(self, window: pygame.Surface) -> None:
         r = self.RECT
         x, right = r.x + 22, r.right - 14
-        title = {"main": "Poké Mart", "buy": "Buy", "sell": "Sell"}.get(self.mode, self.list_mode.title())
+        title = {"main": self.title, "buy": "Buy", "sell": "Sell"}.get(self.mode, self.list_mode.title())
         ui.text(window, title, (r.x + 12, r.y + self.PAD), ui.YELLOW)
         ui.text(window, money_text(self.bag.money), (right, r.y + self.PAD + 2), ui.YELLOW, size=24, align="right")
         for i, line in enumerate(ui.wrap(self.message, 22, r.w - 26)[:2]):

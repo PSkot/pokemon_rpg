@@ -26,11 +26,12 @@ from ..world.instance import ROUTES, Instance
 from ..world.level import TILE
 from ..world.progress import Game
 from ..mechanics.pokemon import SPECIES, animations
-from ..world.towns import Building, Folk, Town, building_mid
+from ..world.towns import TOWNS, Building, Folk, Town, building_mid
 from . import quest_ui
 from .mart import MartScene
 from .recruit import RecruitScene
 from .smith import SmithMenu
+from .dept_store import DeptStoreScene
 from .overworld import HAND_IN_MARK, QUEST_MARK, Doorway, MapScene, OverworldScene, quest_mark
 
 BANNER_TIME = 2.5   # seconds the town's name shows on arrival
@@ -42,6 +43,14 @@ class _NPC:  # what an NPC townsfolk stands like (`Folk.npc`): no foot sink
 @cache
 def _npc_animation(name: str) -> Animation:
     return Animation(tileset.npc_frames(name), fps=6, loop=True)
+
+
+LINK = "town:"  # a `Town.exits` target that's another part of the same city ("town:<key>"), not a route
+
+
+def _door_name(target: str) -> str:
+    """What a doorway leads to: a route's name, or another part of the city's."""
+    return TOWNS[target[len(LINK):]].name if target.startswith(LINK) else ROUTES[target].name
 
 
 FOLK_REACH = 22  # px from a townsfolk within which Up talks to them
@@ -75,8 +84,9 @@ class TownScene(MapScene):
         elif sent_by:  # back from a trial: next to who sent them
             self.place_player(sent_by.x - FOLK_REACH, 1)
             self.t = BANNER_TIME
-        else:  # from a route: the gear counter restocks
-            game.arrive(town.key)
+        else:  # from a route (the gear counter restocks), or another part of the same city
+            if not arrive.startswith(LINK):
+                game.arrive(town.key)
             where = town.exit_to(arrive)
             if where == "left":
                 self.place_player(level.entry_x + ARRIVE_GAP, 1)
@@ -193,12 +203,19 @@ class TownScene(MapScene):
             self.show(board, after=lambda: board.taken and self.show_event(quests.accept(self.game, board.taken)))
             return
         door = self._door_at_player()
+        if door and door[1].startswith(LINK):  # into another part of the city (`Town.exits` "town:<key>")
+            self.next_scene = Transition(self, TownScene(self.game, TOWNS[door[1][len(LINK):]],
+                                                         arrive=LINK + self.town.key), flashes=0)
+            return
         if door and not quests.open_for(self.game, ROUTES[door[1]].needs):
             self.show(quest_ui.Dialogue([("", quests.blocked_text(self.game, ROUTES[door[1]]))]))
             return
         building = None if door else self._building_at_player()
         if building and building.inside == "mart":
             self.next_scene = Transition(self, MartScene(self.game, self.town), flashes=0)
+            return
+        if building and building.inside == "dept":  # the Celadon Department Store, its floors
+            self.next_scene = Transition(self, DeptStoreScene(self.game, self.town), flashes=0)
             return
         if building and building.inside == "recruit":
             self.next_scene = Transition(self, RecruitScene(self.game, self.town), flashes=0)
@@ -323,7 +340,7 @@ class TownScene(MapScene):
         super().draw_overlay(window)
         door = self._door_at_player()
         if door and not isinstance(door[2], str) and not self.panel:  # a doorway in the town: where it leads
-            ui.text(window, ROUTES[door[1]].name, (door[0].x - self.camera, door[0].rect.top - 16), ui.WHITE,
+            ui.text(window, _door_name(door[1]), (door[0].x - self.camera, door[0].rect.top - 16), ui.WHITE,
                     size=26, align="center")
         for sleeper in (f for f in self.town.folk if f.asleep):  # Zzz rising over it, by turns
             top = self._folk_top(sleeper)

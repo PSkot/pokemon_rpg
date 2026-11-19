@@ -802,6 +802,9 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Max Potion | ₽1,250 | ₽625 |
 | Full Restore | ₽1,500 | ₽750 |
 | Revive | ₽750 | ₽375 |
+| Fresh Water (50 HP) | ₽200 | ₽100 |
+| Soda Pop (60 HP) | ₽300 | ₽150 |
+| Lemonade (80 HP) | ₽350 | ₽175 |
 | Antidote | ₽50 | ₽25 |
 | Burn Heal | ₽125 | ₽62 |
 | Paralyze Heal | ₽100 | ₽50 |
@@ -810,6 +813,11 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Full Heal | ₽300 | ₽150 |
 | Escape Rope | ₽275 | ₽137 |
 | Nugget | – (not sold) | ₽5,000 (as in Gen 1) |
+
+The drinks are only sold by the Celadon Department Store's rooftop vending
+machines. Its 4F also sells the smith's materials: Scrap ₽300, Alloy
+₽1,000, Crystal ₽3,000 (`items.MATERIAL_PRICE`; Ether and Star Shards only
+come from salvage and smelting).
 
 What each Poké Mart sells (`Town.mart`; Gen 1's stock, minus the items
 the game doesn't have yet: Poké Balls, Repel):

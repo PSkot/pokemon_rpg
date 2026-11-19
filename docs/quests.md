@@ -472,11 +472,23 @@ yet.
 
 - **Starts:** automatically when quest 20 is done.
 - **Steps:** take the **Underground Path** west (2 maps of tunnel) to
-  **Celadon City** (town "celadon"): Pokémon Center, Department Store
-  (Hyper Potions and Revives) and Persian's gear den (Lv34–38 pieces, up
-  to Rare), the Game Corner (Team Rocket's, later), the Celadon Gym
-  (closed for watering: Erika's gym is the next part), the Recruitment
-  Center, the Celadon Mansion, a quest board and the smith.
+  **Celadon City**, a city in three parts joined by doorways at their
+  ends (`Town.exits` "town:<key>"):
+  - **Celadon City** (town "celadon", the east end, where the tunnel comes
+    up): the Pokémon Center, a quest board and the **Celadon Department
+    Store** (`scenes/dept_store.py`), one screen per floor joined by
+    stairs: **1F** Lobby (Meowth's store guide), **2F** Trainer's Market
+    (medicine, Max Potions and Full Heals too), **3F** Gear Gallery
+    (Persian on its pile: the gear counter, Lv34–38 pieces up to Rare),
+    **4F** Smith Supplies (a Machop sells Scrap ₽300, Alloy ₽1,000 and
+    Crystal ₽3,000, `items.MATERIAL_PRICE`) and the **Rooftop** (three
+    vending machines: Fresh Water ₽200, Soda Pop ₽300, Lemonade ₽350, which
+    restore 50/60/80 HP; and the view over the city).
+  - **Celadon Square** ("celadon_square"): the Game Corner (Team
+    Rocket's, later), the Celadon Gym (closed for watering: Erika's gym is
+    the next part), the Recruitment Center and the smith.
+  - **Celadon West End** ("celadon_west"): the Celadon Mansion and the
+    **Battle Tower** (opening soon: the part after next).
 - **Rewards:** ₽1,600, 1,500 XP, 2 Hyper Potions and a **Rare** gear piece
   (item level 35).
 

@@ -537,6 +537,9 @@ MAX_PLUS = 5
 PLUS_BOOST = 0.10   # each enhancement: bonuses +10% (of the piece's own)
 PLUS_VALUE = 0.15   # ... and its worth +15%
 SMELT = 4           # materials of one kind that smelt into one of the next
+# What the Celadon Department Store's 4F sells the first three for (the rarer
+# ones only come from salvage and smelting).
+MATERIAL_PRICE = {"Scrap": 300, "Alloy": 1000, "Crystal": 3000}
 
 
 # Gear's worth: a Lv5 piece of each rarity is worth about this; it grows
@@ -605,6 +608,10 @@ MEDICINE = {m.name: m for m in [
     Medicine("Full Restore", "Fully restores HP and cures any status.", 1500, fraction=1.0,
              cures=tuple(STATUSES)),
     Medicine("Revive", "Revives a fainted Pokémon with half its HP.", 750, fraction=0.5, revive=True),
+    # The Celadon Department Store's rooftop vending machines (Gen 1's drinks).
+    Medicine("Fresh Water", "Mineral water. Restores 50 HP.", 200, hp=50),
+    Medicine("Soda Pop", "A fizzy soda. Restores 60 HP.", 300, hp=60),
+    Medicine("Lemonade", "A very sweet drink. Restores 80 HP.", 350, hp=80),
     Medicine("Antidote", "Cures poison.", 50, cures=("poison",)),
     Medicine("Burn Heal", "Heals a burn.", 125, cures=("burn",)),
     Medicine("Paralyze Heal", "Cures paralysis.", 100, cures=("paralysis",)),
