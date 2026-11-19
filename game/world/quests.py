@@ -28,7 +28,7 @@ from ..mechanics.items import ITEMS, Gear, money_text
 from ..mechanics.loot import Reward
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, line_base
 from .instance import RECRUITS, Recruit
-from .progress import MAX_ACTIVE
+from .progress import ACTIVE_STEPS
 
 Line = tuple[str, str]  # (speaker, text) of a dialogue page
 
@@ -556,7 +556,9 @@ QUESTS = {q.key: q for q in [
                     gives=("HM01 Cut",))),
         money=1200, xp=1000,
         rewards=(("medicine", "Super Potion", 3), ("medicine", "Revive", 1), ("gear", None, "Uncommon", 25)),
-        done_dialogue=(("", "The S.S. Anne's horn sounds: she's about to set sail. Time to go ashore!"),),
+        done_dialogue=(("", "The S.S. Anne's horn sounds: she's about to set sail. Time to go ashore!"),
+                       ("", "Your team has grown: three Pokémon can now go with you into battle. Recruits from "
+                            "the reserve fill the new place.")),
     ),
     Quest(
         "snake_charmer", "Snake Charmer",
@@ -693,9 +695,9 @@ def is_done(game, key: str) -> bool:
 
 
 def active_limit(game) -> int:
-    """The party's size, all of whom fight: 1 until the rival on Route 22
-    is beaten, then `MAX_ACTIVE`."""
-    return MAX_ACTIVE if is_done(game, "rival_22") else 1
+    """The party's size, all of whom fight: 1, and one more for each quest
+    of `ACTIVE_STEPS` done (the Route 22 rival: 2; the S.S. Anne: 3)."""
+    return 1 + sum(is_done(game, key) for key in ACTIVE_STEPS)
 
 
 def fit_party(game) -> None:

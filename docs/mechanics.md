@@ -702,13 +702,13 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 
 ## Party and reserve
 
-`game/world/progress.py` (`MAX_PARTY`, `MAX_ACTIVE`, `Game.reserve`,
+`game/world/progress.py` (`MAX_PARTY`, `ACTIVE_STEPS`, `Game.reserve`,
 `Game.add_member`), `game/world/quests.py` (`active_limit`, `fit_party`,
 `fighters`)
 
-- The **party** is everyone who fights: **1** Pokémon until the rival on
-  Route 22 is beaten, then **2** (`MAX_ACTIVE`; `MAX_PARTY` = 6 is the
-  size it will grow to). The first is the **lead** (the one on the map;
+- The **party** is everyone who fights: **1** Pokémon at first, **2** once
+  the rival on Route 22 is beaten, **3** once the S.S. Anne quest is done
+  (`ACTIVE_STEPS`; `MAX_PARTY` = 6 is the size it will grow to). The first is the **lead** (the one on the map;
   party screen T puts a member first). Recruits that don't fit wait in
   the **reserve** (saved), and are swapped in at a Recruitment Center (Mr.
   Mime → team). When the party grows, the reserve's first fills the new
@@ -802,10 +802,12 @@ the game doesn't have yet: Poké Balls, Repel):
 Each map theme has a weighted pool of species with level ranges. A wild
 group has 1, 2 or 3 Pokémon (weights 60 / 30 / 10; Route 1: 1 or 2, 80 /
 20), each picked from the pool, each at a random level in its entry's
-range. **With two Pokémon fighting** (once the Route 22 rival is beaten),
-each wild group has a 50% chance (`overworld.EXTRA_FOE_CHANCE`) of one
-more Pokémon from the pool, rolled from the map's seed so it's the same
-each time the map is shown. A **boss** (areas with
+range. **Each Pokémon fighting after the first** gives each wild group a
+50% chance (`overworld.EXTRA_FOE_CHANCE`) of one more Pokémon from the
+pool: with two fighting (once the Route 22 rival is beaten), about half
+the groups have one more; with three (after the S.S. Anne), two chances,
+one more on average. Rolled from the map's seed, so it's the same each
+time the map is shown. A **boss** (areas with
 one) guards the last map's exit: the group the area names (`Route.boss_group`),
 or else 4–5 Pokémon from the pool at the same levels; its leader (the
 first) can be drawn bigger (`Route.boss_scale`). With two fighting, a

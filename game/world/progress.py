@@ -10,9 +10,11 @@ from ..mechanics.pokemon import Monster
 
 START_TOWN = "pallet"
 MAX_PARTY = 6  # the party's size at its biggest; the rest wait in the reserve
-# The party's size for now: everyone in it fights. 1 until the rival on
-# Route 22 is beaten, then this (quests.active_limit; later MAX_PARTY).
-MAX_ACTIVE = 2
+# The party's size for now: everyone in it fights. 1 at first, then one
+# more for each of these quests done (quests.active_limit): the rival on
+# Route 22, the S.S. Anne. Later up to MAX_PARTY.
+ACTIVE_STEPS = ("rival_22", "ss_anne")
+MAX_ACTIVE = 1 + len(ACTIVE_STEPS)
 STARTERS = ("bulbasaur", "charmander", "squirtle")  # what Professor Oak offers
 # The rival picks the starter that beats the player's.
 RIVAL_STARTERS = {"bulbasaur": "charmander", "charmander": "squirtle", "squirtle": "bulbasaur"}

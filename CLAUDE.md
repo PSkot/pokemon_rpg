@@ -426,7 +426,7 @@ non-commercial project.
   boss); beating it adds it (`Game.add_member`: to the party if it has
   room, else `Game.reserve`). Mr. Mime swaps party and reserve. The
   party's size is how many fight (`quests.active_limit`: 1 until the
-  Route 22 rival is beaten, then `MAX_ACTIVE` = 2; `MAX_PARTY` = 6 later;
+  Route 22 rival is beaten, 2, then 3 after the S.S. Anne: `ACTIVE_STEPS`; `MAX_PARTY` = 6 later;
   gyms' `TeamPick` too); `quests.fit_party` (every map scene) moves extras
   to the reserve and fills new places from it. Party screen T moves a
   member to the front (the lead).

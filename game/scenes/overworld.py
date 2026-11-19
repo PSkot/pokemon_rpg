@@ -548,13 +548,17 @@ class OverworldScene(MapScene):
         for i, trainer in placed.items():
             if i < len(level.spawns):  # (the rival's starter depends on the player's)
                 level.spawns[i].encounter = [(rival.get(sp, sp), lv) for sp, lv in trainer.team]
-        # With two fighting, about half the wild groups have one more Pokémon
-        # (the same ones each time this map is shown).
-        if route.wild and quests.active_limit(game) >= 2:
+        # Each one fighting after the first gives every wild group a chance
+        # (`EXTRA_FOE_CHANCE`) of one more Pokémon: with two, about half have
+        # one more; with three, one more on average (the same ones each time
+        # this map is shown).
+        chances = quests.active_limit(game) - 1
+        if route.wild and chances:
             rng = random.Random(instance.seed * 7919 + instance.index)
             for i, spawn in enumerate(level.spawns):
-                if i not in placed and rng.random() < EXTRA_FOE_CHANCE:
-                    spawn.encounter = list(spawn.encounter) + [extra_member(level.theme, rng)]
+                for _ in range(chances):
+                    if i not in placed and rng.random() < EXTRA_FOE_CHANCE:
+                        spawn.encounter = list(spawn.encounter) + [extra_member(level.theme, rng)]
         self.wild = []
         for i, spawn in enumerate(level.spawns):
             trainer = placed.get(i)

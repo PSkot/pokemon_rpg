@@ -335,6 +335,8 @@ yet.
   next part).
 - **Rewards:** ₽1,200, 1,000 XP, 3 Super Potions, a Revive and an Uncommon
   gear piece (item level 25), on top of the rival's prize and boss loot.
+- **Unlocks:** a third place in the party: three Pokémon fight from now on
+  (the reserve's first fills it).
 - **Afterwards** the S.S. Anne sets sail: the gangway is shut
   (`Route.needs` "active": only while the quest is going on).
 
@@ -467,7 +469,7 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
     rewards. **Enter** on an open (or taken) one takes its quest and
     walks straight to its map.
   - Up at Mr. Mime: a few words, then the **team**: swap Pokémon between
-    the party (1, or 2 once the Route 22 rival is beaten; see `mechanics.md` →
+    the party (1; 2 once the Route 22 rival is beaten; 3 after the S.S. Anne; see `mechanics.md` →
     Party and reserve) and the reserve, and choose the lead.
 - **A recruitment map** ("Pidgey Grounds"): one map that looks like the
   Pokémon's home area, full of groups of 2–3 of it (Lv `level` − 2 to
