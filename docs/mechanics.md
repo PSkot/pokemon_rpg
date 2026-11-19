@@ -744,6 +744,8 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 11 | Common | (no boss) |
 | Diglett's Cave | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the giant Dugtrio's band, a chest) |
 | Route 2 (north) | (no wild Pokémon or chests) | (no boss) |
+| Route 9 | Common | (no boss) |
+| Rock Tunnel | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Hiker Crew, a chest) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -1081,6 +1083,39 @@ Route 2 stop at the cave's far end up to Pewter City's doorway by its
 east end): no wild Pokémon (`wild=False`; Gen 1's are far below the
 party by now).
 
+**Route 9** (`Route` "route_9", 2 maps east of Cerulean City, from its
+doorway at the street's east end to the Route 10 Pokémon Center; open
+once HM05 Flash is in hand; five trainers):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Rattata | 20 | 29–32 |
+| Spearow | 20 | 29–32 |
+| Ekans | 15 | 29–32 |
+| Sandshrew | 15 | 29–32 |
+| Raticate | 10 | 31–33 |
+| Fearow | 10 | 31–33 |
+| Voltorb | 10 | 30–32 |
+
+**Rock Tunnel** (`Route` "rock_tunnel", a dungeon of 3 rooms from the
+Route 10 Pokémon Center to Lavender Town: 1F, B1F, then the south 1F;
+needs Flash). It's **pitch dark** (`Theme.dark`): the screen is black
+except for Flash's light, a circle of 92 px around the player fading out
+over 40 px and flickering a little (`overworld._darkness`); wild groups
+and trainers outside it can't be seen (trainers' names still show).
+B1F's last stairs are guarded by the **Hiker Crew** (Onix 36, Machop 34 ×2,
+Geodude 34; a trainer battle, ₽595, a chest with `MID_BOSS` loot).
+Win rate in `tools/balance_sim.py` for three at Lv33 + Lv32: about 88%
+(Charmander's teams about 70%: Rock Tunnel is hard on Fire, as in
+Red/Blue).
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Zubat | 35 | 30–33 |
+| Geodude | 30 | 30–33 |
+| Machop | 20 | 31–33 |
+| Onix | 15 | 31–34 |
+
 **Gyms** are fought in waves. The gym is a short walk (one map,
 `Route.cols` tiles plus the arena) up to an arena where the gym's band
 stands. Touching it opens the team pick (`scenes/gym.TeamPick`): the
@@ -1223,6 +1258,17 @@ always the same spot), with its team in a row.
 | Route 11, map 2 | High Rollers (Gambler) | Horsea 29, Goldeen 29, Shellder 28 | ₽980 |
 | Route 11, map 2 | Rolling Stones (Engineer) | Geodude 29, Onix 30 | ₽750 |
 | Route 11, map 2 | Sleepy Heads (Youngster) | Drowzee 30, Drowzee 29, Jigglypuff 29 | ₽217 |
+| Route 9, map 1 | Meadow Duo (Jr. Trainer) | Oddish 31, Bellsprout 31 | ₽310 |
+| Route 9, map 1 | Boulder Bunch (Hiker) | Geodude 31, Machop 31, Geodude 31 | ₽542 |
+| Route 9, map 2 | Silk Spinners (Bug Catcher) | Butterfree 32, Beedrill 32 | ₽160 |
+| Route 9, map 2 | Roadside Pals (Jr. Trainer) | Pidgeotto 32, Raticate 31, Nidorino 31 | ₽310 |
+| Route 9, map 2 | Mountain Men (Hiker) | Onix 33, Machop 32 | ₽560 |
+| Rock Tunnel 1F | Pick and Shovel (Hiker) | Geodude 32, Geodude 32, Onix 32 | ₽560 |
+| Rock Tunnel 1F | Collector's Pride (Pokémaniac) | Clefairy 32, Psyduck 32 | ₽800 |
+| Rock Tunnel B1F | Lost Hikers (Jr. Trainer) | Jigglypuff 33, Pidgeotto 33 | ₽330 |
+| Rock Tunnel B1F | Rubble Rousers (Hiker) | Machop 33, Geodude 33, Machop 33 | ₽577 |
+| Rock Tunnel B1F (boss) | Hiker Crew | Onix 36, Machop 34, Machop 34, Geodude 34 | ₽595 |
+| Rock Tunnel 1F (south) | Tunnel Twins (Jr. Trainer) | Oddish 33, Bellsprout 33 | ₽330 |
 | S.S. Anne 1F | Gentleman's Hounds (Gentleman) | Growlithe 26, Growlithe 26 | ₽910 |
 | S.S. Anne 1F | Seaside Lass (Lass) | Pidgey 25, Nidoran F 25, Jigglypuff 25 | ₽187 |
 | S.S. Anne 1F | Cabin Boys (Youngster) | Rattata 25, Ekans 25, Raticate 24 | ₽180 |

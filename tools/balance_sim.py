@@ -149,9 +149,10 @@ STORY = [
     # for two: TEAM=2 tries it with two)
     ("Vermilion Gym (2 waves + battalion)", "vermilion_gym", (29, 28), False, {"Super Potion": 4, "Hyper Potion": 1}),
     ("Diglett's Cave boss", "digletts_cave", (31, 30), False, {"Super Potion": 3, "Hyper Potion": 1}),
+    ("Rock Tunnel Hiker Crew", "rock_tunnel", (33, 32), False, {"Super Potion": 3, "Hyper Potion": 1}),
 ]
 # How many fight in each story battle: 1 (solo), 2, or 3 from the S.S. Anne on.
-TEAM_SIZE = {"Vermilion Gym (2 waves + battalion)": 3, "Diglett's Cave boss": 3}
+TEAM_SIZE = {"Vermilion Gym (2 waves + battalion)": 3, "Diglett's Cave boss": 3, "Rock Tunnel Hiker Crew": 3}
 PARTNERS = ["pidgey", "rattata", "nidoran_m", "spearow", "caterpie", "pikachu"]
 
 

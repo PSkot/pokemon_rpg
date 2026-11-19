@@ -38,6 +38,9 @@ script that walks every route's maps; the major fights in
 | Vermilion Gym | 29 | 520 (each of three) | 1,300 |
 | Route 11 | 29–30 | 1,060 | 1,700 |
 | Diglett's Cave | 30–31 | 1,200 | 2,500 |
+| Route 9 | 32 | 1,300 | 1,100 |
+| Rock Tunnel | 32–33 | 1,550 | 3,200 |
+| Lavender Town | 34 | | |
 
 (Before this check, battles gave ×0.5 / ×1.5 to every member unsplit:
 about 62,000 battle XP each from Pewter to Vermilion against 14,000
@@ -208,6 +211,8 @@ handing them in at any board.
 | Vermilion | Lucky Coins | Vermilion City | Collect 5 Lucky Coins (Meowth, Route 6) | 40% | ₽1,100, 700 XP |
 | Vermilion | Sleepy Heads | The Thunder Badge | Defeat 6 Drowzee (Route 11) | – | ₽1,200, 800 XP |
 | Vermilion | Trouble Underfoot | East of Vermilion | Defeat 5 Dugtrio (Diglett's Cave) | – | ₽1,300, 900 XP |
+| Cerulean | Bats in the Dark | Oak's Aide | Defeat 8 Zubat (Rock Tunnel) | – | ₽1,400, 900 XP |
+| Cerulean | Muscle Trouble | Oak's Aide | Defeat 6 Machop (Rock Tunnel) | – | ₽1,400, 900 XP |
 
 Each takes about one or two runs of its route. They can't be repeated
 yet.
@@ -425,6 +430,31 @@ yet.
   later; Gen 1's aide wants 10 Pokémon caught first, here it's just
   given), ₽600, 500 XP.
 
+### 18. The Road East
+
+- **Starts:** automatically when quest 17 is done (with Flash).
+- **Steps:** follow **Route 9** (2 maps, five trainer bands; its doorway
+  is at Cerulean's east end; shut until Flash: a Hiker warns that Rock
+  Tunnel is pitch dark) to the **Route 10 Pokémon Center** (town
+  "route_10", a checkpoint with a Voltorb by the Power Plant road).
+- **Rewards:** ₽1,200, 1,100 XP.
+
+### 19. Rock Tunnel
+
+- **Starts:** automatically when quest 18 is done.
+- **Steps:** go through **Rock Tunnel** (3 dark rooms, Flash lights a
+  circle around you; five bands and the Hiker Crew guarding B1F's stairs
+  up) to **Lavender Town**.
+- **Lavender Town** (town "lavender"): Pokémon Center, Poké Mart (with
+  Hyper Potions and Revives) and Persian's gear den, a quest board, the
+  **Pokémon Tower** (`pokemon_tower.png`; shut for now: "Something moves
+  inside, but you can't make out what. You'd need a way to see it." The
+  Silph Scope comes later), Mr. Fuji's house ("Gone to the Tower"), and a
+  Drowzee and a Jigglypuff who talk about the tower's ghosts. The town
+  ends there for now (Route 8 west to Saffron comes later).
+- **Rewards:** ₽1,500, 1,400 XP, 2 Hyper Potions, a Revive and a **Rare**
+  gear piece (item level 33).
+
 ---
 
 ## Evolution quests
@@ -600,6 +630,10 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | Diglett | 8 | Underground Path | 20–22 | Lv25 |
 | Psyduck | 6 | Route 6 | 21–23 | Lv26 |
 | Drowzee | 8 | Route 11 | 25–27 | Lv30 |
+| Voltorb | 5 | Route 9 | 28–30 | Lv33 |
+| Geodude | 10 | Rock Tunnel | 29–31 | Lv34 |
+| Machop | 8 | Rock Tunnel | 29–31 | Lv34 |
+| Onix | 4 | Rock Tunnel | 30–32 | Lv35 |
 
 Not every Pokémon comes this way: the starters, and those only met with
 trainers (Geodude, Onix, the S.S. Anne's Machop, Tentacool and

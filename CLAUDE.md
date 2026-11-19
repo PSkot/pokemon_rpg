@@ -373,7 +373,15 @@ non-commercial project.
   just ends there) → route "digletts_cave" (theme `DIGLETTS_CAVE`, 3 maps
   of Diglett/Dugtrio, a giant Dugtrio's band, `MID_BOSS` loot) → stop town
   "route_2" (Oak's aide, a Kadabra: HM05 Flash) → route "route_2_north"
-  (one map, `wild=False`) → Pewter's doorway at col 67. `Route.blocked_done`: what a
+  (one map, `wild=False`) → Pewter's doorway at col 67. With Flash (quests
+  "to_rock_tunnel", "rock_tunnel"): Cerulean's doorway at col 89 → route
+  "route_9" (2 maps, five bands) → stop town "route_10" (Pokémon Center) →
+  route "rock_tunnel" (a dungeon of 3 rooms, theme `ROCK_TUNNEL`,
+  `Theme.dark`: black but for Flash's light around the player,
+  `overworld._darkness`; the Hiker Crew guards B1F's stairs, `MID_BOSS`
+  chest) → Lavender Town (Center, Mart, gear den, the Pokémon Tower, shut
+  for now: `towns.TOWER` = `pokemon_tower.png`, a one-cell building sheet;
+  Mr. Fuji's house; the town ends there). `Route.blocked_done`: what a
   shut doorway says once its quest is done (`quests.blocked_text`);
   `Building.note`: what Up at a building says if nothing else happens (`Step.before`: what it says while a
   quest's visit there is still to come, `quests.early_text`).
@@ -576,7 +584,7 @@ non-commercial project.
 - Battle backdrops (`assets/sprites/pixellab/backdrops/`, `Backdrop.art`):
   320×132 Pixellab paintings drawn 2× over the battle area (meadow, forest,
   route_3, pewter_gym, mt_moon, cerulean_gym, underground, ss_anne,
-  vermilion_gym, digletts_cave; underground and ss_anne shifted up 14 px, their floor extended), their ground starting high enough for the
+  vermilion_gym, digletts_cave, rock_tunnel; underground and ss_anne shifted up 14 px, their floor extended), their ground starting high enough for the
   back row; a theme without one would be drawn in code from the
   `Backdrop` colours.
 - Map props (`assets/sprites/pixellab/props/`, `tileset.draw_prop`: centred,
@@ -593,7 +601,7 @@ non-commercial project.
   the title and save line readable).
 - Cave walls (`assets/sprites/pixellab/walls/`, `CaveLook.wall`): 320×180
   paintings of Mt. Moon's, the Pewter Gym's, the Cerulean Gym's, the
-  Underground Path's, the S.S. Anne's, the Vermilion Gym's and Diglett's Cave's far wall, drawn 2×,
+  Underground Path's, the S.S. Anne's, the Vermilion Gym's, Diglett's Cave's and Rock Tunnel's far wall, drawn 2×,
   mirrored every other copy, dimmed (`dim`); the code-drawn rock in front
   stays (`near_rocks`, off in the gym).
 - `assets/sprites/pokemon_icons/` holds reference icons. Species without a

@@ -13,6 +13,7 @@ rooms and doorways out instead: Up (or Down, at a ladder down) uses them.
 """
 
 import math
+from functools import cache
 import random
 
 import pygame
@@ -239,6 +240,34 @@ class Chest:
     def draw(self, surface: pygame.Surface) -> None:
         name = ("chest_fancy" if self.fancy else "chest") + ("_open" if self.opened else "")
         tileset.draw_prop(surface, name, round(self.x), round(self.feet_y))
+
+
+FLASH_RADIUS = 92  # px of Flash's light around the player in a dark cave (`Theme.dark`) ...
+FLASH_SOFT = 40    # ... fading out over this much
+DARK = (6, 6, 10, 238)
+
+
+@cache
+def _flash_hole(grow: int = 0) -> pygame.Surface:
+    """How much darkness Flash takes away around its middle (alpha to
+    subtract), its radius `grow` px bigger (its flicker)."""
+    radius = FLASH_RADIUS + grow
+    r = radius + FLASH_SOFT
+    hole = pygame.Surface((2 * r, 2 * r), pygame.SRCALPHA)
+    for d in range(r, 0, -2):
+        lit = 1.0 if d <= radius else 1 - (d - radius) / FLASH_SOFT
+        pygame.draw.circle(hole, (0, 0, 0, round(DARK[3] * lit)), (r, r), d)
+    return hole
+
+
+def _darkness(x: float, y: float, t: float) -> pygame.Surface:
+    """The dark over the screen, with Flash's light around (`x`, `y`), flickering a little."""
+    dark = pygame.Surface(settings.LOGICAL_SIZE, pygame.SRCALPHA)
+    dark.fill(DARK)
+    hole = _flash_hole(round(2 * math.sin(t * 7) + 1.2 * math.sin(t * 17)))
+    dark.blit(hole, (round(x - hole.get_width() / 2), round(y - hole.get_height() / 2)),
+              special_flags=pygame.BLEND_RGBA_SUB)
+    return dark
 
 
 class Ball:
@@ -498,6 +527,8 @@ class MapScene(Scene):
         if prompt:
             draw_prompt(self.layer, *prompt, self.t)
         canvas.blit(self.layer, (0, 0), pygame.Rect(self.camera, 0, *settings.LOGICAL_SIZE))
+        if self.level.theme.dark:  # pitch dark: only Flash's light around the player
+            canvas.blit(_darkness(self.player.x - self.camera, self.player.feet_y - 14, self.t), (0, 0))
         if self.panel:
             self.panel.draw(canvas)
 

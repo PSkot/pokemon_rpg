@@ -80,6 +80,7 @@ class Theme:
     doorway: str = "doorway"            # its doorways' prop (tileset.draw_prop); "" = drawn in code
     far: str = ""                       # "woods" maps: a painted far layer (pixellab/far/) instead of sky and hills
     built: bool = False                 # a built interior (the S.S. Anne): flat floors and ceilings, of planks
+    dark: bool = False                  # pitch dark (Rock Tunnel): only Flash's light around the player shows
 
     @property
     def decor_key(self) -> str:
@@ -271,6 +272,51 @@ ROUTE_11 = Theme(
         PoolEntry("fearow", 5, (27, 29)),
     ),
     backdrop=MEADOW_BACKDROP,
+)
+
+# Route 9, east of Cerulean City to the Route 10 Pokémon Center: Gen 1's
+# Rattata, Spearow, Ekans and Sandshrew, their evolved forms, and Voltorb
+# from the Power Plant down Route 10, a little under the party.
+ROUTE_9 = Theme(
+    "route_9", "Route 9",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("rattata", 20, (29, 32)),
+        PoolEntry("spearow", 20, (29, 32)),
+        PoolEntry("ekans", 15, (29, 32)),
+        PoolEntry("sandshrew", 15, (29, 32)),
+        PoolEntry("raticate", 10, (31, 33)),
+        PoolEntry("fearow", 10, (31, 33)),
+        PoolEntry("voltorb", 10, (30, 32)),
+    ),
+    backdrop=ROUTE_3.backdrop,
+    far="route_3.png",
+)
+
+# Rock Tunnel, from the Route 10 Pokémon Center to Lavender Town: pitch
+# dark (Flash lights a circle around the player); Gen 1's Zubat, Geodude,
+# Machop and Onix.
+ROCK_TUNNEL = Theme(
+    "rock_tunnel", "Rock Tunnel",
+    Palette(fill=(84, 78, 72), fill_dark=(58, 54, 50), fill_light=(116, 108, 100),
+            top=(138, 128, 116), top_dark=(104, 96, 88), top_light=(172, 162, 148),
+            platform=(102, 94, 86), platform_dark=(66, 60, 56), platform_light=(140, 130, 120)),
+    pool=(
+        PoolEntry("zubat", 35, (30, 33)),
+        PoolEntry("geodude", 30, (30, 33)),
+        PoolEntry("machop", 20, (31, 33)),
+        PoolEntry("onix", 15, (31, 34)),
+    ),
+    backdrop=Backdrop(art="rock_tunnel.png", sky_top=(18, 16, 16), sky_bottom=(54, 50, 46),
+                      hills=((70, 64, 60), (62, 58, 54)), field_far=(120, 112, 104), field_near=(100, 94, 86),
+                      stripe=(110, 102, 94), shadow=(60, 56, 52)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(10, 10, 12), sky_bottom=(36, 34, 32), far_rock=(30, 28, 26), near_rock=(46, 42, 40),
+                  glow=None, wall="rock_tunnel.png", dim=30),
+    doorway="doorway_cave",
+    decor="mt_moon",
+    dark=True,
 )
 
 # Route 2's north end, between Diglett's Cave and Pewter City: a short walk

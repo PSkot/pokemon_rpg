@@ -21,6 +21,7 @@ GROUND = 4  # tiles of ground
 
 
 HOUSES, FUNCTIONAL = "houses.png", "functional_buildings.png"  # Pixellab sheets, 2×2 cells of 128×128
+TOWER = "pokemon_tower.png"  # Lavender's Pokémon Tower: one 128×128 cell
 
 
 @dataclass(frozen=True)
@@ -207,14 +208,15 @@ TOWNS = {t.key: t for t in [
     Town("route_4", "Route 4", 40, (), exits=(("left", "mt_moon_cave"), ("right", "route_4_east")), home_col=8),
     # Cerulean City: the water gym, Bill's road north over Nugget Bridge and
     # the burgled house.
-    Town("cerulean", "Cerulean City", 92, (
+    Town("cerulean", "Cerulean City", 100, (
         Building("Bike Shop", (HOUSES, 1), 6),
         Building("Pokémon Center", (FUNCTIONAL, 0), 18),
         Building("Poké Mart", (FUNCTIONAL, 2), 30, inside="mart"),
         Building("Cerulean Gym", (FUNCTIONAL, 1), 44),
         Building("Recruitment Center", (HOUSES, 3), 57, inside="recruit"),
         Building("Burgled House", (HOUSES, 0), 70),
-    ), exits=(("left", "route_4_east"), ("right", "nugget_bridge"), (82, "route_5_south")), home_col=22, board_col=41,
+    ), exits=(("left", "route_4_east"), ("right", "nugget_bridge"), (82, "route_5_south"), (89, "route_9")),
+       home_col=22, board_col=41,
        mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal",
              "Ice Heal"),
        gear=((17, 22), (("Common", 60), ("Uncommon", 40))),
@@ -314,6 +316,40 @@ TOWNS = {t.key: t for t in [
              "I'm one of Professor Oak's aides. I study Pokémon that live in caves... from the outside.",
              "Pewter City is just up the road. The Professor says hello!",
          )),)),
+    # The Pokémon Center at the end of Route 9 (Gen 1: on Route 10), the
+    # last stop before Rock Tunnel.
+    Town("route_10", "Route 10 Pokémon Center", 44, (
+        Building("Pokémon Center", (FUNCTIONAL, 0), 18),
+    ), exits=(("left", "route_9"), ("right", "rock_tunnel")), home_col=14,
+         folk=(Folk("route_10_voltorb", "Voltorb", "voltorb", 32, (
+             "Bzzt! The Power Plant is down the river from here. It's been shut for ages... Bzzt.",
+             "Rock Tunnel is right there. Pitch dark! Even we Voltorb don't glow enough to light it.",
+         )),)),
+    # Lavender Town, at Rock Tunnel's south end: a small, quiet town, home
+    # of the Pokémon Tower, where Pokémon are laid to rest (its ghosts are
+    # for later: the tower is shut for now).
+    Town("lavender", "Lavender Town", 64, (
+        Building("Pokémon Center", (FUNCTIONAL, 0), 6),
+        Building("Poké Mart", (FUNCTIONAL, 2), 18, inside="mart"),
+        Building("Pokémon Tower", (TOWER, 0), 30,
+                 note="The Pokémon Tower, where Pokémon are laid to rest. A cold draught blows from the door... "
+                      "Something moves inside, but you can't make out what. You'd need a way to see it."),
+        Building("Mr. Fuji's House", (HOUSES, 0), 44,
+                 note="Nobody's home. A note on the door: \"Gone to the Tower. Back soon. - Mr. Fuji\""),
+    ), exits=(("left", "rock_tunnel"),), home_col=14, board_col=41,
+       mart=("Potion", "Super Potion", "Hyper Potion", "Revive", "Escape Rope", "Antidote", "Burn Heal", "Awakening",
+             "Paralyze Heal", "Ice Heal"),
+       gear=((30, 34), (("Common", 40), ("Uncommon", 45), ("Rare", 15))),
+       folk=(
+           Folk("lavender_drowzee", "Drowzee", "drowzee", 26, (
+               "Drowzee... The tower's full of ghosts these days. They give even me bad dreams.",
+               "Mr. Fuji looks after the Pokémon that lost their trainers. He's up in the tower every day.",
+           )),
+           Folk("lavender_jigglypuff", "Jigglypuff", "jigglypuff", 56, (
+               "Puff... Lavender Town is so quiet. Everyone whispers here.",
+               "Jiggly... Some say a lost Pokémon's mother still waits at the top of the tower.",
+           )),
+       )),
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a
     # Clefairy in his teleporter (quest "bill").
     Town("sea_cottage", "Sea Cottage", 40, (

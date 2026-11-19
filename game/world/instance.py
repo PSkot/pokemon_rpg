@@ -28,8 +28,8 @@ from dataclasses import dataclass, field, replace
 from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
-from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_2, ROUTE_3, ROUTE_4,
-                     ROUTE_5, ROUTE_6, ROUTE_11, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE, UNDERGROUND, VERMILION_GYM,
+from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_9, ROUTE_11, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE, UNDERGROUND, VERMILION_GYM,
                      PoolEntry, Theme)
 from .towns import Folk
 
@@ -361,6 +361,41 @@ ROUTES = {r.key: r for r in [
     Route("digletts_cave", "Diglett's Cave", DIGLETTS_CAVE, maps=3, towns=("route_11", "route_2"), boss=True,
           boss_group=(("dugtrio", 35), ("dugtrio", 32), ("diglett", 31), ("diglett", 31)), boss_scale=2,
           boss_loot=MID_BOSS),
+    # Route 9, east of Cerulean City (once Flash is in hand) to the Route 10
+    # Pokémon Center: Gen 1's Jr. Trainers, Hikers and Bug Catchers, as
+    # bands, about level with the party.
+    Route("route_9", "Route 9", ROUTE_9, maps=2, towns=("cerulean", "route_10"),
+          needs=("flash", "done"),
+          blocked="A Hiker blocks the road east: \"Rock Tunnel's past here, and it's pitch dark! Don't even "
+                  "think about it without a way to light it.\"",
+          trainers=(
+              Trainer("route_9_jr_trainer_1", "Meadow Duo", (("oddish", 31), ("bellsprout", 31)), 0, 20),
+              Trainer("route_9_hiker_1", "Boulder Bunch", (("geodude", 31), ("machop", 31), ("geodude", 31)), 0, 35),
+              Trainer("route_9_bug_catcher", "Silk Spinners", (("butterfree", 32), ("beedrill", 32)), 1, 10),
+              Trainer("route_9_jr_trainer_2", "Roadside Pals", (("pidgeotto", 32), ("raticate", 31), ("nidorino", 31)),
+                      1, 20),
+              Trainer("route_9_hiker_2", "Mountain Men", (("onix", 33), ("machop", 32)), 1, 35),
+          )),
+    # Rock Tunnel, from the Route 10 Pokémon Center down to Lavender Town:
+    # pitch dark (Flash's light), two floors; a Hiker's crew guards the
+    # stairs back up to the south exit, as Gen 1's Hikers fill the tunnel.
+    Route("rock_tunnel", "Rock Tunnel", ROCK_TUNNEL, maps=3, towns=("route_10", "lavender"), boss_chest="plain",
+          boss_loot=MID_BOSS, needs=("flash", "done"),
+          blocked="It's pitch dark inside. Without a way to light it, you'd be lost in no time.",
+          rooms=(
+              Room("1f", "1F", 100, (Stair("out", "route_10", 0), Stair("down", "b1", 0.9))),
+              Room("b1", "B1F", 110, (Stair("up", "1f", 0.1), Stair("up", "1f_south", 1)),
+                   boss_group=(("onix", 36), ("machop", 34), ("machop", 34), ("geodude", 34)), trainer="Hiker Crew",
+                   prize=35),
+              Room("1f_south", "1F", 70, (Stair("down", "b1", 0.15), Stair("out", "lavender", 1))),
+          ),
+          trainers=(  # (`map`: the room's place in `rooms`)
+              Trainer("rock_tunnel_hiker_1", "Pick and Shovel", (("geodude", 32), ("geodude", 32), ("onix", 32)), 0, 35),
+              Trainer("rock_tunnel_maniac", "Collector's Pride", (("clefairy", 32), ("psyduck", 32)), 0, 50),
+              Trainer("rock_tunnel_jr_trainer", "Lost Hikers", (("jigglypuff", 33), ("pidgeotto", 33)), 1, 20),
+              Trainer("rock_tunnel_hiker_2", "Rubble Rousers", (("machop", 33), ("geodude", 33), ("machop", 33)), 1, 35),
+              Trainer("rock_tunnel_jr_trainer_2", "Tunnel Twins", (("oddish", 33), ("bellsprout", 33)), 2, 20),
+          )),
     # Route 2's north end, from the cave up to Pewter City: a short walk.
     Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}
@@ -485,6 +520,10 @@ RECRUITS = {r.species: r for r in [
     Recruit("diglett", 8, UNDERGROUND, 22),
     Recruit("psyduck", 6, ROUTE_6, 23),
     Recruit("drowzee", 8, ROUTE_11, 27),
+    Recruit("voltorb", 5, ROUTE_9, 30),
+    Recruit("geodude", 10, ROCK_TUNNEL, 31),
+    Recruit("machop", 8, ROCK_TUNNEL, 31),
+    Recruit("onix", 4, ROCK_TUNNEL, 32),
 ]}
 
 

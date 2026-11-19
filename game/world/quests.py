@@ -617,6 +617,44 @@ QUESTS = {q.key: q for q in [
         money=600, xp=500,
         done_dialogue=(("Oak's Aide", "Pewter City is just up the road, if you want to rest. Good luck!"),),
     ),
+    # With Flash, as in Red/Blue: east of Cerulean along Route 9 to the
+    # Route 10 Pokémon Center, then through the dark Rock Tunnel to Lavender.
+    Quest(
+        "to_rock_tunnel", "The Road East",
+        "With Flash, even a pitch-dark cave is no trouble. Route 9 runs east of Cerulean City to the Pokémon "
+        "Center at Rock Tunnel.",
+        requires=("flash",),
+        steps=(Step("reach", "route_10", "Follow Route 9 east of Cerulean City (its doorway at the street's east "
+                                         "end) to the Route 10 Pokémon Center"),),
+        money=1200, xp=1100,
+        done_dialogue=(("", "Rock Tunnel's entrance gapes beside the Pokémon Center. Not a glimmer of light "
+                            "inside."),),
+    ),
+    Quest(
+        "rock_tunnel", "Rock Tunnel",
+        "Rock Tunnel runs from the Route 10 Pokémon Center to Lavender Town. It's pitch dark: Flash lights the "
+        "way.",
+        requires=("to_rock_tunnel",),
+        steps=(Step("reach", "lavender", "Go through Rock Tunnel to Lavender Town (Flash lights the way)"),),
+        money=1500, xp=1400,
+        rewards=(("medicine", "Hyper Potion", 2), ("medicine", "Revive", 1), ("gear", None, "Rare", 33)),
+        done_dialogue=(("", "Lavender Town: a small, quiet town. The Pokémon Tower looms over it, where Pokémon "
+                            "are laid to rest."),),
+    ),
+    Quest(
+        "pitch_black", "Bats in the Dark",
+        "Zubat swarm Rock Tunnel, and travellers keep losing their way among them. Thin them out a bit.",
+        board="cerulean", requires=("flash",),
+        steps=(hunt("zubat", 8, "Rock Tunnel"), HAND_IN),
+        money=1400, xp=900,
+    ),
+    Quest(
+        "muscle_trouble", "Muscle Trouble",
+        "Machop in Rock Tunnel keep moving the Hikers' boulders around for training. Teach them some manners.",
+        board="cerulean", requires=("flash",),
+        steps=(hunt("machop", 6, "Rock Tunnel"), HAND_IN),
+        money=1400, xp=900,
+    ),
     Quest(
         "sleepy_heads", "Sleepy Heads",
         "Drowzee on Route 11 keep putting travellers to sleep and eating their dreams. Wake the road up.",
