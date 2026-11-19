@@ -246,6 +246,10 @@ def load(info: SaveInfo):
             instance.came_from = where.get("came_from", "")
             scene = OverworldScene(instance, game)
         scene.restore(where)
+        from .world.quests import catch_up  # (steps done before they were asked for complete now)
+        event = catch_up(game)
+        if event:
+            scene.show_event(event)
         return scene
     except (OSError, ValueError, KeyError, IndexError, TypeError) as e:
         raise LoadError(f"{info.name} couldn't be loaded.") from e

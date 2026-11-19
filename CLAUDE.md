@@ -485,7 +485,9 @@ non-commercial project.
   `Game.quests`, key items in `Bag.key_items`, money in `Bag.money`
   (₽, `items.money_text`; `ui.text` draws the ₽ sign itself). Quest events return an `Event` the map scene shows
   (`MapScene.show_event`: dialogue, "New quest", "Quest complete" with
-  rewards); map panels queue (`MapScene.show`). Routes can be gated
+  rewards); map panels queue (`MapScene.show`). A "defeat" step for a map
+  trainer already beaten for good completes by itself (`_skip_beaten`;
+  on load, `quests.catch_up`). Routes can be gated
   (`Route.needs`/`blocked`) and change boss after a quest (`boss_after`).
   Screens in `scenes/quest_ui.py` (dialogue box, quest board, quest log: Q
   on a map, `PauseMenu.open_quests`); the map shows the current step and markers (`MapScene.markers`:

@@ -755,6 +755,11 @@ bosses don't count towards recruitment: only ordinary wild groups do.
 
 ## Code
 
+- **Steps done early:** a step to beat a map trainer that's already beaten
+  for good (fought before the quest asked for it, e.g. the Nugget Bridge
+  rival in dev mode) completes by itself: when its quest starts or reaches
+  that step (`quests._skip_beaten`), and for saves stuck on such a step,
+  when the save is loaded (`quests.catch_up`, shown on the map).
 - `game/world/quests.py`: `Quest` and `Step` data and `QUESTS`; a game's
   quest state (`step`, `is_active`, `is_done`, `current`, `board`,
   `can_take`, `ready_to_hand_in`, `step_text`) and the events that move it

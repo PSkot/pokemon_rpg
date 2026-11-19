@@ -1236,6 +1236,28 @@ def open_for(game, needs: tuple[str, str] | None) -> bool:
 def _start(game, key: str, event: Event) -> None:
     game.quests[key] = 0
     event.started.append(key)
+    _skip_beaten(game, QUESTS[key], event)
+
+
+def _beaten_already(game, s: Step | None) -> bool:
+    """A step to beat a map trainer (fought once: the rival on Nugget
+    Bridge) that's already beaten for good, e.g. fought before the quest
+    asked for it (in dev mode). It could never be done otherwise."""
+    return bool(s) and s.kind == "defeat" and s.target in game.trainers
+
+
+def _skip_beaten(game, quest: Quest, event: Event) -> None:
+    if is_active(game, quest.key) and _beaten_already(game, current(game, quest.key)):
+        _advance(game, quest, event)
+
+
+def catch_up(game) -> Event:
+    """On loading a save: the active quests' steps that were done before
+    they were asked for (see `_beaten_already`) complete now."""
+    event = Event()
+    for quest in active(game):
+        _skip_beaten(game, quest, event)
+    return event
 
 
 def _advance_where(game, matches) -> Event:
@@ -1268,6 +1290,8 @@ def _advance(game, quest: Quest, event: Event) -> None:
         _give_xp(game, done)
         event.finished.append(done)
         _start_automatic(game, event)
+    else:
+        _skip_beaten(game, quest, event)  # (its next step may be done already)
 
 
 def _give_xp(game, done: Finished) -> None:
