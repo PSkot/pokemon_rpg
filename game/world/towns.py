@@ -27,7 +27,7 @@ TOWER = "pokemon_tower.png"  # Lavender's Pokémon Tower: one 128×128 cell
 @dataclass(frozen=True)
 class Building:
     name: str                 # shown when standing in front of it ("" = an unnamed house)
-    sprite: tuple[str, int]   # (sheet, cell): see tileset.building
+    sprite: tuple   # (sheet, cell) or (sheet, cell, scale): see tileset.building
     col: int                  # left edge, in tiles
     # What Up there enters: "mart" (scenes/mart.py), "recruit" (a Recruitment
     # Center, scenes/recruit.py), or "" (nothing).
@@ -331,10 +331,10 @@ TOWNS = {t.key: t for t in [
     Town("lavender", "Lavender Town", 64, (
         Building("Pokémon Center", (FUNCTIONAL, 0), 6),
         Building("Poké Mart", (FUNCTIONAL, 2), 18, inside="mart"),
-        Building("Pokémon Tower", (TOWER, 0), 30,
+        Building("Pokémon Tower", (TOWER, 0, 2), 28,
                  note="The Pokémon Tower, where Pokémon are laid to rest. A cold draught blows from the door... "
                       "Something moves inside, but you can't make out what. You'd need a way to see it."),
-        Building("Mr. Fuji's House", (HOUSES, 0), 44,
+        Building("Mr. Fuji's House", (HOUSES, 0), 46,
                  note="Nobody's home. A note on the door: \"Gone to the Tower. Back soon. - Mr. Fuji\""),
     ), exits=(("left", "rock_tunnel"),), home_col=14, board_col=41, theme=LAVENDER,
        mart=("Potion", "Super Potion", "Hyper Potion", "Revive", "Escape Rope", "Antidote", "Burn Heal", "Awakening",

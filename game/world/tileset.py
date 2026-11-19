@@ -585,13 +585,18 @@ BUILDING_SINK = 1  # px a building's base sits into the ground (over the grass e
 
 @cache
 def building(sprite: tuple[str, int]) -> tuple[pygame.Surface, int]:
-    """A building sprite (sheet, cell) cut to its outline, and the row its
-    base stands on (the lowest row at least half its width wide: below it
-    only small things like steps or plants hang)."""
+    """A building sprite (sheet, cell[, scale]) cut to its outline, and the
+    row its base stands on (the lowest row at least half its width wide:
+    below it only small things like steps or plants hang). A scale draws
+    it that many times bigger (nearest-neighbour: the Pokémon Tower)."""
     cell = _cells(sprite[0], BUILDING_CELL)[sprite[1]]
     box = cell.get_bounding_rect()
     image = cell.subsurface(box)
     wide = [y for y in range(box.h) if sum(image.get_at((x, y)).a > 0 for x in range(box.w)) > box.w / 2]
+    scale = sprite[2] if len(sprite) > 2 else 1
+    if scale != 1:
+        image = pygame.transform.scale_by(image, scale)
+        return image, (max(wide) + 1) * scale - 1
     return image, max(wide)
 
 
