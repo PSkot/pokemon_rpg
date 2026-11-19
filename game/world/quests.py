@@ -784,10 +784,12 @@ def reach(game, town: str) -> Event:
     return event
 
 
-def won_battle(game, route: str, defeated: list[str], event: Event | None = None) -> list[tuple[str, str]]:
+def won_battle(game, route: str, defeated: list[str], event: Event | None = None,
+               recruits: bool = True) -> list[tuple[str, str]]:
     """A battle on `route` was won against `defeated` (species keys): count
-    them for hunts, and roll collect drops and quest items (which start
-    their quest: added to `event`). Returns what happened, as (text,
+    them for hunts and (`recruits`: an ordinary wild battle, not a
+    trainer's or a boss's) recruitment, and roll collect drops and quest
+    items (which start their quest: added to `event`). Returns what happened, as (text,
     detail) rows for the battle's rewards; finished counts move their
     quest on (to handing it in)."""
     rows = []
@@ -801,7 +803,7 @@ def won_battle(game, route: str, defeated: list[str], event: Event | None = None
             event.dialogue.append(("", f"You found a {item}!"))
             _start(game, quest.key, event)
             rows.append((item, f"New quest: {quest.name}"))
-    for species in defeated:  # towards recruitment
+    for species in defeated if recruits else ():  # towards recruitment (wild groups only)
         line = line_base(species)
         game.defeated[line] += 1
         recruit = RECRUITS.get(line)

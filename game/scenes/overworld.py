@@ -817,8 +817,8 @@ class OverworldScene(MapScene):
                              prize=prize_money(prize, encounter) if trainer else 0,
                              bonus=boss_loot(route.boss_loot) if (boss and route.boss_chest == "battle") or (
                                  wild.trainer and wild.trainer.boss_loot) else None,
-                             on_win=lambda key=route.key, defeated=[s for s, _ in encounter]:
-                                 quests.won_battle(self.game, key, defeated, self.battle_event),
+                             on_win=lambda key=route.key, defeated=[s for s, _ in encounter], wild=not (boss or trainer):
+                                 quests.won_battle(self.game, key, defeated, self.battle_event, recruits=wild),
                              evolves=lambda m: quests.can_evolve(self.game, m), **extra)
         self.fighting = (wild, battle)
         return battle

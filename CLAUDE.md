@@ -409,7 +409,8 @@ non-commercial project.
   Spearow, the Horn Brothers' hollow) and Abra → Kadabra (Cerulean's
   Kadabra, `evolve_kadabra`: hunt Venonat, a solo Trial of Mind,
   `_trial(town=, folk=)`).
-- Recruitment (`docs/quests.md` → Recruitment): won route battles count
+- Recruitment (`docs/quests.md` → Recruitment): won wild battles on routes
+  (not trainers', gyms' or bosses': `won_battle(recruits=)`) count
   defeated Pokémon per line (`Game.defeated`, `pokemon.line_base`); at
   `instance.RECRUITS[line].needed` its recruitment quest opens (board
   `quests.RECRUIT_BOARD`, `Quest.unlock`). Recruitment Centers

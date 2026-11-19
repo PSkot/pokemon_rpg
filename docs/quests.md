@@ -431,8 +431,9 @@ City): Abra alone, Poison Pokémon that Psychic moves hit hard.
 How the party grows (`world/instance.py` `RECRUITS`, quests made in
 `world/quests.py`, screens in `scenes/recruit.py`).
 
-- **Defeat counts:** every Pokémon defeated in a won battle on a route
-  (wild or a trainer's) counts for its **line** (`Game.defeated`, by the
+- **Defeat counts:** every Pokémon defeated in a won **wild** battle on a
+  route (an ordinary group: not a trainer's band, a gym's wave or a boss)
+  counts for its **line** (`Game.defeated`, by the
   line's first species: Metapod counts for Caterpie).
 - **Unlocking:** once a line's count reaches its number (`Recruit.needed`,
   10 for most, fewer for rare ones), its **recruitment quest** opens. The
