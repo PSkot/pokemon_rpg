@@ -287,7 +287,8 @@ yet.
 - **Starts:** automatically when quest 7 is done.
 - **Steps:** walk Route 25 to Bill's Sea Cottage and talk to the Clefairy
   outside (Bill, mixed up with it by his teleporter), then go in and run
-  the Cell Separator (Up at the cottage).
+  the Cell Separator (Up at the cottage). Up at the cottage before talking
+  says the door is locked and points to the Clefairy (`Step.before`).
 - **Rewards:** ₽1,000, 800 XP, the **S.S. Ticket** (a key item, for the
   S.S. Anne at Vermilion City later), 2 Revives and an Uncommon gear piece
   (item level 17).

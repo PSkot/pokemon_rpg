@@ -206,6 +206,8 @@ class TownScene(MapScene):
                 self.show(quest_ui.Dialogue([("Nurse", "We've restored your Pokémon to full health. "
                                                        "We hope to see you again!")]))
                 saves.autosave(self)
+            elif early := quests.early_text(self.game, self.town.key, building.name):
+                self.show(quest_ui.Dialogue([("", early)]))
             elif building.note:
                 self.show(quest_ui.Dialogue([("", building.note)]))
             return

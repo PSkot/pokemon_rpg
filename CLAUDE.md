@@ -361,7 +361,8 @@ non-commercial project.
   waves of Pikachu, Voltorb, Magnemite, then Raichu's band; `wave_team=3`,
   tuned to need three: about 70% with three, 14% with two). `Route.blocked_done`: what a
   shut doorway says once its quest is done (`quests.blocked_text`);
-  `Building.note`: what Up at a building says if nothing else happens.
+  `Building.note`: what Up at a building says if nothing else happens (`Step.before`: what it says while a
+  quest's visit there is still to come, `quests.early_text`).
   Code-drawn caves take their colours from
   `Theme.cave` (`CaveLook`) and ceiling decor from `tileset.CEILING_DECOR`.
   Themes (`themes.py`) pick their map art with `Theme.art` ("woods":

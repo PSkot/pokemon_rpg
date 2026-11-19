@@ -55,6 +55,9 @@ class Step:
     route: str = ""
     species: tuple[str, ...] = ()
     chance: int = 0
+    # visit: what Up at the building says while the quest is still at an
+    # earlier step (a hint at what to do first), `early_text`.
+    before: str = ""
 
 
 def hunt(species: str, count: int, where: str) -> Step:
@@ -482,7 +485,7 @@ QUESTS = {q.key: q for q in [
         "bill", "Bill's Sea Cottage",
         "Bill the Pokémaniac lives at the end of Route 25. Something has gone very wrong at his cottage.",
         requires=("rival_cerulean",),
-        steps=(Step("talk", "bill_clefairy", "Find Bill at his Sea Cottage (Routes 24 and 25, north of Cerulean)",
+        steps=(Step("talk", "bill_clefairy", "Talk to the Clefairy outside Bill's Sea Cottage (Routes 24 and 25, north of Cerulean)",
                     town="sea_cottage",
                     dialogue=(("Clefairy", "Hiya! I'm a Pokémon... No wait! I'm Bill, a Pokémaniac!"),
                               ("Bill", "My teleporter mixed me up with this Clefairy! Please help me out."),
@@ -490,6 +493,8 @@ QUESTS = {q.key: q for q in [
                                        "Cell Separator!"))),
                Step("visit", "Bill's Sea Cottage", "Run the Cell Separator in Bill's Sea Cottage",
                     town="sea_cottage",
+                    before="The door is locked. Something whirs inside... The Clefairy by the path is waving "
+                           "at you frantically.",
                     dialogue=(("", "You switch on the Cell Separator. The teleporter whirs..."),
                               ("Bill", "Yeehah! Thanks, pal! I was stuck like that for days."),
                               ("Bill", "Here, take this. It's a ticket for the S.S. Anne. It's docked at "
@@ -798,6 +803,18 @@ def folk_quests(game, folk: str) -> list[Quest]:
 def visit(game, town: str, building: str) -> Event:
     """The player pressed Up at `building` in `town`."""
     return _advance_where(game, lambda s: s.kind == "visit" and s.town == town and s.target == building)
+
+
+def early_text(game, town: str, building: str) -> str:
+    """What Up at `building` says while an active quest's later step is a
+    visit there (`Step.before`), or ""."""
+    for quest in active(game):
+        later = quest.steps[step(game, quest.key) + 1:]
+        hint = next((s.before for s in later if s.kind == "visit" and s.town == town and s.target == building
+                     and s.before), "")
+        if hint:
+            return hint
+    return ""
 
 
 def defeat(game, route: str) -> Event:

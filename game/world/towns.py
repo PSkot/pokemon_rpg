@@ -294,10 +294,11 @@ TOWNS = {t.key: t for t in [
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a
     # Clefairy in his teleporter (quest "bill").
     Town("sea_cottage", "Sea Cottage", 40, (
-        Building("Bill's Sea Cottage", (HOUSES, 2), 16),
+        Building("Bill's Sea Cottage", (HOUSES, 2), 16,
+                 note="Bill's Sea Cottage. Nobody answers the door."),
     ), exits=(("left", "route_25"),), home_col=8,
        folk=(Folk("bill_clefairy", "Clefairy", "clefairy", 28, (
-           "Clefairy! (It seems happy to be a plain Clefairy again.)",
+           "Clefairy! (It hops around the garden.)",
            "Clefai...? (It keeps an eye on the cottage door.)",
        )),)),
 ]}
