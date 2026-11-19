@@ -41,7 +41,9 @@ class Move:
     hits: tuple[int, int] = (1, 1)  # hits per use (2-5: Fury Attack)
     priority: int = 0   # goes before moves with a lower priority (Quick Attack: 1)
     halve: bool = False  # Super Fang: takes half the target's HP instead of normal damage
-    fixed: bool = False  # Seismic Toss: deals damage equal to the user's level, whatever the types
+    fixed: bool = False  # Seismic Toss: deals damage equal to the user's level, whatever the types ...
+    fixed_amount: int = 0  # ... or this much (Sonic Boom: 20)
+    self_ko: bool = False  # Self-Destruct, Explosion: the user faints after using it
     pay_day: int = 0     # Pay Day: each hit scatters this × the user's level in Poké Dollars, picked up after a win
     drain: float = 0.0  # the user heals this share of the damage dealt (Absorb)
     heal: float = 0.0   # the user also heals this share of its max HP
@@ -135,6 +137,9 @@ MOVES = {m.name: m for m in [
     Move("Defense Curl", 0, "self", type="normal", stages=(("defense", 1),)),
     Move("Screech", 0, "enemy", type="normal", stages=(("defense", -2),)),
     Move("Pay Day", 40, "enemy", type="normal", pay_day=2),
+    Move("Sonic Boom", 0, "enemy", type="normal", fixed=True, fixed_amount=20),
+    Move("Self-Destruct", 130, "enemy", type="normal", self_ko=True),
+    Move("Explosion", 170, "enemy", type="normal", self_ko=True),
     Move("Glare", 0, "enemy", type="normal", **_status("paralysis", 75)),
     Move("Constrict", 10, "enemy", type="normal", stages=(("speed", -1),), stage_chance=10),
     Move("Barrier", 0, "self", type="psychic", stages=(("defense", 2),)),
@@ -214,6 +219,7 @@ MOVES = {m.name: m for m in [
     # Gen 1's Reflect halved physical damage on the user's side; here it
     # works like Leaf Shield.
     Move("Reflect", 0, "ally", type="psychic", shield=2),
+    Move("Light Screen", 0, "ally", type="psychic", shield=2),  # (Gen 1's halved special damage; as Reflect here)
     Move("Lick", 20, "enemy", type="ghost", **_status("paralysis", 30)),
     Move("Confuse Ray", 0, "enemy", type="ghost", confuse=100),
 ]}
@@ -225,7 +231,7 @@ GEN1_ACCURACY = {
     "Fury Attack": 85, "Fury Swipes": 80, "Double Slap": 85, "Wrap": 85, "Bind": 75, "Sky Attack": 90,
     "Razor Leaf": 95, "Pin Missile": 85, "Fire Spin": 70, "Fire Blast": 85, "Rock Throw": 65, "Rock Slide": 90,
     "Thunder": 70, "Clamp": 75, "Hydro Pump": 80, "Blizzard": 90,
-    "Screech": 85, "Low Kick": 90, "Submission": 80, "String Shot": 95, "Kinesis": 80, "Leech Seed": 90, "Whirlwind": 85,
+    "Screech": 85, "Low Kick": 90, "Submission": 80, "Sonic Boom": 90, "String Shot": 95, "Kinesis": 80, "Leech Seed": 90, "Whirlwind": 85,
 }
 MOVES = {name: replace(m, accuracy=GEN1_ACCURACY.get(name, 100)) for name, m in MOVES.items()}
 
@@ -246,6 +252,8 @@ def describe(m: Move) -> str:
     parts = []
     if m.halve:
         parts.append(f"{kind}. Takes half the target's HP.")
+    elif m.fixed and m.fixed_amount:
+        parts.append(f"{kind}. Always deals {m.fixed_amount} damage, whatever the types.")
     elif m.fixed:
         parts.append(f"{kind}. Deals damage equal to the user's level, whatever the types.")
     elif m.damaging:
@@ -257,6 +265,8 @@ def describe(m: Move) -> str:
         if m.spread:
             share = "" if m.spread_share == 1 else f", the others at {round(m.spread_share * 100)}% damage"
             parts.append(f"Hits every enemy{share}.")
+    if m.self_ko:
+        parts.append("The user faints afterwards.")
     if m.pay_day:
         parts.append(f"Each hit scatters ₽{m.pay_day} × the user's level, picked up after a win.")
     if m.accuracy < 100 and not m.sure_hit:

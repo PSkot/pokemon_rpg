@@ -145,7 +145,12 @@ STORY = [
     ("Nugget Bridge rival", "nugget_bridge", (22, 21), False, {"Super Potion": 3}),
     ("Cerulean burglar", "cerulean_backyard", (24, 23), False, {"Super Potion": 3}),
     ("S.S. Anne rival", "ss_anne", (27, 26), False, {"Super Potion": 3}),
+    # (three fight from the S.S. Anne on; the gym is meant to be very hard
+    # for two: TEAM=2 tries it with two)
+    ("Vermilion Gym (2 waves + battalion)", "vermilion_gym", (29, 28), False, {"Super Potion": 4, "Hyper Potion": 1}),
 ]
+# How many fight in each story battle: 1 (solo), 2, or 3 from the S.S. Anne on.
+TEAM_SIZE = {"Vermilion Gym (2 waves + battalion)": 3}
 PARTNERS = ["pidgey", "rattata", "nidoran_m", "spearow", "caterpie", "pikachu"]
 
 
@@ -169,14 +174,16 @@ def run_story(runs: int, talents: bool = True) -> None:
         route = ROUTES[key]
         rarities = route.boss_loot if hasattr(route, "boss_loot") else None
         rows = []
+        size = int(os.environ.get("TEAM", TEAM_SIZE.get(name, 1 if solo else 2)))
         for starter in ("bulbasaur", "charmander", "squirtle"):
-            partners = [None] if solo else PARTNERS
+            # (partners: each one in turn; with three, each one and the next)
+            partners = [None] if size == 1 else [
+                tuple(PARTNERS[(i + k) % len(PARTNERS)] for k in range(size - 1)) for i in range(len(PARTNERS))]
             for partner in partners:
                 wins, hp_left = 0, []
                 for r in range(runs):
                     random.seed(hash((name, starter, partner, r, talents)) & 0xFFFFFFFF)
-                    party = [member(starter, lv, talents, berry=True)] + (
-                        [member(partner, plv, talents)] if partner else [])
+                    party = [member(starter, lv, talents, berry=True)] + [member(p, plv, talents) for p in partner or ()]
                     bag = Bag()
                     for n, k in potions.items():
                         bag.add_medicine(n, k)
@@ -191,10 +198,10 @@ def run_story(runs: int, talents: bool = True) -> None:
                             break
                     wins += won
                     hp_left.append(sum(m.hp for m in party) / sum(m.max_hp for m in party))
-                rows.append((starter, partner or "-", wins / runs, mean(hp_left)))
+                rows.append((starter, "+".join(partner) if partner else "-", wins / runs, mean(hp_left)))
         print(f"### {name}  (party Lv{lv}" + ("" if solo else f" + Lv{plv}") + ")")
         for starter, partner, wr, hp in rows:
-            print(f"  {starter:<10} + {partner:<9}  win {wr:5.0%}   HP left {hp:4.0%}")
+            print(f"  {starter:<10} + {partner:<19}  win {wr:5.0%}   HP left {hp:4.0%}")
         print(f"  all: win {mean(r[2] for r in rows):.0%}")
 
 

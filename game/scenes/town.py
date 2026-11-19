@@ -99,6 +99,13 @@ class TownScene(MapScene):
             return None
         return next((r for r in ROUTES.values() if r.building == building.name and self.town.key in r.towns), None)
 
+    def _tree_key(self, building: Building) -> str:
+        return f"cut:{self.town.key}/{building.name}"
+
+    def _tree_at(self, building: Building) -> bool:
+        """Whether a small tree still grows over `building`'s door (`Building.tree`)."""
+        return bool(building.tree) and self._tree_key(building) not in self.game.trainers
+
     def _building_at_player(self) -> Building | None:
         return next((b for b in self.town.buildings
                      if b.name and b.x <= self.player.x < b.x + tileset.building(b.sprite)[0].get_width()), None)
@@ -168,6 +175,16 @@ class TownScene(MapScene):
             return
         if building and building.inside == "recruit":
             self.next_scene = Transition(self, RecruitScene(self.game, self.town), flashes=0)
+            return
+        if building and self._tree_at(building):
+            if quests.step(self.game, building.tree) is None:  # (no Cut yet)
+                gym = self._route_in(building)
+                self.show(quest_ui.Dialogue([("", gym.blocked if gym else building.note)]))
+            else:  # cut it down, once and for all
+                self.game.trainers.add(self._tree_key(building))
+                lead = self.game.party[0].name
+                self.show(quest_ui.Dialogue([("", f"{lead} used Cut! The little tree fell. The way in is clear.")]))
+                saves.autosave(self)
             return
         gym = self._route_in(building)
         if gym:
@@ -252,6 +269,8 @@ class TownScene(MapScene):
         ground = round(self.level.ground_y(0))
         for b in self.town.buildings:
             tileset.draw_building(layer, b.sprite, b.x, ground)
+            if self._tree_at(b):  # over its door
+                tileset.draw_prop(layer, "cut_tree", round(building_mid(b)), ground)
         if self.board_x is not None:
             tileset.quest_board(layer, round(self.board_x), ground, len(quests.can_take(self.game, self.town.key)))
         for door, _, _ in self.doors:

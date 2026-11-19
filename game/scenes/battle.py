@@ -1224,6 +1224,9 @@ class BattleScene(Scene):
                 self.message = f"{user.label}'s attack missed!"
             else:
                 self._apply(user, move, targets)
+            if move.self_ko and not (DEV.god_mode and not user.enemy):  # (Self-Destruct: hit or miss)
+                user.monster.hp = 0
+                user.hit_time = HIT_TIME
             user.used.add(move.name)
             if move.type == user.streak_type:  # (Ripening, Momentum, ...: after this one)
                 user.streak += 1
@@ -1892,7 +1895,7 @@ class BattleScene(Scene):
                 ui.text(window, move.name, (SKILL_WINDOW.x + 22, y), ui.YELLOW if carried else ui.WHITE)
                 if move.type:
                     ui.badge_text(window, type_name(move.type), self._badge_pos(i))
-                power = "1/2" if move.halve else "Lv" if move.fixed else str(round(move.power * move.scale)) if move.damaging else "-"
+                power = "1/2" if move.halve else (str(move.fixed_amount) if move.fixed_amount else "Lv") if move.fixed else str(round(move.power * move.scale)) if move.damaging else "-"
                 ui.text(window, power, (SKILL_WINDOW.x + 210, y), align="right")
                 aim = SPREAD_TEXT.get(move.target) if move.spread else TARGET_TEXT[move.target]
                 ui.text(window, aim, (SKILL_WINDOW.x + 222, y), ui.GREY)

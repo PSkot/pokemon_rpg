@@ -686,6 +686,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 22 | Common | Common 60%, Uncommon 40% (the rival: a reward roll with the battle, no chest) |
 | Pewter Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Boulder Gang: the fancy chest) |
 | Cerulean Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Cascade Crew: the fancy chest) |
+| Vermilion Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Thunder Battalion: the fancy chest) |
 | Route 3 | Common | (no boss) |
 | Mt. Moon | Common | Common 60%, Uncommon 40% (Team Rocket: a reward roll with the battle, no chest) |
 | Route 4 | Common | (no boss) |
@@ -1078,6 +1079,7 @@ always the same spot), with its team in a row.
 | --- | --- | --- | --- |
 | Pewter Gym (boss) | Boulder Gang (Brock) | Geodude 14, Onix 16 | ₽792 |
 | Cerulean Gym (boss) | Cascade Crew (Misty) | Starmie 22, Staryu 19 | ₽940 |
+| Vermilion Gym (boss) | Thunder Battalion (Lt. Surge) | Raichu 31, Voltorb 29, Magnemite 29 (after its two waves, fought by three) | ₽1,534 |
 | Route 3, map 1 | Alley Gang (Youngster) | Rattata 15, Ekans 15 | ₽112 |
 | Route 3, map 1 | Crawler Swarm (Bug Catcher) | Caterpie 14, Weedle 14, Caterpie 14 | ₽70 |
 | Route 3, map 2 | Pidgey Flock (Lass) | Pidgey 13, Pidgey 13 | ₽97 |

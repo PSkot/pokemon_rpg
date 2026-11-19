@@ -36,10 +36,11 @@ Pokémon, each one written by hand.
   Moon's Zubat, Paras and Clefairy, and the Cerulean Gym's Goldeen, Staryu
   (and Starmie), Horsea, Shellder and Psyduck, and Routes 24 and 25's
   Oddish, Bellsprout, Abra (and Kadabra) and Venonat; Diglett, from
-  the Pewter Gym's waves; Route 5's Meowth and Mankey; and the S.S. Anne's
-  Machop, Tentacool and Growlithe. Every line in the game now has talents. (Dugtrio, Graveler,
+  the Pewter Gym's waves; Route 5's Meowth and Mankey; the S.S. Anne's
+  Machop, Tentacool and Growlithe; and the Vermilion Gym's Voltorb and
+  Magnemite (Raichu takes Pikachu's moves and talents). Every line in the game now has talents. (Dugtrio, Graveler,
   Sandslash, Arbok, Golbat, Parasect, Seaking, Seadra, Golduck, Gloom,
-  Weepinbell, Venomoth, Alakazam, Persian, Primeape, Machoke, Tentacruel and Arcanine aren't in the game yet, and Staryu
+  Weepinbell, Venomoth, Alakazam, Persian, Primeape, Machoke, Tentacruel, Arcanine, Electrode and Magneton aren't in the game yet, and Staryu
   doesn't evolve in it, so those lines can't learn their
   evolved forms' moves; their trees are built on the moves they can.)
 - **Tiers.** 12 tiers open at **Lv6, 10, 14, 18, 22, 27, 32, 38, 44, 50,
@@ -581,6 +582,48 @@ Paths: **Flame** (ember and Flamethrower: fire and burns); **Hound** (bite and T
 | 11 | 60 | **Heat Haze** *(needs 4)*: At the start of each battle, each enemy has a 30% chance to be burned. *(Fire)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Unbreakable** *(needs 4)*: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
 | 12 | 75 | **Sacred Fire** *(needs 6)*: Flamethrower burns 50% of the time, and also hits one enemy next to the target at half damage. *(**own**)* | **Apex Predator** *(needs 6)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Fortress** *(needs 6)*: While the user stands, the whole party takes 25% less damage. *(Any)* |
 
+### Voltorb → Electrode
+
+Moves: Tackle, Screech, Thunder Shock 12, Sonic Boom 17, Self-Destruct 22, Light Screen 29, Swift 36, Explosion 43 (Electrode).
+
+Paths: **Spark** (thunder Shock: Electric damage and paralysis); **Roll** (tackle, Swift and Screech: rolling in first); **Blast** (light Screen, Self-Destruct and Explosion: going out with a bang).
+
+| Tier | Lv | Spark | Roll | Blast |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Live Wire**: The user's Electric moves are 20% more likely to paralyze. *(Electric)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 2 | 10 | **Static**: Whoever hits the user has a 25% chance to be paralyzed. *(Electric)* | **Rolling Charge**: Tackle always goes first. *(**own**)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 3 | 14 | **Charge Up**: Each Electric move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Electric)* | **Charge**: Tackle hits harder: 50 power. *(Tackle)* | **Screen Wall**: Light Screen covers the whole party. *(**own**)* |
+| 4 | 18 | **Surge**: Below 1/3 HP, the user's Electric moves deal 1.5× damage. *(Electric)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Live Bomb**: Self-Destruct deals 50% more. *(**own**)* |
+| 5 | 22 | **Conductor**: Enemies the user paralyzes take 30% more damage from everyone. *(Paralysis)* | **Star Shower**: Swift hits every enemy, the others at 60% damage. *(Swift)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 6 | 27 | **Discharge**: Knocking an enemy out with a Electric move heals the user 1/4 of its max HP. *(Electric)* | **Sandblast**: Swift has a 50% chance to lower the target's accuracy 1 stage. *(Swift)* | **Chain Reaction**: Self-Destruct and Explosion hit every enemy, the others at 50% damage. *(**own**)* |
+| 7 | 32 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Piercing Screech**: Screech works on every enemy. *(Screech)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 8 | 38 | **Exploit Weakness**: Enemies with lowered Defense take 30% more damage from the user's party. *(Any)* | **Shriek**: After Screech, the user hits the target with its basic attack at 60% power. *(Screech)* | **Solid Rock**: Super-effective hits on the user deal 25% less damage. *(Any)* |
+| 9 | 44 | **Sonic Barrage**: Sonic Boom hits every enemy, at full damage. *(**own**)* | **Flash Bang**: Sonic Boom has a 30% chance to make the target flinch. *(**own**)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 10 | 50 | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Bulwark Stance**: While the user stands, the whole party takes 15% less damage. *(Any)* |
+| 11 | 60 | **Overcharge** *(needs 4)*: Thunder Shock hits much harder: 80 power. *(**own**)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Fortress** *(needs 4)*: While the user stands, the whole party takes 25% less damage. *(Any)* |
+| 12 | 75 | **Ball Lightning** *(needs 6)*: Thunder Shock hits every enemy at full damage. *(**own**)* | **Gyro Ball** *(needs 6)*: Swift hits much harder: 90 power. *(**own**)* | **Big Bang** *(needs 6)*: Explosion hits every enemy at full damage. *(**own**)* |
+
+### Magnemite → Magneton
+
+Moves: Tackle, Sonic Boom 21, Thunder Shock 25, Supersonic 29, Thunder Wave 35, Swift 41, Screech 47.
+
+Paths: **Magnet** (thunder Shock and Thunder Wave: paralysis); **Steel** (sonic Boom and a steel body: hard to bring down); **Pulse** (supersonic and Screech: scrambling enemies).
+
+| Tier | Lv | Magnet | Steel | Pulse |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Live Wire**: The user's Electric moves are 20% more likely to paralyze. *(Electric)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* | **Echo**: Supersonic works on every enemy. *(Supersonic)* |
+| 2 | 10 | **Static**: Whoever hits the user has a 25% chance to be paralyzed. *(Electric)* | **Sonic Pulse**: Sonic Boom has a 30% chance to confuse. *(**own**)* | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* |
+| 3 | 14 | **Charge Up**: Each Electric move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Electric)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Piercing Screech**: Screech works on every enemy. *(Screech)* |
+| 4 | 18 | **Conductor**: Enemies the user paralyzes take 30% more damage from everyone. *(Paralysis)* | **Lock-On**: The user's damaging moves never miss. *(**own**)* | **Gravity Pull**: Supersonic also lowers the target's Speed 1 stage. *(**own**)* |
+| 5 | 22 | **Chain Lightning**: Thunder Wave works on every enemy. *(Thunder Wave)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Shriek**: After Screech, the user hits the target with its basic attack at 60% power. *(Screech)* |
+| 6 | 27 | **Surge**: Below 1/3 HP, the user's Electric moves deal 1.5× damage. *(Electric)* | **Star Shower**: Swift hits every enemy, the others at 60% damage. *(Swift)* | **Hysteria**: Confusion the user causes has a 30% chance each round to spread to an enemy next to it. *(Confusion)* |
+| 7 | 32 | **Tri Attack**: Swift has a 30% chance to paralyze. *(**own**)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Mind Crush**: Confused enemies take 30% more damage from the user. *(Confusion)* |
+| 8 | 38 | **Discharge**: Knocking an enemy out with a Electric move heals the user 1/4 of its max HP. *(Electric)* | **Solid Rock**: Super-effective hits on the user deal 25% less damage. *(Any)* | **Sandblast**: Swift has a 50% chance to lower the target's accuracy 1 stage. *(Swift)* |
+| 9 | 44 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Magnet Pull**: Supersonic also makes every enemy attack the user, this round and the next. *(**own**)* |
+| 10 | 50 | **Exploit Weakness**: Enemies with lowered Defense take 30% more damage from the user's party. *(Any)* | **Bulwark Stance**: While the user stands, the whole party takes 15% less damage. *(Any)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
+| 11 | 60 | **Zap Cannon** *(needs 4)*: Thunder Shock is 40% more likely to paralyze, and never misses. *(**own**)* | **Wish** *(needs 4)*: Once a battle, a partner that would faint keeps 1 HP, and the user heals it half its max HP. *(Any)* | **Bedlam** *(needs 4)*: Enemies the user confuses always hurt themselves. *(Confusion)* |
+| 12 | 75 | **Magnet Storm** *(needs 6)*: Thunder Shock hits every enemy, the others at 60% damage. *(**own**)* | **Fortress** *(needs 6)*: While the user stands, the whole party takes 25% less damage. *(Any)* | **Blind Spot** *(needs 6)*: Enemies with lowered accuracy take 30% more damage from the user's party. *(Any)* |
+
 ### Mankey → Primeape
 
 Moves: Scratch, Leer, Karate Chop 15, Low Kick 18, Fury Swipes 21, Focus Energy 27, Seismic Toss 33, Thrash 39 (Primeape).
@@ -623,7 +666,7 @@ Paths: **Vine** (vine Whip and Wrap: whipping and binding); **Pitcher** (acid an
 | 11 | 60 | **Constrictor** *(needs 4)*: Wrap's and Bind's grip hurts far more: a further 1/8 of max HP each round. *(**own**)* | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Leaf Storm** *(needs 4)*: Razor Leaf hits every enemy, the others at 60% damage. *(**own**)* |
 | 12 | 75 | **Strangler Fig** *(needs 6)*: Enemies caught in a bind take 50% more damage from the user. *(**own**)* | **Digest** *(needs 6)*: Acid hits every enemy at full damage, and lowers Defense 2 stages. *(**own**)* | **Razor Wind** *(needs 6)*: Razor Leaf is always a critical hit. *(**own**)* |
 
-### Pikachu
+### Pikachu → Raichu
 
 Moves: Thunder Shock, Growl, Thunder Wave 9, Quick Attack 16, Swift 26, Thunderbolt 30, Agility 33, Thunder 43.
 

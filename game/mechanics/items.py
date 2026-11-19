@@ -509,6 +509,7 @@ KEY_ITEMS = {
     "Pokédex": "Professor Oak's high-tech encyclopedia of Pokémon.",
     "Boulder Badge": "The Boulder Gang's badge, from the Pewter Gym.",
     "Cascade Badge": "The Cascade Crew's badge, from the Cerulean Gym.",
+    "Thunder Badge": "The Thunder Battalion's badge, from the Vermilion Gym.",
     "S.S. Ticket": "A ticket for the S.S. Anne, from Bill. The ship docks at Vermilion City.",
     "HM01 Cut": "A hidden machine from the S.S. Anne's Captain. Its technique, Cut, clears small trees out of the "
                 "way, like the one over the Vermilion Gym's door.",

@@ -164,6 +164,10 @@ SPECIES.update({
     "machop": _animated("machop", "Machop", (70, 80, 50, 35, 35), ("fighting",), exp=88, hit=4),
     "tentacool": _animated("tentacool", "Tentacool", (40, 40, 35, 70, 100), ("water", "poison"), exp=105, hit=5),
     "growlithe": _animated("growlithe", "Growlithe", (55, 70, 45, 60, 50), ("fire",), exp=91, hit=5),
+    # The Vermilion Gym (only met with trainers there).
+    "voltorb": _animated("voltorb", "Voltorb", (40, 30, 50, 100, 55), ("electric",), exp=103, hit=4),
+    "magnemite": _animated("magnemite", "Magnemite", (25, 35, 70, 45, 95), ("electric",), exp=89, hit=5),
+    "raichu": _animated("raichu", "Raichu", (60, 90, 55, 100, 90), ("electric",), exp=122, hit=6),
 })
 
 _KEYS = {species: key for key, species in SPECIES.items()}
@@ -229,7 +233,7 @@ EVOLUTIONS = {key: Evolution(into, level) for key, into, level in [
 # Stone and trade evolutions aren't in yet, but some later forms already
 # appear (Starmie leads the Cerulean Gym): this gives them their line's
 # moves, talents and stage (they don't evolve from it).
-LATER_FORMS = {"starmie": "staryu"}
+LATER_FORMS = {"starmie": "staryu", "raichu": "pikachu"}
 
 _EVOLVES_FROM = {e.into: key for key, e in EVOLUTIONS.items()} | LATER_FORMS
 

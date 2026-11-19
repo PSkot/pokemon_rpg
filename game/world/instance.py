@@ -29,7 +29,7 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_22,
-                     ROUTE_24, ROUTE_25, SS_ANNE, UNDERGROUND, PoolEntry, Theme)
+                     ROUTE_24, ROUTE_25, SS_ANNE, UNDERGROUND, VERMILION_GYM, PoolEntry, Theme)
 from .towns import Folk
 
 # Stands in a boss group for the rival's starter, which depends on the
@@ -248,6 +248,20 @@ ROUTES = {r.key: r for r in [
           wild=False, building="Cerulean Gym", cols=44,
           needs=("cascade_badge", "not_done"),
           blocked="Starmie: Hyah! You already have the Cascade Badge. Show it off somewhere else!"),
+    # The Vermilion Gym, from its building, as the other gyms: the Thunder
+    # Battalion's two waves of Electric Pokémon, then the battalion itself,
+    # led by a Raichu (Gen 1's Lt. Surge: Voltorb, Pikachu, Raichu). Three
+    # fight its waves (the party has three places from the S.S. Anne on):
+    # it's meant to be very hard with fewer (tools/balance_sim.py).
+    Route("vermilion_gym", "Vermilion Gym", VERMILION_GYM, maps=1, towns=("vermilion", "vermilion"), boss=True,
+          boss_group=(("raichu", 31), ("voltorb", 29), ("magnemite", 29)), trainer="Thunder Battalion",
+          boss_chest="fancy", prize=99,
+          waves=(Wave("Thunder Battalion Privates", (("pikachu", 27), ("voltorb", 27), ("magnemite", 27)), 30),
+                 Wave("Thunder Battalion Sergeants", (("magnemite", 28), ("voltorb", 28), ("pikachu", 28)), 30)),
+          wave_team=3, wild=False, building="Vermilion Gym", cols=44,
+          needs=("thunder_badge", "active"),
+          blocked="A small, thorny tree has grown over the gym's door. It would have to be cut down to get in.",
+          blocked_done="Raichu: Hey, kid! You've got the Thunder Badge already. Go show it off!"),
     # The S.S. Anne, docked at Vermilion City (quest "ss_anne"), as in
     # Red/Blue: cabins full of trainers (sailors, gentlemen, a fisherman),
     # the rival waiting on the upper deck, and the seasick Captain, who

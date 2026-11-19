@@ -157,7 +157,8 @@ def _lamp(s, x, y, rng, p):
     s.set_at((x, y + h + 2), (255, 248, 210))
 
 
-CEILING_DECOR = {"pewter_gym": _stalactite, "mt_moon": _stalactite, "underground": _lamp, "ss_anne": _lamp}  # theme -> what hangs
+CEILING_DECOR = {"pewter_gym": _stalactite, "mt_moon": _stalactite, "underground": _lamp, "ss_anne": _lamp,
+                 "vermilion_gym": _lamp}  # theme -> what hangs
 
 DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the meadow's come from its tileset)
     "pewter_gym": [(0.12, _rock)],
@@ -165,6 +166,7 @@ DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the m
     "cerulean_gym": [(0.08, _puddle)],
     "underground": [(0.06, _rock)],  # rubble the Diglett left
     "ss_anne": [],  # (polished planks)
+    "vermilion_gym": [],  # (steel floor plates)
 }
 
 

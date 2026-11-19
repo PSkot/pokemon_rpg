@@ -32,6 +32,9 @@ class Building:
     # Center, scenes/recruit.py), or "" (nothing).
     inside: str = ""
     note: str = ""  # what Up there says, if nothing else happens there (a shut gym)
+    # A small tree grows over its door until this quest has started (then the
+    # first Up there cuts it down: the Vermilion Gym and HM01 Cut).
+    tree: str = ""
 
     @property
     def x(self) -> int:
@@ -268,8 +271,7 @@ TOWNS = {t.key: t for t in [
                       "feels like talking.\""),
         Building("Poké Mart", (FUNCTIONAL, 2), 34, inside="mart"),
         Building("Recruitment Center", (HOUSES, 3), 46, inside="recruit"),
-        Building("Vermilion Gym", (FUNCTIONAL, 1), 60,
-                 note="A small, thorny tree has grown over the gym's door. It would have to be cut down to get in."),
+        Building("Vermilion Gym", (FUNCTIONAL, 1), 60, tree="thunder_badge"),
         Building("", (HOUSES, 2), 72),
     ), exits=(("left", "route_6_south"), ("right", "ss_anne")), home_col=14, board_col=57,
        mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal",
@@ -281,7 +283,7 @@ TOWNS = {t.key: t for t in [
                "Jiggly... Everyone's here for the S.S. Anne. It only comes to port once a year!",
            )),
            Folk("vermilion_pikachu", "Pikachu", "pikachu", 69, (
-               "Pika! A little tree has grown right over the gym's door. Someone would have to cut it down...",
+               "Pika! Lt. Surge's gym is full of Electric Pokémon. He says only a full team can stand the shocks.",
                "The gym's leader, Lt. Surge, uses Electric Pokémon. Pika pika! Ground types don't mind them at all.",
            )),
            Folk("vermilion_shellder", "Shellder", "shellder", 84, (

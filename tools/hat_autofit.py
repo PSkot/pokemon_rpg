@@ -45,6 +45,7 @@ REFS = {
     "nidorina": (41, 38), "nidorino": (40, 39), "kadabra": (37, 28),
     "meowth": (35, 39), "mankey": (38, 43),
     "machop": (34, 35), "tentacool": (33, 36), "growlithe": (38, 35),
+    "raichu": (39, 35), "voltorb": (32, 46), "magnemite": (31, 46),
 }
 
 # Hat size, relative to Bulbasaur's head (about 18 px across).
@@ -62,6 +63,7 @@ SCALES = {
     "nidorina": 0.7, "nidorino": 0.7, "kadabra": 0.7,
     "meowth": 0.65, "mankey": 0.7,
     "machop": 0.7, "tentacool": 0.65, "growlithe": 0.7,
+    "raichu": 0.75, "voltorb": 0.6, "magnemite": 0.6,
 }
 
 

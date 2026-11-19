@@ -277,6 +277,25 @@ SS_ANNE = Theme(
     built=True,
 )
 
+# The Vermilion Gym: Lt. Surge's army-style hall of steel (flat floors,
+# a painted wall of hazard stripes and pylons). Its pool is never met.
+VERMILION_GYM = Theme(
+    "vermilion_gym", "Vermilion Gym",
+    Palette(fill=(92, 96, 100), fill_dark=(62, 66, 70), fill_light=(130, 136, 140),
+            top=(168, 172, 160), top_dark=(126, 130, 120), top_light=(210, 214, 196),
+            platform=(200, 170, 60), platform_dark=(120, 100, 30), platform_light=(240, 214, 100)),
+    pool=(PoolEntry("voltorb", 1, (25, 27)),),
+    backdrop=Backdrop(art="vermilion_gym.png", sky_top=(80, 86, 70), sky_bottom=(120, 126, 104),
+                      hills=((96, 100, 84), (90, 94, 78)), field_far=(150, 154, 150), field_near=(130, 134, 130),
+                      stripe=(140, 144, 140), shadow=(80, 84, 80)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(40, 44, 36), sky_bottom=(80, 86, 70), far_rock=(60, 64, 56), near_rock=(76, 80, 70),
+                  glow=None, wall="vermilion_gym.png", dim=50, near_rocks=False),
+    doorway="",
+    built=True,
+)
+
 # The Pewter Gym: an indoor rock hall (drawn in code). Its pool is never
 # met: gyms have only their trainers (`Route.wild`).
 PEWTER_GYM = Theme(

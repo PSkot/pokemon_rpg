@@ -340,6 +340,25 @@ yet.
 - **Afterwards** the S.S. Anne sets sail: the gangway is shut
   (`Route.needs` "active": only while the quest is going on).
 
+### 14. The Thunder Badge
+
+- **Starts:** automatically when quest 13 is done (with HM01 Cut).
+- **Steps:** a small tree grows over the **Vermilion Gym**'s door
+  (`Building.tree`; Up before Cut: "It would have to be cut down"). The
+  first Up once the quest has started cuts it down for good ("<lead> used
+  Cut!"); then Up walks the gym. Defeat the **Thunder Battalion**, the
+  third of three waves, fought by **three** Pokémon the player picks
+  (`Route.wave_team` = 3): Privates (Pikachu, Voltorb, Magnemite 27),
+  Sergeants (Magnemite, Voltorb, Pikachu 28), then the battalion: Raichu 31,
+  Voltorb 29, Magnemite 29 (Gen 1's Lt. Surge: Voltorb, Pikachu, Raichu).
+  Raichu: "Whoa! You're the real deal, kid! Fine then, take the Thunder
+  Badge!" (key item).
+- **Meant to need a full team:** in `tools/balance_sim.py` a team of three
+  at Lv29 + Lv28 wins about 70%; two win about 14% (`TEAM=2`).
+- **Rewards:** ₽1,500, 1,300 XP, 2 Hyper Potions and a **Rare** gear piece
+  (item level 28), on top of the battalion's prize (₽1,534) and the gym's
+  fancy chest.
+
 ---
 
 ## Evolution quests
@@ -506,8 +525,9 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | Psyduck | 6 | Route 6 | 21–23 | Lv26 |
 
 Not every Pokémon comes this way: the starters, and those only met with
-trainers (Geodude, Onix, and the S.S. Anne's Machop, Tentacool and
-Growlithe), will have special quests. Trainers' bands, gyms' waves and
+trainers (Geodude, Onix, the S.S. Anne's Machop, Tentacool and
+Growlithe, the Vermilion Gym's Voltorb, Magnemite and Raichu), will have
+special quests. Trainers' bands, gyms' waves and
 bosses don't count towards recruitment: only ordinary wild groups do.
 
 ---

@@ -561,6 +561,19 @@ QUESTS = {q.key: q for q in [
                             "the reserve fill the new place.")),
     ),
     Quest(
+        "thunder_badge", "The Thunder Badge",
+        "The Thunder Battalion, Electric Pokémon led by a Raichu, holds the Vermilion Gym. With Cut, the little "
+        "tree over its door is no obstacle any more. It's said they only fall to a full team of three.",
+        requires=("ss_anne",),
+        steps=(Step("defeat", "vermilion_gym", "Cut the tree at the Vermilion Gym's door, and defeat the Thunder "
+                                               "Battalion",
+                    dialogue=(("Raichu", "Whoa! You're the real deal, kid! Fine then, take the Thunder Badge!"),
+                              ("", "You received the Thunder Badge!")),
+                    gives=("Thunder Badge",)),),
+        money=1500, xp=1300,
+        rewards=(("medicine", "Hyper Potion", 2), ("gear", None, "Rare", 28)),
+    ),
+    Quest(
         "snake_charmer", "Snake Charmer",
         "Ekans on Route 3 keep frightening travelers. Drive a few of them off.",
         board="pewter", requires=("boulder_badge",),
