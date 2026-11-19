@@ -9,6 +9,7 @@ is closed; they aren't saved.
 from dataclasses import dataclass
 
 XP_BOOSTS = (1, 3, 5, 10, 20)
+PASSWORD = "iamthedev"  # asked before dev mode first switches on (scenes/dev_menu.PasswordPrompt)
 
 
 @dataclass
@@ -16,6 +17,7 @@ class DevMode:
     enabled: bool = False
     xp_boost: int = 1   # one of XP_BOOSTS
     god: bool = False
+    unlocked: bool = False  # the password was given (this session: asked once)
 
     @property
     def xp_multiplier(self) -> int:

@@ -1286,6 +1286,11 @@ always the same spot), with its team in a row.
 
 `game/dev.py` (switched on in the pause menu, for testing; not saved)
 
+- **Password:** switching it on the first time in a session asks for a
+  password (`dev.PASSWORD`; `scenes/dev_menu.PasswordPrompt`): typed on a
+  keyboard (Enter checks it), or picked letter by letter without one
+  (Up/Down, Space adds, Left deletes, "OK" checks). Esc cancels.
+
 - **XP boost** ×3/×5/×10/×20 multiplies the total XP of a won battle
   before it's shared out, and a quest's XP.
 - **God mode:** hits on the party deal 0 damage and burn/poison don't hurt

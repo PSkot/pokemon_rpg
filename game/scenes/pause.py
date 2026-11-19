@@ -9,7 +9,7 @@ from ..mechanics.items import money_text
 from ..saves import LoadError
 from .controls_menu import ControlsMenu
 from .bag import BagScreen
-from .dev_menu import ItemMaker
+from .dev_menu import ItemMaker, PasswordPrompt
 from ..world.towns import TOWNS
 from .quest_ui import QuestLog
 from .town import TownScene
@@ -46,6 +46,7 @@ class PauseMenu:
         self.loaded = None  # the scene of a loaded save, to switch to
         self.saves: SaveList | None = None  # the save or load list, when open
         self.items: ItemMaker | None = None  # dev mode's item maker, when open
+        self.password: PasswordPrompt | None = None  # asked before dev mode first switches on
         self.log: QuestLog | None = None     # the quest log, when open
         self.controls: ControlsMenu | None = None  # the touch controls' layout, when open
         self.bag_screen: BagScreen | None = None   # the bag, when open
@@ -129,6 +130,14 @@ class PauseMenu:
             if self.items.closed:
                 self.items = None
             return
+        if self.password:
+            self.password.handle_event(event)
+            if self.password.closed:
+                if self.password.passed:
+                    DEV.unlocked = True
+                    self._toggle("Dev mode", 1)
+                self.password = None
+            return
         if self.log:
             if event.type == pygame.KEYDOWN and self.log.handle_key(event.key):
                 self.log = None
@@ -181,6 +190,9 @@ class PauseMenu:
             fullscreen.toggle()
             return
         if option == "Dev mode":
+            if not DEV.enabled and not DEV.unlocked:  # (the password first, once a session)
+                self.password = PasswordPrompt()
+                return
             DEV.enabled = not DEV.enabled
         elif option == "XP boost":
             DEV.xp_boost = XP_BOOSTS[(XP_BOOSTS.index(DEV.xp_boost) + step) % len(XP_BOOSTS)]
@@ -226,6 +238,9 @@ class PauseMenu:
             return
         if self.items:
             self.items.draw_overlay(window)
+            return
+        if self.password:
+            self.password.draw_overlay(window)
             return
         if self.log:
             self.log.draw_overlay(window)

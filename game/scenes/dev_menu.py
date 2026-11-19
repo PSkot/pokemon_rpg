@@ -10,6 +10,7 @@ pause menu.
 import pygame
 
 from .. import settings
+from ..dev import PASSWORD
 from ..engine import ui
 from ..mechanics.items import (AFFIX_BY_NAME, EFFECT_CHANCE, EFFECT_COLOR, GEAR_EFFECTS, ITEMS, MEDICINE, RARITIES, SLOT_NAMES, SLOTS,
                                Bag, Gear, Roll, affixes_for, level_factor, mod_text)
@@ -283,3 +284,61 @@ class ItemMaker:
         for i, (line, color) in enumerate(self.message):
             ui.text(window, line, (left, y + 15 + i * 13), color, size=20)
 
+
+
+class PasswordPrompt:
+    """Asks for dev mode's password (`dev.PASSWORD`) before it first switches
+    on. Type it on a keyboard (Backspace deletes, Enter checks it), or pick
+    letters without one (touch): Up/Down chooses a letter, Space (A) adds
+    it, Left deletes, and "OK" at the end of the letters checks it. Esc
+    (Menu) cancels. `passed` once right; `closed` when done either way."""
+
+    LETTERS = [chr(c) for c in range(ord("a"), ord("z") + 1)] + ["OK"]
+    BOX = pygame.Rect(0, 0, 300, 96)
+    BOX.center = RECT.center
+
+    def __init__(self):
+        self.typed = ""
+        self.pick = 0
+        self.passed = self.closed = False
+        self.message = ""
+
+    def _check(self) -> None:
+        if self.typed == PASSWORD:
+            self.passed = self.closed = True
+        else:
+            self.typed, self.message = "", "Wrong password."
+
+    def handle_event(self, event: pygame.event.Event) -> None:
+        if event.type != pygame.KEYDOWN:
+            return
+        key = event.key
+        if key == pygame.K_ESCAPE:
+            self.closed = True
+        elif key in (pygame.K_RETURN, pygame.K_KP_ENTER):
+            self._check()
+        elif key == pygame.K_BACKSPACE or key == pygame.K_LEFT:
+            self.typed = self.typed[:-1]
+        elif key in (pygame.K_UP, pygame.K_DOWN):
+            self.pick = (self.pick + (1 if key == pygame.K_DOWN else -1)) % len(self.LETTERS)
+        elif key == pygame.K_SPACE:  # (the picked letter, or OK)
+            if self.LETTERS[self.pick] == "OK":
+                self._check()
+            elif len(self.typed) < 24:
+                self.typed += self.LETTERS[self.pick]
+        elif event.unicode and event.unicode.isprintable() and len(self.typed) < 24:
+            self.typed += event.unicode.lower()
+            self.message = ""
+
+    def draw_overlay(self, window: pygame.Surface) -> None:
+        box = pygame.Surface(self.BOX.size, pygame.SRCALPHA)
+        ui.window_box(box, box.get_rect())
+        ui.blit_scaled(window, box, self.BOX.topleft)
+        x, y = self.BOX.x + 14, self.BOX.y + PAD
+        ui.text(window, "Dev mode password", (x, y), ui.YELLOW)
+        ui.text(window, "•" * len(self.typed) + "_", (x, y + 22), ui.WHITE)
+        pick = self.LETTERS[self.pick]
+        ui.text(window, f"Up/Down: < {pick} >  Space: add", (self.BOX.right - 14, y + 24), ui.GREY, size=18,
+                align="right")
+        ui.text(window, self.message or "Type it, then Enter.   Left: delete   Esc: cancel", (x, y + 48),
+                (240, 110, 100) if self.message else ui.GREY, size=18)

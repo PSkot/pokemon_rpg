@@ -480,7 +480,9 @@ non-commercial project.
   Enter on a slot lists the bag's gear for it (or Remove), previewing the
   stat changes (Now / Gear / New / Change) and each mod's difference from
   the worn item (mods it would lose struck through), and equips it. S opens the talent screen ("N talents to pick" shows when tiers are open).
-- Dev mode (`dev.py`, `DEV`): switched on in the pause menu; not saved.
+- Dev mode (`dev.py`, `DEV`): switched on in the pause menu, after a
+  password (`dev.PASSWORD`, asked once a session: `scenes/dev_menu.PasswordPrompt`,
+  typed, or letters picked with Up/Down + Space for touch); not saved.
   XP boost (×1/3/5/10/20, `DEV.xp_multiplier` in `_give_xp`), god mode
   (`DEV.god_mode`: the party takes no damage, every hit knocks an enemy
   out) and an item maker (`scenes/dev_menu.ItemMaker`: any gear with
