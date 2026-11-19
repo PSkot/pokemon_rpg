@@ -134,6 +134,7 @@ DEN_CURTAIN_X = 56            # the way back into the mart
 DEN_PERSIAN_X = 320          # Persian on its pile, under its own portrait
 DEN_STANDS = (("gear_stand", 172), ("gear_stand_2", 468))  # gilded stands showing off gear
 PERSIAN_REACH = 44           # (its pile is wide)
+SPILL_DROP = 10              # the coins spilling from its pile lie this far down the carpet
 
 
 class DenScene(MapScene):
@@ -186,6 +187,8 @@ class DenScene(MapScene):
     def draw_things(self, layer: pygame.Surface) -> None:
         image = self.persian
         layer.blit(image, (DEN_PERSIAN_X - image.get_width() // 2, self.ground - image.get_height()))
+        if (tileset.ART / "props" / "coin_spill.png").exists():  # (hides the pile's foot)
+            tileset.draw_prop(layer, "coin_spill", DEN_PERSIAN_X, self.ground + SPILL_DROP)
 
 
 class ShopMenu:
