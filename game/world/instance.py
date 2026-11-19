@@ -30,7 +30,7 @@ from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
                      ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_11, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
-                     UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, PoolEntry, Theme)
+                     UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, PoolEntry, Theme)
 from .towns import Folk
 
 # Stands in a boss group for the rival's starter, which depends on the
@@ -265,6 +265,22 @@ ROUTES = {r.key: r for r in [
           needs=("thunder_badge", "active"),
           blocked="A small, thorny tree has grown over the gym's door. It would have to be cut down to get in.",
           blocked_done="Raichu: Hey, kid! You've got the Thunder Badge already. Go show it off!"),
+    # The Celadon Gym (quest "rainbow_badge"): Erika's greenhouse. Clouds of
+    # spores drift over the walk to the arena (`puzzle` "spores",
+    # scenes/spores.py), so the team may arrive asleep, poisoned or
+    # paralysed; then the Blossom Troupe's two waves of Grass Pokémon, and
+    # the troupe itself, led by a Vileplume (Gen 1's Erika: Victreebel,
+    # Tangela, Vileplume).
+    Route("celadon_gym", "Celadon Gym", CELADON_GYM, maps=1, towns=("celadon_square", "celadon_square"), boss=True,
+          boss_group=(("vileplume", 39), ("victreebel", 38), ("tangela", 37)), trainer="Blossom Troupe",
+          boss_chest="fancy", prize=99, boss_loot=MID_BOSS,
+          waves=(Wave("Blossom Troupe Buds", (("oddish", 35), ("bellsprout", 35), ("gloom", 36)), 20),
+                 Wave("Blossom Troupe Petals", (("weepinbell", 36), ("exeggcute", 36), ("gloom", 37)), 25)),
+          wave_team=3, wild=False, building="Celadon Gym", cols=60, puzzle="spores",
+          needs=("rainbow_badge", "active"),
+          blocked="The gym's glass doors are locked. A sign: \"Closed for watering. - Erika\"",
+          blocked_done="Vileplume: Oh, it's you again... The Rainbow Badge suits you. Do come back to smell the "
+                       "flowers."),
     # The S.S. Anne, docked at Vermilion City (quest "ss_anne"), as in
     # Red/Blue: cabins full of trainers (sailors, gentlemen, a fisherman),
     # the rival waiting on the upper deck, and the seasick Captain, who

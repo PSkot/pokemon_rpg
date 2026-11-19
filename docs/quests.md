@@ -43,6 +43,7 @@ script that walks every route's maps; the major fights in
 | Route 8 | 34 | 1,100 | 3,200 |
 | Underground Path (west) | 35 | 740 | 1,500 |
 | Celadon City | 36 | | |
+| Celadon Gym | 37 | | 1,700 |
 
 (Before this check, battles gave ×0.5 / ×1.5 to every member unsplit:
 about 62,000 battle XP each from Pewter to Vermilion against 14,000
@@ -485,8 +486,8 @@ yet.
     vending machines: Fresh Water ₽200, Soda Pop ₽300, Lemonade ₽350, which
     restore 50/60/80 HP; and the view over the city).
   - **Celadon Square** ("celadon_square"): the Game Corner (Team
-    Rocket's, later), the Celadon Gym (closed for watering: Erika's gym is
-    the next part), the Recruitment Center and the smith.
+    Rocket's, later), the Celadon Gym (quest 22), the Recruitment Center
+    and the smith.
   - **Celadon West End** ("celadon_west"): the Celadon Mansion and the
     **Battle Tower**. It opens after the Rainbow Badge: 25 floors of wave
     battles, five more opening at 6, 7 and 8 badges and the
@@ -494,6 +495,24 @@ yet.
     (`docs/mechanics.md` → The Battle Tower).
 - **Rewards:** ₽1,600, 1,500 XP, 2 Hyper Potions and a **Rare** gear piece
   (item level 35).
+
+### 22. The Rainbow Badge
+
+- **Starts:** automatically when quest 21 is done.
+- **Steps:** defeat the **Blossom Troupe** in the **Celadon Gym** (Celadon
+  Square; route "celadon_gym"), Erika's greenhouse. **Clouds of spores**
+  drift over the walk to the arena: walking into one puts a party member
+  to sleep, poisons or paralyses it, and the status lasts into the waves
+  (`mechanics.md` → *The Celadon Gym's spores*). Three fight
+  (`wave_team=3`): two waves of Grass Pokémon (Oddish 35, Bellsprout 35,
+  Gloom 36; Weepinbell 36, Exeggcute 36, Gloom 37), then the troupe
+  (Vileplume 39, Victreebel 38, Tangela 37). With three at the expected
+  Lv37/36, the gym's battles are won about 69% of the time before any
+  spores (`tools/balance_sim.py`). The leader, Vileplume, gives the
+  **Rainbow Badge**. The gym is shut once the badge is won.
+- **Rewards:** ₽1,800, 1,700 XP, 2 Hyper Potions, 3 Full Heals and a
+  **Rare** gear piece (item level 38). Winning the badge opens the
+  **Battle Tower** (floors 1–5).
 
 ### A Hammer Fit for a Smith (side quest)
 

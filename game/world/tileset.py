@@ -158,6 +158,24 @@ def _moonstone(s, x, y, rng, p):
     s.set_at((x, y - 4), (230, 220, 255))
 
 
+def _flower(s, x, y, rng, p):
+    """A little flower in the moss (the Celadon Gym)."""
+    color = rng.choice(((240, 110, 150), (250, 220, 90), (200, 120, 240), (255, 150, 90), (250, 250, 250)))
+    h = rng.randint(2, 4)
+    pygame.draw.line(s, (70, 130, 60), (x, y), (x, y - h))
+    for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        s.set_at((x + dx, y - h - 1 + dy), color)
+    s.set_at((x, y - h - 1), (255, 240, 160))
+
+
+def _vine(s, x, y, rng, p):
+    """A flowering vine hanging from the glass roof (the Celadon Gym)."""
+    h = rng.randint(4, 10)
+    pygame.draw.line(s, (60, 120, 56), (x, y), (x, y + h))
+    s.set_at((x + 1, y + h // 2), (90, 160, 70))
+    s.set_at((x, y + h + 1), rng.choice(((240, 110, 150), (200, 120, 240), (250, 220, 90))))
+
+
 def _lamp(s, x, y, rng, p):
     """A lamp hanging from the tunnel's ceiling (the Underground Path)."""
     h = rng.randint(3, 6)
@@ -169,7 +187,8 @@ def _lamp(s, x, y, rng, p):
 
 CEILING_DECOR = {"pewter_gym": _stalactite, "mt_moon": _stalactite, "underground": _lamp, "ss_anne": _lamp,
                  "vermilion_gym": _lamp, "digletts_cave": _root,
-                 "tower_1": _lamp, "tower_2": _lamp, "tower_3": _lamp, "tower_4": _lamp, "tower_5": _lamp}  # theme -> what hangs
+                 "tower_1": _lamp, "tower_2": _lamp, "tower_3": _lamp, "tower_4": _lamp, "tower_5": _lamp,
+                 "celadon_gym": _vine}  # theme -> what hangs
 
 DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the meadow's come from its tileset)
     "pewter_gym": [(0.12, _rock)],
@@ -179,7 +198,8 @@ DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the m
     "ss_anne": [],  # (polished planks)
     "vermilion_gym": [],  # (steel floor plates)
     "digletts_cave": [(0.08, _rock)],  # (dirt the Diglett dug out)
-    "tower_1": [], "tower_2": [], "tower_3": [], "tower_4": [], "tower_5": [],  # (the Battle Tower's polished floors)
+    "tower_1": [], "tower_2": [], "tower_3": [], "tower_4": [], "tower_5": [],
+    "celadon_gym": [(0.10, _flower)],  # (flowers in the moss)  # (the Battle Tower's polished floors)
 }
 
 

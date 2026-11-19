@@ -394,8 +394,8 @@ non-commercial project.
   "dept" → `scenes/dept_store.DeptStoreScene`, `FLOORS`: 1F guide, 2F
   medicine, 3F Persian's gear, 4F materials, `MaterialShop`, rooftop
   vending machines selling drinks, `rooms/roof_*.png`; stairs props),
-  "celadon_square" (Game Corner and gym shut for now, Recruitment Center,
-  smith) and "celadon_west" (Mansion, the Battle Tower);
+  "celadon_square" (Game Corner shut for now, the Celadon Gym, Recruitment
+  Center, smith) and "celadon_west" (Mansion, the Battle Tower);
   big buildings have their own sheets (`towns.DEPT_STORE`, `MANSION`,
   `GAME_CORNER`, `BATTLE_TOWER`, `tileset.BUILDING_CELLS`). The smith
   (`towns.smith(col)`, `Folk.npc` = "machamp_smith": drawn from
@@ -406,7 +406,13 @@ non-commercial project.
   is in the bag), then `scenes/smith.SmithMenu`: salvage gear into its
   rarity's material (`items.MATERIALS`, `Bag.materials`), enhance to +5
   (`Gear.plus`, `items.enhanced`: bonuses +10% each), smelt 4 → 1 of the
-  next. The Battle Tower (`world/tower.py`, `scenes/battle_tower.py`;
+  next. Then quest "rainbow_badge": route "celadon_gym" (`CELADON_GYM`,
+  built: a greenhouse, `walls/`/`backdrops/celadon_gym.png`, flowers and
+  hanging vines in code; the Blossom Troupe's waves of Grass Pokémon, then
+  Vileplume's band with Tangela; `wave_team=3`, about 69% with three; its
+  hazard, `Route.puzzle` "spores", `scenes/spores.py`: 8 drifting clouds
+  of Sleep Powder / Poison Powder / Stun Spore that give a party member
+  their status on touch, carried into the waves). The Battle Tower (`world/tower.py`, `scenes/battle_tower.py`;
   `Building.inside` "tower", open after `tower.OPENS_AFTER` "rainbow_badge"
   or in dev mode): post-story content. Its lobby (`TowerLobbyScene`,
   `rooms/tower_*.png`) has Mew floating, drawn 2× (`props/mew.png`), with
@@ -634,7 +640,7 @@ non-commercial project.
 - Battle backdrops (`assets/sprites/pixellab/backdrops/`, `Backdrop.art`):
   320×132 Pixellab paintings drawn 2× over the battle area (meadow, forest,
   route_3, pewter_gym, mt_moon, cerulean_gym, underground, ss_anne,
-  vermilion_gym, digletts_cave, rock_tunnel; underground and ss_anne shifted up 14 px, their floor extended), their ground starting high enough for the
+  vermilion_gym, digletts_cave, rock_tunnel, celadon_gym, tower_1..5; underground and ss_anne shifted up 14 px, their floor extended), their ground starting high enough for the
   back row; a theme without one would be drawn in code from the
   `Backdrop` colours.
 - Map props (`assets/sprites/pixellab/props/`, `tileset.draw_prop`: centred,
@@ -651,7 +657,7 @@ non-commercial project.
   the title and save line readable).
 - Cave walls (`assets/sprites/pixellab/walls/`, `CaveLook.wall`): 320×180
   paintings of Mt. Moon's, the Pewter Gym's, the Cerulean Gym's, the
-  Underground Path's, the S.S. Anne's, the Vermilion Gym's, Diglett's Cave's and Rock Tunnel's far wall, drawn 2×,
+  Underground Path's, the S.S. Anne's, the Vermilion Gym's, Diglett's Cave's, Rock Tunnel's, the Celadon Gym's and the Battle Tower's far wall, drawn 2×,
   mirrored every other copy, dimmed (`dim`); the code-drawn rock in front
   stays (`near_rocks`, off in the gym).
 - `assets/sprites/pokemon_icons/` holds reference icons. Species without a

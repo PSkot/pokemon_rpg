@@ -693,6 +693,22 @@ QUESTS = {q.key: q for q in [
         done_dialogue=(("", "Celadon City: the city of rainbow dreams. Its gym, its Game Corner and its huge "
                             "Department Store glitter in the sun."),),
     ),
+    # The Celadon Gym, as in Red/Blue: Erika's greenhouse of Grass Pokémon.
+    Quest(
+        "rainbow_badge", "The Rainbow Badge",
+        "The Blossom Troupe, Grass Pokémon led by a Vileplume, tends the Celadon Gym's greenhouse. Spores drift "
+        "over every path in there: sleepy, poisonous, numbing. Bring Full Heals, and mind where you step.",
+        requires=("to_celadon",),
+        steps=(Step("defeat", "celadon_gym", "Defeat the Blossom Troupe in the Celadon Gym (Celadon Square)",
+                    dialogue=(("Vileplume", "Oh my... I must have dozed off. You beat us fair and square. Please, "
+                                            "take the Rainbow Badge."),
+                              ("", "You received the Rainbow Badge!")),
+                    gives=("Rainbow Badge",)),),
+        money=1800, xp=1700,
+        rewards=(("medicine", "Hyper Potion", 2), ("medicine", "Full Heal", 3), ("gear", None, "Rare", 38)),
+        done_dialogue=(("", "Word of your badge spreads fast. Out in Celadon's west end, the Battle Tower throws "
+                            "open its doors!"),),
+    ),
     Quest(
         "hot_dogs", "Hot Dogs",
         "Growlithe on Route 8 keep chasing travellers' Pokémon up the trees. Calm a few of them down.",

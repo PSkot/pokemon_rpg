@@ -222,6 +222,10 @@ LEARNSETS = {
     ('magmar',): (
         ('Ember', 0), ('Leer', 36), ('Confuse Ray', 39), ('Fire Punch', 43), ('Smog', 48), ('Flamethrower', 55),
     ),
+    ('tangela',): (
+        ('Constrict', 0), ('Bind', 0), ('Absorb', 29), ('Poison Powder', 32), ('Stun Spore', 36),
+        ('Sleep Powder', 39), ('Slam', 45), ('Growth', 49),
+    ),
     ('pinsir',): (
         ('Vice Grip', 0), ('Seismic Toss', 25), ('Harden', 30), ('Slash', 36), ('Swords Dance', 49),
         ('Submission', 52),

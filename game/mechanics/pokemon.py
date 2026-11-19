@@ -237,6 +237,7 @@ SPECIES.update({
     "electabuzz": _placeholder("125_electabuzz", "Electabuzz", (65, 83, 57, 105, 85), ('electric',), exp=156),
     "magmar": _placeholder("126_magmar", "Magmar", (65, 95, 57, 93, 85), ('fire',), exp=167),
     "pinsir": _placeholder("127_pinsir", "Pinsir", (65, 125, 100, 85, 55), ('bug',), exp=200),
+    "tangela": _placeholder("114_tangela", "Tangela", (65, 55, 115, 60, 100), ('grass',), exp=166),
 })
 
 _KEYS = {species: key for key, species in SPECIES.items()}

@@ -731,6 +731,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Pewter Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Boulder Gang: the fancy chest) |
 | Cerulean Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Cascade Crew: the fancy chest) |
 | Vermilion Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Thunder Battalion: the fancy chest) |
+| Celadon Gym | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Blossom Troupe, the fancy chest) |
 | Route 3 | Common | (no boss) |
 | Mt. Moon | Common | Common 60%, Uncommon 40% (Team Rocket: a reward roll with the battle, no chest) |
 | Route 4 | Common | (no boss) |
@@ -1218,6 +1219,24 @@ rummages in it (its lid comes off):
   sign ("DANGER: 10,000 VOLTS. Two switches cut the power." / "Hid 'em
   where nobody'd ever look. Ha! - Lt. Surge").
 
+**The Celadon Gym's spores** (`Route.puzzle` "spores",
+`scenes/spores.SporeGarden`): Erika's greenhouse is a longer walk (60
+tiles) with trellis platforms, and **8 clouds of spores** drift over it,
+from 12 tiles in to 9 tiles before the arena's band. They take turns:
+Sleep Powder (blue), Poison Powder (violet) and Stun Spore (yellow), and
+every other cloud **sweeps** to and fro along the floor (44 px either
+way) or **rises and sinks** (its middle 14 px to 78 px over the floor),
+each at its own pace (a cycle of 3.2–4.6 s).
+- Walking into a cloud gives **a random party member** its status: one
+  who has none and isn't immune (a Poison type to poison, an Electric type
+  to paralysis). If nobody can take it, nothing happens. A line at the
+  bottom of the screen says who ("Ivysaur breathed in the Sleep Powder!
+  Ivysaur fell asleep!").
+- The cloud then fades for **1.4 s** before it can strike again.
+- The statuses carry into the gym's waves (no healing in between): cure
+  them from the bag first, or jump over the low clouds, slip under the
+  high ones and wait for gaps.
+
 The starters' **trials** (`instance._trial`, quest *Coming of Age* in
 `quests.md`) work the same way, with one Pokémon (`wave_team=1`) that
 must be of the starter's line (`Route.wave_species`), walked by talking
@@ -1288,6 +1307,7 @@ always the same spot), with its team in a row.
 | Pewter Gym (boss) | Boulder Gang (Brock) | Geodude 14, Onix 16 | ₽792 |
 | Cerulean Gym (boss) | Cascade Crew (Misty) | Starmie 22, Staryu 19 | ₽940 |
 | Vermilion Gym (boss) | Thunder Battalion (Lt. Surge) | Raichu 31, Voltorb 29, Magnemite 29 (after its two waves, fought by three) | ₽1,534 |
+| Celadon Gym (boss) | Blossom Troupe (Erika) | Vileplume 39, Victreebel 38, Tangela 37 (after its two waves: Oddish 35, Bellsprout 35, Gloom 36; Weepinbell 36, Exeggcute 36, Gloom 37; fought by three) | ₽1,831 |
 | Route 3, map 1 | Alley Gang (Youngster) | Rattata 15, Ekans 15 | ₽112 |
 | Route 3, map 1 | Crawler Swarm (Bug Catcher) | Caterpie 14, Weedle 14, Caterpie 14 | ₽70 |
 | Route 3, map 2 | Pidgey Flock (Lass) | Pidgey 13, Pidgey 13 | ₽97 |

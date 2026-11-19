@@ -403,8 +403,7 @@ TOWNS = {t.key: t for t in [
                  note="The Game Corner. Slot machines jingle and clatter inside. A grumpy-looking man in black "
                       "stands by a poster at the back..."),
         Building("Celadon Gym", (FUNCTIONAL, 1), 22,
-                 note="The Celadon Gym, overgrown with flowers. A sign on the door: \"Closed for watering. "
-                      "- Erika\""),
+                 note="The Celadon Gym: a great glasshouse, overgrown with flowers."),
         Building("Recruitment Center", (HOUSES, 1), 36, inside="recruit"),
     ), exits=(("right", "town:celadon"), ("left", "town:celadon_west")), home_col=48,
        folk=(
@@ -422,8 +421,8 @@ TOWNS = {t.key: t for t in [
         Building("Celadon Mansion", (MANSION, 0), 6,
                  note="The Celadon Mansion. A sign: \"Residents only. The Pokémon here are very well fed.\""),
         Building("Battle Tower", (BATTLE_TOWER, 0), 30, inside="tower",
-                 note="The Battle Tower. A banner over its doors: \"GRAND OPENING SOON! Twenty floors of the "
-                      "toughest battles in Kanto!\""),
+                 note="The Battle Tower. A banner over its doors: \"GRAND OPENING SOON! Twenty-five floors "
+                      "of the toughest battles in Kanto!\""),
     ), exits=(("right", "town:celadon_square"),), home_col=24,
        folk=(Folk("celadon_clefairy", "Clefairy", "clefairy", 24, (
            "Clefairy! The Battle Tower goes up and up. They say only the strongest teams reach the top.",

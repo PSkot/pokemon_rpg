@@ -419,6 +419,25 @@ TOWER_THEMES = (
                     stripe=(64, 54, 50), shadow=(24, 18, 20))),
 )
 
+# The Celadon Gym: Erika's greenhouse, all glass and flowers (built: a flat
+# floor of flagstones and moss, with trellis platforms).
+CELADON_GYM = Theme(
+    "celadon_gym", "Celadon Gym",
+    Palette(fill=(104, 96, 84), fill_dark=(74, 68, 60), fill_light=(140, 132, 116),
+            top=(112, 170, 90), top_dark=(80, 130, 64), top_light=(160, 210, 120),
+            platform=(236, 236, 226), platform_dark=(160, 170, 160), platform_light=(255, 255, 250)),
+    pool=(PoolEntry("oddish", 1, (34, 36)),),
+    backdrop=Backdrop(art="celadon_gym.png", sky_top=(170, 214, 200), sky_bottom=(220, 240, 220),
+                      hills=((150, 196, 140), (140, 186, 130)), field_far=(130, 180, 110), field_near=(110, 160, 96),
+                      stripe=(120, 170, 104), shadow=(70, 110, 60)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(150, 200, 190), sky_bottom=(210, 236, 214), far_rock=(120, 160, 120),
+                  near_rock=(110, 150, 110), glow=None, wall="celadon_gym.png", dim=20, near_rocks=False),
+    doorway="",
+    built=True,
+)
+
 # Route 2's north end, between Diglett's Cave and Pewter City: a short walk
 # (no wild Pokémon: its Gen 1 ones are far below the party by now).
 ROUTE_2 = Theme(

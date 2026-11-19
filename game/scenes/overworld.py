@@ -38,6 +38,7 @@ from . import quest_ui
 from .battle import BattleScene
 from .gym import TeamPick
 from .power_grid import AMBUSH, PowerGrid
+from .spores import SporeGarden
 from .summary import SummaryScene
 
 HELP = ("Left/Right: walk   Shift: run   Space: jump (hold = higher)   Up: open / go through"
@@ -634,6 +635,8 @@ class OverworldScene(MapScene):
         # The Vermilion Gym's trash cans and electric fence (solved once, it stays open).
         self.grid = (PowerGrid(level, random.Random(instance.seed), self._puzzle_key() in game.trainers)
                      if route.puzzle == "trash_cans" and self.boss else None)
+        # The Celadon Gym's drifting spore clouds.
+        self.spores = SporeGarden(level, random.Random(instance.seed)) if route.puzzle == "spores" else None
         # The doorways in and out; a dungeon room has its stairs instead.
         art = level.theme.doorway
         self.entry = Doorway(level.entry_x, level.ground_y(level.entry_x), palette, art=art)
@@ -935,6 +938,8 @@ class OverworldScene(MapScene):
             self.player.x = self.grid.blocks(self.player.x)
         if self.panel:
             return
+        if self.spores:
+            self.spores.update(dt, self.t, self.player.body_rect, self.party, random)
         for wild in self.wild:
             wild.facing = 1 if self.player.x > wild.x else -1
             touching = wild.touches(self.player.body_rect, self.level)
@@ -1016,6 +1021,8 @@ class OverworldScene(MapScene):
             self.exit.draw(layer)
         if self.grid:
             self.grid.draw(layer, self.t)
+        if self.spores:
+            self.spores.draw(layer, self.t)
         for chest in self.chests:
             chest.draw(layer)
         for ball in self.balls:
@@ -1032,6 +1039,8 @@ class OverworldScene(MapScene):
         super().draw_overlay(window)
         if self.panel:
             return
+        if self.spores and self.spores.toast_t:  # what a spore cloud just did
+            ui.text(window, self.spores.toast, (320, 300), ui.WHITE, size=24, align="center")
         near = self._folk_at_player()
         if near:  # their name, over them
             ui.text(window, near[0].name_for(self.game.starter), (near[1] - self.camera, self._folk_top(*near) - 26),
