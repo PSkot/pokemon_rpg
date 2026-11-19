@@ -127,7 +127,7 @@ non-commercial project.
   no roadside chests (`Level.chests` spots are unused): only bosses leave one. Gear drops
   from battles only rarely (4%). Bosses and trainers' Pokémon wear gear
   (`loot.dress`: the boss 2 pieces, the rest 1, at the enemy's level and
-  the area's rarities), each piece dropping 25% of the time
+  the area's rarities), each piece dropping 10% of the time
   (`worn_drops`). After a boss, `Route.boss_chest`: "plain"
   (a chest: route bosses), "fancy" (the boss loot: gyms), "battle" (the
   boss loot with the battle: rival, trials, feud, Team Rocket) or ""
@@ -288,6 +288,10 @@ non-commercial project.
   scale)`); beating it unseals the door and drops a boss chest (or, with
   `boss_chest=False`, the boss loot comes with the battle). A route with
   `trainer` makes the boss fight a trainer battle (no running, ×1.5 XP).
+  A boss is a boss once: beaten (`Game.trainers` "boss:<route>[/<room>]",
+  `OverworldScene._boss_key`; or `Game.cleared`), it's an ordinary group
+  at normal size on later trips (no boss loot, no chest, door open), unless
+  a quest is at the step of defeating it (`quests.boss_wanted`).
   `RIVAL_STARTER` in a boss group becomes the rival's starter, which beats
   the player's (`Game.starter`, `Game.rival_starter`). Routes can have
   map trainers (`Route.trainers`, `Trainer`: bands of Pokémon named for

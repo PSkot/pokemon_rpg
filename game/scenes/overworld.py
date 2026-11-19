@@ -562,6 +562,11 @@ class OverworldScene(MapScene):
                 self.wild[-1].trainer = trainer
         room = instance.room
         self.trainer = room.trainer if room else route.trainer  # whose team the boss group is ("" = wild)
+        # A boss is a boss once: beaten, it's an ordinary group there on later
+        # trips (its normal size; no boss loot, no chest, the way out open),
+        # unless a quest wants it beaten (again).
+        beaten = (level.boss and self._boss_key() in game.trainers or game.cleared[route.key] > 0) and not (
+            quests.boss_wanted(game, route.key))
         if level.boss and route.boss_after and (route.boss_after[0] in game.trainers
                                                 or (route.boss_after[0] in quests.QUESTS
                                                     and quests.is_done(game, route.boss_after[0]))):
@@ -570,8 +575,17 @@ class OverworldScene(MapScene):
             level.boss.encounter = list(level.boss.encounter) + list(route.boss_extra)  # (more of them for a pair)
         if level.boss:  # the rival's starter depends on the player's
             level.boss.encounter = [(rival.get(species, species), lv) for species, lv in level.boss.encounter]
-        self.boss = (WildPokemon(level.boss, boss=True, scale=instance.route.boss_scale, level=level)
-                     if level.boss else None)
+        if level.boss and beaten:
+            if not route.boss_after:  # (the group it led, without the extras for a pair)
+                level.boss.encounter = [(rival.get(sp, sp), lv) for sp, lv in (room.boss_group if room else
+                                                                                route.boss_group or level.boss.encounter)]
+            self.trainer = ""
+            self.wild.append(WildPokemon(level.boss, level=level))
+            self.wild[-1].trainer = None
+            self.boss = None
+        else:
+            self.boss = (WildPokemon(level.boss, boss=True, scale=instance.route.boss_scale, level=level)
+                         if level.boss else None)
         if self.boss:
             self.wild.append(self.boss)
         # No roadside chests (the map still has spots for them): chests are
@@ -723,6 +737,7 @@ class OverworldScene(MapScene):
             if wild.trainer:
                 self.show_event(quests.defeat(self.game, wild.trainer.key))
             if wild is self.boss:
+                self.game.trainers.add(self._boss_key())  # (an ordinary group from now on)
                 route = self.instance.route
                 if route.boss_key and self.trainer and route.boss_key not in self.game.trainers:
                     self.game.trainers.add(route.boss_key)  # a one-time boss trainer (the Rocket): its gift
@@ -736,6 +751,11 @@ class OverworldScene(MapScene):
             town = TOWNS[self.game.town]
             self.show(ui.ListPanel("Your party fainted...", [(f"You hurry back to {town.name}.", ui.WHITE, "")],
                                    (320, 140)), after=self._fainted)
+
+    def _boss_key(self) -> str:
+        """What `Game.trainers` keeps once this map's boss is beaten."""
+        room = self.instance.room
+        return f"boss:{self.instance.route.key}" + (f"/{room.key}" if room else "")
 
     def _boss_beaten(self) -> None:
         """The way out opens, and the boss leaves its chest (`Route.boss_chest`):

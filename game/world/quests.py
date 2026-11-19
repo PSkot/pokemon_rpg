@@ -884,6 +884,12 @@ def step_text(game, quest: Quest, i: int) -> str:
     return s.text
 
 
+def boss_wanted(game, route: str) -> bool:
+    """Whether an active quest is at the step of defeating `route`'s boss
+    (then it's there as a boss again, even if it was beaten before)."""
+    return any((s := current(game, q.key)) and s.kind == "defeat" and s.target == route for q in active(game))
+
+
 def blocked_text(game, route) -> str:
     """What a shut `route`'s doorway (or building) says."""
     if route.blocked_done and route.needs and is_done(game, route.needs[0]):

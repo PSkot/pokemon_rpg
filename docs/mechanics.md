@@ -648,7 +648,7 @@ rarity picked by weight, at an item level: see *Item level*).
 
 - **Won battle:** the wild table is rolled **once per defeated enemy**, at
   that enemy's level. Each piece of gear a defeated enemy wore (bosses and
-  trainers, below) also drops with a **25%** chance (`WORN_DROP_CHANCE`).
+  trainers, below) also drops with a **10%** chance (`WORN_DROP_CHANCE`).
 - **Poké Ball** lying on a map (Up): the ball table once: **one item**,
   never nothing. Maps have 0–2 (on platforms or along the ground), a
   dungeon room's at the same spots every trip.
@@ -660,6 +660,14 @@ rarity picked by weight, at an item level: see *Item level*).
   (3–4 rolls). The rival, the trials, the feud and Team Rocket give the
   boss table with the battle instead ("battle"); recruitments give no
   chest (the Pokémon is the reward).
+- **A boss is a boss once.** Once beaten (`Game.trainers` keeps
+  "boss:<route>", or "boss:<route>/<room>" in a dungeon; older saves: a
+  route walked all the way through), later trips find its group there at
+  normal size: an ordinary wild battle (the group it led, without the
+  extras that join it for a pair; or the `Route.boss_after` group), with no
+  boss loot or chest, and the way out open. The exception: while a quest
+  is at the step of defeating that route's boss (`quests.boss_wanted`, e.g.
+  the board's *Bugs in the Forest*), it's there as a boss again.
 
 Which **rarities** can drop is set per area (`Route.loot` for wild
 Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):

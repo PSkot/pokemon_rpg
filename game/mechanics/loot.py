@@ -104,7 +104,7 @@ def merge(rewards: list[Reward]) -> list[Reward]:
 
 BOSS_GEAR = 2      # pieces a boss (the leader of a boss group) wears
 TRAINER_GEAR = 1   # ... each of a trainer's Pokémon, and a boss's escorts
-WORN_DROP_CHANCE = 25  # % chance each piece a beaten enemy wore drops
+WORN_DROP_CHANCE = 10  # % chance each piece a beaten enemy wore drops
 
 
 def dress(monster, rarity: Rarities, pieces: int, rng: random.Random | None = None) -> None:
