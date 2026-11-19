@@ -347,7 +347,7 @@ TOWNS = {t.key: t for t in [
                       "Something moves inside, but you can't make out what. You'd need a way to see it."),
         Building("Mr. Fuji's House", (HOUSES, 0), 46,
                  note="Nobody's home. A note on the door: \"Gone to the Tower. Back soon. - Mr. Fuji\""),
-    ), exits=(("left", "rock_tunnel"),), home_col=14, board_col=41, theme=LAVENDER,
+    ), exits=(("left", "rock_tunnel"), ("right", "route_8")), home_col=14, board_col=41, theme=LAVENDER,
        mart=("Potion", "Super Potion", "Hyper Potion", "Revive", "Escape Rope", "Antidote", "Burn Heal", "Awakening",
              "Paralyze Heal", "Ice Heal"),
        gear=((30, 34), (("Common", 40), ("Uncommon", 45), ("Rare", 15))),
@@ -361,6 +361,44 @@ TOWNS = {t.key: t for t in [
                "Jiggly... Some say a lost Pokémon's mother still waits at the top of the tower.",
            )),
            smith(62),
+       )),
+    # The west end of Route 8: Saffron City's east gate (shut, its guard
+    # thirsty, as in Red/Blue) and the Underground Path's doorway west.
+    Town("route_8_gate", "Route 8 Gate", 44, (), exits=(("left", "route_8"), ("right", "underground_west")),
+         home_col=8,
+         folk=(Folk("route_8_guard", "Gate Guard", "nidorino", 24, (
+             "Saffron City is shut. Nobody in, nobody out. I'm so thirsty I could drink a Psyduck...",
+             "Want to go west? Take the Underground Path. It comes out on Route 7, right by Celadon City.",
+         )),)),
+    # Celadon City, the city of rainbow dreams (as in Red/Blue): the
+    # Department Store, the Game Corner (Team Rocket's, later), Erika's gym
+    # (the next part), the Celadon Mansion and the smith.
+    Town("celadon", "Celadon City", 104, (
+        Building("Pokémon Center", (FUNCTIONAL, 0), 6),
+        Building("Department Store", (FUNCTIONAL, 2), 18, inside="mart"),
+        Building("Game Corner", (HOUSES, 3), 32,
+                 note="The Game Corner. Slot machines jingle and clatter inside. A grumpy-looking poster by the "
+                      "door is half torn down."),
+        Building("Celadon Gym", (FUNCTIONAL, 1), 46,
+                 note="The Celadon Gym, overgrown with flowers. A sign on the door: \"Closed for watering. "
+                      "- Erika\""),
+        Building("Recruitment Center", (HOUSES, 1), 58, inside="recruit"),
+        Building("Celadon Mansion", (HOUSES, 0), 70,
+                 note="The Celadon Mansion. A sign: \"Residents only. The Pokémon here are very well fed.\""),
+    ), exits=(("right", "underground_west"),), home_col=12, board_col=83,
+       mart=("Potion", "Super Potion", "Hyper Potion", "Revive", "Escape Rope", "Antidote", "Burn Heal", "Awakening",
+             "Paralyze Heal", "Ice Heal"),
+       gear=((34, 38), (("Common", 30), ("Uncommon", 45), ("Rare", 25))),
+       folk=(
+           Folk("celadon_meowth", "Meowth", "meowth", 41, (
+               "Meowth! The Game Corner pays out in coins. I've never seen anyone win, though...",
+               "Mrrr. The men in black by the Game Corner don't smile much. Meowth doesn't like them.",
+           )),
+           Folk("celadon_bellsprout", "Bellsprout", "bellsprout", 67, (
+               "Sprout! Erika's gym is full of Grass Pokémon. She waters every one of them herself.",
+               "The Department Store sells everything! Well, everything a Bellsprout needs. Water.",
+           )),
+           smith(93),
        )),
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a
     # Clefairy in his teleporter (quest "bill").

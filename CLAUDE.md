@@ -383,7 +383,12 @@ non-commercial project.
   for now: `towns.TOWER` = `pokemon_tower.png`, a one-cell building sheet of its own
   size, 160×256, `tileset.BUILDING_CELLS`; `Building.sprite` can also take
   a scale, (sheet, cell, scale), nearest-neighbour;
-  Mr. Fuji's house; the smith; the town ends there). The smith
+  Mr. Fuji's house; the smith). Then (quests "route_8", "to_celadon"):
+  Lavender's east doorway → route "route_8" (2 maps, four bands) → stop
+  town "route_8_gate" (Saffron's shut east gate) → route
+  "underground_west" (theme `UNDERGROUND_WEST`, 2 maps) → Celadon City
+  (Center, Department Store, gear den, Game Corner and the Celadon Gym
+  shut for now, Recruitment Center, Mansion, board, smith). The smith
   (`towns.smith(col)`, `Folk.npc` = "machamp_smith": drawn from
   `props/machamp_smith.png` with `props/furnace.png`, its glow, and
   `props/anvil.png`; one in each major town from Lavender on): quest

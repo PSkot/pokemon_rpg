@@ -671,6 +671,42 @@ QUESTS = {q.key: q for q in [
                                           "Bring me parts, and I'll make your gear stronger. Up to +5!"))),),
         money=1000, xp=800,
     ),
+    # West of Lavender, as in Red/Blue: Route 8 to the shut Saffron gate,
+    # then the Underground Path under the city to Celadon.
+    Quest(
+        "route_8", "West of Lavender",
+        "Route 8 runs west of Lavender Town, towards Saffron City.",
+        requires=("rock_tunnel",),
+        steps=(Step("reach", "route_8_gate", "Follow Route 8 west of Lavender Town (its doorway at the town's east "
+                                             "end) to the Saffron gate"),),
+        money=1300, xp=1200,
+        done_dialogue=(("", "The gate to Saffron City is shut here too. The guard points you to the Underground "
+                            "Path."),),
+    ),
+    Quest(
+        "to_celadon", "Celadon City",
+        "The Underground Path runs under Saffron City from Route 8 to Route 7, right by Celadon City.",
+        requires=("route_8",),
+        steps=(Step("reach", "celadon", "Take the Underground Path from the Route 8 Gate to Celadon City"),),
+        money=1600, xp=1500,
+        rewards=(("medicine", "Hyper Potion", 2), ("gear", None, "Rare", 35)),
+        done_dialogue=(("", "Celadon City: the city of rainbow dreams. Its gym, its Game Corner and its huge "
+                            "Department Store glitter in the sun."),),
+    ),
+    Quest(
+        "hot_dogs", "Hot Dogs",
+        "Growlithe on Route 8 keep chasing travellers' Pokémon up the trees. Calm a few of them down.",
+        board="lavender", requires=("rock_tunnel",),
+        steps=(hunt("growlithe", 6, "Route 8"), HAND_IN),
+        money=1500, xp=1000,
+    ),
+    Quest(
+        "ekans_fangs", "Fangs for the Memories",
+        "A Lavender herbalist makes antidotes from shed Ekans fangs. Bring her a few from Route 8.",
+        board="lavender", requires=("rock_tunnel",),
+        steps=(collect("Ekans Fang", 5, "route_8", ("ekans",), 40, "Ekans on Route 8"), HAND_IN),
+        money=1500, xp=1000,
+    ),
     Quest(
         "pitch_black", "Bats in the Dark",
         "Zubat swarm Rock Tunnel, and travellers keep losing their way among them. Thin them out a bit.",

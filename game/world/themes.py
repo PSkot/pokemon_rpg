@@ -252,6 +252,16 @@ UNDERGROUND = Theme(
     doorway="",
 )
 
+# The Underground Path's west-east tunnel under Saffron (Route 8 to Route 7,
+# by Celadon City): the same tunnel as the north-south one, deeper in.
+UNDERGROUND_WEST = replace(UNDERGROUND, key="underground_west", name="Underground Path", decor="underground", pool=(
+    PoolEntry("diglett", 30, (32, 35)),
+    PoolEntry("raticate", 20, (33, 35)),
+    PoolEntry("zubat", 20, (32, 35)),
+    PoolEntry("ekans", 15, (32, 35)),
+    PoolEntry("dugtrio", 15, (33, 36)),
+))
+
 # Route 6, from the Underground Path's south end down to Vermilion City:
 # Route 5's Pokémon, a little stronger, and Psyduck from its pond.
 ROUTE_6 = Theme(
@@ -301,6 +311,25 @@ ROUTE_9 = Theme(
     ),
     backdrop=ROUTE_3.backdrop,
     far="route_3.png",
+)
+
+# Route 8, west of Lavender Town to the gate at Saffron City's east side:
+# Gen 1's Route 8 Pokémon (Red's Growlithe and Ekans, Blue's Meowth and
+# Sandshrew), Pidgeotto, Mankey and Abra, a little under the party.
+ROUTE_8 = Theme(
+    "route_8", "Route 8",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("pidgeotto", 20, (33, 35)),
+        PoolEntry("growlithe", 15, (32, 35)),
+        PoolEntry("mankey", 15, (32, 35)),
+        PoolEntry("meowth", 15, (32, 35)),
+        PoolEntry("ekans", 10, (32, 35)),
+        PoolEntry("sandshrew", 10, (32, 35)),
+        PoolEntry("abra", 10, (31, 33)),
+        PoolEntry("kadabra", 5, (34, 36)),
+    ),
+    backdrop=MEADOW_BACKDROP,
 )
 
 # Rock Tunnel, from the Route 10 Pokémon Center to Lavender Town: pitch

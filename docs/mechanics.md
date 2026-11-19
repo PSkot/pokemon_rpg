@@ -746,6 +746,8 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 2 (north) | (no wild Pokémon or chests) | (no boss) |
 | Route 9 | Common | (no boss) |
 | Rock Tunnel | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Hiker Crew, a chest) |
+| Route 8 | Common | (no boss) |
+| Underground Path (west) | Common | (no boss) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -1126,6 +1128,33 @@ once HM05 Flash is in hand; five trainers):
 | Fearow | 10 | 31–33 |
 | Voltorb | 10 | 30–32 |
 
+**Route 8** (`Route` "route_8", 2 maps west of Lavender Town, from its
+doorway at the town's east end to the Route 8 Gate stop, at Saffron's
+shut east gate; four trainers):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Pidgeotto | 20 | 33–35 |
+| Growlithe | 15 | 32–35 |
+| Mankey | 15 | 32–35 |
+| Meowth | 15 | 32–35 |
+| Ekans | 10 | 32–35 |
+| Sandshrew | 10 | 32–35 |
+| Abra | 10 | 31–33 |
+| Kadabra | 5 | 34–36 |
+
+The **Underground Path's west-east tunnel** (`Route` "underground_west",
+theme `UNDERGROUND_WEST`: the north-south tunnel's look, deeper in; 2 maps
+from the Route 8 Gate under Saffron to Celadon City; no trainers):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Diglett | 30 | 32–35 |
+| Raticate | 20 | 33–35 |
+| Zubat | 20 | 32–35 |
+| Ekans | 15 | 32–35 |
+| Dugtrio | 15 | 33–36 |
+
 **Rock Tunnel** (`Route` "rock_tunnel", a dungeon of 3 rooms from the
 Route 10 Pokémon Center to Lavender Town: 1F, B1F, then the south 1F;
 needs Flash). It's **pitch dark** (`Theme.dark`): the screen is black
@@ -1298,6 +1327,10 @@ always the same spot), with its team in a row.
 | Rock Tunnel B1F | Rubble Rousers (Hiker) | Machop 33, Geodude 33, Machop 33 | ₽577 |
 | Rock Tunnel B1F (boss) | Hiker Crew | Onix 36, Machop 34, Machop 34, Geodude 34 | ₽595 |
 | Rock Tunnel 1F (south) | Tunnel Twins (Jr. Trainer) | Oddish 33, Bellsprout 33 | ₽330 |
+| Route 8, map 1 | Lucky Streak (Gambler) | Growlithe 34, Meowth 34 | ₽1,190 |
+| Route 8, map 1 | Pretty Pals (Lass) | Clefairy 34, Jigglypuff 34, Nidorina 33 | ₽247 |
+| Route 8, map 2 | Gadget Nerds (Super Nerd) | Magnemite 35, Voltorb 35, Magnemite 35 | ₽437 |
+| Route 8, map 2 | Twin Tails (Twins) | Nidoran F 35, Nidoran M 35 | ₽350 |
 | S.S. Anne 1F | Gentleman's Hounds (Gentleman) | Growlithe 26, Growlithe 26 | ₽910 |
 | S.S. Anne 1F | Seaside Lass (Lass) | Pidgey 25, Nidoran F 25, Jigglypuff 25 | ₽187 |
 | S.S. Anne 1F | Cabin Boys (Youngster) | Rattata 25, Ekans 25, Raticate 24 | ₽180 |

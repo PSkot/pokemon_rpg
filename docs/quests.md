@@ -40,7 +40,9 @@ script that walks every route's maps; the major fights in
 | Diglett's Cave | 30–31 | 1,200 | 2,500 |
 | Route 9 | 32 | 1,300 | 1,100 |
 | Rock Tunnel | 32–33 | 1,550 | 3,200 |
-| Lavender Town | 34 | | |
+| Route 8 | 34 | 1,100 | 3,200 |
+| Underground Path (west) | 35 | 740 | 1,500 |
+| Celadon City | 36 | | |
 
 (Before this check, battles gave ×0.5 / ×1.5 to every member unsplit:
 about 62,000 battle XP each from Pewter to Vermilion against 14,000
@@ -213,6 +215,8 @@ handing them in at any board.
 | Vermilion | Trouble Underfoot | East of Vermilion | Defeat 5 Dugtrio (Diglett's Cave) | – | ₽1,300, 900 XP |
 | Cerulean | Bats in the Dark | Oak's Aide | Defeat 8 Zubat (Rock Tunnel) | – | ₽1,400, 900 XP |
 | Cerulean | Muscle Trouble | Oak's Aide | Defeat 6 Machop (Rock Tunnel) | – | ₽1,400, 900 XP |
+| Lavender | Hot Dogs | Rock Tunnel | Defeat 6 Growlithe (Route 8) | – | ₽1,500, 1,000 XP |
+| Lavender | Fangs for the Memories | Rock Tunnel | Collect 5 Ekans Fangs (Ekans, Route 8 or later) | 40% | ₽1,500, 1,000 XP |
 
 Each takes about one or two runs of its route. They can't be repeated
 yet.
@@ -455,6 +459,27 @@ yet.
 - **Rewards:** ₽1,500, 1,400 XP, 2 Hyper Potions, a Revive and a **Rare**
   gear piece (item level 33).
 
+### 20. West of Lavender
+
+- **Starts:** automatically when quest 19 is done.
+- **Steps:** follow **Route 8** (2 maps, four trainer bands; its doorway
+  is at Lavender's east end, past the smith) to the **Route 8 Gate**
+  (town "route_8_gate"): Saffron City's east gate, shut, its guard too
+  thirsty to talk sense, and the Underground Path's doorway on.
+- **Rewards:** ₽1,300, 1,200 XP.
+
+### 21. Celadon City
+
+- **Starts:** automatically when quest 20 is done.
+- **Steps:** take the **Underground Path** west (2 maps of tunnel) to
+  **Celadon City** (town "celadon"): Pokémon Center, Department Store
+  (Hyper Potions and Revives) and Persian's gear den (Lv34–38 pieces, up
+  to Rare), the Game Corner (Team Rocket's, later), the Celadon Gym
+  (closed for watering: Erika's gym is the next part), the Recruitment
+  Center, the Celadon Mansion, a quest board and the smith.
+- **Rewards:** ₽1,600, 1,500 XP, 2 Hyper Potions and a **Rare** gear piece
+  (item level 35).
+
 ### A Hammer Fit for a Smith (side quest)
 
 - **Starts:** from the **Machamp smith** (Lavender Town and the major towns
@@ -650,6 +675,7 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | Geodude | 10 | Rock Tunnel | 29–31 | Lv34 |
 | Machop | 8 | Rock Tunnel | 29–31 | Lv34 |
 | Onix | 4 | Rock Tunnel | 30–32 | Lv35 |
+| Growlithe | 6 | Route 8 | 31–33 | Lv36 |
 
 Not every Pokémon comes this way: the starters, and those only met with
 trainers (Geodude, Onix, the S.S. Anne's Machop, Tentacool and

@@ -29,8 +29,8 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
-                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_9, ROUTE_11, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE, UNDERGROUND, VERMILION_GYM,
-                     PoolEntry, Theme)
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_11, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
+                     UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, PoolEntry, Theme)
 from .towns import Folk
 
 # Stands in a boss group for the rival's starter, which depends on the
@@ -396,6 +396,19 @@ ROUTES = {r.key: r for r in [
               Trainer("rock_tunnel_hiker_2", "Rubble Rousers", (("machop", 33), ("geodude", 33), ("machop", 33)), 1, 35),
               Trainer("rock_tunnel_jr_trainer_2", "Tunnel Twins", (("oddish", 33), ("bellsprout", 33)), 2, 20),
           )),
+    # Route 8, west of Lavender Town to the gate at Saffron's east side:
+    # Gen 1's Gamblers, Lasses, Super Nerds and Twins, as bands.
+    Route("route_8", "Route 8", ROUTE_8, maps=2, towns=("lavender", "route_8_gate"),
+          trainers=(
+              Trainer("route_8_gambler", "Lucky Streak", (("growlithe", 34), ("meowth", 34)), 0, 70),
+              Trainer("route_8_lass", "Pretty Pals", (("clefairy", 34), ("jigglypuff", 34), ("nidorina", 33)), 0, 15),
+              Trainer("route_8_super_nerd", "Gadget Nerds", (("magnemite", 35), ("voltorb", 35), ("magnemite", 35)),
+                      1, 25),
+              Trainer("route_8_twins", "Twin Tails", (("nidoran_f", 35), ("nidoran_m", 35)), 1, 20),
+          )),
+    # The Underground Path's west-east tunnel, from the Route 8 Gate under
+    # Saffron City to Route 7, by Celadon City (no trainers, as in Red/Blue).
+    Route("underground_west", "Underground Path", UNDERGROUND_WEST, maps=2, towns=("route_8_gate", "celadon")),
     # Route 2's north end, from the cave up to Pewter City: a short walk.
     Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}
@@ -497,7 +510,7 @@ class Recruit:
 # (easier) ones don't count.
 STORY_ORDER = ("route_1", "route_22", "viridian_forest", "route_3", "mt_moon_cave", "route_4_east", "nugget_bridge",
                "route_25", "route_5_south", "underground_path", "route_6_south", "route_11", "digletts_cave",
-               "route_9", "rock_tunnel")
+               "route_9", "rock_tunnel", "route_8", "underground_west")
 
 
 def from_route(first: str, route: str) -> bool:
@@ -538,6 +551,7 @@ RECRUITS = {r.species: r for r in [
     Recruit("geodude", 10, ROCK_TUNNEL, 31),
     Recruit("machop", 8, ROCK_TUNNEL, 31),
     Recruit("onix", 4, ROCK_TUNNEL, 32),
+    Recruit("growlithe", 6, ROUTE_8, 33),
 ]}
 
 
