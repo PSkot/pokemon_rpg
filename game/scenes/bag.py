@@ -184,6 +184,14 @@ class BagScreen:
             ui.text(window, label, (tab_x, y + 2), color, size=24)
             tab_x += ui.font(24).size(label)[0] / settings.SCALE + 14
         ui.text(window, money_text(self.bag.money), (r.right - 12, y + 2), ui.YELLOW, size=24, align="right")
+        if POCKETS[self.pocket] == "Key items" and +self.bag.gems:  # the Battle Tower's gems
+            from .battle_tower import GEM_COLORS
+            from ..world.tower import GEMS
+            gx = r.right - 12
+            for gem in reversed(GEMS):
+                label = f"{gem} {self.bag.gems[gem]}"
+                ui.text(window, label, (gx, y + 16), GEM_COLORS[gem], size=20, align="right")
+                gx -= 8 + ui.font(20).size(label)[0] / settings.SCALE
         self._draw_list(window)
         if self.picking:
             self._draw_party(window)

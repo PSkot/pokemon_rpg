@@ -267,9 +267,9 @@ Paths: **Talon** (pecks and Drill Peck: hard Flying strikes); **Flock** (fury At
 | 11 | 60 | **Sky Tyrant** *(needs 4)*: The user's Flying moves always go first, and its moves deal 50% more to a target that hasn't moved yet this round. *(**own**)* | **Murder of Crows** *(needs 4)*: The user's moves deal 50% more to a target a partner already hit this round. *(**own**)* | **Spiteful** *(needs 4)*: Enemies with lowered Attack take 30% more damage from the user's party. *(**own**)* |
 | 12 | 75 | **Apex Predator** *(needs 6)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Storm of Beaks** *(needs 6)*: Fury Attack hits every enemy, at full damage. *(**own**)* | **Reign of Terror** *(needs 6)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
 
-### Nidoran F → Nidorina
+### Nidoran F → Nidorina → Nidoqueen
 
-Moves: Tackle, Growl, Scratch 8, Poison Sting 14, Tail Whip 21, Body Slam 25 (Nidorina), Bite 29, Fury Swipes 36, Double Kick 43.
+Moves: Tackle, Growl, Scratch 8, Poison Sting 14, Tail Whip 21, Body Slam 25 (Nidorina), Bite 29, Fury Swipes 36, Double Kick 43, Earthquake 48 (Nidoqueen).
 
 Paths: **Venom** (poison, and making it worse); **Claw** (scratching, biting and kicking); **Matriarch** (keeping the partner safe).
 
@@ -288,9 +288,9 @@ Paths: **Venom** (poison, and making it worse); **Claw** (scratching, biting and
 | 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Apex Predator** *(needs 4)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Den Mother** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(**own**)* |
 | 12 | 75 | **Venom Queen** *(needs 6)*: All poison the user inflicts is bad poison, and poisoned enemies take 25% more damage from it. *(**own**)* | **Frenzy Claws** *(needs 6)*: Fury Swipes always hits 5 times. *(Fury Swipes)* | **Queen's Guard** *(needs 6)*: Once a battle, a partner that would faint keeps 1 HP, and the user heals it 1/4 of its max HP. *(**own**)* |
 
-### Nidoran M → Nidorino
+### Nidoran M → Nidorino → Nidoking
 
-Moves: Tackle, Leer, Horn Attack 8, Poison Sting 14, Focus Energy 21, Body Slam 25 (Nidorino), Fury Attack 29, Double Kick 43.
+Moves: Tackle, Leer, Horn Attack 8, Poison Sting 14, Focus Energy 21, Body Slam 25 (Nidorino), Fury Attack 29, Thrash 38 (Nidoking), Double Kick 43, Earthquake 48 (Nidoking).
 
 Paths: **Venom** (poison, and making it worse); **Horn** (horn Attack: critical hits and piercing); **Brawler** (focus, charging and momentum).
 
@@ -687,9 +687,9 @@ Paths: **Spark** (paralysis: slowing and stopping enemies); **Bolt** (raw Electr
 | 11 | 60 | **Thunder Cloud** *(needs 4)*: At the start of each battle, each enemy has a 30% chance to be paralyzed. *(**own**)* | **Gigavolt** *(needs 4)*: Thunder hits every enemy, at full damage. *(**own**)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
 | 12 | 75 | **Supercharged** *(needs 6)*: The user's Electric moves deal 50% more to paralyzed enemies. *(**own**)* | **Thunder God** *(needs 6)*: Thunderbolt and Thunder never miss, and are always critical hits on a target below half HP. *(**own**)* | **Lightning Speed** *(needs 6)*: Quick Attack hits 3 times, at 70% power each. *(Quick Attack)* |
 
-### Shellder
+### Shellder → Cloyster
 
-Moves: Tackle, Withdraw, Water Gun 10, Supersonic 18, Clamp 23, Bubble Beam 25, Aurora Beam 30, Leer 39, Ice Beam 50.
+Moves: Tackle, Withdraw, Water Gun 10, Supersonic 18, Clamp 23, Bubble Beam 25, Aurora Beam 30, Spike Cannon 35 (Cloyster), Leer 39, Ice Beam 50, Blizzard 55 (Cloyster).
 
 Paths: **Shell** (withdraw: the hardest shell in the sea); **Clamp** (clamp and Supersonic: catching and confusing); **Frost** (water Gun, then Aurora Beam and Ice Beam).
 
@@ -876,7 +876,7 @@ Paths: **Venom** (poison, and making it worse); **Coil** (wrap and Glare: catchi
 | 11 | 60 | **Miasma** *(needs 4)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Coil Crush** *(needs 4)*: Wrap and Bind catch every enemy. *(Bind)* | **Unbreakable** *(needs 4)*: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
 | 12 | 75 | **Coil of Venom** *(needs 6)*: Poisoned enemies take 40% more damage from the user. *(**own**)* | **Constrictor** *(needs 6)*: Wrap's and Bind's grip hurts far more: a further 1/8 of max HP each round. *(**own**)* | **Gorgon Gaze** *(needs 6)*: At the start of each battle, each enemy has a 25% chance to be paralyzed. *(**own**)* |
 
-### Jigglypuff
+### Jigglypuff → Wigglytuff
 
 Moves: Pound, Sing, Defense Curl 19, Double Slap 24, Rest 29, Body Slam 34, Double-Edge 39.
 

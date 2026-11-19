@@ -134,6 +134,7 @@ class Route:
     wave_team: int = 2
     wave_species: tuple[str, ...] = ()  # only these can be picked for the waves (() = anyone)
     puzzle: str = ""  # a puzzle on the way to the arena: "trash_cans" (the Vermilion Gym, scenes/power_grid.py)
+    tower: int = 0    # a Battle Tower floor (world/tower.py): its number
     folk: str = ""                      # walked by talking to this townsfolk (a trial), not a doorway
 
     def other_end(self, town: str) -> str:
@@ -623,3 +624,6 @@ class Instance:
         if level.boss and self.route.boss_group:
             level.boss.encounter = list(self.route.boss_group)
         return level
+
+
+from . import tower  # noqa: E402,F401  (the Battle Tower's floors join ROUTES)

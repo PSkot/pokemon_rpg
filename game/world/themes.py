@@ -358,6 +358,57 @@ ROCK_TUNNEL = Theme(
     dark=True,
 )
 
+# The Battle Tower's floors, by tier of five: built halls (flat floors), each
+# grander than the last: marble halls, sky gardens, a storm spire, the
+# celestial summit. Their pools are never met.
+def _tower(key: str, name: str, palette: Palette, wall: str, look: CaveLook, backdrop: Backdrop) -> Theme:
+    return Theme(key, name, palette, pool=(PoolEntry("pidgey", 1, (35, 35)),), backdrop=backdrop, ceiling=True,
+                 art="cave", cave=look, doorway="", built=True)
+
+
+TOWER_THEMES = (
+    _tower("tower_1", "Battle Tower",
+           Palette(fill=(196, 190, 176), fill_dark=(150, 144, 132), fill_light=(232, 228, 216),
+                   top=(236, 230, 214), top_dark=(200, 190, 168), top_light=(252, 248, 236),
+                   platform=(214, 180, 90), platform_dark=(150, 120, 50), platform_light=(244, 216, 130)),
+           "tower_1.png", CaveLook(sky_top=(120, 116, 110), sky_bottom=(200, 196, 186), far_rock=(150, 146, 140),
+                                   near_rock=(170, 166, 160), glow=None, wall="tower_1.png", dim=10,
+                                   near_rocks=False),
+           Backdrop(art="tower_1.png", sky_top=(200, 196, 186), sky_bottom=(236, 230, 214),
+                    hills=((210, 204, 192), (200, 194, 182)), field_far=(232, 226, 210), field_near=(220, 214, 198),
+                    stripe=(226, 220, 204), shadow=(180, 174, 160))),
+    _tower("tower_2", "Battle Tower",
+           Palette(fill=(150, 170, 140), fill_dark=(110, 130, 104), fill_light=(186, 204, 172),
+                   top=(212, 222, 196), top_dark=(170, 186, 158), top_light=(236, 244, 222),
+                   platform=(200, 160, 90), platform_dark=(140, 104, 50), platform_light=(232, 196, 128)),
+           "tower_2.png", CaveLook(sky_top=(250, 200, 150), sky_bottom=(250, 230, 200), far_rock=(200, 180, 160),
+                                   near_rock=(170, 160, 140), glow=None, wall="tower_2.png", dim=0,
+                                   near_rocks=False),
+           Backdrop(art="tower_2.png", sky_top=(250, 200, 150), sky_bottom=(250, 230, 200),
+                    hills=((200, 210, 180), (190, 200, 170)), field_far=(212, 222, 196), field_near=(200, 210, 184),
+                    stripe=(206, 216, 190), shadow=(160, 170, 150))),
+    _tower("tower_3", "Battle Tower",
+           Palette(fill=(70, 60, 96), fill_dark=(46, 40, 66), fill_light=(100, 88, 134),
+                   top=(120, 108, 156), top_dark=(90, 80, 120), top_light=(150, 140, 190),
+                   platform=(90, 200, 220), platform_dark=(40, 120, 150), platform_light=(160, 240, 250)),
+           "tower_3.png", CaveLook(sky_top=(30, 20, 50), sky_bottom=(70, 50, 100), far_rock=(50, 40, 70),
+                                   near_rock=(60, 50, 84), glow=((120, 220, 255), (220, 250, 255)),
+                                   wall="tower_3.png", dim=10, near_rocks=False),
+           Backdrop(art="tower_3.png", sky_top=(30, 20, 50), sky_bottom=(70, 50, 100),
+                    hills=((60, 50, 90), (54, 44, 80)), field_far=(110, 100, 146), field_near=(96, 86, 130),
+                    stripe=(104, 94, 140), shadow=(50, 40, 70))),
+    _tower("tower_4", "Battle Tower",
+           Palette(fill=(40, 36, 70), fill_dark=(24, 20, 46), fill_light=(66, 60, 106),
+                   top=(210, 180, 90), top_dark=(160, 130, 60), top_light=(250, 226, 140),
+                   platform=(230, 200, 110), platform_dark=(160, 130, 60), platform_light=(255, 240, 170)),
+           "tower_4.png", CaveLook(sky_top=(10, 8, 30), sky_bottom=(40, 30, 80), far_rock=(30, 24, 60),
+                                   near_rock=(40, 34, 70), glow=((255, 230, 150), (255, 250, 220)),
+                                   wall="tower_4.png", dim=0, near_rocks=False),
+           Backdrop(art="tower_4.png", sky_top=(10, 8, 30), sky_bottom=(40, 30, 80),
+                    hills=((40, 34, 70), (34, 28, 60)), field_far=(80, 70, 120), field_near=(66, 58, 104),
+                    stripe=(74, 64, 112), shadow=(30, 24, 56))),
+)
+
 # Route 2's north end, between Diglett's Cave and Pewter City: a short walk
 # (no wild Pokémon: its Gen 1 ones are far below the party by now).
 ROUTE_2 = Theme(

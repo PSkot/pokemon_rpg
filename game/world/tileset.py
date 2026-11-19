@@ -168,7 +168,8 @@ def _lamp(s, x, y, rng, p):
 
 
 CEILING_DECOR = {"pewter_gym": _stalactite, "mt_moon": _stalactite, "underground": _lamp, "ss_anne": _lamp,
-                 "vermilion_gym": _lamp, "digletts_cave": _root}  # theme -> what hangs
+                 "vermilion_gym": _lamp, "digletts_cave": _root,
+                 "tower_1": _lamp, "tower_2": _lamp, "tower_3": _lamp, "tower_4": _lamp}  # theme -> what hangs
 
 DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the meadow's come from its tileset)
     "pewter_gym": [(0.12, _rock)],
@@ -178,6 +179,7 @@ DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the m
     "ss_anne": [],  # (polished planks)
     "vermilion_gym": [],  # (steel floor plates)
     "digletts_cave": [(0.08, _rock)],  # (dirt the Diglett dug out)
+    "tower_1": [], "tower_2": [], "tower_3": [], "tower_4": [],  # (the Battle Tower's polished floors)
 }
 
 

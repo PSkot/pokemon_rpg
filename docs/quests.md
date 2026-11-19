@@ -488,7 +488,9 @@ yet.
     Rocket's, later), the Celadon Gym (closed for watering: Erika's gym is
     the next part), the Recruitment Center and the smith.
   - **Celadon West End** ("celadon_west"): the Celadon Mansion and the
-    **Battle Tower** (opening soon: the part after next).
+    **Battle Tower**. It opens after the Rainbow Badge: 20 floors of wave
+    battles, run by Mew, with gems that buy gear and special Pokémon
+    (`docs/mechanics.md` → The Battle Tower).
 - **Rewards:** ₽1,600, 1,500 XP, 2 Hyper Potions and a **Rare** gear piece
   (item level 35).
 

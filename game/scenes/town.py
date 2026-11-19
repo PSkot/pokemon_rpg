@@ -217,6 +217,13 @@ class TownScene(MapScene):
         if building and building.inside == "dept":  # the Celadon Department Store, its floors
             self.next_scene = Transition(self, DeptStoreScene(self.game, self.town), flashes=0)
             return
+        if building and building.inside == "tower":  # the Battle Tower's lobby (once it's open)
+            from .battle_tower import TowerLobbyScene, is_open
+            if is_open(self.game):
+                self.next_scene = Transition(self, TowerLobbyScene(self.game), flashes=0)
+            else:
+                self.show(quest_ui.Dialogue([("", building.note)]))
+            return
         if building and building.inside == "recruit":
             self.next_scene = Transition(self, RecruitScene(self.game, self.town), flashes=0)
             return

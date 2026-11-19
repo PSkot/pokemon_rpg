@@ -105,7 +105,7 @@ def snapshot(scene) -> dict:
         "defeated": dict(game.defeated),
         "bag": {"gear": [_gear(g) for g in game.bag.gear], "medicine": dict(game.bag.medicine),
                 "key_items": game.bag.key_items, "money": game.bag.money,
-                "materials": dict(game.bag.materials)},
+                "materials": dict(game.bag.materials), "gems": dict(game.bag.gems)},
         "town": game.town,
         "cleared": dict(game.cleared),
         "starter": game.starter,
@@ -114,6 +114,7 @@ def snapshot(scene) -> dict:
         "trainers": sorted(game.trainers),
         "seed": game.seed,
         "slots": game.slots,
+        "tower_best": game.tower_best,
         "shop_visits": game.shop_visits,
         "shop_bought": game.shop_bought,
         "location": scene.location(),
@@ -222,7 +223,7 @@ def load(info: SaveInfo):
         party = [_load_monster(m) for m in data["party"]]
         bag = Bag([_load_gear(g) for g in data["bag"]["gear"]], Counter(data["bag"]["medicine"]),
                   list(data["bag"].get("key_items", [])), data["bag"].get("money", 0),
-                  Counter(data["bag"].get("materials", {})))
+                  Counter(data["bag"].get("materials", {})), Counter(data["bag"].get("gems", {})))
         game = Game(party, bag, data["town"], Counter(data["cleared"]), data.get("starter", "bulbasaur"),
                     dict(data.get("quests", {})), dict(data.get("quest_counts", {})),
                     set(data.get("trainers", [])), [_load_monster(m) for m in data.get("reserve", [])],
@@ -233,6 +234,7 @@ def load(info: SaveInfo):
         # (older saves, from before the Teamwork Ribbons: a place per ribbon quest done)
         game.slots = data.get("slots", 1 + sum(1 for k in ACTIVE_STEPS if k in game.quests
                                                and game.quests[k] >= len(QUESTS[k].steps)))
+        game.tower_best = data.get("tower_best", 0)
         game.shop_visits = dict(data.get("shop_visits", {}))
         game.shop_bought = {town: list(bought) for town, bought in data.get("shop_bought", {}).items()}
         where = data["location"]

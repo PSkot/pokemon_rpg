@@ -33,7 +33,8 @@ class Building:
     sprite: tuple   # (sheet, cell) or (sheet, cell, scale): see tileset.building
     col: int                  # left edge, in tiles
     # What Up there enters: "mart" (scenes/mart.py), "recruit" (a Recruitment
-    # Center, scenes/recruit.py), or "" (nothing).
+    # Center, scenes/recruit.py), "dept" (scenes/dept_store.py), "tower" (the
+    # Battle Tower's lobby, scenes/battle_tower.py, once open), or "" (nothing).
     inside: str = ""
     note: str = ""  # what Up there says, if nothing else happens there (a shut gym)
     # A small tree grows over its door until this quest has started (then the
@@ -420,7 +421,7 @@ TOWNS = {t.key: t for t in [
     Town("celadon_west", "Celadon West End", 56, (
         Building("Celadon Mansion", (MANSION, 0), 6,
                  note="The Celadon Mansion. A sign: \"Residents only. The Pokémon here are very well fed.\""),
-        Building("Battle Tower", (BATTLE_TOWER, 0), 30,
+        Building("Battle Tower", (BATTLE_TOWER, 0), 30, inside="tower",
                  note="The Battle Tower. A banner over its doors: \"GRAND OPENING SOON! Twenty floors of the "
                       "toughest battles in Kanto!\""),
     ), exits=(("right", "town:celadon_square"),), home_col=24,

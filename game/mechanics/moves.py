@@ -225,6 +225,22 @@ MOVES = {m.name: m for m in [
     Move("Light Screen", 0, "ally", type="psychic", shield=2),  # (Gen 1's halved special damage; as Reflect here)
     Move("Lick", 20, "enemy", type="ghost", **_status("paralysis", 30)),
     Move("Confuse Ray", 0, "enemy", type="ghost", confuse=100),
+    Move("Night Shade", 0, "enemy", type="ghost", fixed=True),  # (the user's level, as Seismic Toss)
+    # The Battle Tower's strong Pokémon (and Mew's).
+    Move("Dragon Rage", 0, "enemy", type="dragon", fixed=True, fixed_amount=40),
+    Move("Mega Punch", 80, "enemy", type="normal"),
+    Move("Mega Kick", 120, "enemy", type="normal"),
+    Move("Comet Punch", 18, "enemy", type="normal", hits=(2, 5)),
+    Move("Dizzy Punch", 70, "enemy", type="normal", confuse=20),
+    Move("Stomp", 65, "enemy", type="normal", flinch=30),
+    Move("Vice Grip", 55, "enemy", type="normal"),
+    Move("Spike Cannon", 20, "enemy", type="normal", hits=(2, 5)),
+    Move("Egg Bomb", 100, "enemy", type="normal"),
+    Move("Softboiled", 0, "self", type="normal", heal=0.5),
+    Move("Splash", 0, "self", type="normal"),
+    Move("Thunder Punch", 75, "enemy", type="electric", **_status("paralysis", 10)),
+    Move("Fire Punch", 75, "enemy", type="fire", **_status("burn", 10)),
+    Move("Smog", 20, "enemy", type="poison", **_status("poison", 40)),
 ]}
 
 # Red/Blue accuracy of the moves that could miss (status moves' chance to
@@ -234,7 +250,7 @@ GEN1_ACCURACY = {
     "Fury Attack": 85, "Fury Swipes": 80, "Double Slap": 85, "Wrap": 85, "Bind": 75, "Sky Attack": 90,
     "Razor Leaf": 95, "Pin Missile": 85, "Fire Spin": 70, "Fire Blast": 85, "Rock Throw": 65, "Rock Slide": 90,
     "Thunder": 70, "Clamp": 75, "Hydro Pump": 80, "Blizzard": 90,
-    "Screech": 85, "Low Kick": 90, "Submission": 80, "Sonic Boom": 90, "String Shot": 95, "Kinesis": 80, "Leech Seed": 90, "Whirlwind": 85,
+    "Mega Punch": 85, "Mega Kick": 75, "Comet Punch": 85, "Egg Bomb": 75, "Smog": 70, "Screech": 85, "Low Kick": 90, "Submission": 80, "Sonic Boom": 90, "String Shot": 95, "Kinesis": 80, "Leech Seed": 90, "Whirlwind": 85,
 }
 MOVES = {name: replace(m, accuracy=GEN1_ACCURACY.get(name, 100)) for name, m in MOVES.items()}
 

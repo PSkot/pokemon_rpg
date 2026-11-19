@@ -106,7 +106,13 @@ PARTY_SLOTS = {
     # Bigger groups (bosses) stand in two staggered lines.
     4: [(450, 170), (490, 232), (540, 160), (580, 222)],
     5: [(440, 160), (470, 205), (500, 250), (555, 180), (590, 232)],
+    6: [(430, 158), (462, 204), (494, 250), (540, 172), (572, 218), (604, 260)],
 }
+
+
+def row_height(n: int) -> int:
+    """The party and enemy windows' rows squeeze together for big groups."""
+    return ROW_H if n <= 4 else 15 if n == 5 else 12
 
 
 class Combatant:
@@ -428,7 +434,7 @@ class BattleScene(Scene):
     def __init__(self, return_to: Scene, party: list[Monster], enemies: list[Monster], bag: Bag,
                  loot: LootTable | None = None, backdrop: Backdrop = MEADOW_BACKDROP, boss: bool = False,
                  trainer: str = "", bonus: LootTable | None = None, on_win=None, prize: int = 0,
-                 evolves=None, wave: tuple[int, int] | None = None, next_battle=None):
+                 evolves=None, wave: tuple[int, int] | None = None, next_battle=None, drops: bool = True):
         self.return_to = return_to
         # A gym's arena: (this wave, how many), and what makes the next
         # wave's battle, which follows straight on from a win (None: back
@@ -451,6 +457,7 @@ class BattleScene(Scene):
         self.enemies = _side(enemies, enemy=True)
         self.bag = bag
         self.loot = loot or wild_loot()  # rolled once per enemy when the party wins (at its level)
+        self.drops = drops  # False: no loot or worn gear drops (the Battle Tower)
         self.rewards: ui.ListPanel | None = None
         self.command = 0        # cursor positions
         self.skill = 0
@@ -564,7 +571,7 @@ class BattleScene(Scene):
         """The combatant at `pos`: its sprite, or its row in the enemy or party window."""
         x, y = pos
         if PARTY_WINDOW.collidepoint(pos):
-            row = int((y - PARTY_WINDOW.y - PAD + 3) // ROW_H)
+            row = int((y - PARTY_WINDOW.y - PAD + 3) // self._party_row_h)
             return self.party[row] if 0 <= row < len(self.party) else None
         if ENEMY_WINDOW.collidepoint(pos) and not self._list_open:
             rows = self._enemy_rows()
@@ -874,8 +881,10 @@ class BattleScene(Scene):
             yield LEVEL_UP_TIME
 
     def _give_rewards(self) -> None:
-        rewards = [r for e in self.enemies for r in self.loot.roll(level=e.monster.level)]
-        rewards += [r for e in self.enemies for r in worn_drops(e.monster)]  # bosses' and trainers' gear
+        rewards = []
+        if self.drops:
+            rewards += [r for e in self.enemies for r in self.loot.roll(level=e.monster.level)]
+            rewards += [r for e in self.enemies for r in worn_drops(e.monster)]  # bosses' and trainers' gear
         if self.bonus:
             rewards += self.bonus.roll(level=max(e.monster.level for e in self.enemies))
         rewards = merge(rewards)
@@ -1737,10 +1746,13 @@ class BattleScene(Scene):
     def _badge_pos(row: int) -> tuple[int, int]:
         return SKILL_WINDOW.x + 118, SKILL_WINDOW.y + PAD + 1 + row * ROW_H
 
-    @staticmethod
-    def _party_badge_pos(row: int) -> tuple[int, int]:
+    def _party_badge_pos(self, row: int) -> tuple[int, int]:
         """A status badge, in place of the level."""
-        return PARTY_WINDOW.x + 108, PARTY_WINDOW.y + PAD + 1 + row * ROW_H
+        return PARTY_WINDOW.x + 108, PARTY_WINDOW.y + PAD + 1 + row * self._party_row_h
+
+    @property
+    def _party_row_h(self) -> int:
+        return row_height(len(self.party))
 
     @staticmethod
     def _enemy_badge_pos(row: int, row_h: int) -> tuple[int, int]:
@@ -1749,7 +1761,7 @@ class BattleScene(Scene):
     @property
     def _enemy_row_h(self) -> int:
         """Rows in the enemy window squeeze together for big groups."""
-        return ROW_H if len(self.enemies) <= 4 else 15
+        return row_height(len(self.enemies))
 
     @staticmethod
     def _enemy_bar(c: Combatant) -> pygame.Rect:
@@ -1828,9 +1840,10 @@ class BattleScene(Scene):
         if self.menu == "items":
             ui.window_box(canvas, INFO_WINDOW)
         for i, c in enumerate(self.party):
-            bar = pygame.Rect(PARTY_WINDOW.x + 168, PARTY_WINDOW.y + PAD + 3 + i * ROW_H, 90, 6)
+            row_h = self._party_row_h
+            bar = pygame.Rect(PARTY_WINDOW.x + 168, PARTY_WINDOW.y + PAD + 3 + i * row_h, 90, 6 if row_h > 12 else 5)
             ui.hp_bar(canvas, bar, c.shown_hp / c.monster.max_hp)
-            ui.bar(canvas, pygame.Rect(bar.x, bar.bottom + 1, bar.w, 4), c.shown_xp, XP_COLOR)
+            ui.bar(canvas, pygame.Rect(bar.x, bar.bottom + 1, bar.w, 4 if row_h > 12 else 2), c.shown_xp, XP_COLOR)
             if c.status:
                 ui.badge(canvas, self._party_badge_pos(i), STATUSES[c.status].color)
         if not self._list_open:
@@ -1905,7 +1918,7 @@ class BattleScene(Scene):
             for i, c in enumerate(self._enemy_rows()):
                 color = ui.YELLOW if c in aimed else ui.WHITE
                 row_h = self._enemy_row_h
-                y, size = ENEMY_WINDOW.y + PAD + i * row_h, 28 if row_h == ROW_H else 24
+                y, size = ENEMY_WINDOW.y + PAD + i * row_h, 28 if row_h == ROW_H else 24 if row_h == 15 else 21
                 ui.text(window, c.label, (ENEMY_WINDOW.x + 12, y), color, size=size)
                 # Its HP left, between the name and the level (draining with the bar).
                 ui.text(window, f"{math.ceil(c.shown_hp)}/{c.monster.max_hp}", (ENEMY_WINDOW.right - ENEMY_HP_X, y + 2),
@@ -1924,19 +1937,21 @@ class BattleScene(Scene):
                 ui.text(window, name, (COMMAND_WINDOW.x + 22, y), color)
 
         for i, c in enumerate(self.party):
-            m, y = c.monster, PARTY_WINDOW.y + PAD + i * ROW_H
+            row_h = self._party_row_h
+            m, y = c.monster, PARTY_WINDOW.y + PAD + i * row_h
+            size = 28 if row_h == ROW_H else 24 if row_h == 15 else 21
             if c in aimed or (self.menu in ("command", "skills", "items") and c is self.actor):
                 color = ui.YELLOW
             elif not c.alive:
                 color = ui.GREY
             else:
                 color = ui.WHITE
-            ui.text(window, c.label, (PARTY_WINDOW.x + 12, y), color)
+            ui.text(window, c.label, (PARTY_WINDOW.x + 12, y), color, size=size)
             if c.status:
                 ui.badge_text(window, STATUSES[c.status].abbrev, self._party_badge_pos(i))
             else:
-                ui.text(window, f"Lv{m.level}", (PARTY_WINDOW.x + 112, y), color)
-            ui.text(window, f"{math.ceil(c.shown_hp)}/{m.max_hp}", (PARTY_WINDOW.right - 12, y), color,
+                ui.text(window, f"Lv{m.level}", (PARTY_WINDOW.x + 112, y), color, size=size)
+            ui.text(window, f"{math.ceil(c.shown_hp)}/{m.max_hp}", (PARTY_WINDOW.right - 12, y), color, size=size,
                     align="right")
 
         for p in self.popups:

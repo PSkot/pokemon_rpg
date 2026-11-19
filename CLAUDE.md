@@ -76,7 +76,8 @@ non-commercial project.
   menus open on what it chose last (`Combatant.last_command`/`last_skill`).
   In the Skills list, O (touch: Reorder moves) carries the highlighted move up or
   down: the equipped moves' order, kept after the battle (`_move_skill`);
-  which moves are equipped only changes outside battles. Enemies show an HP bar
+  which moves are equipped only changes outside battles. Up to 6 a side
+  (`PARTY_SLOTS`; the party and enemy windows' rows squeeze, `row_height`). Enemies show an HP bar
   under their feet (`_enemy_bar`; those names go under it) and their HP
   left as numbers in the enemy window, between name and level/status. Battle sequences are generator "scripts"
   that yield seconds to wait (`BattleScene._round` / `_perform`).
@@ -394,7 +395,7 @@ non-commercial project.
   medicine, 3F Persian's gear, 4F materials, `MaterialShop`, rooftop
   vending machines selling drinks, `rooms/roof_*.png`; stairs props),
   "celadon_square" (Game Corner and gym shut for now, Recruitment Center,
-  smith) and "celadon_west" (Mansion, the Battle Tower, opening later);
+  smith) and "celadon_west" (Mansion, the Battle Tower);
   big buildings have their own sheets (`towns.DEPT_STORE`, `MANSION`,
   `GAME_CORNER`, `BATTLE_TOWER`, `tileset.BUILDING_CELLS`). The smith
   (`towns.smith(col)`, `Folk.npc` = "machamp_smith": drawn from
@@ -405,7 +406,25 @@ non-commercial project.
   is in the bag), then `scenes/smith.SmithMenu`: salvage gear into its
   rarity's material (`items.MATERIALS`, `Bag.materials`), enhance to +5
   (`Gear.plus`, `items.enhanced`: bonuses +10% each), smelt 4 → 1 of the
-  next. `Route.blocked_done`: what a
+  next. The Battle Tower (`world/tower.py`, `scenes/battle_tower.py`;
+  `Building.inside` "tower", open after `tower.OPENS_AFTER` "rainbow_badge"
+  or in dev mode): post-story content. Its lobby (`TowerLobbyScene`,
+  `rooms/tower_*.png`) has Mew floating, drawn 2× (`props/mew.png`), with
+  `MewMenu`: Climb (heals, floor 1), gem exchange (`GEM_GEAR`: 12 of a gem
+  for a piece, slot picked; `GEM_POKEMON`: Dratini/Chansey/Lapras, each
+  once, "mew:<species>" in `Game.trainers`). 20 floors (`TOWER_ROUTES`,
+  "tower_1".."tower_20", `Route.tower` = the floor): each a gym-like hall of
+  waves then a master's band (`trainer`), Lv35 → Lv60
+  (`floor_level`), four tiers (`TIER_NAMES`, `POOLS`, `WAVES`, `BAND`,
+  `WORN`, `TALENTS`; themes `TOWER_THEMES`, walls and backdrops
+  `tower_1..4.png`; giant masters on every fifth, `BOSS_FLOORS`). Tower
+  battles: `tower.dress_up`, `drops=False`, no prize; masters every run
+  (no boss-once). After a floor, `TowerChoice` (climb on, no healing, or
+  claim: `battle_tower.claim` → `tower.chest`: medicine, gear, gems into
+  `Bag.gems`); losing gives nothing. Saves on a floor or in the lobby are
+  outside the tower (`lobby_location`). `Game.tower_best`. Placeholder
+  species for the tower and later (Dragonite, Gengar, Golem, Alakazam, ...)
+  have learnsets but no talent trees yet. `Route.blocked_done`: what a
   shut doorway says once its quest is done (`quests.blocked_text`);
   `Building.note`: what Up at a building says if nothing else happens (`Step.before`: what it says while a
   quest's visit there is still to come, `quests.early_text`).

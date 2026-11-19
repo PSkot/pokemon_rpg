@@ -57,13 +57,13 @@ LEARNSETS = {
         ('Peck', 0), ('Growl', 0), ('Leer', 9), ('Fury Attack', 15), ('Swift', 20), ('Whirlwind', 22),
         ('Drill Peck', 29, 1), ('Agility', 36), ('Hyper Beam', 45, 1),
     ),
-    ('nidoran_f', 'nidorina'): (
+    ('nidoran_f', 'nidorina', 'nidoqueen'): (
         ('Tackle', 0), ('Growl', 0), ('Scratch', 8), ('Poison Sting', 14), ('Tail Whip', 21),
-        ('Body Slam', 25, 1), ('Bite', 29), ('Fury Swipes', 36), ('Double Kick', 43),
+        ('Body Slam', 25, 1), ('Bite', 29), ('Fury Swipes', 36), ('Double Kick', 43), ('Earthquake', 48, 2),
     ),
-    ('nidoran_m', 'nidorino'): (
+    ('nidoran_m', 'nidorino', 'nidoking'): (
         ('Tackle', 0), ('Leer', 0), ('Horn Attack', 8), ('Poison Sting', 14), ('Focus Energy', 21),
-        ('Body Slam', 25, 1), ('Fury Attack', 29), ('Double Kick', 43),
+        ('Body Slam', 25, 1), ('Fury Attack', 29), ('Thrash', 38, 2), ('Double Kick', 43), ('Earthquake', 48, 2),
     ),
     ('pidgey', 'pidgeotto', 'pidgeot'): (
         ('Gust', 0), ('Sand-Attack', 5), ('Quick Attack', 12), ('Whirlwind', 19), ('Wing Attack', 28),
@@ -146,9 +146,10 @@ LEARNSETS = {
         ('Thunder Shock', 0), ('Growl', 0), ('Thunder Wave', 9), ('Quick Attack', 16), ('Swift', 26),
         ('Thunderbolt', 30), ('Agility', 33), ('Thunder', 43),
     ),
-    ('shellder',): (
+    ('shellder', 'cloyster'): (
         ('Tackle', 0), ('Withdraw', 0), ('Water Gun', 10), ('Supersonic', 18), ('Clamp', 23),
-        ('Bubble Beam', 25), ('Aurora Beam', 30), ('Leer', 39), ('Ice Beam', 50),
+        ('Bubble Beam', 25), ('Aurora Beam', 30), ('Spike Cannon', 35, 1), ('Leer', 39), ('Ice Beam', 50),
+        ('Blizzard', 55, 1),
     ),
     ('psyduck', 'golduck'): (
         ('Scratch', 0), ('Water Gun', 8), ('Bubble Beam', 20), ('Tail Whip', 28), ('Confusion', 36),
@@ -166,6 +167,65 @@ LEARNSETS = {
         ('Tackle', 0), ('Screech', 0), ('Bind', 15), ('Rock Throw', 19), ('Rock Slide', 28), ('Slam', 33),
         ('Earthquake', 38), ('Harden', 43),
     ),
+    # The Battle Tower's strong lines (and Mew's Pokémon): Gen 1's moves, as far
+    # as the game has them. No talent trees yet: just their moves.
+    ('dratini', 'dragonair', 'dragonite'): (
+        ('Wrap', 0), ('Leer', 0), ('Thunder Wave', 10), ('Dragon Rage', 18), ('Agility', 24), ('Slam', 30),
+        ('Body Slam', 36, 1), ('Wing Attack', 40, 2), ('Hyper Beam', 50, 1),
+    ),
+    ('aerodactyl',): (
+        ('Wing Attack', 0), ('Agility', 0), ('Supersonic', 33), ('Bite', 38), ('Take Down', 45), ('Rock Slide', 48),
+        ('Hyper Beam', 54),
+    ),
+    ('magikarp', 'gyarados'): (
+        ('Tackle', 0), ('Splash', 0), ('Bite', 20, 1), ('Dragon Rage', 25, 1), ('Leer', 32, 1), ('Hydro Pump', 41, 1),
+        ('Hyper Beam', 52, 1),
+    ),
+    ('lapras',): (
+        ('Water Gun', 0), ('Growl', 0), ('Sing', 16), ('Body Slam', 25), ('Confuse Ray', 31), ('Ice Beam', 38),
+        ('Hydro Pump', 46), ('Blizzard', 52),
+    ),
+    ('gastly', 'haunter', 'gengar'): (
+        ('Lick', 0), ('Confuse Ray', 0), ('Night Shade', 0), ('Hypnosis', 27), ('Psychic', 35, 2),
+        ('Thunderbolt', 40, 2),
+    ),
+    ('chansey',): (
+        ('Pound', 0), ('Double Slap', 0), ('Sing', 24), ('Growl', 30), ('Softboiled', 34), ('Defense Curl', 38),
+        ('Light Screen', 44), ('Seismic Toss', 46), ('Egg Bomb', 48), ('Double-Edge', 54),
+    ),
+    ('scyther',): (
+        ('Quick Attack', 0), ('Leer', 17), ('Focus Energy', 20), ('Slash', 24), ('Swords Dance', 29), ('Agility', 36),
+        ('Wing Attack', 42),
+    ),
+    ('kangaskhan',): (
+        ('Comet Punch', 0), ('Bite', 26), ('Tail Whip', 31), ('Mega Punch', 36), ('Leer', 41), ('Dizzy Punch', 46),
+    ),
+    ('tauros',): (
+        ('Tackle', 0), ('Stomp', 21), ('Tail Whip', 28), ('Body Slam', 35), ('Take Down', 44), ('Hyper Beam', 51),
+    ),
+    ('rhyhorn', 'rhydon'): (
+        ('Horn Attack', 0), ('Stomp', 30), ('Tail Whip', 35), ('Fury Attack', 40), ('Rock Slide', 44),
+        ('Take Down', 48, 1), ('Earthquake', 50, 1),
+    ),
+    ('exeggcute', 'exeggutor'): (
+        ('Confusion', 0), ('Hypnosis', 0), ('Reflect', 25), ('Leech Seed', 28), ('Stomp', 28, 1), ('Stun Spore', 32),
+        ('Egg Bomb', 35, 1), ('Psychic', 40, 1), ('Solar Beam', 45), ('Sleep Powder', 48),
+    ),
+    ('jynx',): (
+        ('Pound', 0), ('Lovely Kiss', 0), ('Ice Punch', 31), ('Double Slap', 39), ('Psychic', 44), ('Body Slam', 47),
+        ('Blizzard', 55),
+    ),
+    ('electabuzz',): (
+        ('Quick Attack', 0), ('Thunder Shock', 0), ('Leer', 34), ('Screech', 37), ('Thunder Punch', 42),
+        ('Light Screen', 49), ('Thunder', 54),
+    ),
+    ('magmar',): (
+        ('Ember', 0), ('Leer', 36), ('Confuse Ray', 39), ('Fire Punch', 43), ('Smog', 48), ('Flamethrower', 55),
+    ),
+    ('pinsir',): (
+        ('Vice Grip', 0), ('Seismic Toss', 25), ('Harden', 30), ('Slash', 36), ('Swords Dance', 49),
+        ('Submission', 52),
+    ),
     ('drowzee', 'hypno'): (
         ('Pound', 0), ('Hypnosis', 0), ('Confusion', 17), ('Headbutt', 24), ('Poison Gas', 29), ('Psychic', 32),
         ('Meditate', 37), ('Psybeam', 40, 1),
@@ -182,7 +242,7 @@ LEARNSETS = {
         ('Wrap', 0), ('Leer', 0), ('Poison Sting', 10), ('Bite', 17), ('Glare', 24), ('Screech', 31),
         ('Dig', 35, 1), ('Acid', 38),
     ),
-    ('jigglypuff',): (
+    ('jigglypuff', 'wigglytuff'): (
         ('Pound', 0), ('Sing', 0), ('Defense Curl', 19), ('Double Slap', 24), ('Rest', 29),
         ('Body Slam', 34), ('Double-Edge', 39),
     ),

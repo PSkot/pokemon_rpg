@@ -26,6 +26,7 @@ from ..mechanics.items import Range
 from ..mechanics.loot import BOSS_GEAR, TRAINER_GEAR, LootTable, ball_loot, boss_loot, chest_loot, dress, wild_loot
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES, Monster, animations
 from ..world import tileset
+from ..world import tower
 from ..world.instance import RIVAL_STARTER, RIVAL_STARTER_EVOLVED, Instance, Stair, Trainer
 from ..world.level import EMPTY, PLATFORM, SOLID, TILE, Level, Spawn, extra_member
 from ..world.player import Controls, Player
@@ -602,8 +603,9 @@ class OverworldScene(MapScene):
         # A boss is a boss once: beaten, it's an ordinary group there on later
         # trips (its normal size; no boss loot, no chest, the way out open),
         # unless a quest wants it beaten (again).
-        beaten = (level.boss and self._boss_key() in game.trainers or game.cleared[route.key] > 0) and not (
-            quests.boss_wanted(game, route.key))
+        # (The Battle Tower's masters are there every run.)
+        beaten = not route.tower and (level.boss and self._boss_key() in game.trainers
+                                      or game.cleared[route.key] > 0) and not quests.boss_wanted(game, route.key)
         if level.boss and route.boss_after and (route.boss_after[0] in game.trainers
                                                 or (route.boss_after[0] in quests.QUESTS
                                                     and quests.is_done(game, route.boss_after[0]))):
@@ -665,11 +667,15 @@ class OverworldScene(MapScene):
 
     def where(self) -> str:
         inst = self.instance
-        if inst.room:
+        if inst.route.tower:
+            text = f"Battle Tower {inst.route.name}"
+        elif inst.room:
             text = f"{inst.route.name} {inst.room.name}"
         else:
             text = f"{inst.route.name}   map {inst.index + 1}/{inst.maps}   to {TOWNS[inst.destination].name}"
-        if self.boss:
+        if self.boss and inst.route.tower:
+            text += "   the master awaits!" if self.boss in self.wild else "   floor cleared!"
+        elif self.boss:
             text += "   the way out is guarded!" if self.boss in self.wild else "   the way out is open"
         return text
 
@@ -824,6 +830,9 @@ class OverworldScene(MapScene):
         """Through the doorway: the next map, or into the town at the end of
         the route after the last. Either way, autosave where the player arrives."""
         inst = self.instance
+        if inst.route.tower:  # (the Battle Tower: on up, or stop)
+            self._tower_choice()
+            return
         if inst.final:
             self.game.cleared[inst.route.key] += 1
             town = TOWNS[inst.destination]
@@ -842,7 +851,10 @@ class OverworldScene(MapScene):
             self.show_event(self.battle_event)
             if wild.trainer:
                 self.show_event(quests.defeat(self.game, wild.trainer.key))
-            if wild is self.boss:
+            if wild is self.boss and self.instance.route.tower:  # a Battle Tower floor cleared
+                self._boss_beaten()
+                self._tower_choice()
+            elif wild is self.boss:
                 self.game.trainers.add(self._boss_key())  # (an ordinary group from now on)
                 route = self.instance.route
                 if route.boss_key and self.trainer and route.boss_key not in self.game.trainers:
@@ -855,8 +867,35 @@ class OverworldScene(MapScene):
             saves.autosave(self)
         elif battle.lost:
             town = TOWNS[self.game.town]
+            if self.instance.route.tower:
+                self.show(ui.ListPanel("Your party fainted...", [("The run is over: no chest this time.", ui.WHITE, ""),
+                                                                 (f"You hurry back to {town.name}.", ui.WHITE, "")],
+                                       (320, 140)), after=self._fainted)
+                return
             self.show(ui.ListPanel("Your party fainted...", [(f"You hurry back to {town.name}.", ui.WHITE, "")],
                                    (320, 140)), after=self._fainted)
+
+    def _tower_choice(self) -> None:
+        """A Battle Tower floor is cleared: on up to the next (no healing),
+        or stop and claim the run's chest, back in the lobby."""
+        from . import battle_tower  # (it builds on this module)
+        floor = self.instance.route.tower
+        self.game.tower_best = max(self.game.tower_best, floor)
+        choice = battle_tower.TowerChoice(floor)
+
+        def chosen():
+            if choice.picked == "climb":
+                inst = Instance(tower.TOWER_ROUTES[tower.floor_key(floor + 1)], tower.LOBBY_TOWN)
+                self.next_scene = Transition(self, OverworldScene(inst, self.game), flashes=0)
+            elif choice.picked == "claim":
+                self.show(battle_tower.claim(self.game, floor), after=self._to_lobby)
+        self.show(choice, after=chosen)
+
+    def _to_lobby(self) -> None:
+        from .battle_tower import TowerLobbyScene
+        lobby = TowerLobbyScene(self.game)
+        saves.autosave(lobby)
+        self.next_scene = Transition(self, lobby, flashes=0)
 
     def _boss_key(self) -> str:
         """What `Game.trainers` keeps once this map's boss is beaten."""
@@ -917,13 +956,23 @@ class OverworldScene(MapScene):
             for enemy, scale in zip(enemies, wild.scales):
                 enemy.scale = scale
         route = self.instance.route
-        if boss or trainer:  # they wear gear (the boss itself 2 pieces), which can drop
+        if route.tower:  # the Battle Tower: talents and gear by its tier, nothing dropped, no prize
+            enemies = [Monster.create(species, level, talents=tower.TALENTS[tower.tier(route.tower)])
+                       for species, level in encounter]
+            if boss:
+                for enemy, scale in zip(enemies, wild.scales):
+                    enemy.scale = scale
+            for i, enemy in enumerate(enemies):
+                tower.dress_up(enemy, route.tower, master=boss and i == 0)
+            extra.setdefault("drops", False)
+            prize = 0
+        elif boss or trainer:  # they wear gear (the boss itself 2 pieces), which can drop
             for i, enemy in enumerate(enemies):
                 dress(enemy, route.boss_loot if boss else route.loot, BOSS_GEAR if boss and i == 0 else TRAINER_GEAR)
         battle = BattleScene(self, party, enemies, self.bag, loot=wild_loot(route.boss_loot if boss else route.loot),
                              backdrop=self.level.theme.backdrop, boss=boss, trainer=trainer,
-                             prize=prize_money(prize, encounter) if trainer else 0,
-                             bonus=boss_loot(route.boss_loot) if (boss and route.boss_chest == "battle") or (
+                             prize=prize_money(prize, encounter) if trainer and prize else 0,
+                             bonus=None if route.tower else boss_loot(route.boss_loot) if (boss and route.boss_chest == "battle") or (
                                  wild.trainer and wild.trainer.boss_loot) else None,
                              on_win=lambda key=route.key, defeated=[s for s, _ in encounter], wild=not (boss or trainer):
                                  quests.won_battle(self.game, key, defeated, self.battle_event, recruits=wild),
@@ -1013,6 +1062,9 @@ class OverworldScene(MapScene):
         """Where the run is at: the map, what's been beaten and opened on it
         (in a dungeon: in every room visited), and where the player stands."""
         inst, p = self.instance, self.player
+        if inst.route.tower:  # (a Battle Tower run isn't saved: outside the tower)
+            from .battle_tower import lobby_location
+            return lobby_location()
         return {
             "kind": "route", "route": inst.route.key, "destination": inst.destination,
             "seed": inst.seed, "map": inst.index, **self.room_state(),

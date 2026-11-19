@@ -696,6 +696,7 @@ class Bag:
     key_items: list[str] = field(default_factory=list)  # story items (Oak's Parcel): never used up or sold
     money: int = 0  # Poké Dollars
     materials: Counter = field(default_factory=Counter)  # the smith's materials (`MATERIALS`): name -> how many
+    gems: Counter = field(default_factory=Counter)  # the Battle Tower's gems (world/tower.GEMS): name -> how many
 
     def add_medicine(self, name: str, count: int = 1) -> None:
         self.medicine[MEDICINE[name].name] += count

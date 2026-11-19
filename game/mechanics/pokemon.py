@@ -65,7 +65,8 @@ class Species:
         key, stage = self.key, 0
         while key in _EVOLVES_FROM:
             key, stage = _EVOLVES_FROM[key], stage + 1
-        return stage
+        line = _LINE_OF.get(self.key)  # (trade and stone forms aren't in EVOLUTIONS: their place in their line)
+        return line.species.index(self.key) if line and not stage else stage
 
     @property
     def tree(self) -> TalentTree:
@@ -73,10 +74,14 @@ class Species:
         key = self.key
         while key in _EVOLVES_FROM:
             key = _EVOLVES_FROM[key]
-        return TREES.get(key) or stand_in_tree(key)
+        return TREES.get(key) or _LINE_OF.get(self.key) or stand_in_tree(key)
 
 
 SPECIES: dict[str, Species] = {}  # filled in below (`_animated`, `_placeholder`)
+# Each species' line (its `TalentTree`), by its place in a learnset's line:
+# also for forms reached by trade or stone (Alakazam, Gengar, Nidoking), which
+# EVOLUTIONS (level evolutions only) doesn't lead back from.
+_LINE_OF = {species: tree for tree in TREES.values() for species in tree.species}
 
 
 def _placeholder(icon: str, name: str, stats: tuple[int, int, int, int, int], types: tuple[str, ...],
@@ -175,6 +180,63 @@ SPECIES.update({
     # sheet has just the sleeping row, breathing.
     "snorlax": Species("Snorlax", 160, 110, 65, 30, 65, ("normal",), fight_anim="idle", anims={
         "idle": AnimSpec("snorlax.png", 0, fps=2, loop=True)}, base_exp=154, size=1.5),
+})
+
+# Placeholders (their icon as a still sprite, until they get a PixelLab
+# sheet): the later forms and strong Pokémon met in the Battle Tower (and
+# Mew's special Pokémon: Dratini, Chansey, Lapras). Gen 1 stats.
+SPECIES.update({
+    "arbok": _placeholder("024_arbok", "Arbok", (60, 85, 69, 80, 65), ('poison',), exp=147),
+    "sandslash": _placeholder("028_sandslash", "Sandslash", (75, 100, 110, 65, 55), ('ground',), exp=163),
+    "nidoqueen": _placeholder("031_nidoqueen", "Nidoqueen", (90, 82, 87, 76, 75), ('poison', 'ground'), exp=194),
+    "nidoking": _placeholder("034_nidoking", "Nidoking", (81, 92, 77, 85, 75), ('poison', 'ground'), exp=195),
+    "golbat": _placeholder("042_golbat", "Golbat", (75, 80, 70, 90, 75), ('poison', 'flying'), exp=171),
+    "persian": _placeholder("053_persian", "Persian", (65, 70, 60, 115, 65), ('normal',), exp=148),
+    "primeape": _placeholder("057_primeape", "Primeape", (65, 105, 60, 95, 60), ('fighting',), exp=149),
+    "machoke": _placeholder("067_machoke", "Machoke", (80, 100, 70, 45, 50), ('fighting',), exp=146),
+    "machamp": _placeholder("068_machamp", "Machamp", (90, 130, 80, 55, 65), ('fighting',), exp=193),
+    "graveler": _placeholder("075_graveler", "Graveler", (55, 95, 115, 35, 45), ('rock', 'ground'), exp=134),
+    "golem": _placeholder("076_golem", "Golem", (80, 110, 130, 45, 55), ('rock', 'ground'), exp=177),
+    "alakazam": _placeholder("065_alakazam", "Alakazam", (55, 50, 45, 120, 135), ('psychic',), exp=186),
+    "magneton": _placeholder("082_magneton", "Magneton", (50, 60, 95, 70, 120), ('electric',), exp=161),
+    "electrode": _placeholder("101_electrode", "Electrode", (60, 50, 70, 140, 80), ('electric',), exp=150),
+    "golduck": _placeholder("055_golduck", "Golduck", (80, 82, 78, 85, 80), ('water',), exp=174),
+    "seaking": _placeholder("119_seaking", "Seaking", (80, 92, 65, 68, 80), ('water',), exp=170),
+    "seadra": _placeholder("117_seadra", "Seadra", (55, 65, 95, 85, 95), ('water',), exp=155),
+    "cloyster": _placeholder("091_cloyster", "Cloyster", (50, 95, 180, 70, 85), ('water', 'ice'), exp=203),
+    "venomoth": _placeholder("049_venomoth", "Venomoth", (70, 65, 60, 90, 90), ('bug', 'poison'), exp=138),
+    "gloom": _placeholder("044_gloom", "Gloom", (60, 65, 70, 40, 85), ('grass', 'poison'), exp=132),
+    "vileplume": _placeholder("045_vileplume", "Vileplume", (75, 80, 85, 50, 100), ('grass', 'poison'), exp=184),
+    "weepinbell": _placeholder("070_weepinbell", "Weepinbell", (65, 90, 50, 55, 85), ('grass', 'poison'), exp=151),
+    "victreebel": _placeholder("071_victreebel", "Victreebel", (80, 105, 65, 70, 100), ('grass', 'poison'), exp=191),
+    "parasect": _placeholder("047_parasect", "Parasect", (60, 95, 80, 30, 80), ('bug', 'grass'), exp=128),
+    "tentacruel": _placeholder("073_tentacruel", "Tentacruel", (80, 70, 65, 100, 120), ('water', 'poison'), exp=205),
+    "arcanine": _placeholder("059_arcanine", "Arcanine", (90, 110, 80, 95, 80), ('fire',), exp=213),
+    "wigglytuff": _placeholder("040_wigglytuff", "Wigglytuff", (140, 70, 45, 45, 50), ('normal',), exp=109),
+    "clefable": _placeholder("036_clefable", "Clefable", (95, 70, 73, 60, 85), ('normal',), exp=129),
+    "hypno": _placeholder("097_hypno", "Hypno", (85, 73, 70, 67, 115), ('psychic',), exp=165),
+    "dratini": _placeholder("147_dratini", "Dratini", (41, 64, 45, 50, 50), ('dragon',), exp=67),
+    "dragonair": _placeholder("148_dragonair", "Dragonair", (61, 84, 65, 70, 70), ('dragon',), exp=144),
+    "dragonite": _placeholder("149_dragonite", "Dragonite", (91, 134, 95, 80, 100), ('dragon', 'flying'), exp=218),
+    "aerodactyl": _placeholder("142_aerodactyl", "Aerodactyl", (80, 105, 65, 130, 60), ('rock', 'flying'), exp=202),
+    "magikarp": _placeholder("129_magikarp", "Magikarp", (20, 10, 55, 80, 20), ('water',), exp=20),
+    "gyarados": _placeholder("130_gyarados", "Gyarados", (95, 125, 79, 81, 100), ('water', 'flying'), exp=214),
+    "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60, 95), ('water', 'ice'), exp=219),
+    "gastly": _placeholder("092_gastly", "Gastly", (30, 35, 30, 80, 100), ('ghost', 'poison'), exp=95),
+    "haunter": _placeholder("093_haunter", "Haunter", (45, 50, 45, 95, 115), ('ghost', 'poison'), exp=126),
+    "gengar": _placeholder("094_gengar", "Gengar", (60, 65, 60, 110, 130), ('ghost', 'poison'), exp=190),
+    "chansey": _placeholder("113_chansey", "Chansey", (250, 5, 5, 50, 105), ('normal',), exp=255),
+    "scyther": _placeholder("123_scyther", "Scyther", (70, 110, 80, 105, 55), ('bug', 'flying'), exp=187),
+    "kangaskhan": _placeholder("115_kangaskhan", "Kangaskhan", (105, 95, 80, 90, 40), ('normal',), exp=175),
+    "tauros": _placeholder("128_tauros", "Tauros", (75, 100, 95, 110, 70), ('normal',), exp=211),
+    "rhyhorn": _placeholder("111_rhyhorn", "Rhyhorn", (80, 85, 95, 25, 30), ('ground', 'rock'), exp=135),
+    "rhydon": _placeholder("112_rhydon", "Rhydon", (105, 130, 120, 40, 45), ('ground', 'rock'), exp=204),
+    "exeggcute": _placeholder("102_exeggcute", "Exeggcute", (60, 40, 80, 40, 60), ('grass', 'psychic'), exp=98),
+    "exeggutor": _placeholder("103_exeggutor", "Exeggutor", (95, 95, 85, 55, 125), ('grass', 'psychic'), exp=212),
+    "jynx": _placeholder("124_jynx", "Jynx", (65, 50, 35, 95, 95), ('ice', 'psychic'), exp=137),
+    "electabuzz": _placeholder("125_electabuzz", "Electabuzz", (65, 83, 57, 105, 85), ('electric',), exp=156),
+    "magmar": _placeholder("126_magmar", "Magmar", (65, 95, 57, 93, 85), ('fire',), exp=167),
+    "pinsir": _placeholder("127_pinsir", "Pinsir", (65, 125, 100, 85, 55), ('bug',), exp=200),
 })
 
 _KEYS = {species: key for key, species in SPECIES.items()}
