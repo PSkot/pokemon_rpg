@@ -412,12 +412,14 @@ non-commercial project.
   `rooms/tower_*.png`) has Mew floating, drawn 2× (`props/mew.png`), with
   `MewMenu`: Climb (heals, floor 1), gem exchange (`GEM_GEAR`: 12 of a gem
   for a piece, slot picked; `GEM_POKEMON`: Dratini/Chansey/Lapras, each
-  once, "mew:<species>" in `Game.trainers`). 20 floors (`TOWER_ROUTES`,
-  "tower_1".."tower_20", `Route.tower` = the floor): each a gym-like hall of
-  waves then a master's band (`trainer`), Lv35 → Lv60
-  (`floor_level`), four tiers (`TIER_NAMES`, `POOLS`, `WAVES`, `BAND`,
+  once, "mew:<species>" in `Game.trainers`). 25 floors (`TOWER_ROUTES`,
+  "tower_1".."tower_25", `Route.tower` = the floor): each a gym-like hall of
+  waves then a master's band (`trainer`), Lv35 → Lv65
+  (`floor_level`), five tiers (`TIER_NAMES`, `POOLS`, `WAVES`, `BAND`,
   `WORN`, `TALENTS`; themes `TOWER_THEMES`, walls and backdrops
-  `tower_1..4.png`; giant masters on every fifth, `BOSS_FLOORS`). Tower
+  `tower_1..5.png`; giant masters on every fifth, `BOSS_FLOORS`), opening
+  five at a time (`GATES`: 4/5/6/7 badges of `BADGES`, counted in any
+  order, then `LEAGUE`; `top_floor`, `tier_open`). Tower
   battles: `tower.dress_up`, `drops=False`, no prize; masters every run
   (no boss-once). After a floor, `TowerChoice` (climb on, no healing, or
   claim: `battle_tower.claim` → `tower.chest`: medicine, gear, gems into

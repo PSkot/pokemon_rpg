@@ -1362,14 +1362,21 @@ story and after it. Its lobby is a marble hall where **Mew** floats. Up at
 Mew opens its menu: Climb, the gem exchange (gear or Pokémon), how the
 tower works, and Leave. Up at the stairs also starts a climb.
 
-- **20 floors**, in four tiers of five. Each floor is a short hall up to an
+- **25 floors**, in five tiers of five. Each floor is a short hall up to an
   arena, fought like a gym: pick the team (as many as the party's places),
   then **waves** of challengers one after another, then the floor master's
   band. Every run **starts on floor 1**, and Mew heals the team first.
+- **Gates:** floors 1–5 open with the tower (the Rainbow Badge, the 4th
+  badge). Each next five needs one more badge, in any order
+  (`tower.GATES`, `top_floor`): floors 6–10 at 5 badges, 11–15 at 6 and
+  16–20 at 7. Floors 21–25 open once you're the Champion
+  (`tower.LEAGUE`). In dev mode every floor is open. On the last open
+  floor, the way up is sealed and you can only claim the chest.
 - **No healing** between waves or floors. Losing any battle ends the run
   with **nothing**: back to the last town, no chest.
 - After each floor's master, choose: **climb on** to the next floor, or
-  **stop and claim the chest**. After floor 20 you can only claim. X
+  **stop and claim the chest**. After floor 25 (or the last open
+  floor) you can only claim. X
   puts the choice off, and Up at the arena's doorway asks again.
 - **XP:** trainer XP (×0.45), split as usual. There are **no drops**
   (loot, worn gear) and **no prize money** (`BattleScene.drops=False`).
@@ -1382,29 +1389,31 @@ tower works, and Leave. Up at the stairs also starts a climb.
 | Sky Gardens | 6–10 | ruins in the clouds | 3 + 1 | 3 (4) | half | 1: Uncommon 3 / Rare 1 |
 | Storm Spire | 11–15 | lightning and crystals | 3 + 1 | 4 (5) | all | 2: Uncommon 1 / Rare 3 / Epic 1 |
 | Celestial Summit | 16–20 | the edge of space | 4 + 1 | 4 (5) | all | 2: Rare 2 / Epic 3 |
+| Eclipse Throne | 21–25 | black and gold under an eclipse | 4 + 1 | 5 (6) | all | 3: Rare 1 / Epic 5 |
 
-- **Levels:** floor *f*'s enemies are Lv 35 + round((*f* − 1) × 25 / 19):
-  Lv35 on floor 1, Lv60 on floor 20. Challengers are 1 below that (or 2),
+- **Levels:** floor *f*'s enemies are Lv 35 + round((*f* − 1) × 30 / 24):
+  Lv35 on floor 1, Lv40 on 5, 46 on 10, 53 on 15, 59 on 20 and Lv65 on
+  floor 25. Challengers are 1 below that (or 2),
   and masters 1 above (or 0).
 - **Pools:** each tier draws from its own pool of strong evolved Pokémon
   (`tower.POOLS`, no legendaries): Pidgeot, Machoke and Kadabra low down;
   Arcanine, Nidoking, Dragonair and Scyther next; then Alakazam, Golem,
-  Machamp, Gengar and Gyarados; and at the top Dragonite, Aerodactyl,
-  Lapras, the three starters' final forms and the rest of the strongest.
+  Machamp, Gengar and Gyarados; then Aerodactyl, Lapras and the three
+  starters' final forms; and at the top Dragonite with the strongest of all.
   The bands are the same every run, as each floor is seeded by its number.
 - **Giant masters:** every fifth floor's master is drawn twice as big and
-  leads the tier's strongest: Nidoking (floor 5, Lv41), Gengar (10, Lv50),
-  Gyarados (15, Lv56) and Dragonite (20, Lv62).
+  leads the tier's strongest: Nidoking (floor 5, Lv42), Gengar (10, Lv48),
+  Gyarados (15, Lv55), Aerodactyl (20, Lv61) and Dragonite (25, Lv67).
 
 **The chest** (`tower.chest`) after clearing floors 1 to *f*:
 - **gems:** 2 of each cleared floor's gem, 3 more on every fifth floor.
-  Quartz comes from floors 1–5, Jade 6–10, Sapphire 11–15 and Ruby 16–20.
-  Stopping at floor 20 gives 13 of each;
+  Quartz comes from floors 1–5, Jade 6–10, Sapphire 11–15, Ruby 16–20 and
+  Diamond 21–25. Stopping at floor 25 gives 13 of each;
 - 1 + ⌊*f*/4⌋ Hyper Potions, ⌊*f*/5⌋ Revives (from floor 5), ⌊*f*/8⌋ Max
   Potions (from 8) and ⌊*f*/12⌋ Full Restores (from 12);
 - 1 + ⌊*f*/5⌋ pieces of gear at the floor's level (Lv60 at most), with
   rarities by tier, Epic at most: Uncommon 3 / Rare 1, Uncommon 1 / Rare 3,
-  Rare 3 / Epic 1, Rare 1 / Epic 3.
+  Rare 3 / Epic 1, Rare 1 / Epic 3, and Epic only.
 
 **Mew's gem exchange:**
 
@@ -1414,6 +1423,7 @@ tower works, and Leave. Up at the stairs also starts a climb.
 | Jade | Rare | 47 |
 | Sapphire | Rare or Epic (half each) | 55 |
 | Ruby | Epic, with a **60%** chance of a special effect (Epic's own is 20%) | 60 |
+| Diamond | Epic, always with a special effect, every bonus at its best roll | 60 |
 
 You pick the slot (Left/Right) and Mew rolls the piece: a random item for
 that slot at that rarity, with random affixes.
@@ -1423,6 +1433,7 @@ that slot at that rarity, with random affixes.
 | Dratini | 30 | 20 Jade |
 | Chansey | 35 | 20 Sapphire |
 | Lapras | 40 | 25 Ruby |
+| Aerodactyl | 50 | 25 Diamond |
 
 A bought Pokémon joins the party if it has room, or else the reserve.
 

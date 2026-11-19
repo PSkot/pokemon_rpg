@@ -881,7 +881,7 @@ class OverworldScene(MapScene):
         from . import battle_tower  # (it builds on this module)
         floor = self.instance.route.tower
         self.game.tower_best = max(self.game.tower_best, floor)
-        choice = battle_tower.TowerChoice(floor)
+        choice = battle_tower.TowerChoice(floor, tower.top_floor(self.game))
 
         def chosen():
             if choice.picked == "climb":

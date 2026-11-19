@@ -41,7 +41,7 @@ MEW_BOB, MEW_BOB_SPEED = 6, 1.6  # px, cycles a second
 MEW_SWAY = 10       # it drifts sideways a little too
 REACH = 26
 GEM_COLORS = {"Quartz": (236, 236, 246), "Jade": (100, 214, 140), "Sapphire": (110, 156, 250),
-              "Ruby": (240, 84, 100)}
+              "Ruby": (240, 84, 100), "Diamond": (190, 246, 255)}
 
 
 def is_open(game: Game) -> bool:
@@ -96,7 +96,8 @@ class TowerLobbyScene(MapScene):
         self.place_player(DOOR_X + 40, 1)
 
     def where(self) -> str:
-        return f"{NAME} lobby   best: floor {self.game.tower_best}" if self.game.tower_best else f"{NAME} lobby"
+        text = f"{NAME} lobby   floors open: 1-{tower.top_floor(self.game)}"
+        return text + (f"   best: floor {self.game.tower_best}" if self.game.tower_best else "")
 
     def location(self) -> dict:
         return lobby_location()
@@ -122,7 +123,7 @@ class TowerLobbyScene(MapScene):
             menu = MewMenu(self.game)
             self.show(menu, after=lambda: menu.climb and start_run(self))
         elif self._at_stairs():
-            ask = TowerChoice(0)
+            ask = TowerChoice(0, tower.top_floor(self.game))
             self.show(ask, after=lambda: ask.picked == "climb" and start_run(self))
         elif self._at_door():
             from .town import TownScene
@@ -186,18 +187,21 @@ def _sparkle(s: pygame.Surface, x: float, y: float, size: int, color) -> None:
 
 class TowerChoice:
     """After floor `floor` (0: in the lobby, about to start): climb on, or
-    stop and claim the chest. Floor 20 can only claim. X closes it undecided
-    (`picked` ""): Up at the doorway asks again."""
+    stop and claim the chest. On the last floor open (`top`, the badges'
+    gates) it can only claim. X closes it undecided (`picked` ""): Up at the
+    doorway asks again."""
 
     OPTIONS_ON = (("climb", "Climb on"), ("claim", "Stop and claim the chest"))
     CONFIRM, BACK = ShopMenu.CONFIRM, ShopMenu.BACK
 
-    def __init__(self, floor: int):
-        self.floor = floor
+    def __init__(self, floor: int, top: int = tower.FLOORS):
+        self.floor, self.top = floor, top
         if floor == 0:
             self.options = (("climb", "Climb (from floor 1)"), ("", "Not yet"))
         elif floor >= tower.FLOORS:
             self.options = (("claim", "Claim the summit's chest"),)
+        elif floor >= top:
+            self.options = (("claim", "Claim the chest"),)
         else:
             self.options = self.OPTIONS_ON
         self.choice = 0
@@ -209,9 +213,15 @@ class TowerChoice:
         f = self.floor
         if f == 0:
             return ["Every run starts on floor 1, with your team healed.",
-                    "No healing between floors; losing ends the run with nothing."]
+                    "No healing between floors; losing ends the run with nothing.",
+                    f"Floors open to you: 1-{self.top}."]
         if f >= tower.FLOORS:
             return ["You stand at the top of the Battle Tower!", "The summit's chest is yours."]
+        if f >= self.top:
+            t = tower.tier(f + 1)
+            return [f"The way up to floor {f + 1} is sealed.",
+                    f"Floors {f + 1}-{f + tower.TIER} open {tower.gate_text(t)}.",
+                    f"The chest of floor {f} is yours."]
         nxt = f + 1
         gem = tower.GEMS[tower.tier(nxt)]
         return [f"Next: floor {nxt}, Lv{tower.floor_level(nxt)} ({tower.TIER_NAMES[tower.tier(nxt)]}).",
@@ -256,10 +266,12 @@ class MewMenu:
     ROW_H, PAD = 17, 9
     CONFIRM, BACK = ShopMenu.CONFIRM, ShopMenu.BACK
     GREETING = "Mew! ♪  (Mew loops around you, giggling. It seems to run this place.)"
-    HELP = ("Twenty floors, each a hall of waves and a master's band; every fifth master is a giant.",
+    HELP = ("Twenty-five floors, each a hall of waves and a master's band; every fifth master is a giant.",
+            "Floors 1-5 are open; each next five opens with one more badge (5, 6, then 7), and the last five "
+            "once you're the Champion.",
             "Every run starts on floor 1. No healing between floors, and losing ends the run.",
             "After each floor: climb on, or stop and claim a chest (medicine, gear and gems).",
-            "Gems: Quartz from floor 1, Jade from 6, Sapphire from 11, Ruby from 16.",
+            "Gems: Quartz from floor 1, Jade from 6, Sapphire from 11, Ruby from 16, Diamond from 21.",
             "No drops or prize money up there, but plenty of XP.")
 
     def __init__(self, game: Game):
@@ -405,7 +417,7 @@ class MewMenu:
                 name = "/".join(rarities) + f" {slot}, Lv{level}"
                 ui.text(window, name, (x, y), rarity.color, size=26)
                 ui.text(window, f"{tower.GEM_PRICE} {gem}", (right, y), GEM_COLORS[gem], size=22, align="right")
-                note = "special effect likely" if i == 3 else "rolled for you"
+                note = {3: "special effect likely", 4: "special effect, best rolls"}.get(i, "rolled for you")
                 ui.text(window, f"< {slot} >   {note}" if i == self.item else note, (x + 8, y + 14), ui.GREY,
                         size=20)
             hint = "Enter: trade   Left/Right: slot   X: back" if self.mode != "confirm" else "Enter: yes   X: no"

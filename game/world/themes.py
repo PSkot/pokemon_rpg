@@ -407,6 +407,16 @@ TOWER_THEMES = (
            Backdrop(art="tower_4.png", sky_top=(10, 8, 30), sky_bottom=(40, 30, 80),
                     hills=((40, 34, 70), (34, 28, 60)), field_far=(80, 70, 120), field_near=(66, 58, 104),
                     stripe=(74, 64, 112), shadow=(30, 24, 56))),
+    _tower("tower_5", "Battle Tower",
+           Palette(fill=(28, 22, 26), fill_dark=(14, 10, 14), fill_light=(52, 44, 46),
+                   top=(226, 186, 80), top_dark=(170, 130, 50), top_light=(255, 232, 150),
+                   platform=(236, 196, 96), platform_dark=(170, 130, 50), platform_light=(255, 240, 170)),
+           "tower_5.png", CaveLook(sky_top=(8, 6, 10), sky_bottom=(40, 30, 30), far_rock=(30, 24, 26),
+                                   near_rock=(40, 32, 34), glow=((255, 220, 130), (255, 250, 220)),
+                                   wall="tower_5.png", dim=0, near_rocks=False),
+           Backdrop(art="tower_5.png", sky_top=(8, 6, 10), sky_bottom=(40, 30, 30),
+                    hills=((40, 32, 34), (34, 26, 28)), field_far=(70, 60, 56), field_near=(58, 48, 46),
+                    stripe=(64, 54, 50), shadow=(24, 18, 20))),
 )
 
 # Route 2's north end, between Diglett's Cave and Pewter City: a short walk
