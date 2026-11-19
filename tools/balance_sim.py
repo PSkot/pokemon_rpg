@@ -143,6 +143,8 @@ STORY = [
     ("Mt. Moon Rocket leader", "mt_moon_cave", (18, 17), False, {"Potion": 2, "Super Potion": 2}),
     ("Cerulean Gym (2 waves + crew)", "cerulean_gym", (21, 20), False, {"Super Potion": 4}),
     ("Nugget Bridge rival", "nugget_bridge", (22, 21), False, {"Super Potion": 3}),
+    ("Stench Patch (Gloom)", "stench_patch", (23, 22), False, {"Super Potion": 2}),
+    ("Pitcher Grove (Weepinbell)", "pitcher_grove", (23, 22), False, {"Super Potion": 2}),
     ("Cerulean burglar", "cerulean_backyard", (24, 23), False, {"Super Potion": 3}),
     ("S.S. Anne rival", "ss_anne", (27, 26), False, {"Super Potion": 3}),
     # (three fight from the S.S. Anne on; the gym is meant to be very hard

@@ -496,6 +496,11 @@ ROUTES.update({r.key: r for r in [
           (23, 19)),
     _feud("horn_hollow", "Horn Hollow", ROUTE_22, "nidoran_m", "nidorino", "Horn Brothers", "viridian_nidorino",
           (19, 15)),
+    # (quests evolve_gloom, evolve_weepinbell: Route 24/25's grass lines)
+    _feud("stench_patch", "Stench Patch", ROUTE_25, "oddish", "gloom", "Stench Patch", "cerulean_gloom",
+          (26, 21), town="cerulean"),
+    _feud("pitcher_grove", "Pitcher Grove", ROUTE_24, "bellsprout", "weepinbell", "Vine Lashers",
+          "route_24_weepinbell", (26, 21), town="route_24"),
 ]})
 
 

@@ -680,6 +680,24 @@ City): Abra alone, Poison Pokémon that Psychic moves hit hard.
 | Last | Evolve Diglett into Dugtrio |
 | Rewards | ₽700, 600 XP |
 
+### Gloom and Weepinbell (Lv21)
+
+Once your Oddish / Bellsprout (recruited from Route 24) is Lv21. Each
+ends on a home ground like the feud's (`instance._feud`): a map of that
+line, its giant leader waiting with two of them. With two at Lv23/22,
+the leader's band is beaten about 66% (Stench Patch) and 79% (Pitcher
+Grove) of the time (`tools/balance_sim.py`). Their next forms come by
+the **Leaf Stone** (`The evolution stones`).
+
+| | Sweet Stench (`evolve_gloom`) | Pitcher's Appetite (`evolve_weepinbell`) |
+| --- | --- | --- |
+| Giver | Gloom, Cerulean City (by the east exit) | Weepinbell, Route 24 (the stop past Nugget Bridge) |
+| 1. | Collect 5 Sweet Nectar (35% per Oddish or Bellsprout, from Route 24 on) | Hunt 6 Venonat (Route 25) |
+| 2. Talk | Bring the nectar to Gloom | Report to Weepinbell |
+| 3. | Defeat the **Stench Patch** (Route 25's look): giant Gloom 26, Oddish 21 ×2 | Defeat the **Vine Lashers** in Pitcher Grove (Route 24's look): giant Weepinbell 26, Bellsprout 21 ×2 |
+| Last | Evolve Oddish into Gloom | Evolve Bellsprout into Weepinbell |
+| Rewards | ₽900, 700 XP | ₽900, 700 XP |
+
 ---
 
 ## Recruitment

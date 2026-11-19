@@ -100,9 +100,9 @@ Example: beating wild Lv6 Pidgey (47), Lv7 Rattata (57) and Lv5 Pidgey
 
 Pokémon evolve at the levels from Red/Blue, but **only once a quest
 unlocks the evolution** (see `quests.md`, *Evolution quests*). Without its
-quest, a line doesn't evolve, whatever its level. For now only Caterpie →
-Metapod and Weedle → Kakuna have quests; Pokémon already evolved stay as
-they are. Trade evolutions aren't in yet; stone evolutions are below.
+quest, a line doesn't evolve, whatever its level (`quests.md` lists the
+lines that have one, e.g. Oddish → Gloom and Bellsprout → Weepinbell);
+Pokémon already evolved stay as they are. Trade evolutions aren't in yet; stone evolutions are below.
 
 - **First time (the quest):** with the quest's item, a party member of
   that species at or above the evolution level shows "Evolve!" on the

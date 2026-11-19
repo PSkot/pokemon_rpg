@@ -253,6 +253,11 @@ TOWNS = {t.key: t for t in [
                "...I bent this spoon with my mind. Yes, it's mine. No, you can't have it.",
                "An Abra sleeps most of the day. Yours will wake up for good once it's ready (Lv16).",
            )),
+           # Evolution quest: Oddish -> Gloom.
+           Folk("cerulean_gloom", "Gloom", "gloom", 94, (
+               "Glooom... Don't mind the smell. Everyone says it's lovely, really. From far away.",
+               "An Oddish grows into a Gloom once it's ready (Lv21), and once it's proved itself.",
+           )),
        )),
     # The top of Route 24, past Nugget Bridge: a stop where Route 25 turns
     # east to Bill's Sea Cottage.
@@ -260,6 +265,11 @@ TOWNS = {t.key: t for t in [
          folk=(Folk("route_24_pidgey", "Pidgey", "pidgey", 22, (
              "Coo! You crossed Nugget Bridge? Route 25 runs east from here, to the sea.",
              "A Pokémaniac called Bill lives by the sea. Strange noises come from his cottage.",
+         )),
+           # Evolution quest: Bellsprout -> Weepinbell.
+           Folk("route_24_weepinbell", "Weepinbell", "weepinbell", 32, (
+             "Weepin'... Mmm, bugs. Route 25's full of them. A Bellsprout's best friend.",
+             "A Bellsprout grows into a Weepinbell once it's ready (Lv21), and once it's earned it.",
          )),)),
     # The bottom of Route 5: the Day Care, Saffron City's gate (shut) and the
     # Underground Path to Route 6 (being dug out: the next part).

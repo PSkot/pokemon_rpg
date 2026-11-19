@@ -302,6 +302,44 @@ QUESTS = {q.key: q for q in [
         money=600, xp=450,
     ),
     Quest(
+        "evolve_gloom", "Sweet Stench",
+        "Cerulean City's Gloom says an Oddish grows into a Gloom by learning to make a smell all its own. Its "
+        "teacher: the Stench Patch's leader, out past Route 25.",
+        giver="cerulean_gloom",
+        offer=(("Gloom", "Glooom... Your Oddish is ready to smell like a real Gloom. It needs to know what's sweet."),
+               ("Gloom", "Bring me 5 drops of Sweet Nectar. The Oddish and Bellsprout up north carry it.")),
+        steps=(collect("Sweet Nectar", 5, "nugget_bridge", ("oddish", "bellsprout"), 35,
+                       "Oddish and Bellsprout, from Route 24 on", "drops of Sweet Nectar"),
+               Step("talk", "cerulean_gloom", "Bring the Sweet Nectar to Gloom (Cerulean City)", town="cerulean",
+                    dialogue=(("Gloom", "Mmm, sweet. Now the stink! The Stench Patch's leader is the smelliest Gloom "
+                                        "of all."),
+                              ("Gloom", "Beat its patch, and your Oddish will have learned. Talk to me when "
+                                        "you're ready."))),
+               Step("defeat", "stench_patch", "Beat the Stench Patch (talk to Gloom, Cerulean City)",
+                    dialogue=(("Gloom", "Pee-yew! Your Oddish stinks wonderfully now. It's a Gloom at heart!"),)),
+               Step("evolve", "oddish", "Evolve your Oddish into Gloom (party screen: E)")),
+        money=900, xp=700,
+    ),
+    Quest(
+        "evolve_weepinbell", "Pitcher's Appetite",
+        "The Route 24 Weepinbell says a Bellsprout grows into a Weepinbell by catching its fill of bugs, and "
+        "by out-lashing the Vine Lashers in Pitcher Grove.",
+        giver="route_24_weepinbell",
+        offer=(("Weepinbell", "Weepin'! Your Bellsprout's vines are long enough. But is it hungry enough?"),
+               ("Weepinbell", "Catch 6 Venonat on Route 25. Then we'll see.")),
+        steps=(hunt("venonat", 6, "Route 25"),
+               Step("talk", "route_24_weepinbell", "Report to Weepinbell (Route 24)", town="route_24",
+                    dialogue=(("Weepinbell", "Bugs caught! Weepin'!"),
+                              ("Weepinbell", "Now the Vine Lashers in Pitcher Grove. Their leader's mouth is twice "
+                                             "the size of mine. Talk to me when you're ready."))),
+               Step("defeat", "pitcher_grove", "Beat the Vine Lashers in Pitcher Grove (talk to Weepinbell, Route "
+                                               "24)",
+                    dialogue=(("Weepinbell", "Snap! Your Bellsprout out-lashed them all. It's a Weepinbell now in "
+                                             "all but shape!"),)),
+               Step("evolve", "bellsprout", "Evolve your Bellsprout into Weepinbell (party screen: E)")),
+        money=900, xp=700,
+    ),
+    Quest(
         "evolve_nidorina", "Mother's Thorns",
         "Viridian City's Nidorina says a Nidoran F grows by caring for others. Bring soft grass for the young "
         "ones' nests.",

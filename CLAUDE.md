@@ -515,7 +515,10 @@ non-commercial project.
   Nidorino: `evolve_nidorina`: collect Soft Grass; `evolve_nidorino`: hunt
   Spearow, the Horn Brothers' hollow) and Abra → Kadabra (Cerulean's
   Kadabra, `evolve_kadabra`: hunt Venonat, a solo Trial of Mind,
-  `_trial(town=, folk=)`).
+  `_trial(town=, folk=)`), Oddish → Gloom (Cerulean's Gloom,
+  `evolve_gloom`: collect Sweet Nectar, the Stench Patch) and Bellsprout →
+  Weepinbell (the Route 24 Weepinbell, `evolve_weepinbell`: hunt Venonat,
+  Pitcher Grove).
 - Recruitment (`docs/quests.md` → Recruitment): won wild battles on routes
   (not trainers', gyms' or bosses': `won_battle(recruits=)`) count
   defeated Pokémon per line (`Game.defeated`, `pokemon.line_base`); at
