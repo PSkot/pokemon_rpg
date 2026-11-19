@@ -462,6 +462,25 @@ ROUTES.update({r.key: r for r in [
         Wave("Night Swarm", (("venonat", 18), ("venonat", 18)), 0),
         Wave("Cave Biters", (("zubat", 19), ("ekans", 19)), 0)), "kadabra", level=20,
         town="cerulean", folk="cerulean_kadabra"),
+    # The starters' last evolutions (quests master_<form>, the master in
+    # Celadon's west end) and Pidgeot's (quest evolve_pidgeot, Celadon's
+    # Pidgeot): harder solo trials, ending with a giant of the final form.
+    _trial("ivysaur", "Trial of the Great Tree", FOREST, (
+        Wave("Stone Wall", (("graveler", 29), ("onix", 30)), 0),
+        Wave("Tide Pool", (("golduck", 30), ("seaking", 30)), 0)), "venusaur", level=29,
+        town="celadon_west", folk="celadon_master"),
+    _trial("charmeleon", "Trial of the Inferno", MT_MOON, (
+        Wave("Silk Spinners", (("venomoth", 29), ("parasect", 30)), 0),
+        Wave("Thorn Hedge", (("weepinbell", 30), ("gloom", 30)), 0)), "charizard", level=29,
+        town="celadon_west", folk="celadon_master"),
+    _trial("wartortle", "Trial of the Deep", CERULEAN_GYM, (
+        Wave("Rock Crew", (("graveler", 29), ("onix", 30)), 0),
+        Wave("Blaze Pack", (("growlithe", 30), ("growlithe", 30)), 0)), "blastoise", level=30,
+        town="celadon_west", folk="celadon_master"),
+    _trial("pidgeotto", "Trial of the Skies", ROUTE_25, (
+        Wave("Bug Swarm", (("venomoth", 29), ("butterfree", 29)), 0),
+        Wave("Garden Pests", (("paras", 30), ("bellsprout", 30)), 0)), "pidgeot", level=28,
+        town="celadon", folk="celadon_pidgeot"),
 ]})
 
 

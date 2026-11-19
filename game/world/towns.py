@@ -407,7 +407,8 @@ TOWNS = {t.key: t for t in [
                "Sprout! The Department Store sells everything! Well, everything a Bellsprout needs. Water.",
                "Erika's gym is on the square, past the Game Corner. She waters every one of her Pokémon herself.",
            )),
-           Folk("celadon_pidgeotto", "Pidgeotto", "pidgeotto", 52, (
+           # Evolution quest: Pidgeotto -> Pidgeot.
+           Folk("celadon_pidgeot", "Pidgeot", "pidgeot", 52, (
                "Kaw! From the store's roof you can see all of Celadon. Even the Battle Tower out west!",
                "The drinks on the roof are the best in Kanto. Kaw! Thirsty gate guards would kill for one.",
            )),
@@ -438,10 +439,18 @@ TOWNS = {t.key: t for t in [
                  note="The Battle Tower. A banner over its doors: \"GRAND OPENING SOON! Twenty-five floors "
                       "of the toughest battles in Kanto!\""),
     ), exits=(("right", "town:celadon_square"),), home_col=24,
-       folk=(Folk("celadon_clefairy", "Clefairy", "clefairy", 24, (
+       folk=(
+           # The starters' last evolutions: a master of the player's starter's
+           # line, retired to the Mansion (quests master_<form>).
+           Folk("celadon_master", "Master {}", ELDER, 19, (
+               "Your first partner has come far. The last step is the hardest: it must face what it will become.",
+               "When it's strong enough (Lv32 for an Ivysaur, Lv36 for a Charmeleon or Wartortle), come and see me.",
+           )),
+           Folk("celadon_clefairy", "Clefairy", "clefairy", 24, (
            "Clefairy! The Battle Tower goes up and up. They say only the strongest teams reach the top.",
            "Fairy... Someone pink and tiny was floating around the tower last night. Clefairy saw it!",
-       )),)),
+       )),
+       )),
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a
     # Clefairy in his teleporter (quest "bill").
     Town("sea_cottage", "Sea Cottage", 40, (

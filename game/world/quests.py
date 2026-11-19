@@ -429,6 +429,82 @@ QUESTS = {q.key: q for q in [
         money=600, xp=400,
     ),
 
+    # The starters' last evolutions (the master in Celadon's west end: the
+    # last form of the player's starter's line) and Pidgeot's.
+    Quest(
+        "master_ivysaur", "Mastery",
+        "The master Venusaur in Celadon's west end says your Ivysaur is ready for its last step. "
+        "First it must stand up to what it fears most; then, alone, face what it will become.",
+        giver="celadon_master",
+        offer=(("Master Venusaur", "Your Ivysaur's bud is about to bloom. I can smell it. But a flower must weather the wind first."),
+               ("Master Venusaur", "Beat 8 Pidgeotto on Route 8. Then come back to me.")),
+        steps=(hunt("pidgeotto", 8, "Route 8"),
+               Step("talk", "celadon_master", "Report to the master Venusaur (Celadon West End)",
+                    town="celadon_west",
+                    dialogue=(("Master Venusaur", "The birds didn't scare it off. Good. Roots that deep don't come up easily."),
+                              ("Master Venusaur", "Now, the Trial of the Great Tree. Your Ivysaur goes in alone, "
+                                                        "and at the end, a Venusaur waits. Talk to me when "
+                                                        "you're ready."))),
+               Step("defeat", "trial_ivysaur", "Pass the Trial of the Great Tree (talk to the master Venusaur, Celadon West End)",
+                    dialogue=(("Master Venusaur", "Magnificent. Your Ivysaur stood against a Venusaur and did not wither. It is ready to bloom."),)),
+               Step("evolve", "ivysaur", "Evolve your Ivysaur into Venusaur (party screen: E)")),
+        money=1500, xp=1300,
+    ),
+    Quest(
+        "master_charmeleon", "Mastery",
+        "The master Charizard in Celadon's west end says your Charmeleon is ready for its last step. "
+        "First it must stand up to what it fears most; then, alone, face what it will become.",
+        giver="celadon_master",
+        offer=(("Master Charizard", "Your Charmeleon's flame burns hot. But a flame that fears the earth will be smothered."),
+               ("Master Charizard", "Beat 8 Diglett on the Underground Path (west). Then come back to me.")),
+        steps=(hunt("diglett", 8, "the Underground Path (west)"),
+               Step("talk", "celadon_master", "Report to the master Charizard (Celadon West End)",
+                    town="celadon_west",
+                    dialogue=(("Master Charizard", "It stood its ground against the ground itself. Good. That flame won't go out."),
+                              ("Master Charizard", "Now, the Trial of the Inferno. Your Charmeleon goes in alone, "
+                                                        "and at the end, a Charizard waits. Talk to me when "
+                                                        "you're ready."))),
+               Step("defeat", "trial_charmeleon", "Pass the Trial of the Inferno (talk to the master Charizard, Celadon West End)",
+                    dialogue=(("Master Charizard", "The sky is yours now. Your Charmeleon faced a Charizard and its flame never wavered."),)),
+               Step("evolve", "charmeleon", "Evolve your Charmeleon into Charizard (party screen: E)")),
+        money=1500, xp=1300,
+    ),
+    Quest(
+        "master_wartortle", "Mastery",
+        "The master Blastoise in Celadon's west end says your Wartortle is ready for its last step. "
+        "First it must stand up to what it fears most; then, alone, face what it will become.",
+        giver="celadon_master",
+        offer=(("Master Blastoise", "Your Wartortle's shell has grown hard. But a shell is only as strong as the will inside it."),
+               ("Master Blastoise", "Beat 8 Growlithe on Route 8. Then come back to me.")),
+        steps=(hunt("growlithe", 8, "Route 8"),
+               Step("talk", "celadon_master", "Report to the master Blastoise (Celadon West End)",
+                    town="celadon_west",
+                    dialogue=(("Master Blastoise", "It put out every fire. Good. The deep sea is calm, and so is it."),
+                              ("Master Blastoise", "Now, the Trial of the Deep. Your Wartortle goes in alone, "
+                                                        "and at the end, a Blastoise waits. Talk to me when "
+                                                        "you're ready."))),
+               Step("defeat", "trial_wartortle", "Pass the Trial of the Deep (talk to the master Blastoise, Celadon West End)",
+                    dialogue=(("Master Blastoise", "Your Wartortle held firm against a Blastoise's cannons. It is ready to carry its own."),)),
+               Step("evolve", "wartortle", "Evolve your Wartortle into Blastoise (party screen: E)")),
+        money=1500, xp=1300,
+    ),
+    Quest(
+        "evolve_pidgeot", "Lord of the Skies",
+        "Celadon's Pidgeot says a Pidgeotto becomes a Pidgeot only once it leads the flock, and once it has "
+        "flown higher than the rest.",
+        giver="celadon_pidgeot",
+        offer=(("Pidgeot", "Kaw! Your Pidgeotto has strong wings. But a Pidgeot leads, it doesn't follow."),
+               ("Pidgeot", "Out-fly 8 wild Pidgeotto on Route 8. Then come back to me.")),
+        steps=(hunt("pidgeotto", 8, "Route 8"),
+               Step("talk", "celadon_pidgeot", "Report to Pidgeot (Celadon City)", town="celadon",
+                    dialogue=(("Pidgeot", "The flock follows you now. Kaw!"),
+                              ("Pidgeot", "Last, the Trial of the Skies. Your Pidgeotto flies alone, and at the end "
+                                          "a giant Pidgeot waits. Talk to me when you're ready."))),
+               Step("defeat", "trial_pidgeotto", "Pass the Trial of the Skies (talk to Pidgeot, Celadon City)",
+                    dialogue=(("Pidgeot", "Kaw! You flew higher than any of them. The skies are yours."),)),
+               Step("evolve", "pidgeotto", "Evolve your Pidgeotto into Pidgeot (party screen: E)")),
+        money=1500, xp=1300,
+    ),
     # The feud on Route 22: help the Pidgey or the Spearow (one at a time;
     # the other side opens again once the first is done).
     Quest(

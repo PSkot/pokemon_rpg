@@ -515,7 +515,11 @@ non-commercial project.
   Nidorino: `evolve_nidorina`: collect Soft Grass; `evolve_nidorino`: hunt
   Spearow, the Horn Brothers' hollow) and Abra → Kadabra (Cerulean's
   Kadabra, `evolve_kadabra`: hunt Venonat, a solo Trial of Mind,
-  `_trial(town=, folk=)`), Oddish → Gloom (Cerulean's Gloom,
+  `_trial(town=, folk=)`), the starters' last forms ("Mastery",
+  `master_<form>`: Celadon West End's master, `celadon_master` (the
+  `ELDER`): hunt, talk, a solo trial ending with a giant final form) and
+  Pidgeotto → Pidgeot (Celadon's Pidgeot, `evolve_pidgeot`, the same
+  way), Oddish → Gloom (Cerulean's Gloom,
   `evolve_gloom`: collect Sweet Nectar, the Stench Patch) and Bellsprout →
   Weepinbell (the Route 24 Weepinbell, `evolve_weepinbell`: hunt Venonat,
   Pitcher Grove).

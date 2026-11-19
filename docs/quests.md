@@ -680,6 +680,37 @@ City): Abra alone, Poison Pokémon that Psychic moves hit hard.
 | Last | Evolve Diglett into Dugtrio |
 | Rewards | ₽700, 600 XP |
 
+### Mastery: the starters' last forms (Ivysaur Lv32, Charmeleon and Wartortle Lv36)
+
+A harder "Coming of Age", from the **master** of your starter's line
+(Master Venusaur, Charizard or Blastoise: the `ELDER`), retired to
+Celadon's west end, by the Mansion. First beat 8 of a kind your starter
+fears, then a **solo trial** (`instance._trial`, from Celadon West End):
+the starter alone through two waves, then a **giant of its final form**.
+With the starter at Lv36 and all its talents, the trials are won about
+50–60% of the time (`tools/balance_sim.py`-style runs; the giant is the
+hard part). The masters are lower-levelled, as a final form's stats are
+far above a middle form's.
+
+| | Mastery (`master_ivysaur`) | Mastery (`master_charmeleon`) | Mastery (`master_wartortle`) |
+| --- | --- | --- | --- |
+| 1. | Hunt 8 Pidgeotto (Route 8) | Hunt 8 Diglett (Underground Path, west) | Hunt 8 Growlithe (Route 8) |
+| 2. Talk | Report to the master | Report to the master | Report to the master |
+| 3. | **Trial of the Great Tree** (Viridian Forest's look): Graveler 29 and Onix 30; Golduck 30 and Seaking 30; then a giant Venusaur 29 | **Trial of the Inferno** (Mt. Moon's look): Venomoth 29 and Parasect 30; Weepinbell 30 and Gloom 30; then a giant Charizard 29 | **Trial of the Deep** (the Cerulean Gym's look): Graveler 29 and Onix 30; Growlithe 30 ×2; then a giant Blastoise 30 |
+| Last | Evolve Ivysaur into Venusaur | Evolve Charmeleon into Charizard | Evolve Wartortle into Blastoise |
+| Rewards | ₽1,500, 1,300 XP | ₽1,500, 1,300 XP | ₽1,500, 1,300 XP |
+
+### Pidgeot (Lv36)
+
+| | Lord of the Skies (`evolve_pidgeot`) |
+| --- | --- |
+| Giver | Pidgeot, Celadon City (east) |
+| 1. | Hunt 8 Pidgeotto (Route 8) |
+| 2. Talk | Report to Pidgeot |
+| 3. | **Trial of the Skies** (Route 25's look), Pidgeotto alone: Venomoth 29 and Butterfree 29; Paras 30 and Bellsprout 30; then a giant Pidgeot 28 (about 45% won at Lv36) |
+| Last | Evolve Pidgeotto into Pidgeot |
+| Rewards | ₽1,500, 1,300 XP |
+
 ### Gloom and Weepinbell (Lv21)
 
 Once your Oddish / Bellsprout (recruited from Route 24) is Lv21. Each
