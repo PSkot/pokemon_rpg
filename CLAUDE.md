@@ -259,8 +259,9 @@ non-commercial project.
   props; run by a Meowth: an idle
   animation, `props/meowth.png`, `tileset.npc_frames`): Up at the counter does a quest step there,
   else opens the shop (`ShopMenu`: buy the town's stock, `Town.mart`;
-  sell medicine for half; `Medicine.price`); Up at Persian by the door
-  (`props/persian.png`, towns with `Town.gear`) opens the gear counter
+  sell medicine for half; `Medicine.price`); Up at Persian, lying on a pile of
+  gear by the door (`props/persian.png`: 80 px frames, `npc_frames(name,
+  width)`; towns with `Town.gear`) opens the gear counter
   (`GearShop`: 6 pieces, `towns.gear_stock`, rolled from `Game.seed` and
   the visit, restocked on arriving from a route, `Game.arrive`; buy at
   `Gear.price` = 5× `Gear.value`, `GEAR_MARKUP`, sell bag gear for half

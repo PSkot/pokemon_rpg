@@ -2,7 +2,7 @@
 
 Up at the counter talks to Meowth: a quest step at the Poké Mart if there
 is one, else the shop (`ShopMenu`: buy the town's medicine, sell the bag's
-for half). Up at Persian, by the door, opens the gear counter (`GearShop`:
+for half). Up at Persian, lazing on a pile of gear by the door, opens the gear counter (`GearShop`:
 buy the pieces on offer, `towns.gear_stock`, restocked each time the player
 arrives in the town from a route; sell the bag's gear for half its price).
 Up at the glass door goes back out into the town. Saving here saves the
@@ -32,8 +32,9 @@ MEOWTH_LIFT = 0     # Meowth stands on the floor: it peeps over the counter
 MEOWTH_FPS = 6         # Meowth's idle animation
 SHELVES = [232, 328, 424]
 DOOR_X = 592
-PERSIAN_X = 524     # the gear counter: Persian, between the last shelf and the door
+PERSIAN_X = 530     # the gear counter: Persian on its pile, between the last shelf and the door
 PERSIAN_FPS = 5
+PERSIAN_W = 80      # its frames' width (lying on its pile of gear)
 REACH = 24          # how close the player must be to the counter or door
 
 MAX_AMOUNT = 99
@@ -55,7 +56,7 @@ class MartScene(MapScene):
         self.tiles = pygame.Surface((1, 1), pygame.SRCALPHA)  # the floor is part of the room
         self.backgrounds = [(tileset.room("mart", self.level.width, self.ground, SHELVES, DOOR_X), 0.0)]
         self.meowth_frames = tileset.npc_frames("meowth")
-        self.persian_frames = tileset.npc_frames("persian") if town.gear else []
+        self.persian_frames = tileset.npc_frames("persian", PERSIAN_W) if town.gear else []
         self.place_player(DOOR_X - 36, -1)
 
     def where(self) -> str:
@@ -125,12 +126,9 @@ class MartScene(MapScene):
         if self.persian_frames:
             image = self.persian
             layer.blit(image, (PERSIAN_X - image.get_width() // 2, self.ground - image.get_height()))
-            tileset.mart_sign(layer, PERSIAN_X, 196, w=56)
 
     def draw_overlay(self, window: pygame.Surface) -> None:
         ui.text(window, "POKé MART", (COUNTER_X + COUNTER_W / 2, 74), ui.WHITE, size=26, align="center")
-        if self.persian_frames and not self.panel:  # (the panel covers it)
-            ui.text(window, "GEAR", (PERSIAN_X, 200), ui.WHITE, size=26, align="center")
         super().draw_overlay(window)
 
 
@@ -303,7 +301,7 @@ class GearShop:
     OPTIONS = ("Buy", "Sell", "Leave")
     ROW_H, PAD, ROWS = 15, 9, 6
     CONFIRM, BACK = ShopMenu.CONFIRM, ShopMenu.BACK
-    GREETING = "Purr... Welcome. Only the finest gear at my counter, darling. Buying or selling?"
+    GREETING = "*Yawn*... Oh. A customer. Buying, selling, or just blocking my light?"
 
     def __init__(self, town: Town, game: Game):
         self.town, self.game, self.bag = town, game, game.bag
@@ -358,8 +356,8 @@ class GearShop:
                 return True
             self.mode = self.list_mode = option.lower()
             self.item = self.top = 0
-            self.message = ("Have a look. Fresh pieces come in whenever you're back in town." if option == "Buy"
-                            else "Let me see what you've dragged in.")
+            self.message = ("Look all you like. I get new things whenever you've been away a while." if option == "Buy"
+                            else "Fine. Show me what you dragged in.")
         elif key in self.BACK:
             return True
         return False
@@ -372,13 +370,13 @@ class GearShop:
         elif key in self.CONFIRM and pieces:
             gear = pieces[self.item]
             if self.list_mode == "buy" and self.bag.money < gear.price:
-                self.message = "Purr... You can't afford that one, darling."
+                self.message = "Hmph. Come back when you can afford it."
                 return
             self.mode = "confirm"
             verb = "Buy" if self.list_mode == "buy" else "Sell"
             self.message = f"{verb} the {gear.name} for {money_text(self._price(gear))}?"
         elif key in self.BACK:
-            self.mode, self.message = "main", "Anything else, darling?"
+            self.mode, self.message = "main", "Mm. Anything else?"
 
     def _confirm_key(self, key: int) -> None:
         gear = self._selected
@@ -387,17 +385,17 @@ class GearShop:
                 self.bag.money -= gear.price
                 self.bag.add(gear)
                 self._bought.append(self.stock.index(gear))
-                self.message = f"The {gear.name} is yours. It suits you, darling."
+                self.message = f"The {gear.name}. Yours. Now let me nap."
             else:
                 self.bag.money += gear.sell_price
                 self.bag.gear.remove(gear)
-                self.message = f"Sold for {money_text(gear.sell_price)}. A pleasure."
+                self.message = f"{money_text(gear.sell_price)}. Take it or leave it... you took it."
             pieces = self._pieces(self.list_mode)
             self.item = max(0, min(self.item, len(pieces) - 1))
             self.top = max(0, min(self.top, len(pieces) - self.ROWS))
             self.mode = self.list_mode
         elif key in self.BACK:
-            self.mode, self.message = self.list_mode, "Changed your mind? Purr..."
+            self.mode, self.message = self.list_mode, "Whatever."
 
     # -------------------------------------------------------------- drawing
 
@@ -433,7 +431,7 @@ class GearShop:
     def _draw_list(self, window: pygame.Surface, x: int, right: int) -> None:
         r, pieces = self.RECT, self._pieces(self.list_mode)
         if not pieces:
-            empty = ("That's all I had, darling. Come back after your next trip." if self.list_mode == "buy"
+            empty = ("That's all of it. Go away for a while, then come back." if self.list_mode == "buy"
                      else "You've no gear in your bag to sell.")
             ui.text(window, empty, (x, self._row_y(0)), ui.GREY, size=22)
             return

@@ -592,11 +592,13 @@ def prop(name: str) -> pygame.Surface:
 
 
 @cache
-def npc_frames(name: str) -> list[pygame.Surface]:
-    """An NPC's idle animation (props/<name>.png: one row of 64×64 frames),
-    each frame cut to the outline of them all, so they line up."""
+def npc_frames(name: str, width: int = 64) -> list[pygame.Surface]:
+    """An NPC's idle animation (props/<name>.png: one row of frames `width`
+    px wide, as tall as the sheet), each frame cut to the outline of them
+    all, so they line up."""
     sheet = prop(name)
-    frames = [sheet.subsurface((x, 0, 64, 64)) for x in range(0, sheet.get_width(), 64)]
+    h = sheet.get_height()
+    frames = [sheet.subsurface((x, 0, width, h)) for x in range(0, sheet.get_width(), width)]
     box = frames[0].get_bounding_rect().unionall([f.get_bounding_rect() for f in frames])
     return [f.subsurface(box).copy() for f in frames]
 
@@ -641,9 +643,9 @@ def mart_counter(s: pygame.Surface, x: int, ground: int, w: int) -> pygame.Rect:
     return draw_prop(s, "mart_counter", x + w // 2, ground)
 
 
-def mart_sign(s: pygame.Surface, center_x: int, y: int, w: int = 120) -> pygame.Rect:
-    """A blue sign board, `w` px wide (over the counter, over Persian; the scene writes on it)."""
-    sign = pygame.Rect(0, y, w, 22)
+def mart_sign(s: pygame.Surface, center_x: int, y: int) -> pygame.Rect:
+    """The blue sign board over the counter (the scene writes on it)."""
+    sign = pygame.Rect(0, y, 120, 22)
     sign.centerx = center_x
     pygame.draw.rect(s, MART_BLUE, sign, border_radius=3)
     pygame.draw.rect(s, (245, 245, 250), sign.inflate(-4, -4), 1, border_radius=2)
