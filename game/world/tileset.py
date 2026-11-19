@@ -578,7 +578,8 @@ def _gradient(surface: pygame.Surface, top, bottom) -> None:
 
 # --------------------------------------------------------------- buildings
 
-BUILDING_CELL = (128, 128)  # cells of the building sheets (houses.png, functional_buildings.png)
+BUILDING_CELL = (128, 128)  # cells of the building sheets (houses.png, functional_buildings.png) ...
+BUILDING_CELLS = {"pokemon_tower.png": (160, 256)}  # ... unless a sheet has its own (the Pokémon Tower)
 OUTLINE = (48, 28, 16)
 BUILDING_SINK = 1  # px a building's base sits into the ground (over the grass edge)
 
@@ -589,7 +590,7 @@ def building(sprite: tuple[str, int]) -> tuple[pygame.Surface, int]:
     row its base stands on (the lowest row at least half its width wide:
     below it only small things like steps or plants hang). A scale draws
     it that many times bigger (nearest-neighbour: the Pokémon Tower)."""
-    cell = _cells(sprite[0], BUILDING_CELL)[sprite[1]]
+    cell = _cells(sprite[0], BUILDING_CELLS.get(sprite[0], BUILDING_CELL))[sprite[1]]
     box = cell.get_bounding_rect()
     image = cell.subsurface(box)
     wide = [y for y in range(box.h) if sum(image.get_at((x, y)).a > 0 for x in range(box.w)) > box.w / 2]

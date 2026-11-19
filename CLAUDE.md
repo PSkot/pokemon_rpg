@@ -380,8 +380,9 @@ non-commercial project.
   `Theme.dark`: black but for Flash's light around the player,
   `overworld._darkness`; the Hiker Crew guards B1F's stairs, `MID_BOSS`
   chest) → Lavender Town (Center, Mart, gear den, the Pokémon Tower, shut
-  for now: `towns.TOWER` = `pokemon_tower.png`, a one-cell building sheet, drawn 2×:
-  `Building.sprite` (sheet, cell, scale);
+  for now: `towns.TOWER` = `pokemon_tower.png`, a one-cell building sheet of its own
+  size, 160×256, `tileset.BUILDING_CELLS`; `Building.sprite` can also take
+  a scale, (sheet, cell, scale), nearest-neighbour;
   Mr. Fuji's house; the town ends there). `Route.blocked_done`: what a
   shut doorway says once its quest is done (`quests.blocked_text`);
   `Building.note`: what Up at a building says if nothing else happens (`Step.before`: what it says while a

@@ -21,7 +21,7 @@ GROUND = 4  # tiles of ground
 
 
 HOUSES, FUNCTIONAL = "houses.png", "functional_buildings.png"  # Pixellab sheets, 2×2 cells of 128×128
-TOWER = "pokemon_tower.png"  # Lavender's Pokémon Tower: one 128×128 cell
+TOWER = "pokemon_tower.png"  # Lavender's Pokémon Tower: one 160×256 cell (tileset.BUILDING_CELLS)
 
 
 @dataclass(frozen=True)
@@ -331,7 +331,7 @@ TOWNS = {t.key: t for t in [
     Town("lavender", "Lavender Town", 64, (
         Building("Pokémon Center", (FUNCTIONAL, 0), 6),
         Building("Poké Mart", (FUNCTIONAL, 2), 18, inside="mart"),
-        Building("Pokémon Tower", (TOWER, 0, 2), 28,
+        Building("Pokémon Tower", (TOWER, 0), 28,
                  note="The Pokémon Tower, where Pokémon are laid to rest. A cold draught blows from the door... "
                       "Something moves inside, but you can't make out what. You'd need a way to see it."),
         Building("Mr. Fuji's House", (HOUSES, 0), 46,
