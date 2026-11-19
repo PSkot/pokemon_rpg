@@ -455,6 +455,22 @@ yet.
 - **Rewards:** ₽1,500, 1,400 XP, 2 Hyper Potions, a Revive and a **Rare**
   gear piece (item level 33).
 
+### A Hammer Fit for a Smith (side quest)
+
+- **Starts:** from the **Machamp smith** (Lavender Town and the major towns
+  after it), once quest 19 is done: his hammer snapped, and nothing from a
+  Mart survives four arms. "Bring me something STRONG."
+- **Steps:** bring him something strong enough for a hammer: the
+  **Thick Bone** (a key item; it comes from the Pokémon Tower's Marowak,
+  later). Until it's in the bag, talking to him says to keep looking (and
+  no "!" shows over him: `Step.takes`/`waiting`). When it turns up:
+  "You found a Thick Bone! It's heavier than stone, and not a scratch on
+  it. / Something this strong must be good for more than gathering
+  dust..." (`quests.BONE_FOUND`).
+- **Rewards:** ₽1,000, 800 XP, and his menu opens: salvage, enhance and
+  smelt (`mechanics.md`, *The smith*). (Dev mode's item maker can add the
+  Thick Bone meanwhile: key items are in its list.)
+
 ---
 
 ## Evolution quests

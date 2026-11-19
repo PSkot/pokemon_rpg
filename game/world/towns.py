@@ -57,6 +57,7 @@ class Folk:
     # Chat, one line per talk in turn; "{partner}" = the player's starter's name.
     lines: tuple[str, ...] = ()
     asleep: bool = False  # fast asleep (Snorlax): doesn't turn to face the player, Zzz over it
+    npc: str = ""  # drawn as this NPC's idle animation (props/<npc>.png, tileset.npc_frames), not a species
 
     @property
     def x(self) -> float:
@@ -124,6 +125,16 @@ def gear_stock(town: Town, seed: int, visit: int) -> list[Gear]:
         item = rng.choice([name for name, i in ITEMS.items() if i.drops_at(rarity)])
         stock.append(Gear.roll(item, rarity, rng, level=rng.randint(*levels)))
     return stock
+
+
+def smith(col: int) -> Folk:
+    """The smith: a Machamp at his anvil and furnace (from Lavender Town on,
+    in the major towns). His quest (quests.SMITH, "A Hammer Fit for a
+    Smith") opens his menu (scenes/smith.py)."""
+    return Folk("smith", "Machamp", "machop", col, (
+        "HAH! You call that a grip? Four arms, kid. Four.",
+        "A good smith listens to the metal. Mostly it says CLANG.",
+    ), npc="machamp_smith")
 
 
 TOWNS = {t.key: t for t in [
@@ -328,7 +339,7 @@ TOWNS = {t.key: t for t in [
     # Lavender Town, at Rock Tunnel's south end: a small, quiet town, home
     # of the Pokémon Tower, where Pokémon are laid to rest (its ghosts are
     # for later: the tower is shut for now).
-    Town("lavender", "Lavender Town", 64, (
+    Town("lavender", "Lavender Town", 72, (
         Building("Pokémon Center", (FUNCTIONAL, 0), 6),
         Building("Poké Mart", (FUNCTIONAL, 2), 18, inside="mart"),
         Building("Pokémon Tower", (TOWER, 0), 28,
@@ -349,6 +360,7 @@ TOWNS = {t.key: t for t in [
                "Puff... Lavender Town is so quiet. Everyone whispers here.",
                "Jiggly... Some say a lost Pokémon's mother still waits at the top of the tower.",
            )),
+           smith(62),
        )),
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a
     # Clefairy in his teleporter (quest "bill").

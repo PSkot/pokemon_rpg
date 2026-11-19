@@ -24,11 +24,13 @@ import random
 from dataclasses import dataclass, field
 
 from ..dev import DEV
-from ..mechanics.items import ITEMS, RIBBON, STACKING, Gear, money_text
+from ..mechanics.items import BONE, ITEMS, RIBBON, STACKING, Gear, money_text
 from ..mechanics.loot import Reward
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, line_base
 from .instance import RECRUITS, Recruit, from_route
 from .progress import MAX_PARTY
+
+SMITH = "smith"  # the smith Machamp's townsfolk key (the same in every town he works in)
 
 Line = tuple[str, str]  # (speaker, text) of a dialogue page
 
@@ -58,6 +60,9 @@ class Step:
     # visit: what Up at the building says while the quest is still at an
     # earlier step (a hint at what to do first), `early_text`.
     before: str = ""
+    # talk with `takes`: the step only happens once those key items are in
+    # the bag; until then, talking says this instead.
+    waiting: tuple[Line, ...] = ()
 
 
 def hunt(species: str, count: int, where: str) -> Step:
@@ -641,6 +646,31 @@ QUESTS = {q.key: q for q in [
         done_dialogue=(("", "Lavender Town: a small, quiet town. The Pokémon Tower looms over it, where Pokémon "
                             "are laid to rest."),),
     ),
+    # The smith (a Machamp at an anvil, in the major towns from Lavender on):
+    # bring him something strong enough for a hammer (the Thick Bone, from
+    # the Pokémon Tower's Marowak, later), and he salvages and enhances gear.
+    Quest(
+        "smith_hammer", "A Hammer Fit for a Smith",
+        "Machamp the smith broke his hammer, and no ordinary hammer survives four arms. He needs something "
+        "truly strong to make a new one.",
+        giver=SMITH, requires=("rock_tunnel",),
+        offer=(("Machamp", "HAH! A traveller! Look at this. My hammer. Snapped clean in two."),
+               ("Machamp", "Four arms, kid. Nothing they sell in a Mart lasts a day in these hands."),
+               ("Machamp", "Bring me something STRONG. Stronger than iron. I'll make a hammer worth swinging, "
+                           "and then I'll show you what a real smith can do with your gear.")),
+        steps=(Step("talk", SMITH, "Find something strong enough for Machamp's hammer", takes=(BONE,),
+                    waiting=(("Machamp", "Still nothing? I need something STRONG. Stronger than iron, "
+                                         "stronger than stone."),
+                             ("Machamp", "Keep your eyes open, kid. Strong things turn up in strange places.")),
+                    dialogue=(("Machamp", "...What's that you've got? Let me see."),
+                              ("Machamp", "HAH! Now THAT is a bone! Heavier than steel, and not a crack in it."),
+                              ("", "Machamp fits the Thick Bone into an iron head, heats it, and pounds it with "
+                                   "all four fists."),
+                              ("Machamp", "A hammer fit for a smith! Now we can get to work."),
+                              ("Machamp", "Bring me gear you don't need, and I'll break it down for parts. "
+                                          "Bring me parts, and I'll make your gear stronger. Up to +5!"))),),
+        money=1000, xp=800,
+    ),
     Quest(
         "pitch_black", "Bats in the Dark",
         "Zubat swarm Rock Tunnel, and travellers keep losing their way among them. Thin them out a bit.",
@@ -833,6 +863,17 @@ def fit_party(game) -> None:
         game.reserve.insert(0, game.party.pop())
 
 
+def smith_open(game) -> bool:
+    """Whether the smith salvages and enhances gear (his hammer is made)."""
+    return is_done(game, "smith_hammer")
+
+
+# What the player sees when the Thick Bone turns up (the Pokémon Tower's
+# Marowak, later; dev mode's item maker meanwhile).
+BONE_FOUND = (("", f"You found a {BONE}! It's heavier than stone, and not a scratch on it."),
+              ("", "Something this strong must be good for more than gathering dust..."))
+
+
 def use_ribbon(game) -> str:
     """Use a Teamwork Ribbon from the bag: one more place in the party.
     Returns what to say."""
@@ -899,6 +940,10 @@ def accept(game, key: str) -> Event:
 def talk(game, folk: str) -> Event:
     """The player talked to townsfolk `folk`: the quest steps that wait for
     that, or else a quest they give (its offer, and it starts)."""
+    for quest in active(game):  # a step that wants an item the player hasn't got yet
+        s = current(game, quest.key)
+        if s.kind == "talk" and s.target == folk and s.takes and not all(i in game.bag.key_items for i in s.takes):
+            return Event(dialogue=list(s.waiting))
     event = _advance_where(game, lambda s: s.kind == "talk" and s.target == folk)
     if not event:
         for quest in QUESTS.values():
@@ -914,7 +959,8 @@ def folk_quests(game, folk: str) -> list[Quest]:
     are ready, and active ones waiting to talk to them."""
     return [q for q in QUESTS.values()
             if (q.giver == folk and ready(game, q))
-            or (is_active(game, q.key) and current(game, q.key).kind == "talk" and current(game, q.key).target == folk)]
+            or (is_active(game, q.key) and (s := current(game, q.key)).kind == "talk" and s.target == folk
+                and all(i in game.bag.key_items for i in s.takes))]  # (not while what it wants is missing)
 
 
 def visit(game, town: str, building: str) -> Event:

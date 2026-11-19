@@ -10,10 +10,14 @@ them: a quest step, a quest they give, a trial they send the player to
 (a route with `Route.folk`), or a chat line.
 """
 
+import math
+from functools import cache
+
 import pygame
 
 from .. import saves, settings
 from ..engine import ui
+from ..engine.animation import Animation
 from ..engine.scene import Transition
 from ..world import tileset
 from ..world import quests
@@ -26,10 +30,20 @@ from ..world.towns import Building, Folk, Town, building_mid
 from . import quest_ui
 from .mart import MartScene
 from .recruit import RecruitScene
+from .smith import SmithMenu
 from .overworld import HAND_IN_MARK, QUEST_MARK, Doorway, MapScene, OverworldScene, quest_mark
 
 BANNER_TIME = 2.5   # seconds the town's name shows on arrival
 ARRIVE_GAP = 3 * TILE  # how far from the doorway the player arrives
+class _NPC:  # what an NPC townsfolk stands like (`Folk.npc`): no foot sink
+    foot_sink = 0
+
+
+@cache
+def _npc_animation(name: str) -> Animation:
+    return Animation(tileset.npc_frames(name), fps=6, loop=True)
+
+
 FOLK_REACH = 22  # px from a townsfolk within which Up talks to them
 
 
@@ -114,8 +128,18 @@ class TownScene(MapScene):
         return next((f for f in self.town.folk if abs(self.player.x - f.x) < FOLK_REACH), None)
 
     def _folk_anim(self, folk: Folk):
+        if folk.npc:  # (an NPC's own animation: the smith)
+            return _NPC, _npc_animation(folk.npc)
         species = SPECIES[folk.species_for(self.game.starter)]
         return species, animations(species)["idle"]
+
+    def _forge_glow(self, layer: pygame.Surface, x: int, y: int) -> None:
+        """The furnace's fire at (`x`, `y`), flickering: a soft orange glow."""
+        r = 9 + round(2 * math.sin(self.t * 9) + math.sin(self.t * 23))
+        glow = pygame.Surface((2 * r, 2 * r), pygame.SRCALPHA)
+        pygame.draw.circle(glow, (255, 150, 40, 70), (r, r), r)
+        pygame.draw.circle(glow, (255, 210, 90, 60), (r, r), r // 2)
+        layer.blit(glow, (x - r, y - r))
 
     def _folk_top(self, folk: Folk) -> float:
         species, anim = self._folk_anim(folk)
@@ -141,6 +165,9 @@ class TownScene(MapScene):
                 self.next_scene = Transition(self, first_map, flashes=0)
             self.show(quest_ui.Dialogue([(name, f"The {trial.name} awaits. Go, and show me what you've learned!")]),
                       after=go)
+            return
+        if folk.key == quests.SMITH and quests.smith_open(self.game):  # the smithy: salvage, enhance, smelt
+            self.show(SmithMenu(self.game), after=lambda: saves.autosave(self))
             return
         event = quests.talk(self.game, folk.key)
         if event:
@@ -277,6 +304,11 @@ class TownScene(MapScene):
             tileset.quest_board(layer, round(self.board_x), ground, len(quests.can_take(self.game, self.town.key)))
         for door, _, _ in self.doors:
             door.draw(layer)
+        for folk in self.town.folk:  # the smith's furnace behind him and anvil beside him
+            if folk.key == quests.SMITH:
+                tileset.draw_prop(layer, "furnace", round(folk.x - 46), ground)
+                self._forge_glow(layer, round(folk.x - 46) + 5, ground - 17)  # (its fire, in the painting)
+                tileset.draw_prop(layer, "anvil", round(folk.x + 32), ground)
         for folk in self.town.folk:  # facing the player (unless fast asleep)
             species, anim = self._folk_anim(folk)
             flip = self.player.x < folk.x and not folk.asleep

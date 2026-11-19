@@ -427,6 +427,7 @@ class Gear:
     rolls: list[Roll]
     level: int = 1
     effect: str = ""  # a special effect (`GEAR_EFFECTS` key), if it rolled one
+    plus: int = 0     # enhancements by the smith (0 to `MAX_PLUS`): each raises its bonuses `PLUS_BOOST`
 
     @classmethod
     def roll(cls, item: str, rarity: str = "Common", rng: random.Random | None = None,
@@ -462,7 +463,7 @@ class Gear:
         """The item's name, with its first prefix and first suffix."""
         prefix = next((r.affix.name for r in self.rolls if r.affix and r.affix.prefix), None)
         suffix = next((r.affix.name for r in self.rolls if r.affix and not r.affix.prefix), None)
-        return " ".join(p for p in (prefix, self.item.name, suffix) if p)
+        return " ".join(p for p in (prefix, self.item.name, suffix, self.plus and f"+{self.plus}") if p)
 
     @property
     def slot(self) -> str:
@@ -475,7 +476,8 @@ class Gear:
     @property
     def value(self) -> int:
         """What it's worth: by rarity, growing with its item level (`GEAR_PRICE`)."""
-        return round(gear_price(self.rarity.name, self.level) * (EFFECT_VALUE if self.effect else 1) / 10) * 10
+        worth = gear_price(self.rarity.name, self.level) * (EFFECT_VALUE if self.effect else 1) * (1 + PLUS_VALUE * self.plus)
+        return round(worth / 10) * 10
 
     @property
     def price(self) -> int:
@@ -490,12 +492,51 @@ class Gear:
 
     @property
     def mods(self) -> dict[str, int]:
-        """All of its rolls added up."""
+        """All of its rolls added up; its enhancements raise the bonuses."""
         total: dict[str, int] = {}
         for roll in self.rolls:
             for mod, value in roll.mods.items():
                 total[mod] = total.get(mod, 0) + value
-        return total
+        return {mod: enhanced(value, self.plus) for mod, value in total.items()} if self.plus else total
+
+    # --- the smith (scenes/smith.py): salvage and enhancement
+
+    @property
+    def material(self) -> str:
+        """What salvaging it gives, and what enhancing it costs: its rarity's material."""
+        return MATERIALS[self.rarity.name]
+
+    def enhance_cost(self, step: int | None = None) -> int:
+        """Materials to take it to +`step` (the next one by default):
+        `step` × (1 + item level // 25)."""
+        step = self.plus + 1 if step is None else step
+        return step * (1 + self.level // 25)
+
+    @property
+    def salvage_yield(self) -> int:
+        """Materials salvaging it gives: 1 + item level // 25, and half of
+        what its enhancements cost."""
+        spent = sum(self.enhance_cost(n) for n in range(1, self.plus + 1))
+        return 1 + self.level // 25 + spent // 2
+
+
+def enhanced(value: int, plus: int) -> int:
+    """A mod's value at +`plus`: bonuses × (1 + `PLUS_BOOST` × plus), rounded
+    half up (so a small bonus only grows at the higher +s: Regen 1% is 2% at
+    +5); penalties stay."""
+    if value <= 0 or not plus:
+        return value
+    return math.floor(value * (1 + PLUS_BOOST * plus) + 0.5)
+
+
+# Salvage and enhancement (the smith's, after his quest): breaking a piece
+# down gives its rarity's material; enhancing a piece (+1 to +MAX_PLUS)
+# costs its own rarity's material. Four of one smelt into one of the next.
+MATERIALS = {"Common": "Scrap", "Uncommon": "Alloy", "Rare": "Crystal", "Epic": "Ether", "Legendary": "Star Shard"}
+MAX_PLUS = 5
+PLUS_BOOST = 0.10   # each enhancement: bonuses +10% (of the piece's own)
+PLUS_VALUE = 0.15   # ... and its worth +15%
+SMELT = 4           # materials of one kind that smelt into one of the next
 
 
 # Gear's worth: a Lv5 piece of each rarity is worth about this; it grows
@@ -576,6 +617,7 @@ MEDICINE = {m.name: m for m in [
 ]}
 ESCAPE_ROPE = "Escape Rope"
 
+BONE = "Thick Bone"  # what the smith's hammer is made of (from the Pokémon Tower's Marowak, later)
 RIBBON = "Teamwork Ribbon"  # a key item used up from the bag: one more place in the party (Game.slots)
 STACKING = {RIBBON}  # key items one can hold more than one of
 
@@ -591,6 +633,8 @@ KEY_ITEMS = {
     "S.S. Ticket": "A ticket for the S.S. Anne, from Bill. The ship docks at Vermilion City.",
     "HM01 Cut": "A hidden machine from the S.S. Anne's Captain. Its technique, Cut, clears small trees out of the "
                 "way, like the one over the Vermilion Gym's door.",
+    BONE: "A huge, heavy bone, harder than stone. It must have belonged to a mighty Pokémon. Surely someone "
+          "could put it to good use...",
     RIBBON: "A special ribbon, given for proving your team. Use it (here, in Key items): one more Pokémon "
             "can fight at your side. Then fill the new place with Mr. Mime, at any Recruitment Center.",
     "HM05 Flash": "A hidden machine from Professor Oak's aide on Route 2. Its technique, Flash, lights up dark "
@@ -644,6 +688,7 @@ class Bag:
     medicine: Counter = field(default_factory=Counter)  # name -> how many
     key_items: list[str] = field(default_factory=list)  # story items (Oak's Parcel): never used up or sold
     money: int = 0  # Poké Dollars
+    materials: Counter = field(default_factory=Counter)  # the smith's materials (`MATERIALS`): name -> how many
 
     def add_medicine(self, name: str, count: int = 1) -> None:
         self.medicine[MEDICINE[name].name] += count

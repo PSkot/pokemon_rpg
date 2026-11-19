@@ -12,7 +12,7 @@ import pygame
 from .. import settings
 from ..dev import PASSWORD
 from ..engine import ui
-from ..mechanics.items import (AFFIX_BY_NAME, EFFECT_CHANCE, EFFECT_COLOR, GEAR_EFFECTS, ITEMS, MEDICINE, RARITIES, SLOT_NAMES, SLOTS,
+from ..mechanics.items import (AFFIX_BY_NAME, EFFECT_CHANCE, EFFECT_COLOR, GEAR_EFFECTS, ITEMS, KEY_ITEMS, STACKING, MEDICINE, RARITIES, SLOT_NAMES, SLOTS,
                                Bag, Gear, Roll, affixes_for, level_factor, mod_text)
 
 PAD = 9
@@ -115,7 +115,7 @@ class ItemMaker:
             if affixes_for(ITEMS[self.item].slot):
                 rows += [f"affix{i}" for i in range(min(len(self.affixes) + 1, MAX_AFFIXES))]
             rows += ["values", "effect"]
-        else:
+        elif self.item not in KEY_ITEMS:
             rows.append("count")
         return rows + ["make"]
 
@@ -191,7 +191,8 @@ class ItemMaker:
     def _item_entries(self) -> list[Entry]:
         gear = sorted(ITEMS.values(), key=lambda i: (SLOTS.index(i.slot), i.name))
         return ([(i.name, i.name, ui.WHITE, f"{SLOT_NAMES[i.slot]}   {_mods_text(i.mods)}") for i in gear]
-                + [(m.name, m.name, ui.WHITE, f"Medicine   {m.description}") for m in MEDICINE.values()])
+                + [(m.name, m.name, ui.WHITE, f"Medicine   {m.description}") for m in MEDICINE.values()]
+                + [(k, k, ui.YELLOW, "Key item") for k in KEY_ITEMS])
 
     def _affix_entries(self, row: int) -> list[Entry]:
         taken = set(self.affixes) - ({self.affixes[row]} if row < len(self.affixes) else set())
@@ -200,6 +201,13 @@ class ItemMaker:
             for a in affixes_for(ITEMS[self.item].slot) if a.name not in taken]
 
     def _make(self) -> None:
+        if self.item in KEY_ITEMS:
+            if self.item in self.bag.key_items and self.item not in STACKING:
+                self.message = [(f"You already have the {self.item}.", ui.GREY)]
+            else:
+                self.bag.key_items.append(self.item)
+                self.message = [(f"Added the {self.item} (a key item) to the bag.", ui.YELLOW)]
+            return
         if not self.is_gear:
             self.bag.add_medicine(self.item, self.count)
             self.message = [(f"Added {self.count} × {self.item} to the bag.", ui.WHITE)]
@@ -238,7 +246,7 @@ class ItemMaker:
                 ui.text(window, "Item", (left, y), color)
                 ui.text(window, self.item, (value_x, y), rarity.color if self.is_gear else ui.WHITE)
                 side = (f"{SLOT_NAMES[ITEMS[self.item].slot]}   {_mods_text(ITEMS[self.item].mods)}" if self.is_gear
-                        else "Medicine")
+                        else "Key item" if self.item in KEY_ITEMS else "Medicine")
                 ui.text(window, side, (right, y + 2), ui.GREY, size=22, align="right")
             elif row == "rarity":
                 ui.text(window, "Rarity", (left, y), color)

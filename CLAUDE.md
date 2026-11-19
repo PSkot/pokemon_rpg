@@ -383,7 +383,16 @@ non-commercial project.
   for now: `towns.TOWER` = `pokemon_tower.png`, a one-cell building sheet of its own
   size, 160×256, `tileset.BUILDING_CELLS`; `Building.sprite` can also take
   a scale, (sheet, cell, scale), nearest-neighbour;
-  Mr. Fuji's house; the town ends there). `Route.blocked_done`: what a
+  Mr. Fuji's house; the smith; the town ends there). The smith
+  (`towns.smith(col)`, `Folk.npc` = "machamp_smith": drawn from
+  `props/machamp_smith.png` with `props/furnace.png`, its glow, and
+  `props/anvil.png`; one in each major town from Lavender on): quest
+  "smith_hammer" wants the Thick Bone (`items.BONE`, from the Tower's
+  Marowak later; `Step.takes` + `waiting`: a talk step only once the item
+  is in the bag), then `scenes/smith.SmithMenu`: salvage gear into its
+  rarity's material (`items.MATERIALS`, `Bag.materials`), enhance to +5
+  (`Gear.plus`, `items.enhanced`: bonuses +10% each), smelt 4 → 1 of the
+  next. `Route.blocked_done`: what a
   shut doorway says once its quest is done (`quests.blocked_text`);
   `Building.note`: what Up at a building says if nothing else happens (`Step.before`: what it says while a
   quest's visit there is still to come, `quests.early_text`).

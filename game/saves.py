@@ -15,7 +15,7 @@ import os
 import sys
 import time
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
 
@@ -63,14 +63,16 @@ class SaveInfo:
 def _gear(g: Gear) -> dict:
     return {"item": g.item.name, "rarity": g.rarity.name, "level": g.level,
             "rolls": [{"affix": r.affix.name if r.affix else None, "mods": r.mods} for r in g.rolls],
-            "v": GEAR_VERSION, **({"effect": g.effect} if g.effect else {})}
+            "v": GEAR_VERSION, **({"effect": g.effect} if g.effect else {}), **({"plus": g.plus} if g.plus else {})}
 
 
 def _load_gear(d: dict) -> Gear:
     rolls = [Roll(AFFIX_BY_NAME[r["affix"]] if r["affix"] else None, r["mods"]) for r in d["rolls"]]
     effect = d.get("effect", "") if d.get("effect") in GEAR_EFFECTS else ""
-    gear = Gear(ITEMS[d["item"]], RARITIES[d["rarity"]], rolls, d.get("level", 1), effect)
-    return gear if d.get("v", 1) >= GEAR_VERSION else updated_gear(gear)  # (older saves: today's rules)
+    gear = Gear(ITEMS[d["item"]], RARITIES[d["rarity"]], rolls, d.get("level", 1), effect, d.get("plus", 0))
+    if d.get("v", 1) < GEAR_VERSION:
+        gear = replace(updated_gear(gear), plus=gear.plus)
+    return gear  # (older saves: today's rules)
 
 
 TALENTS_VERSION = 8  # saves from before talents (skill trees) keep their equipped moves, and no talents
@@ -102,7 +104,8 @@ def snapshot(scene) -> dict:
         "reserve": [_monster(m) for m in game.reserve],
         "defeated": dict(game.defeated),
         "bag": {"gear": [_gear(g) for g in game.bag.gear], "medicine": dict(game.bag.medicine),
-                "key_items": game.bag.key_items, "money": game.bag.money},
+                "key_items": game.bag.key_items, "money": game.bag.money,
+                "materials": dict(game.bag.materials)},
         "town": game.town,
         "cleared": dict(game.cleared),
         "starter": game.starter,
@@ -218,7 +221,8 @@ def load(info: SaveInfo):
             raise LoadError(f"{info.name} is from an older version of the game.")
         party = [_load_monster(m) for m in data["party"]]
         bag = Bag([_load_gear(g) for g in data["bag"]["gear"]], Counter(data["bag"]["medicine"]),
-                  list(data["bag"].get("key_items", [])), data["bag"].get("money", 0))
+                  list(data["bag"].get("key_items", [])), data["bag"].get("money", 0),
+                  Counter(data["bag"].get("materials", {})))
         game = Game(party, bag, data["town"], Counter(data["cleared"]), data.get("starter", "bulbasaur"),
                     dict(data.get("quests", {})), dict(data.get("quest_counts", {})),
                     set(data.get("trainers", [])), [_load_monster(m) for m in data.get("reserve", [])],

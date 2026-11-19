@@ -818,6 +818,35 @@ the game doesn't have yet: Poké Balls, Repel):
 | Pewter City | Potion, Super Potion, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal (Super Potion added: Gen 1 has it from Cerulean) |
 | Cerulean City, Vermilion City | Potion, Super Potion, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal, Ice Heal |
 
+### The smith: salvage and enhancement
+
+`game/scenes/smith.py` (`SmithMenu`), `game/mechanics/items.py`
+(`MATERIALS`, `Gear.plus`, `Gear.enhance_cost`, `Gear.salvage_yield`,
+`enhanced`), `game/world/towns.py` (`smith`)
+
+A **Machamp smith** stands at his anvil and furnace in the major towns
+from Lavender Town on (the same townsfolk, `quests.SMITH`). Until his
+quest *A Hammer Fit for a Smith* is done (`docs/quests.md`) he only talks;
+then Up at him opens his menu:
+
+- **Materials,** one per rarity (`MATERIALS`): Scrap (Common), Alloy
+  (Uncommon), Crystal (Rare), Ether (Epic), Star Shard (Legendary), kept in
+  `Bag.materials` (saved) and shown at the top of the menu.
+- **Salvage:** a piece from the bag (not one that's worn) is broken down
+  for good into **1 + item level // 25** of its rarity's material (Lv30: 2),
+  plus half of what its enhancements cost.
+- **Enhance:** a piece in the bag or worn by the party goes up one, to at
+  most **+5** (`MAX_PLUS`), for its rarity's material: the step to +n costs
+  **n × (1 + item level // 25)** (a Lv30 piece: 2, 4, 6, 8, 10; 30 in all).
+  Each + raises every **bonus** of the piece by **10% of its own value**
+  (`enhanced`: value × (1 + 0.1 × plus), rounded half up, so small bonuses
+  only grow at the higher +s: Attack 13% is 14, 16, 17, 18, 20%; Regen 1%
+  is 2% at +5); **penalties stay**. The + shows after its name ("Swift
+  Muscle Band of the Arbok +2") and it's worth 15% more per + (`PLUS_VALUE`).
+  The menu previews each bonus's change.
+- **Smelt:** **4** of one material (`SMELT`) into 1 of the next rarity's
+  (Scrap → Alloy → Crystal → Ether → Star Shard).
+
 ### Gear counter
 
 `game/scenes/mart.py` (`GearShop`), `game/world/towns.py` (`Town.gear`,
