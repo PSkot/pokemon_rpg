@@ -143,8 +143,8 @@ non-commercial project.
   with just a Common Oran Berry.
 - XP (`pokemon.py`): defeating a Pokémon is worth `base_exp × level / 7`
   (Gen 1; `Species.base_exp`), and reaching a level takes `level³` total XP.
-  A won battle gives every party member still standing the XP of all the
-  enemies (`BattleScene._give_xp`; ×0.5 wild, ×1.5 trainer), filling the
+  A won battle gives the party members still standing the XP of all the
+  enemies, split between them (`BattleScene._give_xp`; ×0.15 wild, ×0.45 trainer), filling the
   XP bar and leveling up (keeping the damage taken). Quests are the main
   XP source.
 - Talents (`talents.py`, `docs/talents.md`): moves come by level
@@ -297,7 +297,7 @@ non-commercial project.
   drawn `boss_scale` times bigger (`Monster.scale`, `animations(species,
   scale)`); beating it unseals the door and drops a boss chest (or, with
   `boss_chest=False`, the boss loot comes with the battle). A route with
-  `trainer` makes the boss fight a trainer battle (no running, ×1.5 XP).
+  `trainer` makes the boss fight a trainer battle (no running, trainer XP).
   A boss is a boss once: beaten (`Game.trainers` "boss:<route>[/<room>]",
   `OverworldScene._boss_key`; or `Game.cleared`), it's an ordinary group
   at normal size on later trips (no boss loot, no chest, door open), unless
@@ -395,7 +395,7 @@ non-commercial project.
   collect (N quest items dropped by species on a route,
   `quests.won_battle` via `BattleScene.on_win`), handed in at any board
   (`HAND_IN`); counts in `Game.quest_counts`. Quests are the main XP
-  source (wild battles ×0.5, `WILD_XP`; trainers ×1.5). Every quest pays Poké Dollars and XP
+  source, about ¾ (wild battles ×0.15, `WILD_XP`; trainers ×0.45; split). Every quest pays Poké Dollars and XP
   (`Quest.money`, `Quest.xp`: XP to each party member); major quests
   (rival, gyms) also give items (`Quest.rewards`). State in
   `Game.quests`, key items in `Bag.key_items`, money in `Bag.money`

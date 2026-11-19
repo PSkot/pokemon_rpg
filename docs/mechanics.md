@@ -67,19 +67,22 @@ full HP when its max HP goes up or down.
   the species' Gen 1 base experience yield (`Species.base_exp`; e.g.
   Pidgey 55, Bulbasaur 64, Venusaur 208). This is Gen 1's formula for wild
   Pokémon.
-- **Wild battles give half** (`WILD_XP` = 0.5) and trainer battles ×1.5
-  (`TRAINER_XP`): quests are the main source of XP (see `quests.md` for
-  the budget).
-- **Sharing:** after a won battle, the XP of **all** enemies is added up,
-  and **every party member still standing gets the full amount** (no
-  splitting). Fainted members get nothing. *Gen 1 split XP between the
-  Pokémon that took part.*
+- **Wild battles give ×0.15** (`WILD_XP`) and trainer battles ×0.45
+  (`TRAINER_XP`): quests are the main source of XP (about ¾ of it; see
+  `quests.md` for the budget). (Until the Pewter → Vermilion check they
+  were ×0.5 / ×1.5, unsplit: a party that fought everything reached the
+  Vermilion Gym around Lv42 instead of 29.)
+- **Sharing:** after a won battle, the XP of **all** enemies is added up
+  and **split evenly between the party members still standing** (as in
+  Gen 1), rounded. Fainted members get nothing. So a bigger party doesn't
+  earn more from the same fights (with two fighting, wild groups are
+  bigger, which makes up for part of it).
 - **Level up:** stats are recalculated at once. Max HP goes up, and the
   HP gained is added to current HP (damage taken stays the same).
   Several level-ups from one battle are possible.
 
 Example: beating wild Lv6 Pidgey (47), Lv7 Rattata (57) and Lv5 Pidgey
-(39) gives 143 × 0.5 = 72 XP to each party member still standing.
+(39) gives 143 × 0.15 = 21 XP to a lone starter (11 each to two).
 
 - **Quest XP:** a finished quest gives its XP (`Quest.xp`) to **every**
   party member, fainted ones too (`quests._give_xp`), with the same level
@@ -1045,7 +1048,7 @@ come one battle straight after another, ending with the boss group:
 - **no healing in between**: HP, status and fainted members carry over
   (stat stages and the like reset with each battle), and only the two
   picked fight, earn XP and can level up or evolve;
-- each wave is a trainer battle (no running, ×1.5 XP) with its own loot
+- each wave is a trainer battle (no running, trainer XP) with its own loot
   roll and prize; the last also brings the boss loot and prize;
 - losing any wave is losing the gym: back to the last town, as when the
   party faints.
@@ -1105,7 +1108,7 @@ There are no human trainers: each is a **band of Pokémon** with a name
 always the same spot), with its team in a row.
 - the battle opens with "<name> challenges you!" and **can't be run
   from**;
-- its Pokémon give **×1.5 XP** (as in Gen 1; wild ones ×0.5);
+- its Pokémon give **trainer XP** (×0.45; wild ones ×0.15; see *Levels and XP*);
 - the band's name shows above the team on the map;
 - **prize money:** the base prize of the Gen 1 trainer class it stands in
   for × the level of its last Pokémon, **halved** like the shop's prices

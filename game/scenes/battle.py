@@ -81,8 +81,8 @@ QUICK_MESSAGE_TIME = 0.7   # "is quick to act!"
 REGEN_MESSAGE_TIME = 0.8   # "restored 2 HP."
 ACTION_PAUSE = 0.6       # quiet gap (no message) before the next action
 VICTORY_PAUSE = 1.0      # "You won!", before the XP is handed out
-TRAINER_XP = 1.5         # XP × this from a trainer's Pokémon (Gen 1)
-WILD_XP = 0.5            # ... and from wild ones (quests are the main source of XP)
+TRAINER_XP = 0.45        # XP × this from a trainer's Pokémon (3× wild's)
+WILD_XP = 0.15           # ... and from wild ones (quests are the main source of XP)
 XP_FILL_TIME = 1.2       # seconds for an XP bar to fill completely
 XP_MESSAGE_TIME = 0.8    # after a party member's XP bar has filled
 LEVEL_UP_TIME = 1.2      # "grew to Lv6!"
@@ -814,9 +814,11 @@ class BattleScene(Scene):
         return f"You defeated {self.trainer}!" if self.trainer else "You won!"
 
     def _give_xp(self):
-        """Every party member still standing gets the XP of all the enemies.
-        Returns the members who leveled up."""
-        xp = round(sum(c.monster.xp_yield for c in self.enemies) * (TRAINER_XP if self.trainer else WILD_XP))
+        """The party members still standing share the XP of all the enemies
+        (Gen 1: split evenly). Returns the members who leveled up."""
+        standing = sum(1 for c in self.party if c.alive and c.monster.level < MAX_LEVEL) or 1
+        xp = round(sum(c.monster.xp_yield for c in self.enemies) * (TRAINER_XP if self.trainer else WILD_XP)
+                   / standing)
         xp *= DEV.xp_multiplier
         boost = f" (×{DEV.xp_multiplier})" if DEV.xp_multiplier > 1 else ""
         leveled = []

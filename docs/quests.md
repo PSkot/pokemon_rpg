@@ -10,15 +10,36 @@ routes only open once a quest has started or is done, and some areas
 change once a quest is finished. Board jobs ("defeat 6 Rattata", "collect
 5 Pidgey Feathers") fill the gaps between story beats.
 
-**Quests are the main source of XP.** Wild battles give half their Gen 1
-XP (`WILD_XP`, see `mechanics.md`); trainer battles give ×1.5, so they
-stay worth fighting. Budget up to Pewter City: the quests before it pay
-1,800 XP in all, a full run of each route there about 1,500 in battle XP,
-so a player who does both arrives around Lv14–15 (the Boulder Gang's Onix is
-Lv16, two levels above Brock's in Gen 1). From Pewter to Mt. Moon: the quests pay 1,350 XP (Boulder Badge 400,
-Road to Mt. Moon 300, Route 3 jobs 650), the Pewter Gym's three waves about
-1,300 in battle XP (to each of the two who fight them) and Route 3's six trainers about 1,200, so a party
-arrives around Lv18–19.
+**Quests are the main source of XP** (about ¾ of it). Wild battles give
+×0.15 of their Gen 1 XP and trainer battles ×0.45 (`WILD_XP`,
+`TRAINER_XP`, see `mechanics.md`), split between the party members still
+standing. Budget up to Pewter City: the quests pay about 2,900 XP (with
+Pewter's two board jobs), a full run of each route there about 400 in
+battle XP, so a player who does both reaches the gym around Lv14–15 (the
+Boulder Gang's Onix is Lv16, two levels above Brock's in Gen 1).
+
+Expected levels after that, for a pair that fights everything on the way
+and does the story quests and the area's board jobs (checked with a
+script that walks every route's maps; the major fights in
+`tools/balance_sim.py` are tuned for these):
+
+| Arriving at | Lead's level | Battle XP there (each) | Quest XP there |
+| --- | --- | --- | --- |
+| Pewter Gym | 14–15 | 230 | 400 |
+| Route 3 | 15 | 620 | 1,350 |
+| Mt. Moon | 18 | 1,000 | 600 |
+| Route 4 | 19–20 | 540 | 400 |
+| Cerulean Gym | 20–21 | 430 | 1,650 |
+| Nugget Bridge | 22 | 1,000 | 1,850 |
+| Route 25 | 23–24 | 850 | 1,400 |
+| Cerulean burglar | 24–25 | 150 | 900 |
+| Route 5, Underground Path, Route 6 | 25–27 | 2,000 | 3,200 |
+| S.S. Anne | 28 | 1,740 | 1,000 |
+| Vermilion Gym | 29 | 520 (each of three) | 1,300 |
+
+(Before this check, battles gave ×0.5 / ×1.5 to every member unsplit:
+about 62,000 battle XP each from Pewter to Vermilion against 14,000
+from quests, reaching Mt. Moon at Lv22 and the Vermilion Gym at Lv42.)
 
 **Levels track the party.** From Viridian Forest on, the areas' levels
 sit around where the party is expected to be (raised well above Red/Blue's
@@ -406,7 +427,7 @@ Rewards: ₽600, 400 XP.
 | Trial of Flame (Charmander; Mt. Moon) | Crawler Nest: Caterpie 11, Weedle 11 | Spore Grove: Paras 12, Paras 12 | Charmeleon 16 |
 | Trial of Tides (Squirtle; Route 22) | Stone Rollers: Geodude 11, Geodude 11 | Rock Burrowers: Diglett 12, Geodude 12 | Wartortle 16 |
 
-Each wave is a trainer battle (×1.5 XP, no prize money). Tuned so a Lv16
+Each wave is a trainer battle (trainer XP, no prize money). Tuned so a Lv16
 starter gets through with a few Potions (Sandshrew's Sand-Attack is kept
 out of the Trial of Tides: Squirtle can't out-hit it alone).
 
