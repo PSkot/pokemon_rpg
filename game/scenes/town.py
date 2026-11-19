@@ -277,9 +277,9 @@ class TownScene(MapScene):
             tileset.quest_board(layer, round(self.board_x), ground, len(quests.can_take(self.game, self.town.key)))
         for door, _, _ in self.doors:
             door.draw(layer)
-        for folk in self.town.folk:  # facing the player
+        for folk in self.town.folk:  # facing the player (unless fast asleep)
             species, anim = self._folk_anim(folk)
-            flip = self.player.x < folk.x
+            flip = self.player.x < folk.x and not folk.asleep
             index = anim.index_at(self.t)
             layer.blit(anim.frame(index, flip), anim.place(index, folk.x, ground + species.foot_sink, flip))
         for side in ("left", "right"):
@@ -293,6 +293,12 @@ class TownScene(MapScene):
         if door and not isinstance(door[2], str) and not self.panel:  # a doorway in the town: where it leads
             ui.text(window, ROUTES[door[1]].name, (door[0].x - self.camera, door[0].rect.top - 16), ui.WHITE,
                     size=26, align="center")
+        for sleeper in (f for f in self.town.folk if f.asleep):  # Zzz rising over it, by turns
+            top = self._folk_top(sleeper)
+            for i, letter in enumerate("zZZ"):
+                phase = (self.t * 0.6 + i / 3) % 1
+                x = sleeper.x - 6 + 10 * phase + 4 * i - self.camera
+                ui.text(window, letter, (x, top - 4 - 22 * phase), (230, 236, 255), size=14 + 6 * i)
         folk = self._folk_at_player()
         if folk and not self.panel:  # their name, over them
             ui.text(window, folk.name_for(self.game.starter), (folk.x - self.camera, self._folk_top(folk) - 30),

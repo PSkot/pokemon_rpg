@@ -55,6 +55,7 @@ class Folk:
     col: int
     # Chat, one line per talk in turn; "{partner}" = the player's starter's name.
     lines: tuple[str, ...] = ()
+    asleep: bool = False  # fast asleep (Snorlax): doesn't turn to face the player, Zzz over it
 
     @property
     def x(self) -> float:
@@ -174,7 +175,7 @@ TOWNS = {t.key: t for t in [
         Building("Poké Mart", (FUNCTIONAL, 2), 32, inside="mart"),
         Building("Pewter Gym", (FUNCTIONAL, 1), 45),
         Building("Recruitment Center", (HOUSES, 2), 58, inside="recruit"),
-    ), exits=(("left", "viridian_forest"), ("right", "route_3")), home_col=23, board_col=15,
+    ), exits=(("left", "viridian_forest"), ("right", "route_3"), (67, "route_2_north")), home_col=23, board_col=15,
        mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal"),
        gear=((11, 15), (("Common", 75), ("Uncommon", 25))),
        folk=(
@@ -191,7 +192,7 @@ TOWNS = {t.key: t for t in [
                "Flutter... The flowers here grow on rocks. Tough flowers, for a tough town.",
                "Every Metapod dreams of flying. When yours is ready (Lv10), come and see me.",
            )),
-           Folk("pewter_beedrill", "Beedrill", "beedrill", 70, (
+           Folk("pewter_beedrill", "Beedrill", "beedrill", 72, (
                "Bzzz. The hive is deep in Viridian Forest. Keep away, unless you're one of us.",
                "A Kakuna that serves the hive (Lv10) earns its stingers. Bzzz.",
            )),
@@ -273,7 +274,7 @@ TOWNS = {t.key: t for t in [
         Building("Recruitment Center", (HOUSES, 3), 46, inside="recruit"),
         Building("Vermilion Gym", (FUNCTIONAL, 1), 60, tree="thunder_badge"),
         Building("", (HOUSES, 2), 72),
-    ), exits=(("left", "route_6_south"), ("right", "ss_anne")), home_col=14, board_col=57,
+    ), exits=(("left", "route_6_south"), ("right", "ss_anne"), (81, "route_11")), home_col=14, board_col=57,
        mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal",
              "Ice Heal"),
        gear=((22, 26), (("Common", 50), ("Uncommon", 45), ("Rare", 5))),
@@ -291,6 +292,28 @@ TOWNS = {t.key: t for t in [
                "Clack clack. The sailors on the S.S. Anne have strong Pokémon from all over the world.",
            )),
        )),
+    # The east end of Route 11: the mouth of Diglett's Cave, and the road on
+    # to Route 12, where a Snorlax sleeps across it (as in Red/Blue: it takes
+    # the Poké Flute to wake it, later).
+    Town("route_11", "Route 11 Gate", 50, (), exits=(("left", "route_11"), (22, "digletts_cave")), home_col=6,
+         folk=(
+             Folk("route_11_diglett", "Diglett", "diglett", 28, (
+                 "Dig! That's Diglett's Cave. We dug it all the way to Route 2, near Pewter City!",
+                 "Dig dig... The Dugtrio deep inside don't like visitors. Watch your feet.",
+             )),
+             Folk("route_12_snorlax", "Snorlax", "snorlax", 43, (
+                 "A huge Pokémon is fast asleep, sprawled right across the road to Route 12. It won't budge.",
+                 "Snorlax is snoring loudly. Pushing, shouting... nothing wakes it. (Maybe something will, one "
+                 "day.)",
+             ), asleep=True),
+         )),
+    # Route 2's north end, at the far end of Diglett's Cave: Professor Oak's
+    # aide waits by the cave with HM05 Flash (as in Red/Blue).
+    Town("route_2", "Route 2", 40, (), exits=(("left", "route_2_north"), ("right", "digletts_cave")), home_col=30,
+         folk=(Folk("route_2_aide", "Oak's Aide", "kadabra", 20, (
+             "I'm one of Professor Oak's aides. I study Pokémon that live in caves... from the outside.",
+             "Pewter City is just up the road. The Professor says hello!",
+         )),)),
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a
     # Clefairy in his teleporter (quest "bill").
     Town("sea_cottage", "Sea Cottage", 40, (

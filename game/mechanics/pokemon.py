@@ -168,6 +168,13 @@ SPECIES.update({
     "voltorb": _animated("voltorb", "Voltorb", (40, 30, 50, 100, 55), ("electric",), exp=103, hit=4),
     "magnemite": _animated("magnemite", "Magnemite", (25, 35, 70, 45, 95), ("electric",), exp=89, hit=5),
     "raichu": _animated("raichu", "Raichu", (60, 90, 55, 100, 90), ("electric",), exp=122, hit=6),
+    # Route 11 and Diglett's Cave.
+    "drowzee": _animated("drowzee", "Drowzee", (60, 48, 45, 42, 90), ("psychic",), exp=102, hit=4),
+    "dugtrio": _animated("dugtrio", "Dugtrio", (35, 80, 50, 120, 70), ("ground",), exp=153, hit=5),
+    # Asleep across the road to Route 12 (only met as townsfolk for now): its
+    # sheet has just the sleeping row, breathing.
+    "snorlax": Species("Snorlax", 160, 110, 65, 30, 65, ("normal",), fight_anim="idle", anims={
+        "idle": AnimSpec("snorlax.png", 0, fps=2, loop=True)}, base_exp=154, size=1.5),
 })
 
 _KEYS = {species: key for key, species in SPECIES.items()}

@@ -36,6 +36,8 @@ script that walks every route's maps; the major fights in
 | Route 5, Underground Path, Route 6 | 25–27 | 2,000 | 3,200 |
 | S.S. Anne | 28 | 1,740 | 1,000 |
 | Vermilion Gym | 29 | 520 (each of three) | 1,300 |
+| Route 11 | 29–30 | 1,060 | 1,700 |
+| Diglett's Cave | 30–31 | 1,200 | 2,500 |
 
 (Before this check, battles gave ×0.5 / ×1.5 to every member unsplit:
 about 62,000 battle XP each from Pewter to Vermilion against 14,000
@@ -201,6 +203,8 @@ handing them in at any board.
 | Cerulean | Hot Tempers | The Cerulean Burglar | Collect 5 Mankey Fur (Mankey, Route 5) | 40% | ₽1,000, 650 XP |
 | Vermilion | Tunnel Trouble | Vermilion City | Defeat 6 Diglett (Underground Path) | – | ₽1,100, 700 XP |
 | Vermilion | Lucky Coins | Vermilion City | Collect 5 Lucky Coins (Meowth, Route 6) | 40% | ₽1,100, 700 XP |
+| Vermilion | Sleepy Heads | The Thunder Badge | Defeat 6 Drowzee (Route 11) | – | ₽1,200, 800 XP |
+| Vermilion | Trouble Underfoot | East of Vermilion | Defeat 5 Dugtrio (Diglett's Cave) | – | ₽1,300, 900 XP |
 
 Each takes about one or two runs of its route. They can't be repeated
 yet.
@@ -383,6 +387,43 @@ yet.
 
 ---
 
+### 15. East of Vermilion
+
+- **Starts:** automatically when quest 14 is done.
+- **Steps:** follow **Route 11** (2 maps, five trainer bands; its doorway
+  is at Vermilion's east end, by the dock; shut until the Thunder Badge:
+  "Soldiers of the Thunder Battalion are drilling on the road east...")
+  to the **Route 11 Gate** (town "route_11").
+- **There:** the mouth of **Diglett's Cave**, a Diglett (townsfolk; it
+  gives *Three Heads Are Better*), and **Snorlax**, fast asleep across the
+  road to Route 12 (`Folk.asleep`: its sleeping sprite, breathing, with a
+  Zzz rising over it; it doesn't turn to face you). Talking to it: "A huge
+  Pokémon is fast asleep, sprawled right across the road to Route 12. It
+  won't budge." The town ends there: turn back. (As in Red/Blue, it takes
+  the Poké Flute to wake it, later.)
+- **Rewards:** ₽1,000, 900 XP.
+
+### 16. Diglett's Cave
+
+- **Starts:** automatically when quest 15 is done.
+- **Steps:** go through **Diglett's Cave** (3 maps of Diglett and
+  Dugtrio, a giant Dugtrio's band at the end) to the **Route 2** stop.
+- **Rewards:** ₽1,200, 1,100 XP, 2 Hyper Potions and a **Rare** gear piece
+  (item level 30).
+- **Afterwards:** Route 2 (one short map, no wild Pokémon) leads up to
+  Pewter City (a new doorway at its east end), so the trip back east goes
+  through Pewter, or back through the cave.
+
+### 17. Oak's Aide
+
+- **Starts:** automatically when quest 16 is done.
+- **Steps:** talk to **Professor Oak's aide** (a Kadabra) on Route 2.
+- **Rewards:** **HM05 Flash** (a key item, for the dark Rock Tunnel
+  later; Gen 1's aide wants 10 Pokémon caught first, here it's just
+  given), ₽600, 500 XP.
+
+---
+
 ## Evolution quests
 
 Every evolution is unlocked by a quest (`quests.can_evolve`); a line
@@ -487,6 +528,16 @@ City): Abra alone, Poison Pokémon that Psychic moves hit hard.
 | Last | Evolve Nidoran F into Nidorina | Evolve Nidoran M into Nidorino | Evolve Abra into Kadabra |
 | Rewards | ₽400, 300 XP | ₽600, 450 XP | ₽700, 500 XP |
 
+### Dugtrio (Lv26)
+
+| | Three Heads Are Better (`evolve_dugtrio`) |
+| --- | --- |
+| Giver | Diglett, Route 11 Gate |
+| 1. | Hunt 6 Dugtrio (Diglett's Cave) |
+| 2. Talk | Report to Diglett |
+| Last | Evolve Diglett into Dugtrio |
+| Rewards | ₽700, 600 XP |
+
 ---
 
 ## Recruitment
@@ -545,6 +596,7 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | Mankey | 10 | Route 5 | 19–21 | Lv24 |
 | Diglett | 8 | Underground Path | 20–22 | Lv25 |
 | Psyduck | 6 | Route 6 | 21–23 | Lv26 |
+| Drowzee | 8 | Route 11 | 25–27 | Lv30 |
 
 Not every Pokémon comes this way: the starters, and those only met with
 trainers (Geodude, Onix, the S.S. Anne's Machop, Tentacool and

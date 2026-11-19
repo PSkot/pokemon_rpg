@@ -257,6 +257,52 @@ ROUTE_6 = Theme(
     backdrop=MEADOW_BACKDROP,
 )
 
+# Route 11, east of Vermilion City to the gate where Snorlax sleeps: its
+# Red/Blue Pokémon (Ekans from Red, Sandshrew from Blue), Spearow and
+# Drowzee, a few levels under the party after the Thunder Badge.
+ROUTE_11 = Theme(
+    "route_11", "Route 11",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("drowzee", 30, (26, 29)),
+        PoolEntry("spearow", 25, (26, 29)),
+        PoolEntry("ekans", 20, (26, 29)),
+        PoolEntry("sandshrew", 20, (26, 29)),
+        PoolEntry("fearow", 5, (27, 29)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+)
+
+# Route 2's north end, between Diglett's Cave and Pewter City: a short walk
+# (no wild Pokémon: its Gen 1 ones are far below the party by now).
+ROUTE_2 = Theme(
+    "route_2", "Route 2",
+    MEADOW.palette,
+    pool=(PoolEntry("pidgey", 1, (5, 7)),),
+    backdrop=MEADOW_BACKDROP,
+)
+
+# Diglett's Cave: a long tunnel dug by Diglett, from Route 11 to Route 2
+# (soft brown earth, roots overhead). Diglett and, deeper in, Dugtrio.
+DIGLETTS_CAVE = Theme(
+    "digletts_cave", "Diglett's Cave",
+    Palette(fill=(104, 76, 54), fill_dark=(74, 52, 36), fill_light=(140, 104, 74),
+            top=(150, 112, 78), top_dark=(116, 84, 58), top_light=(186, 146, 104),
+            platform=(120, 88, 60), platform_dark=(80, 58, 38), platform_light=(160, 122, 86)),
+    pool=(
+        PoolEntry("diglett", 70, (26, 29)),
+        PoolEntry("dugtrio", 30, (28, 31)),
+    ),
+    backdrop=Backdrop(art="digletts_cave.png", sky_top=(44, 32, 24), sky_bottom=(92, 68, 50),
+                      hills=((102, 76, 56), (92, 68, 50)), field_far=(150, 114, 82), field_near=(130, 98, 70),
+                      stripe=(140, 106, 76), shadow=(90, 66, 46)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(30, 22, 16), sky_bottom=(70, 52, 38), far_rock=(56, 42, 30), near_rock=(76, 56, 40),
+                  glow=((150, 110, 60), (255, 220, 150)), wall="digletts_cave.png", dim=50),
+    doorway="doorway_cave",
+)
+
 # The S.S. Anne: a luxury liner's corridors (polished planks, a painted
 # wall of portholes and brass). No wild Pokémon live aboard: its pool is
 # never met (`Route.wild`).

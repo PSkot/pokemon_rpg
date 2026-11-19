@@ -792,6 +792,27 @@ Paths: **Quake** (rock Slide and Earthquake: Rock and Ground damage); **Coil** (
 | 11 | 60 | **Rock Storm** *(needs 4)*: Rock Slide hits every enemy, the others at 60% damage. *(**own**)* | **Coil Crush** *(needs 4)*: Wrap and Bind catch every enemy. *(Bind)* | **Bulwark Stance** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(Any)* |
 | 12 | 75 | **Magnitude 10** *(needs 6)*: Earthquake hits every enemy at full damage. *(**own**)* | **Constrictor** *(needs 6)*: Wrap's and Bind's grip hurts far more: a further 1/8 of max HP each round. *(**own**)* | **Living Mountain** *(needs 6)*: The first hit the user takes in each battle deals no damage, and while it stands the whole party takes 25% less damage. *(**own**)* |
 
+### Drowzee → Hypno
+
+Moves: Pound, Hypnosis, Confusion 17, Headbutt 24, Poison Gas 29, Psychic 32, Meditate 37, Psybeam 40 (Hypno).
+
+Paths: **Dream** (hypnosis and sleep: putting enemies to sleep and making them pay); **Mind** (confusion, Headbutt and Psychic: Psychic damage); **Haze** (poison Gas and confusion: wearing enemies down, and staying up).
+
+| Tier | Lv | Dream | Mind | Haze |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Mesmerize**: Hypnosis is 25% more likely to work. *(**own**)* | **Telepathy**: The user's Psychic moves never miss. *(Psychic)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 2 | 10 | **Deep Sleep**: Enemies the user puts to sleep sleep 1 round longer. *(Sleep)* | **Dizzying Mind**: Confusion is 20% more likely to confuse. *(Confusion)* | **Noxious Cloud**: Poison Gas works on every enemy. *(**own**)* |
+| 3 | 14 | **Nightmare**: Enemies the user puts to sleep lose 1/8 of their max HP each round. *(Sleep)* | **Focus Mind**: Each Psychic move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Psychic)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 4 | 18 | **Mass Hypnosis**: Hypnosis works on every enemy. *(**own**)* | **Mind Over Matter**: Below 1/3 HP, the user's Psychic moves deal 1.5× damage. *(Psychic)* | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* |
+| 5 | 22 | **Lull**: Sleeping enemies take 30% more damage from the user. *(Sleep)* | **Psychic Wings**: Confusion and Psybeam are 20% more likely to confuse. *(Confusion)* | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* |
+| 6 | 27 | **Yawn**: Sleep the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Sleep)* | **Thick Skull**: Headbutt hits harder: 85 power, with a 40% chance to make the target flinch. *(**own**)* | **Hysteria**: Confusion the user causes has a 30% chance each round to spread to an enemy next to it. *(Confusion)* |
+| 7 | 32 | **Pendulum**: Hypnosis never misses. *(**own**)* | **Mind Feast**: Knocking an enemy out with a Psychic move heals the user 1/4 of its max HP. *(Psychic)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 8 | 38 | **Dream Eater**: The user heals 1/8 of its max HP each round for each sleeping enemy. *(Sleep)* | **Psycho Cut**: Psychic is 4× as likely to be a critical hit. *(Psychic)* | **Mind Crush**: Confused enemies take 30% more damage from the user. *(Confusion)* |
+| 9 | 44 | **Bedtime Story**: At the start of each battle, each enemy has a 25% chance to fall asleep. *(Sleep)* | **Psychic Mastery**: Psybeam hits every enemy, the others at 60% damage. *(Psybeam)* | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* |
+| 10 | 50 | **Drowsy Jab**: After Hypnosis, the user also hits the target with its basic attack, at full power. *(**own**)* | **Mind Blast**: Psychic hits every enemy, the others at 50% damage. *(Psychic)* | **Magic Guard**: The user takes no damage from poison, burns, seeds, binds, wounds or nightmares. *(Psychic)* |
+| 11 | 60 | **Endless Dream** *(needs 4)*: Enemies the user puts to sleep sleep 1 more round (on top of Deep Sleep's). *(Sleep)* | **Apex Predator** *(needs 4)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Unbreakable** *(needs 4)*: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 12 | 75 | **Dreamland** *(needs 6)*: Hypnosis also exposes its target: it takes 30% more damage from everyone, for 3 rounds. *(**own**)* | **Psychic Storm** *(needs 6)*: Psychic hits every enemy, the others at 80% damage. *(**own**)* | **Bedlam** *(needs 6)*: Enemies the user confuses always hurt themselves. *(Confusion)* |
+
 ### Diglett → Dugtrio
 
 Moves: Scratch, Growl 15, Sand-Attack 24, Slash 31, Dig 35 (Dugtrio), Rock Slide 35 (Dugtrio), Earthquake 40 (Dugtrio).

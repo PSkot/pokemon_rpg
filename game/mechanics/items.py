@@ -588,6 +588,8 @@ KEY_ITEMS = {
     "S.S. Ticket": "A ticket for the S.S. Anne, from Bill. The ship docks at Vermilion City.",
     "HM01 Cut": "A hidden machine from the S.S. Anne's Captain. Its technique, Cut, clears small trees out of the "
                 "way, like the one over the Vermilion Gym's door.",
+    "HM05 Flash": "A hidden machine from Professor Oak's aide on Route 2. Its technique, Flash, lights up dark "
+                  "caves.",
     "Metapod Shell": "An empty Metapod shell, hard as steel. Use it on a Caterpie at Lv7 or higher: it evolves "
                      "into Metapod.",
     "Kakuna Shell": "An empty Kakuna shell, still smelling of poison. Use it on a Weedle at Lv7 or higher: it "

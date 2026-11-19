@@ -177,7 +177,7 @@ non-commercial project.
   Pikachu, Geodude, Onix, Jigglypuff, Sandshrew, Ekans, Zubat, Paras,
   Clefairy, Goldeen, Staryu (Starmie), Horsea, Shellder, Psyduck, Oddish,
   Bellsprout, Abra, Venonat, Diglett, Meowth, Mankey, Machop, Tentacool,
-  Growlithe, Voltorb, Magnemite (Raichu: Pikachu's, `LATER_FORMS`): every line in the game (a new
+  Growlithe, Voltorb, Magnemite, Drowzee (Raichu: Pikachu's, `LATER_FORMS`): every line in the game (a new
   line without `TALENT_TREES` would have just its moves). `Monster.create`
   picks for wild/trainer Pokémon (mostly one random path). The talent
   screen (`scenes/talent_screen.py`, party screen → S): a grid (tiers ×
@@ -359,7 +359,16 @@ non-commercial project.
   started cuts it, kept in `Game.trainers` "cut:<town>/<building>"); route
   "vermilion_gym" (`VERMILION_GYM`, built: steel; the Thunder Battalion's
   waves of Pikachu, Voltorb, Magnemite, then Raichu's band; `wave_team=3`,
-  tuned to need three: about 70% with three, 14% with two). `Route.blocked_done`: what a
+  tuned to need three: about 70% with three, 14% with two). After the badge
+  (quests "to_route_11", "digletts_cave", "flash"): Vermilion's doorway by
+  the dock (col 81) → route "route_11" (2 maps, five bands; wild Drowzee)
+  → stop town "route_11" ("Route 11 Gate": the Diglett's Cave doorway, a
+  Diglett giving `evolve_dugtrio`, and Snorlax asleep across the road to
+  Route 12, `Folk.asleep`: not turning, Zzz drawn in `town.py`; the town
+  just ends there) → route "digletts_cave" (theme `DIGLETTS_CAVE`, 3 maps
+  of Diglett/Dugtrio, a giant Dugtrio's band, `MID_BOSS` loot) → stop town
+  "route_2" (Oak's aide, a Kadabra: HM05 Flash) → route "route_2_north"
+  (one map, `wild=False`) → Pewter's doorway at col 67. `Route.blocked_done`: what a
   shut doorway says once its quest is done (`quests.blocked_text`);
   `Building.note`: what Up at a building says if nothing else happens (`Step.before`: what it says while a
   quest's visit there is still to come, `quests.early_text`).
@@ -528,11 +537,13 @@ non-commercial project.
   species' icon as a design reference and Charmander as a style reference
   (Oddish, Bellsprout, Abra, Venonat, Goldeen, Staryu, Starmie, Horsea,
   Shellder, Psyduck, Butterfree, Beedrill, Raticate, Nidorina, Nidorino,
-  Kadabra, Meowth, Mankey, Machop, Tentacool, Growlithe, Voltorb, Magnemite
-  and Raichu too, made the same way (Meowth's, Mankey's, Tentacool's,
+  Kadabra, Meowth, Mankey, Machop, Tentacool, Growlithe, Voltorb, Magnemite,
+  Raichu, Drowzee and Dugtrio too, made the same way (Meowth's, Mankey's, Tentacool's,
   Voltorb's and Magnemite's on 32 px canvases, Machop's and Growlithe's on
-  36 px, Raichu's on 40 px with Pikachu as its style reference; Meowth's idle is its base
-  with 1 px breathing); Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
+  36 px, Raichu's on 40 px with Pikachu as its style reference, Drowzee's and Dugtrio's on
+  36 px, Dugtrio's with Diglett as its style reference; Meowth's idle is its base
+  with 1 px breathing). Snorlax only sleeps for now: `snorlax.png` is one row,
+  a lying base (64×48) with 1 px breathing, drawn 1.5×; Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
   their candidates faced left). Placeholder quality: likely to be redone.
 - A move's `anim` plays if the species has that animation; otherwise the
   species' `fight_anim` does (no move-specific sheets for now).
@@ -557,7 +568,7 @@ non-commercial project.
 - Battle backdrops (`assets/sprites/pixellab/backdrops/`, `Backdrop.art`):
   320×132 Pixellab paintings drawn 2× over the battle area (meadow, forest,
   route_3, pewter_gym, mt_moon, cerulean_gym, underground, ss_anne,
-  vermilion_gym; underground and ss_anne shifted up 14 px, their floor extended), their ground starting high enough for the
+  vermilion_gym, digletts_cave; underground and ss_anne shifted up 14 px, their floor extended), their ground starting high enough for the
   back row; a theme without one would be drawn in code from the
   `Backdrop` colours.
 - Map props (`assets/sprites/pixellab/props/`, `tileset.draw_prop`: centred,
@@ -574,7 +585,7 @@ non-commercial project.
   the title and save line readable).
 - Cave walls (`assets/sprites/pixellab/walls/`, `CaveLook.wall`): 320×180
   paintings of Mt. Moon's, the Pewter Gym's, the Cerulean Gym's, the
-  Underground Path's, the S.S. Anne's and the Vermilion Gym's far wall, drawn 2×,
+  Underground Path's, the S.S. Anne's, the Vermilion Gym's and Diglett's Cave's far wall, drawn 2×,
   mirrored every other copy, dimmed (`dim`); the code-drawn rock in front
   stays (`near_rocks`, off in the gym).
 - `assets/sprites/pokemon_icons/` holds reference icons. Species without a

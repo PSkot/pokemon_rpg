@@ -169,6 +169,7 @@ MOVES = {m.name: m for m in [
     Move("Poison Sting", 15, "enemy", type="poison", **_status("poison", 30)),
     Move("Acid", 40, "enemy", type="poison", stages=(("defense", -1),), stage_chance=33),
     Move("Poison Powder", 0, "enemy", type="poison", **_status("poison", 75)),
+    Move("Poison Gas", 0, "enemy", type="poison", **_status("poison", 55)),
     # Bug
     Move("Twineedle", 25, "enemy", type="bug", hits=(2, 2), **_status("poison", 20)),
     Move("Pin Missile", 14, "enemy", type="bug", hits=(2, 5)),
@@ -211,6 +212,8 @@ MOVES = {m.name: m for m in [
     Move("Lovely Kiss", 0, "enemy", type="normal", **_status("sleep", 75)),
     # Psychic and Ghost
     Move("Confusion", 50, "enemy", type="psychic", confuse=10),
+    Move("Hypnosis", 0, "enemy", type="psychic", **_status("sleep", 60)),
+    Move("Meditate", 0, "self", type="psychic", stages=(("attack", 1),)),
     Move("Psybeam", 65, "enemy", type="psychic", confuse=10),
     # Gen 1's Psychic lowered Special (not in this game); here it's Defense.
     Move("Psychic", 90, "enemy", type="psychic", stages=(("defense", -1),), stage_chance=33),

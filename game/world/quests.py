@@ -578,6 +578,69 @@ QUESTS = {q.key: q for q in [
         money=1500, xp=1300,
         rewards=(("medicine", "Hyper Potion", 2), ("gear", None, "Rare", 28)),
     ),
+    # After the Thunder Badge, as in Red/Blue: east along Route 11 to where
+    # Snorlax blocks the road, and through Diglett's Cave to Route 2.
+    Quest(
+        "to_route_11", "East of Vermilion",
+        "With the Thunder Battalion beaten, the road east of Vermilion City is open. Route 11 leads to Diglett's "
+        "Cave.",
+        requires=("thunder_badge",),
+        steps=(Step("reach", "route_11", "Follow Route 11 east of Vermilion City (its doorway by the dock)"),),
+        money=1000, xp=900,
+        done_dialogue=(("", "A huge Pokémon is fast asleep across the road ahead. There's no getting past it."),
+                       ("", "Diglett's Cave opens beside the road. They say it runs all the way to Route 2.")),
+    ),
+    Quest(
+        "digletts_cave", "Diglett's Cave",
+        "Diglett dug a long tunnel from Route 11 all the way to Route 2, near Pewter City. Something big lives "
+        "at its far end.",
+        requires=("to_route_11",),
+        steps=(Step("reach", "route_2", "Go through Diglett's Cave to Route 2 (from Route 11's end)"),),
+        money=1200, xp=1100,
+        rewards=(("medicine", "Hyper Potion", 2), ("gear", None, "Rare", 30)),
+    ),
+    Quest(
+        "flash", "Oak's Aide",
+        "One of Professor Oak's aides is waiting on Route 2, by the mouth of Diglett's Cave.",
+        requires=("digletts_cave",),
+        steps=(Step("talk", "route_2_aide", "Talk to Professor Oak's aide (Route 2)",
+                    dialogue=(("Oak's Aide", "Oh! You came out of Diglett's Cave? Professor Oak said you might."),
+                              ("Oak's Aide", "He asked me to give you this. With Flash, even the darkest cave is "
+                                             "no trouble."),
+                              ("", "You received HM05 Flash!")),
+                    gives=("HM05 Flash",)),),
+        money=600, xp=500,
+        done_dialogue=(("Oak's Aide", "Pewter City is just up the road, if you want to rest. Good luck!"),),
+    ),
+    Quest(
+        "sleepy_heads", "Sleepy Heads",
+        "Drowzee on Route 11 keep putting travellers to sleep and eating their dreams. Wake the road up.",
+        board="vermilion", requires=("thunder_badge",),
+        steps=(hunt("drowzee", 6, "Route 11"), HAND_IN),
+        money=1200, xp=800,
+    ),
+    Quest(
+        "mole_hunt", "Trouble Underfoot",
+        "Dugtrio deep in Diglett's Cave keep collapsing the tunnel. Chase a few of them off.",
+        board="vermilion", requires=("to_route_11",),
+        steps=(hunt("dugtrio", 5, "Diglett's Cave"), HAND_IN),
+        money=1300, xp=900,
+    ),
+    # Diglett -> Dugtrio: from the Diglett at the cave's mouth on Route 11.
+    Quest(
+        "evolve_dugtrio", "Three Heads Are Better",
+        "The Diglett at the mouth of Diglett's Cave says your Diglett is ready to become a Dugtrio, once it has "
+        "proved itself underground.",
+        giver="route_11_diglett",
+        offer=(("Diglett", "Dig! Your Diglett is ready to become three. But a Dugtrio has to know the tunnels."),
+               ("Diglett", "Chase off 6 Dugtrio in Diglett's Cave, then come back. Dig dig!")),
+        steps=(hunt("dugtrio", 6, "Diglett's Cave"),
+               Step("talk", "route_11_diglett", "Tell the Diglett at Diglett's Cave (Route 11)", town="route_11",
+                    dialogue=(("Diglett", "Dig! The Dugtrio say you're one of us now."),
+                              ("Diglett", "Go on, Diglett. Pop up three times as tall!"))),
+               Step("evolve", "diglett", "Evolve your Diglett into Dugtrio (party screen: E)")),
+        money=700, xp=600,
+    ),
     Quest(
         "snake_charmer", "Snake Charmer",
         "Ekans on Route 3 keep frightening travelers. Drive a few of them off.",

@@ -129,6 +129,7 @@ def worn_drops(monster, rng: random.Random | None = None) -> list[Reward]:
 # also drop Uncommon. Rare, Epic and Legendary are for later areas.
 COMMON_ONLY: Rarities = (("Common", 1),)
 EARLY_BOSS: Rarities = (("Common", 3), ("Uncommon", 2))
+MID_BOSS: Rarities = (("Common", 2), ("Uncommon", 3), ("Rare", 1))  # (from Diglett's Cave on)
 
 
 @cache

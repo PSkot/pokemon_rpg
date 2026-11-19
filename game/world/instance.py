@@ -25,11 +25,12 @@ import random
 import zlib
 from dataclasses import dataclass, field, replace
 
-from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, Rarities
+from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
-from .themes import (CERULEAN_GYM, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_22,
-                     ROUTE_24, ROUTE_25, SS_ANNE, UNDERGROUND, VERMILION_GYM, PoolEntry, Theme)
+from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_2, ROUTE_3, ROUTE_4,
+                     ROUTE_5, ROUTE_6, ROUTE_11, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE, UNDERGROUND, VERMILION_GYM,
+                     PoolEntry, Theme)
 from .towns import Folk
 
 # Stands in a boss group for the rival's starter, which depends on the
@@ -338,6 +339,29 @@ ROUTES = {r.key: r for r in [
               Trainer("route_6_bug_catcher_2", "Thicket Crawlers", (("venonat", 25), ("paras", 25), ("metapod", 25)),
                       1, 10),
           )),
+    # Route 11, east of Vermilion City (after the Thunder Badge): Gen 1's
+    # Engineers, Gamblers and Youngsters, as bands, about level with the
+    # party. It ends at the mouth of Diglett's Cave, where Snorlax sleeps
+    # across the road to Route 12.
+    Route("route_11", "Route 11", ROUTE_11, maps=2, towns=("vermilion", "route_11"),
+          needs=("thunder_badge", "done"),
+          blocked="Soldiers of the Thunder Battalion are drilling on the road east. Nobody gets past until "
+                  "someone beats their gym.",
+          trainers=(
+              Trainer("route_11_engineer_1", "Engine Crew", (("magnemite", 29), ("voltorb", 29)), 0, 50),
+              Trainer("route_11_youngster_1", "Roadside Gang", (("rattata", 28), ("ekans", 28), ("zubat", 28)), 0, 15),
+              Trainer("route_11_gambler_1", "High Rollers", (("horsea", 29), ("goldeen", 29), ("shellder", 28)), 1, 70),
+              Trainer("route_11_engineer_2", "Rolling Stones", (("geodude", 29), ("onix", 30)), 1, 50),
+              Trainer("route_11_youngster_2", "Sleepy Heads", (("drowzee", 30), ("drowzee", 29), ("jigglypuff", 29)),
+                      1, 15),
+          )),
+    # Diglett's Cave, from Route 11 to Route 2 by Pewter City: one long
+    # tunnel of Diglett and Dugtrio, with a giant Dugtrio's band at its end.
+    Route("digletts_cave", "Diglett's Cave", DIGLETTS_CAVE, maps=3, towns=("route_11", "route_2"), boss=True,
+          boss_group=(("dugtrio", 35), ("dugtrio", 32), ("diglett", 31), ("diglett", 31)), boss_scale=2,
+          boss_loot=MID_BOSS),
+    # Route 2's north end, from the cave up to Pewter City: a short walk.
+    Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}
 
 
@@ -459,6 +483,7 @@ RECRUITS = {r.species: r for r in [
     Recruit("mankey", 10, ROUTE_5, 21),
     Recruit("diglett", 8, UNDERGROUND, 22),
     Recruit("psyduck", 6, ROUTE_6, 23),
+    Recruit("drowzee", 8, ROUTE_11, 27),
 ]}
 
 

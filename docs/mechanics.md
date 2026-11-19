@@ -307,7 +307,8 @@ rewards). Meowth's Amulet Coin talent doubles it.
 
 - **Status moves** that inflict a status or confusion work with their
   Gen 1 chance (Poison Powder, Sleep Powder, Stun Spore, Lovely Kiss 75%;
-  Sing, Supersonic 55%; Thunder Wave, Confuse Ray 100%), unless the
+  Hypnosis 60%; Sing, Supersonic, Poison Gas 55%; Thunder Wave, Confuse
+  Ray 100%), unless the
   target already has a status or its type is immune. Every other status
   move always works.
 - **Immune types:** Leech Seed doesn't affect Grass types, Thunder Wave
@@ -740,6 +741,9 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Underground Path | Common | (no boss) |
 | Route 6 | Common | (no boss) |
 | S.S. Anne | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the rival: a reward roll with the battle) |
+| Route 11 | Common | (no boss) |
+| Diglett's Cave | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the giant Dugtrio's band, a chest) |
+| Route 2 (north) | (no wild Pokémon or chests) | (no boss) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -1039,6 +1043,37 @@ where the burglar's **Rocket Gang** (Mankey 24, Abra 22, Zubat 22; Gen 1's
 Machop and Drowzee) waits. Win rate in `tools/balance_sim.py` at Lv24 +
 Lv23: about 73%.
 
+**Route 11** (`Route` "route_11", 2 maps east of Vermilion City, from its
+doorway by the dock to the Route 11 Gate stop; open once the Thunder
+Badge is won; five trainers):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Drowzee | 30 | 26–29 |
+| Spearow | 25 | 26–29 |
+| Ekans | 20 | 26–29 |
+| Sandshrew | 20 | 26–29 |
+| Fearow | 5 | 27–29 |
+
+**Diglett's Cave** (`Route` "digletts_cave", 3 maps of earthen tunnel from
+the Route 11 Gate to the Route 2 stop by Pewter City; theme
+`DIGLETTS_CAVE`: its wall `walls/digletts_cave.png`, roots hanging from
+the ceiling; Gen 1's Diglett 15–22 and Dugtrio 29–31, raised to the
+party's levels). Its last map ends in an arena: a **giant Dugtrio 35**
+with Dugtrio 32 and Diglett 31 ×2 guards the way out (×2 size; a chest,
+`MID_BOSS` loot). Win rate in `tools/balance_sim.py` for three at Lv31 +
+Lv30: about 82%.
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Diglett | 70 | 26–29 |
+| Dugtrio | 30 | 28–31 |
+
+**Route 2** (`Route` "route_2_north", one short map, 40 tiles, from the
+Route 2 stop at the cave's far end up to Pewter City's doorway by its
+east end): no wild Pokémon (`wild=False`; Gen 1's are far below the
+party by now).
+
 **Gyms** are fought in waves. The gym is a short walk (one map,
 `Route.cols` tiles plus the arena) up to an arena where the gym's band
 stands. Touching it opens the team pick (`scenes/gym.TeamPick`): the
@@ -1154,6 +1189,11 @@ always the same spot), with its team in a row.
 | Route 6, map 1 | Pond Pals (Jr. Trainer) | Psyduck 24, Goldeen 24 | ₽240 |
 | Route 6, map 2 | Spark Squad (Jr. Trainer) | Pikachu 25, Rattata 25, Raticate 24 | ₽240 |
 | Route 6, map 2 | Thicket Crawlers (Bug Catcher) | Venonat 25, Paras 25, Metapod 25 | ₽125 |
+| Route 11, map 1 | Engine Crew (Engineer) | Magnemite 29, Voltorb 29 | ₽725 |
+| Route 11, map 1 | Roadside Gang (Youngster) | Rattata 28, Ekans 28, Zubat 28 | ₽210 |
+| Route 11, map 2 | High Rollers (Gambler) | Horsea 29, Goldeen 29, Shellder 28 | ₽980 |
+| Route 11, map 2 | Rolling Stones (Engineer) | Geodude 29, Onix 30 | ₽750 |
+| Route 11, map 2 | Sleepy Heads (Youngster) | Drowzee 30, Drowzee 29, Jigglypuff 29 | ₽217 |
 | S.S. Anne 1F | Gentleman's Hounds (Gentleman) | Growlithe 26, Growlithe 26 | ₽910 |
 | S.S. Anne 1F | Seaside Lass (Lass) | Pidgey 25, Nidoran F 25, Jigglypuff 25 | ₽187 |
 | S.S. Anne 1F | Cabin Boys (Youngster) | Rattata 25, Ekans 25, Raticate 24 | ₽180 |

@@ -135,6 +135,16 @@ def _stalactite(s, x, y, rng, p):
     pygame.draw.line(s, p.fill_light, (x - 1, y), (x, y + h - 2))
 
 
+def _root(s, x, y, rng, p):
+    """A root dangling from an earthen ceiling whose underside is at `y`."""
+    h, cx = rng.randint(6, 14), x
+    for dy in range(h):
+        cx += rng.choice((-1, 0, 0, 1)) if dy > 2 else 0
+        s.set_at((cx, y + dy), (92, 64, 40) if dy < h - 2 else (120, 88, 56))
+    if rng.random() < 0.5:  # a side shoot
+        pygame.draw.line(s, (92, 64, 40), (cx, y + h // 2), (cx + rng.choice((-3, 3)), y + h // 2 + 3))
+
+
 def _puddle(s, x, y, rng, p):
     """A splash of pool water on the tiles (the Cerulean Gym)."""
     w = rng.randint(6, 11)
@@ -158,7 +168,7 @@ def _lamp(s, x, y, rng, p):
 
 
 CEILING_DECOR = {"pewter_gym": _stalactite, "mt_moon": _stalactite, "underground": _lamp, "ss_anne": _lamp,
-                 "vermilion_gym": _lamp}  # theme -> what hangs
+                 "vermilion_gym": _lamp, "digletts_cave": _root}  # theme -> what hangs
 
 DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the meadow's come from its tileset)
     "pewter_gym": [(0.12, _rock)],
@@ -167,6 +177,7 @@ DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the m
     "underground": [(0.06, _rock)],  # rubble the Diglett left
     "ss_anne": [],  # (polished planks)
     "vermilion_gym": [],  # (steel floor plates)
+    "digletts_cave": [(0.08, _rock)],  # (dirt the Diglett dug out)
 }
 
 
