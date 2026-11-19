@@ -1391,9 +1391,11 @@ tower works, and Leave. Up at the stairs also starts a climb.
 | Celestial Summit | 16–20 | the edge of space | 4 + 1 | 4 (5) | all | 2: Rare 2 / Epic 3 |
 | Eclipse Throne | 21–25 | black and gold under an eclipse | 4 + 1 | 5 (6) | all | 3: Rare 1 / Epic 5 |
 
-- **Levels:** floor *f*'s enemies are Lv 35 + round((*f* − 1) × 30 / 24):
-  Lv35 on floor 1, Lv40 on 5, 46 on 10, 53 on 15, 59 on 20 and Lv65 on
-  floor 25. Challengers are 1 below that (or 2),
+- **Levels:** each tier starts about at the party's expected level when it
+  opens (Lv38 after the Celadon Gym, about 48 at 6 badges, 52 at 7, 56 at
+  8 and 63 as Champion) and climbs a level a floor (`tower.TIER_LEVELS`):
+  floors 1–5 Lv35–40, 6–10 Lv47–51, 11–15 Lv52–56, 16–20 Lv57–61 and 21–25
+  Lv63–68 (floors 21–24: 63, 64, 65, 67). Challengers are 1 below that (or 2),
   and masters 1 above (or 0).
 - **Pools:** each tier draws from its own pool of strong evolved Pokémon
   (`tower.POOLS`, no legendaries): Pidgeot, Machoke and Kadabra low down;
@@ -1402,8 +1404,8 @@ tower works, and Leave. Up at the stairs also starts a climb.
   starters' final forms; and at the top Dragonite with the strongest of all.
   The bands are the same every run, as each floor is seeded by its number.
 - **Giant masters:** every fifth floor's master is drawn twice as big and
-  leads the tier's strongest: Nidoking (floor 5, Lv42), Gengar (10, Lv48),
-  Gyarados (15, Lv55), Aerodactyl (20, Lv61) and Dragonite (25, Lv67).
+  leads the tier's strongest: Nidoking (floor 5, Lv42), Gengar (10, Lv53),
+  Gyarados (15, Lv58), Aerodactyl (20, Lv63) and Dragonite (25, Lv70).
 
 **The chest** (`tower.chest`) after clearing floors 1 to *f*:
 - **gems:** 2 of each cleared floor's gem, 3 more on every fifth floor.
