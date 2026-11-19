@@ -134,7 +134,16 @@ DEN_CURTAIN_X = 56            # the way back into the mart
 DEN_PERSIAN_X = 320          # Persian on its pile, under its own portrait
 DEN_STANDS = (("gear_stand", 172), ("gear_stand_2", 468))  # gilded stands showing off gear
 PERSIAN_REACH = 44           # (its pile is wide)
-SPILL_DROP = 10              # the coins spilling from its pile lie this far down the carpet
+SPILL_DROP = 4
+# Loose coins on the den's carpet: (x from Persian, y below the floor line).
+LOOSE_COINS = ((-96, 7), (-78, 13), (-120, 18), (88, 6), (104, 15), (130, 9), (-30, 22), (52, 20), (190, 17))
+
+
+def _coin(s: pygame.Surface, x: int, y: int) -> None:
+    """A gold coin lying flat on the floor (5×3 px, outlined)."""
+    pygame.draw.ellipse(s, (120, 80, 20), (x - 3, y - 2, 7, 4))
+    pygame.draw.ellipse(s, (240, 190, 50), (x - 2, y - 1, 5, 2))
+    s.set_at((x - 1, y - 1), (255, 240, 150))              # the coins spilling from its pile lie this far down the carpet
 
 
 class DenScene(MapScene):
@@ -151,6 +160,8 @@ class DenScene(MapScene):
         room = tileset.room("den", self.level.width, self.ground, [], None, (("den_curtain", DEN_CURTAIN_X),))
         for stand, x in DEN_STANDS:
             tileset.draw_prop(room, stand, x, self.ground)
+        for dx, dy in LOOSE_COINS:  # strays from Persian's pile, out on the carpet
+            _coin(room, DEN_PERSIAN_X + dx, self.ground + dy)
         self.backgrounds = [(room, 0.0)]
         self.persian_frames = tileset.npc_frames("persian", PERSIAN_W)
         self.place_player(DEN_CURTAIN_X + 36, 1)
@@ -187,8 +198,8 @@ class DenScene(MapScene):
     def draw_things(self, layer: pygame.Surface) -> None:
         image = self.persian
         layer.blit(image, (DEN_PERSIAN_X - image.get_width() // 2, self.ground - image.get_height()))
-        if (tileset.ART / "props" / "coin_spill.png").exists():  # (hides the pile's foot)
-            tileset.draw_prop(layer, "coin_spill", DEN_PERSIAN_X, self.ground + SPILL_DROP)
+        # The coins spilling from its pile, in front of the pile's foot.
+        tileset.draw_prop(layer, "coin_spill", DEN_PERSIAN_X, self.ground + SPILL_DROP)
 
 
 class ShopMenu:

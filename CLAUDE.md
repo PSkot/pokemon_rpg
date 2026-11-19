@@ -264,7 +264,8 @@ non-commercial project.
   Persian's den (`DenScene`: `rooms/den_wall.png`/`den_floor.png`, gilded
   gear stands `props/gear_stand*.png`; `tileset.room(..., doors=)`), where
   Persian lies on a pile of gear (`props/persian.png`: 80 px frames,
-  `npc_frames(name, width)`); Up at it opens the gear counter
+  `npc_frames(name, width)`; `props/coin_spill.png` in front of its foot,
+  loose coins drawn on the carpet, `LOOSE_COINS`); Up at it opens the gear counter
   (`GearShop`: 6 pieces, `towns.gear_stock`, rolled from `Game.seed` and
   the visit, restocked on arriving from a route, `Game.arrive`; buy at
   `Gear.price` = 5× `Gear.value`, `GEAR_MARKUP`, sell bag gear for half
