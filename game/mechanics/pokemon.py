@@ -11,7 +11,7 @@ from ..engine import hats
 from ..engine.animation import Animation, load_sheet
 from .items import SLOTS, Gear, boosted
 from .moves import Move
-from .talents import MAX_EQUIPPED, TALENT_MODS, TREES, TalentTree, stand_in_tree
+from .talents import MAX_EQUIPPED, TALENT_MODS, TREES, TalentTree, _selects, apply_changes, stand_in_tree
 from .status import SLEEP_ROUNDS, STATUSES
 
 
@@ -404,11 +404,29 @@ class Monster:
         """The value of a talent's battle effect (`Talent.flags`), 0 if it has
         none. Talents with the same effect don't add up: the strongest counts
         (Fortress after Shell Formation, Unbreakable after Tenacity, ...)."""
-        return max((v for t in self.tree.chosen_talents(self.talents) for f, v in t.flags if f == flag), default=0)
+        sources = [*self.tree.chosen_talents(self.talents), *self.gear_effects]
+        return max((v for t in sources for f, v in t.flags if f == flag), default=0)
+
+    @property
+    def has_effects(self) -> bool:
+        """Whether it has talents or gear special effects (whose battle
+        effects `talent` reads)."""
+        return bool(self.talents) or bool(self.gear_effects)
+
+    @property
+    def gear_effects(self) -> list:
+        """The special effects (`items.GEAR_EFFECTS`) of its equipped gear."""
+        return [g.special for slot in SLOTS if (g := self.gear.get(slot)) and g.special]
 
     def move(self, key: str) -> Move:
-        """Move `key`, as its talents change it."""
-        return self.tree.effective_move(self.talents, key)
+        """Move `key`, as its talents change it, then its gear's special effects."""
+        move = self.tree.effective_move(self.talents, key)
+        basic = key == self.tree.basic.key
+        for effect in self.gear_effects:
+            for selector, changes in effect.moves:
+                if _selects(selector, move, basic):
+                    move = apply_changes(move, changes)
+        return move
 
     @property
     def basic_attack(self) -> Move:
@@ -499,7 +517,7 @@ class Monster:
         """Total of `mod` (see `items.MOD_TEXT`) from equipped gear, and for a
         few battle mods also from talents (Head Start: "first", ...)."""
         total = sum(self.gear[slot].mods.get(mod, 0) for slot in SLOTS if slot in self.gear)
-        if self.talents and (mod in TALENT_MODS or mod.startswith("status:")):
+        if mod in TALENT_MODS or mod.startswith("status:"):  # (talents' and gear effects')
             total += self.talent(mod)
         return total
 

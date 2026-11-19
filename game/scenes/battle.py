@@ -177,7 +177,7 @@ class Combatant:
     @property
     def guarded(self) -> bool:
         """Magic Guard: no damage from status, seeds, binds, wounds or nightmares."""
-        return bool(self.monster.talents) and bool(self.monster.talent("magic_guard"))
+        return self.monster.has_effects and bool(self.monster.talent("magic_guard"))
 
     @property
     def status(self) -> str:
@@ -698,7 +698,7 @@ class BattleScene(Scene):
         (Miasma, Thunder Cloud) or lower their Attack (Intimidate)."""
         for holder in self.everyone:
             m = holder.monster
-            if not holder.alive or not m.talents:
+            if not holder.alive or not m.has_effects:
                 continue
             foes = [c for c in (self.party if holder.enemy else self.enemies) if c.alive]
             for status in STATUSES:
@@ -1582,7 +1582,7 @@ class BattleScene(Scene):
         lowered stat). The target side's: Ancient Roots; its foes': Sapping
         (against a poisoned user); the target's own Sturdy (its first hit)."""
         m, factor = user.monster, 1.0
-        if not m.talents and not any(c.monster.talents for c in self.everyone):
+        if not m.has_effects and not any(c.monster.has_effects for c in self.everyone):
             return factor
         if m.hp * 3 < m.max_hp:
             factor *= 1 + m.talent(f"pinch:{move.type}")

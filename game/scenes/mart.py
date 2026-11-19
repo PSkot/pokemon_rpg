@@ -18,7 +18,7 @@ import pygame
 from .. import saves, settings
 from ..engine import ui
 from ..engine.scene import Transition
-from ..mechanics.items import MEDICINE, SLOT_NAMES, Bag, Gear, mod_text, money_text
+from ..mechanics.items import EFFECT_COLOR, MEDICINE, SLOT_NAMES, Bag, Gear, mod_text, money_text
 from ..world import quests, tileset
 from ..world.level import EMPTY, ROWS, SOLID, TILE, Level
 from ..world.progress import Game
@@ -526,8 +526,10 @@ class GearShop:
         if not self._wearable(gear):
             ui.text(window, "(no one is that level yet)", (right, y), level_color, size=20, align="right")
         y += 14
-        for line in ui.wrap(gear.item.description, 20, r.w - 28)[:2]:
-            ui.text(window, line, (r.x + 14, y), ui.WHITE, size=20)
+        effect = gear.special  # (its special effect, in red, in place of the description)
+        about = f"{effect.name}: {effect.text}" if effect else gear.item.description
+        for line in ui.wrap(about, 20, r.w - 28)[:2]:
+            ui.text(window, line, (r.x + 14, y), EFFECT_COLOR if effect else ui.WHITE, size=20)
             y += 12
         mods = [(mod_text(mod, value), value) for mod, value in gear.mods.items()]
         half = (len(mods) + 1) // 2

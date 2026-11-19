@@ -581,6 +581,9 @@ once per battle); the bag starts without gear.
      the item-level scale only, rounded, at least −1.
 4. **Name:** the first prefix + item + the first suffix ("Fierce Red Bandana
    of the Aerodactyl"). Further affixes still count but aren't in the name.
+5. **Special effect** (Rare and up only): a 10% (Rare), 20% (Epic) or 40%
+   (Legendary) chance (`EFFECT_CHANCE`) of one special effect, picked
+   evenly (see *Special effects*).
 
 Affixes can stack on the same stat as the item (a Fierce Red Bandana has
 two Attack rolls), and all rolls simply add up.
@@ -633,6 +636,43 @@ Values at Lv50 Common (before the rarity factor and item level).
 | | | | of the Hypno / Jynx | Sleep / freeze chance 3…6% |
 
 Berries roll their own affixes (see *Berries*).
+
+### Special effects
+
+`items.GEAR_EFFECTS`, `Gear.effect`
+
+Gear's "red text": rare pieces that change how their wearer fights rather
+than adding a bigger number. They're written like talents (move changes by
+selector and battle flags, see `docs/talents.md`) and work the same way:
+`Monster.talent` reads gear effects' flags too, and `Monster.move` applies
+their move changes after the talents' (talents' rules: numbers add up, a
+spread share keeps the higher, ...). An effect and a talent with the same
+flag don't add up: the stronger counts. They work for any wearer (selectors
+by kind of move, not by name). A piece has at most one; shown in red (its
+name, what it does and a quote) on the party screen, in the bag and at
+Persian's counter. A piece with one is worth ×1.5 (`EFFECT_VALUE`: its
+price and what it sells for).
+
+| Effect | What it does | As talent data |
+| --- | --- | --- |
+| Earthshaker | The basic attack hits every enemy, the others at 50% | basic: spread, share 0.5 |
+| Double Tap | The basic attack hits twice, at 65% power each | basic: hits 2, scale −0.35 |
+| Megaphone | Status moves work on every Pokémon on the side they aim at | status moves: spread |
+| Ricochet | Damaging moves also hit an enemy next to the target, at half damage | damaging: reach 0.5 |
+| Quickdraw | Damaging moves always go first | damaging: priority +1 |
+| Executioner | Damaging moves always crit a target below 1/3 HP | damaging: keen 1/3 |
+| Armor Breaker | Damaging moves: 30% chance to lower the target's Defense 1 stage | damaging: Defense −1, 30% |
+| Thornmail | Whoever hits the wearer loses 1/8 of its max HP | thorns 1/8 |
+| Phoenix Feather | Once a battle, ending a round below 1/3 HP heals half max HP | second_wind 0.5 |
+| Storm Cell | Whoever hits the wearer: 30% chance to be paralyzed | retaliate:paralysis 30 |
+| Plague Charm | Battle start: each enemy 40% chance to be poisoned | aura:poison 40 |
+| Dread Mask | Battle start: every enemy's Attack −1 stage | lower:attack 1 |
+| Hunter's Mark | +50% damage to a target that hasn't moved this round | ambush 0.5 |
+| Pack Tactics | +40% damage to a target a partner already hit this round | gang 0.4 |
+| Gale Banner | +40% damage with moves that hit every enemy | wide 0.4 |
+| Rallying Cry | The whole side heals 1/16 max HP at each round's end | party_regen 6.25 |
+| Aegis | While the wearer stands, its side takes 20% less damage | ancient_roots 0.2 |
+| Last Rites | Once a battle, a partner that would faint keeps 1 HP and is healed half its max HP | world_tree, guard_heal 0.5 |
 
 Item stats are listed in `ITEMS` and `HATS` in `items.py`.
 
@@ -770,7 +810,7 @@ the game doesn't have yet: Poké Balls, Repel):
 
 - **What gear is worth** (`Gear.value`): by rarity, growing with the item
   level: `GEAR_PRICE` × (level + 10) / 15, rounded to ₽10 (Lv5: ×1, Lv20:
-  ×2, Lv35: ×3). `GEAR_PRICE`: Common ₽200, Uncommon ₽500, Rare ₽1,200,
+  ×2, Lv35: ×3); ×1.5 with a special effect. `GEAR_PRICE`: Common ₽200, Uncommon ₽500, Rare ₽1,200,
   Epic ₽3,000, Legendary ₽8,000.
 - **Persian sells gear for 5× its worth** (`GEAR_MARKUP`): gear is meant
   to be won, and buying it a goal to save up for (every quest up to
@@ -1137,7 +1177,9 @@ always the same spot), with its team in a row.
   arriving as after fainting (healed; it becomes the town you wake up in).
 - **Add item** rolls gear with `Gear.roll(..., affixes=[...], values=...)`:
   the chosen affixes (any number, 0–5, regardless of rarity), and every
-  value random, lowest or highest of its range (then × rarity as usual).
+  value random, lowest or highest of its range (then × rarity as usual),
+  and its special effect: Random (rolled as usual), none, or any one
+  (`effect=`, regardless of rarity).
 
 ---
 

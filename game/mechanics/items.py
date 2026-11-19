@@ -345,6 +345,71 @@ def _roll(mods: dict[str, Range], rarity: Rarity, level: int, rng: random.Random
     return rolled
 
 
+# --- special effects (rare gear's "red text") ----------------------------------
+# Now and then a Rare piece or better rolls one of these on top of its
+# mods: not a bigger number, but a change in how its wearer fights, like a
+# talent (and written the same way: move changes by selector, and battle
+# flags; see talents.py). They work for any wearer: their selectors pick
+# moves by kind ("basic", "damaging", "status_moves"), not by name.
+
+@dataclass(frozen=True)
+class GearEffect:
+    key: str
+    name: str    # shown in red, as the effect's title
+    text: str    # what it does
+    quote: str   # its line of flavour, in red
+    moves: tuple[tuple[str, dict], ...] = field(default=(), hash=False)  # (selector, Move field changes)
+    flags: tuple[tuple[str, float], ...] = ()  # battle effects, as `Talent.flags`
+
+
+def _effect(name: str, text: str, quote: str, *moves: tuple[str, dict], **flags: float) -> GearEffect:
+    return GearEffect(name.lower().replace(" ", "_").replace("'", ""), name, text, quote, tuple(moves),
+                      tuple((f.replace("__", ":"), v) for f, v in flags.items()))
+
+
+GEAR_EFFECTS = {e.key: e for e in [
+    _effect("Earthshaker", "The basic attack hits every enemy, the others at 50% damage.",
+            "Why hit one when you can hit them all?", ("basic", {"spread": True, "spread_share": 0.5})),
+    _effect("Double Tap", "The basic attack hits twice, at 65% power each.", "Two for the price of one.",
+            ("basic", {"hits": (2, 2), "scale": -0.35})),
+    _effect("Megaphone", "The wearer's status moves work on every Pokémon on the side they aim at.",
+            "CAN YOU HEAR ME IN THE BACK?", ("status_moves", {"spread": True})),
+    _effect("Ricochet", "The wearer's damaging moves also hit an enemy next to the target, at half damage.",
+            "Nobody stands next to me twice.", ("damaging", {"reach": 0.5})),
+    _effect("Quickdraw", "The wearer's damaging moves always go first.", "Fastest paws in Kanto.",
+            ("damaging", {"priority": 1})),
+    _effect("Executioner", "The wearer's damaging moves are always critical hits on a target below 1/3 HP.",
+            "It's nothing personal.", ("damaging", {"keen": 1 / 3})),
+    _effect("Armor Breaker", "The wearer's damaging moves have a 30% chance to lower the target's Defense.",
+            "Knock knock.", ("damaging", {"stages": (("defense", -1),), "stage_chance": 30})),
+    _effect("Thornmail", "Whoever hits the wearer loses 1/8 of its max HP.", "Look, but don't touch.",
+            thorns=1 / 8),
+    _effect("Phoenix Feather", "Once a battle, ending a round below 1/3 HP heals the wearer half its max HP.",
+            "Not today.", second_wind=0.5),
+    _effect("Storm Cell", "Whoever hits the wearer has a 30% chance to be paralyzed.", "Shocking, really.",
+            retaliate__paralysis=30),
+    _effect("Plague Charm", "At the start of each battle, each enemy has a 40% chance to be poisoned.",
+            "Something's in the air.", aura__poison=40),
+    _effect("Dread Mask", "At the start of each battle, every enemy's Attack falls 1 stage.", "Everyone flinched.",
+            lower__attack=1),
+    _effect("Hunter's Mark", "The wearer's moves deal 50% more to a target that hasn't moved this round.",
+            "Strike first. Strike hard.", ambush=0.5),
+    _effect("Pack Tactics", "The wearer's moves deal 40% more to a target a partner already hit this round.",
+            "Together, we bite.", gang=0.4),
+    _effect("Gale Banner", "The wearer's moves that hit every enemy deal 40% more.", "Let the wind carry it.",
+            wide=0.4),
+    _effect("Rallying Cry", "The wearer's whole side heals 1/16 of its max HP at the end of each round.",
+            "Hold the line!", party_regen=6.25),
+    _effect("Aegis", "While the wearer stands, its whole side takes 20% less damage.", "Behind me!",
+            ancient_roots=0.2),
+    _effect("Last Rites", "Once a battle, a partner that would faint keeps 1 HP and is healed half its max HP.", "Not on my watch.", world_tree=1, guard_heal=0.5),
+]}
+# The chance a piece rolls one, by rarity (none below Rare).
+EFFECT_CHANCE = {"Rare": 10, "Epic": 20, "Legendary": 40}
+EFFECT_VALUE = 1.5  # a piece with one is worth (and costs) this much more
+EFFECT_COLOR = (235, 70, 60)  # their text's red
+
+
 @dataclass(frozen=True)
 class Roll:
     """One rolled part of a piece of gear: its item's own effect (no affix),
@@ -361,14 +426,17 @@ class Gear:
     rarity: Rarity
     rolls: list[Roll]
     level: int = 1
+    effect: str = ""  # a special effect (`GEAR_EFFECTS` key), if it rolled one
 
     @classmethod
     def roll(cls, item: str, rarity: str = "Common", rng: random.Random | None = None,
-             affixes: list[str] | None = None, values: str = "random", level: int = 1) -> "Gear":
+             affixes: list[str] | None = None, values: str = "random", level: int = 1,
+             effect: str | None = None) -> "Gear":
         """Roll a new piece at item level `level`. `affixes` picks its
         affixes by name instead of at random; `values` "min" or "max" gives
-        every roll its lowest or highest value (both are for testing, see
-        dev.py)."""
+        every roll its lowest or highest value; `effect` picks its special
+        effect ("" none) instead of rolling for one (`EFFECT_CHANCE`; these
+        are for testing, see dev.py)."""
         rng = rng or random.Random()
         item_, rarity_ = ITEMS[item], RARITIES[rarity]
         rolls = [Roll(None, _roll(item_.mods, rarity_, level, rng, values))] if item_.mods else []
@@ -380,7 +448,14 @@ class Gear:
             picked = []
         for affix in picked:
             rolls.append(Roll(affix, _roll(affix.mods, rarity_, level, rng, values)))
-        return cls(item_, rarity_, rolls, level)
+        if effect is None:  # (rolled last, so a piece's mods come out as they always have from an rng)
+            effect = (rng.choice(sorted(GEAR_EFFECTS)) if rng.random() * 100 < EFFECT_CHANCE.get(rarity, 0) else "")
+        return cls(item_, rarity_, rolls, level, effect)
+
+    @property
+    def special(self) -> GearEffect | None:
+        """Its special effect, if it has one."""
+        return GEAR_EFFECTS.get(self.effect)
 
     @property
     def name(self) -> str:
@@ -400,7 +475,7 @@ class Gear:
     @property
     def value(self) -> int:
         """What it's worth: by rarity, growing with its item level (`GEAR_PRICE`)."""
-        return gear_price(self.rarity.name, self.level)
+        return round(gear_price(self.rarity.name, self.level) * (EFFECT_VALUE if self.effect else 1) / 10) * 10
 
     @property
     def price(self) -> int:
@@ -552,7 +627,7 @@ def updated_gear(gear: Gear, rng: random.Random | None = None) -> Gear:
         item = ITEMS[rng.choice([n for n, i in ITEMS.items() if i.slot == item.slot and i.drops_at(gear.rarity.name)])]
     names = {a.name for a in affixes_for(item.slot)}
     affixes = [r.affix.name for r in gear.rolls if r.affix and r.affix.name in names]
-    return Gear.roll(item.name, gear.rarity.name, rng, affixes=affixes, level=gear.level)
+    return Gear.roll(item.name, gear.rarity.name, rng, affixes=affixes, level=gear.level, effect=gear.effect)
 
 
 @dataclass

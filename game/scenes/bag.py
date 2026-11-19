@@ -17,7 +17,7 @@ import pygame
 
 from .. import settings
 from ..engine import ui
-from ..mechanics.items import KEY_ITEMS, MEDICINE, RARITIES, SLOT_NAMES, SLOTS, Bag, Gear, mod_text, money_text
+from ..mechanics.items import EFFECT_COLOR, KEY_ITEMS, MEDICINE, RARITIES, SLOT_NAMES, SLOTS, Bag, Gear, mod_text, money_text
 from ..mechanics.pokemon import SPECIES
 from ..mechanics.status import STATUSES
 from ..world import quests
@@ -231,6 +231,13 @@ class BagScreen:
             for mod, value in gear.mods.items():
                 ui.text(window, mod_text(mod, value), (x, y), GREEN if value > 0 else RED, size=22)
                 y += 13
+            if effect := gear.special:  # (its special effect: name, what it does, and its quote, in red)
+                y += 4
+                ui.text(window, effect.name, (x, y), EFFECT_COLOR, size=22)
+                y += 13
+                for line in ui.wrap(effect.text, 20, w) + ui.wrap(f"\u201c{effect.quote}\u201d", 20, w):
+                    ui.text(window, line, (x, y), EFFECT_COLOR, size=20)
+                    y += 12
             ui.text(window, f"Sells for {money_text(gear.sell_price)} (Persian, at a Poké Mart)", (x, y + 4), ui.GREY,
                     size=20)
             return

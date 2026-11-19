@@ -20,7 +20,7 @@ from datetime import datetime
 from pathlib import Path
 
 from . import settings
-from .mechanics.items import AFFIX_BY_NAME, GEAR_VERSION, ITEMS, RARITIES, Bag, Gear, Roll, updated_gear
+from .mechanics.items import AFFIX_BY_NAME, GEAR_EFFECTS, GEAR_VERSION, ITEMS, RARITIES, Bag, Gear, Roll, updated_gear
 from .mechanics.pokemon import SPECIES, Monster
 from .world.progress import Game
 
@@ -63,12 +63,13 @@ class SaveInfo:
 def _gear(g: Gear) -> dict:
     return {"item": g.item.name, "rarity": g.rarity.name, "level": g.level,
             "rolls": [{"affix": r.affix.name if r.affix else None, "mods": r.mods} for r in g.rolls],
-            "v": GEAR_VERSION}
+            "v": GEAR_VERSION, **({"effect": g.effect} if g.effect else {})}
 
 
 def _load_gear(d: dict) -> Gear:
     rolls = [Roll(AFFIX_BY_NAME[r["affix"]] if r["affix"] else None, r["mods"]) for r in d["rolls"]]
-    gear = Gear(ITEMS[d["item"]], RARITIES[d["rarity"]], rolls, d.get("level", 1))
+    effect = d.get("effect", "") if d.get("effect") in GEAR_EFFECTS else ""
+    gear = Gear(ITEMS[d["item"]], RARITIES[d["rarity"]], rolls, d.get("level", 1), effect)
     return gear if d.get("v", 1) >= GEAR_VERSION else updated_gear(gear)  # (older saves: today's rules)
 
 

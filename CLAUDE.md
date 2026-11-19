@@ -108,6 +108,14 @@ non-commercial project.
   `affixes_for(slot)`)
   and are eaten at most once per battle (`BattleScene._berry`), not used
   up. `Monster.attack` etc. include gear; `base_*` don't.
+  Special effects (`items.GEAR_EFFECTS`, `Gear.effect`, "red text" as in
+  Borderlands): Rare 10% / Epic 20% / Legendary 40% (`EFFECT_CHANCE`) roll
+  one, a talent-like change (Earthshaker: the basic attack spreads, Thornmail,
+  Plague Charm, ...), written as talent data (`GearEffect.moves`/`flags`);
+  `Monster.talent` reads their flags and `Monster.move` applies their move
+  changes after the talents' (`Monster.gear_effects`, `has_effects`); shown
+  in red (`EFFECT_COLOR`) on the party screen, bag and gear counter; worth
+  ×1.5 (`EFFECT_VALUE`); saved as "effect".
 - Hats (`hats.py`): head-slot items (`items.HATS`) are cells of
   `hats_new.png`, drawn on the Pokémon wearing them (map, battle, party
   screen). The cells' reference faces are cut out on load, so the Pokémon's

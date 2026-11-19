@@ -17,7 +17,7 @@ from .. import settings
 from ..engine import hats, ui
 from ..engine.scene import Scene
 from ..mechanics.combat import CRIT_CHANCE
-from ..mechanics.items import RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text, money_text
+from ..mechanics.items import EFFECT_COLOR, RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text, money_text
 from ..mechanics.pokemon import SPECIES, Monster, animations
 from ..mechanics.status import STATUSES
 from ..mechanics.type_chart import COLORS
@@ -366,11 +366,13 @@ class SummaryScene(Scene):
         if worn is gear:
             worn = None  # (nothing to compare)
         entries = len(gear.mods.keys() | (worn.mods.keys() if worn else set()))
-        if entries <= 9:  # (more need the description's line)
+        if gear.special:  # (its special effect, in red, says more than the description)
+            ui.text(window, f"{gear.special.name}: {gear.special.text}", (x, y + 16), EFFECT_COLOR, size=22)
+        elif entries <= 9:  # (more need the description's line)
             ui.text(window, gear.item.description, (x, y + 15), size=24)
         if not gear.mods and not worn and not gear.item.cures:  # (a cure berry's description says what it does)
             ui.text(window, "No stat changes.", (x, y + 31), ui.GREY, size=24)
-        self._draw_mods(window, gear, worn, y + 31 if entries <= 9 else y + 17)
+        self._draw_mods(window, gear, worn, y + 31 if entries <= 9 or gear.special else y + 17)
 
     def _draw_mods(self, window: pygame.Surface, gear: Gear | None, worn: Gear | None, top: float) -> None:
         """`gear`'s mods in three columns from `top`; compared with `worn`,

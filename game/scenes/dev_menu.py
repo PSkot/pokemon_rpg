@@ -11,7 +11,7 @@ import pygame
 
 from .. import settings
 from ..engine import ui
-from ..mechanics.items import (AFFIX_BY_NAME, ITEMS, MEDICINE, RARITIES, SLOT_NAMES, SLOTS,
+from ..mechanics.items import (AFFIX_BY_NAME, EFFECT_CHANCE, EFFECT_COLOR, GEAR_EFFECTS, ITEMS, MEDICINE, RARITIES, SLOT_NAMES, SLOTS,
                                Bag, Gear, Roll, affixes_for, level_factor, mod_text)
 
 PAD = 9
@@ -23,7 +23,7 @@ LEVELS = (1, 100)  # gear's item level
 VALUES = {"random": "Random", "min": "Lowest", "max": "Highest"}
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE, pygame.K_ESCAPE)
-RECT = pygame.Rect(0, 0, 480, PAD * 2 + ROW_H * (VISIBLE + 2) + 8)
+RECT = pygame.Rect(0, 0, 480, PAD * 2 + ROW_H * (VISIBLE + 4) + 8)  # (room for every row and the name)
 RECT.center = (settings.LOGICAL_SIZE[0] // 2, settings.LOGICAL_SIZE[1] // 2)
 
 Entry = tuple[str | None, str, tuple[int, int, int], str]  # (value, text, colour, right-hand text)
@@ -94,6 +94,7 @@ class ItemMaker:
         self.rarity = "Common"
         self.affixes: list[str] = []
         self.values = "random"
+        self.effect: str | None = None  # its special effect: None rolls for one, "" none
         self.level = 5
         self.count = 1
         self.row = 0
@@ -112,7 +113,7 @@ class ItemMaker:
             rows += ["rarity", "level"]
             if affixes_for(ITEMS[self.item].slot):
                 rows += [f"affix{i}" for i in range(min(len(self.affixes) + 1, MAX_AFFIXES))]
-            rows.append("values")
+            rows += ["values", "effect"]
         else:
             rows.append("count")
         return rows + ["make"]
@@ -161,6 +162,9 @@ class ItemMaker:
         elif row == "values":
             keys = list(VALUES)
             self.values = keys[(keys.index(self.values) + step) % len(keys)]
+        elif row == "effect":
+            keys = [None, "", *GEAR_EFFECTS]
+            self.effect = keys[(keys.index(self.effect) + step) % len(keys)]
         elif row == "count":
             self.count = max(COUNTS[0], min(COUNTS[1], self.count + step))
         elif row == "level":
@@ -199,9 +203,12 @@ class ItemMaker:
             self.bag.add_medicine(self.item, self.count)
             self.message = [(f"Added {self.count} × {self.item} to the bag.", ui.WHITE)]
             return
-        gear = Gear.roll(self.item, self.rarity, affixes=self.affixes, values=self.values, level=self.level)
+        gear = Gear.roll(self.item, self.rarity, affixes=self.affixes, values=self.values, level=self.level,
+                         effect=self.effect)
         self.bag.add(gear)
         mods = ", ".join(mod_text(mod, value) for mod, value in gear.mods.items()) or "No stat changes"
+        if gear.special:
+            mods += f"; {gear.special.name}"
         self.message = [(f"Added {gear.name} (Lv{gear.level} {gear.rarity.name}) to the bag.", gear.rarity.color),
                         (mods, ui.GREY)]
 
@@ -253,6 +260,14 @@ class ItemMaker:
             elif row == "values":
                 ui.text(window, "Values", (left, y), color)
                 ui.text(window, f"< {VALUES[self.values]} >", (value_x, y))
+            elif row == "effect":
+                ui.text(window, "Effect", (left, y), color)
+                effect = GEAR_EFFECTS.get(self.effect or "")
+                name = effect.name if effect else "(none)" if self.effect == "" else "Random"
+                ui.text(window, f"< {name} >", (value_x, y), EFFECT_COLOR if effect else ui.WHITE)
+                if self.effect is None:
+                    ui.text(window, f"{EFFECT_CHANCE.get(self.rarity, 0)}% chance at {self.rarity}", (right, y + 2),
+                            ui.GREY, size=22, align="right")
             elif row == "count":
                 ui.text(window, "Count", (left, y), color)
                 ui.text(window, f"< {self.count} >", (value_x, y))
@@ -262,6 +277,9 @@ class ItemMaker:
         if self.is_gear:  # the name it will get
             rolls = [Roll(AFFIX_BY_NAME[a], {}) for a in self.affixes]  # enough for its name
             ui.text(window, Gear(ITEMS[self.item], rarity, rolls).name, (left, y), rarity.color, size=24)
+            if effect := GEAR_EFFECTS.get(self.effect or ""):  # (and what its effect does)
+                y += 13
+                ui.text(window, effect.text, (left, y + 2), EFFECT_COLOR, size=20)
         for i, (line, color) in enumerate(self.message):
             ui.text(window, line, (left, y + 15 + i * 13), color, size=20)
 
