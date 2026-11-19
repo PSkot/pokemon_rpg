@@ -75,6 +75,22 @@ def _top_tile(surface: pygame.Surface, rect: pygame.Rect, p: Palette, rng: rando
     pygame.draw.line(surface, p.top_light, (rect.left, rect.top), (rect.right - 1, rect.top))
 
 
+def _plank_tile(surface: pygame.Surface, rect: pygame.Rect, p: Palette, col: int, row: int, top: bool) -> None:
+    """Polished planks (a built interior: the S.S. Anne): boards 4 px high
+    with staggered joints; a floor's top has a bright varnished edge."""
+    surface.fill(p.fill, rect)
+    for i, y in enumerate(range(rect.top, rect.bottom, 4)):
+        pygame.draw.line(surface, p.fill_dark, (rect.left, y + 3), (rect.right - 1, y + 3))
+        if (row * 4 + i + col) % 3 == 0:  # a joint between two boards
+            x = rect.left + (5 + 7 * (row + i)) % TILE
+            pygame.draw.line(surface, p.fill_dark, (x, y), (x, y + 2))
+        pygame.draw.line(surface, p.fill_light, (rect.left, y), (rect.right - 1, y))
+    if top:
+        surface.fill(p.top, (rect.left, rect.top, TILE, 3))
+        pygame.draw.line(surface, p.top_light, rect.topleft, (rect.right - 1, rect.top))
+        pygame.draw.line(surface, p.top_dark, (rect.left, rect.top + 3), (rect.right - 1, rect.top + 3))
+
+
 def _underside(surface: pygame.Surface, rect: pygame.Rect, p: Palette) -> None:
     """The bottom edge of a ceiling."""
     pygame.draw.line(surface, p.fill_dark, (rect.left, rect.bottom - 1), (rect.right - 1, rect.bottom - 1))
@@ -141,13 +157,14 @@ def _lamp(s, x, y, rng, p):
     s.set_at((x, y + h + 2), (255, 248, 210))
 
 
-CEILING_DECOR = {"pewter_gym": _stalactite, "mt_moon": _stalactite, "underground": _lamp}  # theme -> what hangs
+CEILING_DECOR = {"pewter_gym": _stalactite, "mt_moon": _stalactite, "underground": _lamp, "ss_anne": _lamp}  # theme -> what hangs
 
 DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the meadow's come from its tileset)
     "pewter_gym": [(0.12, _rock)],
     "mt_moon": [(0.10, _rock), (0.03, _moonstone)],
     "cerulean_gym": [(0.08, _puddle)],
     "underground": [(0.06, _rock)],  # rubble the Diglett left
+    "ss_anne": [],  # (polished planks)
 }
 
 
@@ -271,9 +288,11 @@ def render(level: Level) -> pygame.Surface:
             rect = pygame.Rect(col * TILE, row * TILE, TILE, TILE)
             if kind == SOLID:
                 above, below = level.tile(col, row - 1), level.tile(col, row + 1)
-                if above == SOLID or row == 0:
+                if theme.built:
+                    _plank_tile(surface, rect, p, col, row, top=above != SOLID and row > 0)
+                elif above == SOLID or row == 0:
                     _fill_tile(surface, rect, p, rng)
-                else:
+                if not theme.built and not (above == SOLID or row == 0):
                     _top_tile(surface, rect, p, rng)
                     for chance, draw in DECOR[theme.decor_key]:
                         if rng.random() < chance:

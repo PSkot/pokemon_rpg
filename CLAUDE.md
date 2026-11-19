@@ -168,7 +168,8 @@ non-commercial project.
   starters, Pidgey, Rattata, Spearow, Nidoran F/M, Caterpie, Weedle,
   Pikachu, Geodude, Onix, Jigglypuff, Sandshrew, Ekans, Zubat, Paras,
   Clefairy, Goldeen, Staryu (Starmie), Horsea, Shellder, Psyduck, Oddish,
-  Bellsprout, Abra, Venonat, Diglett, Meowth, Mankey: every line in the game (a new
+  Bellsprout, Abra, Venonat, Diglett, Meowth, Mankey, Machop, Tentacool,
+  Growlithe: every line in the game (a new
   line without `TALENT_TREES` would have just its moves). `Monster.create`
   picks for wild/trainer Pokémon (mostly one random path). The talent
   screen (`scenes/talent_screen.py`, party screen → S): a grid (tiers ×
@@ -338,7 +339,12 @@ non-commercial project.
   painting `walls/underground.png`; without it `CaveLook.lamps` draws a
   tiled wall with lamps in code, `tileset._tunnel_wall`; ceiling lamps) → stop town "route_6" → route "route_6_south" (four
   bands) → Vermilion City (Center, Mart, Recruitment Center, Fan Club,
-  the gym shut by a tree; the S.S. Anne's dock: next). `Route.blocked_done`: what a
+  the gym shut by a tree) → its east doorway: route "ss_anne" (quest
+  "ss_anne": a dungeon of rooms, deck/hold/2F/Captain's cabin; no wild
+  Pokémon; `Theme.built`: flat plank decks, `walls/ss_anne.png`,
+  `backdrops/ss_anne.png`; the rival guards 2F's stairs; the Captain is
+  `Room.folk` (townsfolk in a dungeon room, `OverworldScene._talk`) and
+  gives HM01 Cut; `Route.needs` "active": shut once the ship has sailed). `Route.blocked_done`: what a
   shut doorway says once its quest is done (`quests.blocked_text`);
   `Building.note`: what Up at a building says if nothing else happens.
   Code-drawn caves take their colours from
@@ -506,8 +512,9 @@ non-commercial project.
   species' icon as a design reference and Charmander as a style reference
   (Oddish, Bellsprout, Abra, Venonat, Goldeen, Staryu, Starmie, Horsea,
   Shellder, Psyduck, Butterfree, Beedrill, Raticate, Nidorina, Nidorino,
-  Kadabra, Meowth and Mankey too, made the same
-  way (Meowth's and Mankey's on 32 px canvases; Meowth's idle is its base
+  Kadabra, Meowth, Mankey, Machop, Tentacool and Growlithe too, made the same
+  way (Meowth's, Mankey's and Tentacool's on 32 px canvases, Machop's and
+  Growlithe's on 36 px; Meowth's idle is its base
   with 1 px breathing); Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
   their candidates faced left). Placeholder quality: likely to be redone.
 - A move's `anim` plays if the species has that animation; otherwise the
@@ -532,8 +539,8 @@ non-commercial project.
   slopes/islands/roots aren't used yet.
 - Battle backdrops (`assets/sprites/pixellab/backdrops/`, `Backdrop.art`):
   320×132 Pixellab paintings drawn 2× over the battle area (meadow, forest,
-  route_3, pewter_gym, mt_moon, cerulean_gym, underground; the last shifted
-  up 14 px, its floor extended), their ground starting high enough for the
+  route_3, pewter_gym, mt_moon, cerulean_gym, underground, ss_anne; the last
+  two shifted up 14 px, their floor extended), their ground starting high enough for the
   back row; a theme without one would be drawn in code from the
   `Backdrop` colours.
 - Map props (`assets/sprites/pixellab/props/`, `tileset.draw_prop`: centred,
@@ -549,8 +556,8 @@ non-commercial project.
 - The title screen's background: `backdrops/title.png` (dark bands keep
   the title and save line readable).
 - Cave walls (`assets/sprites/pixellab/walls/`, `CaveLook.wall`): 320×180
-  paintings of Mt. Moon's, the Pewter Gym's, the Cerulean Gym's and the
-  Underground Path's far wall, drawn 2×,
+  paintings of Mt. Moon's, the Pewter Gym's, the Cerulean Gym's, the
+  Underground Path's and the S.S. Anne's far wall, drawn 2×,
   mirrored every other copy, dimmed (`dim`); the code-drawn rock in front
   stays (`near_rocks`, off in the gym).
 - `assets/sprites/pokemon_icons/` holds reference icons. Species without a

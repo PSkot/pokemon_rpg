@@ -60,6 +60,7 @@ MIN_SQUEEZE = 0.6      # a group squeezes to as little as this of its spacing to
 # column over it), up to the first tile overhead: so it can't be jumped over
 # from the ground, only passed on a platform over it (or jumped from one).
 GROUP_REACH = 6 * TILE
+FOLK_REACH = 22  # px from someone in a dungeon room within which Up talks to them (as in towns)
 EVOLVE_COLOR = (255, 130, 200)  # evolution quests (their marks and tracked steps)
 # Marks over what quests need: (symbol, colour).
 QUEST_MARK = ("!", ui.YELLOW)    # a quest to take, or the next step's place
@@ -608,6 +609,9 @@ class OverworldScene(MapScene):
             here = next((thing for stair, thing in self.stairs if stair.to == (arrive or instance.came_from)), None)
             if here:
                 self.place_player(here.x, 1 if here.x < level.width / 2 else -1)
+        # Who stands in a dungeon room to talk to (`Room.folk`: the S.S. Anne's Captain).
+        self.folk = [(folk, col * TILE + TILE / 2) for (_, folk), col in zip(room.folk, level.folk_cols)] if room else []
+        self.chats: dict[str, int] = {}  # their key -> chat lines said
         self.fighting: tuple[WildPokemon, BattleScene] | None = None
         self.battle_event = quests.Event()  # quests started by the last battle's drops
         if str(instance.index) in instance.rooms:  # back in a room left earlier this trip
@@ -646,9 +650,41 @@ class OverworldScene(MapScene):
         return next(((stair, thing) for stair, thing in self.stairs
                      if not thing.sealed and self.player.body_rect.colliderect(thing.rect)), None)
 
+    def _folk_at_player(self):
+        """(folk, x) of who the player stands next to, if anyone."""
+        return next(((f, x) for f, x in self.folk if abs(self.player.x - x) < FOLK_REACH), None)
+
+    def _folk_anim(self, folk):
+        species = SPECIES[folk.species_for(self.game.starter)]
+        return species, animations(species)["idle"]
+
+    def _folk_top(self, folk, x: float) -> float:
+        species, anim = self._folk_anim(folk)
+        return anim.body_rect(0, x, self.level.ground_y(x) + species.foot_sink).top
+
+    def markers(self) -> list[tuple[float, float, tuple]]:
+        """Over a room's folk: a quest step that waits for them."""
+        near = self._folk_at_player()
+        return [(x, self._folk_top(folk, x) - 4, quest_mark(quest)) for folk, x in self.folk
+                if not (near and near[0] is folk) for quest in quests.folk_quests(self.game, folk.key)]
+
+    def _talk(self, folk) -> None:
+        """A quest step that waits for them, else their next chat line."""
+        event = quests.talk(self.game, folk.key)
+        if event:
+            self.show_event(event)
+            saves.autosave(self)
+        elif folk.lines:
+            said = self.chats.get(folk.key, 0)
+            self.chats[folk.key] = said + 1
+            self.show(quest_ui.Dialogue([(folk.name_for(self.game.starter), folk.lines[said % len(folk.lines)])]))
+
     def interact(self) -> None:
         chest, ball = self._chest_at_player(), self._ball_at_player()
-        if ball:
+        folk = self._folk_at_player()
+        if folk:
+            self._talk(folk[0])
+        elif ball:
             self._pick_up(ball)
         elif chest:
             self._open(chest)
@@ -665,6 +701,9 @@ class OverworldScene(MapScene):
             self._take(at[0])
 
     def prompt(self) -> tuple[float, float] | None:
+        folk = self._folk_at_player()
+        if folk:
+            return folk[1], self._folk_top(*folk) - 12
         ball = self._ball_at_player()
         if ball:
             return ball.x, ball.feet_y - 26
@@ -864,11 +903,19 @@ class OverworldScene(MapScene):
                 ball.draw(layer)
         for wild in self.wild:
             wild.draw(layer, self.level, self.debug)
+        for folk, x in self.folk:  # facing the player
+            species, anim = self._folk_anim(folk)
+            flip, index = self.player.x < x, anim.index_at(self.t)
+            layer.blit(anim.frame(index, flip), anim.place(index, x, self.level.ground_y(x) + species.foot_sink, flip))
 
     def draw_overlay(self, window: pygame.Surface) -> None:
         super().draw_overlay(window)
         if self.panel:
             return
+        near = self._folk_at_player()
+        if near:  # their name, over them
+            ui.text(window, near[0].name_for(self.game.starter), (near[1] - self.camera, self._folk_top(*near) - 26),
+                    ui.WHITE, size=26, align="center")
         for wild in self.wild:  # whose team it is, over trainers' groups
             name = self.trainer if wild is self.boss else wild.trainer.name if wild.trainer else ""
             if name:

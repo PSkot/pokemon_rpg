@@ -136,6 +136,10 @@ MOVES = {m.name: m for m in [
     Move("Screech", 0, "enemy", type="normal", stages=(("defense", -2),)),
     Move("Pay Day", 40, "enemy", type="normal", pay_day=2),
     Move("Glare", 0, "enemy", type="normal", **_status("paralysis", 75)),
+    Move("Constrict", 10, "enemy", type="normal", stages=(("speed", -1),), stage_chance=10),
+    Move("Barrier", 0, "self", type="psychic", stages=(("defense", 2),)),
+    # Roar ended a wild battle in Gen 1; here it lowers every enemy's Attack.
+    Move("Roar", 0, "enemy", type="normal", stages=(("attack", -1),), spread=True),
     Move("Sing", 0, "enemy", type="normal", **_status("sleep", 55)),
     # Flying
     Move("Gust", 40, "enemy", "gust", type="normal"),  # Normal, as in Gen 1 (Flying since Gen 2)
@@ -175,6 +179,7 @@ MOVES = {m.name: m for m in [
     Move("Karate Chop", 50, "enemy", type="normal", crit_ratio=8),
     Move("Low Kick", 50, "enemy", type="fighting", flinch=30),
     Move("Seismic Toss", 0, "enemy", type="fighting", fixed=True),
+    Move("Submission", 80, "enemy", type="fighting", recoil=0.25),
     Move("Earthquake", 100, "enemy", type="ground"),
     Move("Dig", 100, "enemy", type="ground", charge="{user} dug a hole!"),
     # Rock
@@ -220,7 +225,7 @@ GEN1_ACCURACY = {
     "Fury Attack": 85, "Fury Swipes": 80, "Double Slap": 85, "Wrap": 85, "Bind": 75, "Sky Attack": 90,
     "Razor Leaf": 95, "Pin Missile": 85, "Fire Spin": 70, "Fire Blast": 85, "Rock Throw": 65, "Rock Slide": 90,
     "Thunder": 70, "Clamp": 75, "Hydro Pump": 80, "Blizzard": 90,
-    "Screech": 85, "Low Kick": 90, "String Shot": 95, "Kinesis": 80, "Leech Seed": 90, "Whirlwind": 85,
+    "Screech": 85, "Low Kick": 90, "Submission": 80, "String Shot": 95, "Kinesis": 80, "Leech Seed": 90, "Whirlwind": 85,
 }
 MOVES = {name: replace(m, accuracy=GEN1_ACCURACY.get(name, 100)) for name, m in MOVES.items()}
 

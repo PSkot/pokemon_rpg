@@ -36,9 +36,10 @@ Pokémon, each one written by hand.
   Moon's Zubat, Paras and Clefairy, and the Cerulean Gym's Goldeen, Staryu
   (and Starmie), Horsea, Shellder and Psyduck, and Routes 24 and 25's
   Oddish, Bellsprout, Abra (and Kadabra) and Venonat; Diglett, from
-  the Pewter Gym's waves; and Route 5's Meowth and Mankey. Every line in the game now has talents. (Dugtrio, Graveler,
+  the Pewter Gym's waves; Route 5's Meowth and Mankey; and the S.S. Anne's
+  Machop, Tentacool and Growlithe. Every line in the game now has talents. (Dugtrio, Graveler,
   Sandslash, Arbok, Golbat, Parasect, Seaking, Seadra, Golduck, Gloom,
-  Weepinbell, Venomoth, Alakazam, Persian and Primeape aren't in the game yet, and Staryu
+  Weepinbell, Venomoth, Alakazam, Persian, Primeape, Machoke, Tentacruel and Arcanine aren't in the game yet, and Staryu
   doesn't evolve in it, so those lines can't learn their
   evolved forms' moves; their trees are built on the moves they can.)
 - **Tiers.** 12 tiers open at **Lv6, 10, 14, 18, 22, 27, 32, 38, 44, 50,
@@ -516,6 +517,69 @@ Paths: **Coin** (pay Day: lucky hits, and money); **Claw** (scratch, Fury Swipes
 | 10 | 50 | **Blind Spot**: Enemies with lowered accuracy take 30% more damage from the user's party. *(Any)* | **Rampage**: Each Normal move in a row deals 25% more than the last, up to +75%. *(Normal)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
 | 11 | 60 | **Fortune** *(needs 4)*: Pay Day is always a critical hit. *(**own**)* | **Dragon Claw** *(needs 4)*: Slash is always a critical hit. *(Slash)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
 | 12 | 75 | **Jackpot** *(needs 6)*: Pay Day hits 2-5 times, at 60% power each. *(**own**)* | **Thousand Cuts** *(needs 6)*: Fury Swipes and Slash hit every enemy, the others at 60% damage. *(**own**)* | **Pounce** *(needs 6)*: Bite always goes first, and makes the target flinch 50% of the time. *(**own**)* |
+
+### Machop → Machoke → Machamp
+
+Moves: Karate Chop, Low Kick 20, Leer 25, Focus Energy 32, Seismic Toss 39, Submission 46 (Machoke).
+
+Paths: **Power** (karate Chop and Submission: heavy Fighting blows); **Grapple** (low Kick and Seismic Toss: throws, holds and combos); **Discipline** (leer and Focus Energy: training hard and lasting long).
+
+| Tier | Lv | Power | Grapple | Discipline |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Fighting Spirit**: The basic attack becomes a Fighting move (with STAB). *(Fighting)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* |
+| 2 | 10 | **Pressure Points**: The user's Fighting moves are 4× as likely to be critical hits. *(Fighting)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 3 | 14 | **Mach Punch**: Karate Chop always goes first. *(**own**)* | **Combo**: Each Fighting move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Fighting)* | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* |
+| 4 | 18 | **Last Stand**: Below 1/3 HP, the user's Fighting moves deal 1.5× damage. *(Fighting)* | **Stagger**: The user's Fighting moves have a 30% chance to lower the target's Defense 1 stage. *(Fighting)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 5 | 22 | **Dynamic Punch**: Karate Chop has a 30% chance to confuse. *(**own**)* | **Seismic Slam**: Seismic Toss hits every enemy, at full damage. *(**own**)* | **Keen Focus**: Focus Energy also raises the user's Attack 1 stage. *(Focus Energy)* |
+| 6 | 27 | **Victory Rush**: Knocking an enemy out with a Fighting move heals the user 1/4 of its max HP. *(Fighting)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 7 | 32 | **Exploit Weakness**: Enemies with lowered Defense take 30% more damage from the user's party. *(Any)* | **Body Throw**: Low Kick also lowers the target's Speed 1 stage. *(**own**)* | **Bulk Up**: Focus Energy also raises the user's Attack and Defense 1 stage. *(**own**)* |
+| 8 | 38 | **Submission Hold**: Submission no longer hurts the user. *(**own**)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Shared Focus**: Focus Energy works on the whole party. *(Focus Energy)* |
+| 9 | 44 | **Apex Predator**: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Intimidate**: At the start of each battle, every enemy's Attack falls 1 stage. *(Any)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 10 | 50 | **Rampage**: Each Normal move in a row deals 25% more than the last, up to +75%. *(Normal)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 11 | 60 | **Momentum** *(needs 4)*: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Bulwark Stance** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(Any)* |
+| 12 | 75 | **Close Combat** *(needs 6)*: Submission hits much harder: 120 power. *(**own**)* | **Atomic Drop** *(needs 6)*: Seismic Toss always goes first and never misses. *(**own**)* | **Fortress** *(needs 6)*: While the user stands, the whole party takes 25% less damage. *(Any)* |
+
+### Tentacool → Tentacruel
+
+Moves: Acid, Supersonic 7, Wrap 13, Poison Sting 18, Water Gun 22, Constrict 27, Barrier 33, Screech 40, Hydro Pump 48 (Tentacruel).
+
+Paths: **Toxin** (acid and Poison Sting: poison that eats away); **Tide** (water Gun and Hydro Pump: Water damage); **Tangle** (wrap, Constrict, Supersonic and Barrier: holding enemies off).
+
+| Tier | Lv | Toxin | Tide | Tangle |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Splash Strike**: The basic attack becomes a Water move (with STAB). *(Water)* | **Echo**: Supersonic works on every enemy. *(Supersonic)* |
+| 2 | 10 | **Corrode**: Acid is twice as likely to lower Defense. *(Acid)* | **Pressure Jet**: Water Gun hits harder: 60 power. *(Water Gun)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 3 | 14 | **Barbed Sting**: Poison Sting is 30% more likely to poison. *(Poison Sting)* | **Torrent**: Below 1/3 HP, the user's Water moves deal 1.5× damage. *(Water)* | **Coil Crush**: Wrap and Bind catch every enemy. *(Bind)* |
+| 4 | 18 | **Sapping**: Poisoned enemies deal 20% less damage. *(Poison)* | **Undertow**: The user's Water moves have a 20% chance to lower the target's Speed 1 stage. *(Water)* | **Toxic Tentacles**: Constrict has a 30% chance to poison. *(**own**)* |
+| 5 | 22 | **Acid Spray**: Acid has a 20% chance to poison. *(**own**)* | **Rising Tide**: Each Water move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Water)* | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* |
+| 6 | 27 | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* | **Splash Zone**: The user's Water moves also hit one enemy next to the target, at half damage. *(Water)* | **Crushing Coils**: Wrap and Bind have a 30% chance to paralyze. *(Bind)* |
+| 7 | 32 | **Venom Needle**: Poison Sting wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Poison Sting)* | **Rain Dish**: Knocking an enemy out with a Water move heals the user 1/4 of its max HP. *(Water)* | **Squeeze**: Enemies caught in a bind take 30% more damage from the user. *(Any)* |
+| 8 | 38 | **Siphon**: The user heals half the poison damage of the enemies it poisoned. *(Poison)* | **Hydration**: At the end of each round, the user has a 30% chance to wash off its status. *(Water)* | **Barrier Reef**: Barrier works on the whole party. *(**own**)* |
+| 9 | 44 | **Acid Rain**: Acid hits every enemy, the others at 50% damage. *(Acid)* | **Geyser**: Hydro Pump hits every enemy, the others at 50% damage. *(Hydro Pump)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 10 | 50 | **Poison Point**: Whoever hits the user has a 25% chance to be poisoned. *(Poison)* | **Tidal Force**: The user's Water moves are always critical hits on a target below half HP. *(Water)* | **Solid Rock**: Super-effective hits on the user deal 25% less damage. *(Any)* |
+| 11 | 60 | **Virulent** *(needs 4)*: The user's poison is bad poison: it gets worse every round. *(Poison)* | **Hydro Cannon** *(needs 4)*: Hydro Pump never misses. *(Hydro Pump)* | **Unbreakable** *(needs 4)*: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 12 | 75 | **Miasma** *(needs 6)*: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Tsunami** *(needs 6)*: Hydro Pump hits every enemy at full damage. *(Hydro Pump)* | **Fortress** *(needs 6)*: While the user stands, the whole party takes 25% less damage. *(Any)* |
+
+### Growlithe → Arcanine
+
+Moves: Bite, Roar, Ember 18, Leer 23, Take Down 30, Agility 39, Flamethrower 50 (Arcanine).
+
+Paths: **Flame** (ember and Flamethrower: fire and burns); **Hound** (bite and Take Down: a fast, loyal hunter); **Guard** (roar and Leer: guarding the party).
+
+| Tier | Lv | Flame | Hound | Guard |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Fireball**: Ember hits harder: 60 power. *(Ember)* | **Fire Fang**: Bite has a 20% chance to burn. *(**own**)* | **Howl**: Roar also raises the user's Attack 1 stage. *(**own**)* |
+| 2 | 10 | **Searing**: The user's Fire moves are 20% more likely to burn. *(Fire)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* |
+| 3 | 14 | **Blaze**: Below 1/3 HP, the user's Fire moves deal 1.5× damage. *(Fire)* | **Crunch**: Bite has a 30% chance to lower the target's Defense 1 stage. *(Bite)* | **Sturdy**: The first hit the user takes in each battle deals half damage. *(Any)* |
+| 4 | 18 | **Ember Shower**: Ember hits every enemy, the others at 50% damage. *(Ember)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Intimidating Roar**: Roar also makes every enemy attack the user, this round and the next. *(**own**)* |
+| 5 | 22 | **Stoke the Flames**: Each Fire move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Fire)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* |
+| 6 | 27 | **Smoulder**: The user's Fire moves wound the target: 1/16 of its max HP each round, for 3 rounds. *(Fire)* | **Extreme Speed**: Take Down always goes first. *(**own**)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 7 | 32 | **Scorch**: Burned enemies take 25% more damage from the user. *(Fire)* | **Flare Blitz**: Take Down becomes a Fire move (with STAB). *(**own**)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 8 | 38 | **Scorching Breath**: Flamethrower is 20% more likely to burn. *(Flamethrower)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 9 | 44 | **Blowtorch**: Flamethrower also hits one enemy next to the target, at half damage. *(Flamethrower)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Intimidate**: At the start of each battle, every enemy's Attack falls 1 stage. *(Any)* |
+| 10 | 50 | **Feed the Flames**: Knocking an enemy out with a Fire move heals the user 1/4 of its max HP. *(Fire)* | **Tailwind**: Agility works on the whole party. *(Agility)* | **Wish**: Once a battle, a partner that would faint keeps 1 HP, and the user heals it half its max HP. *(Any)* |
+| 11 | 60 | **Heat Haze** *(needs 4)*: At the start of each battle, each enemy has a 30% chance to be burned. *(Fire)* | **Blur** *(needs 4)*: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Unbreakable** *(needs 4)*: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 12 | 75 | **Sacred Fire** *(needs 6)*: Flamethrower burns 50% of the time, and also hits one enemy next to the target at half damage. *(**own**)* | **Apex Predator** *(needs 6)*: The user's moves are always critical hits on a target below 1/3 HP. *(Any)* | **Fortress** *(needs 6)*: While the user stands, the whole party takes 25% less damage. *(Any)* |
 
 ### Mankey → Primeape
 

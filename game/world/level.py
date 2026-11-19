@@ -52,6 +52,7 @@ class Level:
     platforms: list[tuple[int, int, int]] = field(default_factory=list)  # (row, first col, last col)
     boss: Spawn | None = None  # the last map of an instance ends with a big group
     stairs: list[int] = field(default_factory=list)  # columns of a dungeon room's stairs and doorways
+    folk_cols: list[int] = field(default_factory=list)  # ... and of who stands in it (`Room.folk`)
 
     @property
     def cols(self) -> int:
@@ -185,7 +186,8 @@ def generate(theme: Theme, seed: int, final: bool = False, cols: int | None = No
     end = ARENA if final else FLAT_ENDS
     if final:
         cols += ARENA - FLAT_ENDS
-    heights = _walk(rng, cols, *GROUND, start=4, flat_start=FLAT_ENDS, flat_end=end)
+    heights = ([4] * cols if theme.built  # (a ship's deck: level all through)
+               else _walk(rng, cols, *GROUND, start=4, flat_start=FLAT_ENDS, flat_end=end))
     stair_cols = [stair_col(at, cols) for at in stairs]
     for col in stair_cols:
         _flatten(heights, col)
@@ -198,7 +200,7 @@ def generate(theme: Theme, seed: int, final: bool = False, cols: int | None = No
 
     ceiling = [0] * cols
     if theme.ceiling:
-        ceiling = _walk(rng, cols, 1, 3, start=1, flat_start=0, flat_end=0)
+        ceiling = [1] * cols if theme.built else _walk(rng, cols, 1, 3, start=1, flat_start=0, flat_end=0)
         for col in range(cols):
             ceiling[col] = min(ceiling[col], surface[col] - CLEARANCE)
             for row in range(ceiling[col]):

@@ -79,6 +79,7 @@ class Theme:
     decor: str = ""                     # whose decorations a code-drawn map uses (tileset.DECOR); "" = its own
     doorway: str = "doorway"            # its doorways' prop (tileset.draw_prop); "" = drawn in code
     far: str = ""                       # "woods" maps: a painted far layer (pixellab/far/) instead of sky and hills
+    built: bool = False                 # a built interior (the S.S. Anne): flat floors and ceilings, of planks
 
     @property
     def decor_key(self) -> str:
@@ -254,6 +255,26 @@ ROUTE_6 = Theme(
         PoolEntry("psyduck", 10, (22, 25)),
     ),
     backdrop=MEADOW_BACKDROP,
+)
+
+# The S.S. Anne: a luxury liner's corridors (polished planks, a painted
+# wall of portholes and brass). No wild Pokémon live aboard: its pool is
+# never met (`Route.wild`).
+SS_ANNE = Theme(
+    "ss_anne", "S.S. Anne",
+    Palette(fill=(110, 72, 44), fill_dark=(78, 50, 30), fill_light=(146, 98, 60),
+            top=(176, 120, 72), top_dark=(138, 92, 54), top_light=(210, 154, 96),
+            platform=(150, 104, 60), platform_dark=(98, 66, 38), platform_light=(196, 146, 88)),
+    pool=(PoolEntry("tentacool", 1, (24, 26)),),
+    backdrop=Backdrop(art="ss_anne.png", sky_top=(220, 206, 180), sky_bottom=(200, 186, 160),
+                      hills=((120, 80, 50), (110, 74, 46)), field_far=(170, 116, 70), field_near=(150, 100, 60),
+                      stripe=(160, 108, 66), shadow=(100, 66, 40)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(60, 44, 30), sky_bottom=(110, 84, 60), far_rock=(80, 60, 44), near_rock=(96, 70, 50),
+                  glow=None, wall="ss_anne.png", dim=40, near_rocks=False),
+    doorway="",
+    built=True,
 )
 
 # The Pewter Gym: an indoor rock hall (drawn in code). Its pool is never

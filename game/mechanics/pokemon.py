@@ -160,6 +160,10 @@ SPECIES.update({
     # Route 5.
     "meowth": _animated("meowth", "Meowth", (40, 45, 35, 90, 40), ("normal",), exp=69, hit=3),
     "mankey": _animated("mankey", "Mankey", (40, 80, 35, 70, 35), ("fighting",), exp=74, hit=5),
+    # The S.S. Anne (only met with trainers there).
+    "machop": _animated("machop", "Machop", (70, 80, 50, 35, 35), ("fighting",), exp=88, hit=4),
+    "tentacool": _animated("tentacool", "Tentacool", (40, 40, 35, 70, 100), ("water", "poison"), exp=105, hit=5),
+    "growlithe": _animated("growlithe", "Growlithe", (55, 70, 45, 60, 50), ("fire",), exp=91, hit=5),
 })
 
 _KEYS = {species: key for key, species in SPECIES.items()}

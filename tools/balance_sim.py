@@ -144,6 +144,7 @@ STORY = [
     ("Cerulean Gym (2 waves + crew)", "cerulean_gym", (21, 20), False, {"Super Potion": 4}),
     ("Nugget Bridge rival", "nugget_bridge", (22, 21), False, {"Super Potion": 3}),
     ("Cerulean burglar", "cerulean_backyard", (24, 23), False, {"Super Potion": 3}),
+    ("S.S. Anne rival", "ss_anne", (27, 26), False, {"Super Potion": 3}),
 ]
 PARTNERS = ["pidgey", "rattata", "nidoran_m", "spearow", "caterpie", "pikachu"]
 
@@ -151,7 +152,7 @@ PARTNERS = ["pidgey", "rattata", "nidoran_m", "spearow", "caterpie", "pikachu"]
 def story_battles(route_key: str, starter: str, levels, solo: bool, talents: bool) -> list:
     """The battles the route's major fight is made of (gym: waves, then the boss)."""
     route = ROUTES[route_key]
-    if route_key == "mt_moon_cave":
+    if route.rooms:  # a dungeon: its room's boss (Mt. Moon's Rocket leader, the S.S. Anne's rival)
         room = next(r for r in route.rooms if r.boss_group)
         return [(list(room.boss_group), room.trainer, True)]
     if route_key == "nugget_bridge":

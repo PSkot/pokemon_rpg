@@ -27,9 +27,10 @@ from dataclasses import dataclass, field, replace
 
 from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
-from .level import Level, encounter, generate
+from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_22,
-                     ROUTE_24, ROUTE_25, UNDERGROUND, PoolEntry, Theme)
+                     ROUTE_24, ROUTE_25, SS_ANNE, UNDERGROUND, PoolEntry, Theme)
+from .towns import Folk
 
 # Stands in a boss group for the rival's starter, which depends on the
 # player's (`progress.Game.rival_starter`).
@@ -85,6 +86,9 @@ class Room:
     boss_group: tuple[tuple[str, int], ...] = ()
     trainer: str = ""
     prize: int = 0
+    # Who's there to talk to (as townsfolk: quests.talk): (how far along
+    # the room, as `Stair.at`; who), on flat ground.
+    folk: tuple[tuple[float, Folk], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -244,6 +248,41 @@ ROUTES = {r.key: r for r in [
           wild=False, building="Cerulean Gym", cols=44,
           needs=("cascade_badge", "not_done"),
           blocked="Starmie: Hyah! You already have the Cascade Badge. Show it off somewhere else!"),
+    # The S.S. Anne, docked at Vermilion City (quest "ss_anne"), as in
+    # Red/Blue: cabins full of trainers (sailors, gentlemen, a fisherman),
+    # the rival waiting on the upper deck, and the seasick Captain, who
+    # gives HM01 Cut. A dungeon of rooms; no wild Pokémon aboard. Once the
+    # quest is done the ship has sailed.
+    Route("ss_anne", "S.S. Anne", SS_ANNE, maps=4, towns=("vermilion", "vermilion"), boss_chest="battle",
+          wild=False, needs=("ss_anne", "active"),
+          blocked="A sailor checks tickets at the gangway: \"Passengers only! No ticket, no boarding.\"",
+          blocked_done="The S.S. Anne has set sail. She'll be back in port next year.",
+          rooms=(
+              Room("deck", "1F", 90, (Stair("out", "vermilion", 0), Stair("down", "hold", 0.45),
+                                      Stair("up", "upper", 0.9))),
+              Room("hold", "B1F", 70, (Stair("up", "deck", 0.15),)),
+              Room("upper", "2F", 80, (Stair("down", "deck", 0.1), Stair("up", "cabin", 1)),
+                   # (Gen 1's Pidgeotto 19, Raticate 16, Kadabra 18 and the starter's next form 20, a few
+                   # levels up: all four attack the player's two at once; tuned with tools/balance_sim.py)
+                   boss_group=(("pidgeotto", 22), ("raticate", 19), ("kadabra", 18), (RIVAL_STARTER_EVOLVED, 22)),
+                   trainer="Rival", prize=35),
+              Room("cabin", "Captain's cabin", 40, (Stair("down", "upper", 0.15),),
+                   folk=((0.7, Folk("ss_anne_captain", "Captain", "machop", 0, (
+                       "Ooargh... the sea's calm as glass and I still feel dreadful...",
+                       "A captain who gets seasick. Don't tell the passengers, will you?",
+                   ))),)),
+          ),
+          trainers=(  # (`map`: the room's place in `rooms`)
+              Trainer("ss_anne_gentleman_1", "Gentleman's Hounds", (("growlithe", 26), ("growlithe", 26)), 0, 70),
+              Trainer("ss_anne_lass", "Seaside Lass", (("pidgey", 25), ("nidoran_f", 25), ("jigglypuff", 25)), 0, 15),
+              Trainer("ss_anne_youngster", "Cabin Boys", (("rattata", 25), ("ekans", 25), ("raticate", 24)), 0, 15),
+              Trainer("ss_anne_sailor_1", "Deckhands", (("machop", 26), ("shellder", 26)), 1, 30),
+              Trainer("ss_anne_sailor_2", "Bosun's Crew", (("machop", 26), ("tentacool", 26), ("horsea", 26)), 1, 30),
+              Trainer("ss_anne_fisherman", "Fishing Party", (("goldeen", 25), ("tentacool", 25), ("staryu", 25)),
+                      1, 35),
+              Trainer("ss_anne_gentleman_2", "First Class", (("pikachu", 28), ("growlithe", 27)), 2, 70),
+              Trainer("ss_anne_lass_2", "Ballroom Belles", (("jigglypuff", 26), ("clefairy", 26)), 2, 15),
+          )),
     # Route 25, from the top of Route 24 east to Bill's Sea Cottage.
     Route("route_25", "Route 25", ROUTE_25, maps=2, towns=("route_24", "sea_cottage"),
           trainers=(
@@ -259,7 +298,7 @@ ROUTES = {r.key: r for r in [
     Route("cerulean_backyard", "Burgled House", MEADOW, maps=1, towns=("cerulean", "cerulean"), boss=True,
           boss_group=(("mankey", 24), ("abra", 22), ("zubat", 22)), trainer="Rocket Gang", boss_chest="battle",
           prize=30, wild=False, building="Burgled House", cols=30,
-          needs=("burglary", "started"),
+          needs=("burglary", "active"),
           blocked="The door is taped shut. A note says: \"Police business. Nobody goes in until the thief is found.\"",
           blocked_done="The owner is tidying up: \"Thanks for chasing off that thief! The backyard's open, by the way: "
                        "it's the way south, onto Route 5.\""),
@@ -462,7 +501,10 @@ class Instance:
         room = self.room
         if room:  # laid out the same every time; Pokémon new every trip
             level = generate(self.theme, zlib.crc32(f"{self.route.key}/{room.key}".encode()),
-                             final=bool(room.boss_group), cols=room.width, stairs=tuple(s.at for s in room.stairs))
+                             final=bool(room.boss_group), cols=room.width,
+                             stairs=tuple(s.at for s in room.stairs) + tuple(at for at, _ in room.folk))
+            level.stairs = level.stairs[:len(room.stairs)]  # (the rest is flat ground for its folk)
+            level.folk_cols = [stair_col(at, level.cols) for at, _ in room.folk]
             rng = random.Random(self.seed * 101 + self.index)
             for spawn in level.spawns:
                 spawn.encounter = encounter(self.theme, rng)

@@ -271,7 +271,7 @@ TOWNS = {t.key: t for t in [
         Building("Vermilion Gym", (FUNCTIONAL, 1), 60,
                  note="A small, thorny tree has grown over the gym's door. It would have to be cut down to get in."),
         Building("", (HOUSES, 2), 72),
-    ), exits=(("left", "route_6_south"),), home_col=14, board_col=57,
+    ), exits=(("left", "route_6_south"), ("right", "ss_anne")), home_col=14, board_col=57,
        mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal",
              "Ice Heal"),
        gear=((22, 26), (("Common", 50), ("Uncommon", 45), ("Rare", 5))),

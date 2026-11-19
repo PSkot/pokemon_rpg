@@ -538,6 +538,27 @@ QUESTS = {q.key: q for q in [
         done_dialogue=(("", "The S.S. Anne is in port. With Bill's S.S. Ticket, you can go aboard."),),
     ),
     Quest(
+        "ss_anne", "The S.S. Anne",
+        "The luxury liner S.S. Anne is docked at Vermilion City for its yearly party, full of trainers from all "
+        "over the world. Your rival is aboard too, and the Captain is said to know a secret technique.",
+        requires=("to_vermilion",),
+        steps=(Step("defeat", "ss_anne", "Find your rival aboard the S.S. Anne (Vermilion City's dock)",
+                    dialogue=(("Rival", "Humph! At least you're raising your Pokémon a little."),
+                              ("Rival", "I heard there was a Cut master on board. But he was just a seasick old "
+                                        "man! Cut's useful, though. Go see him. Smell ya!"))),
+               Step("talk", "ss_anne_captain", "See the Captain in his cabin (top of the S.S. Anne)",
+                    dialogue=(("Captain", "Ooargh... I feel hideous... Urrp! Seasick..."),
+                              ("", "You rub the Captain's back..."),
+                              ("Captain", "Whew! Thank you! I feel much better. You want to see my Cut technique?"),
+                              ("Captain", "I could show you if I wasn't so ill... I know! You can have this. "
+                                          "Teach it to your Pokémon and you can see it Cut any time!"),
+                              ("", "You received HM01 Cut!")),
+                    gives=("HM01 Cut",))),
+        money=1200, xp=1000,
+        rewards=(("medicine", "Super Potion", 3), ("medicine", "Revive", 1), ("gear", None, "Uncommon", 25)),
+        done_dialogue=(("", "The S.S. Anne's horn sounds: she's about to set sail. Time to go ashore!"),),
+    ),
+    Quest(
         "snake_charmer", "Snake Charmer",
         "Ekans on Route 3 keep frightening travelers. Drive a few of them off.",
         board="pewter", requires=("boulder_badge",),
@@ -900,13 +921,16 @@ def blocked_text(game, route) -> str:
 
 
 def open_for(game, needs: tuple[str, str] | None) -> bool:
-    """Whether a (quest, "started"/"done"/"not_done") condition holds
-    (None: always)."""
+    """Whether a (quest, "started"/"active"/"done"/"not_done") condition
+    holds ("started": started or done; "active": started and not done yet;
+    None: always)."""
     if not needs:
         return True
     key, what = needs
     if what == "not_done":
         return not is_done(game, key)
+    if what == "active":
+        return is_active(game, key)
     return is_done(game, key) if what == "done" else step(game, key) is not None
 
 

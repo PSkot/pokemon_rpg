@@ -695,6 +695,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 5 | Common | (no boss) |
 | Underground Path | Common | (no boss) |
 | Route 6 | Common | (no boss) |
+| S.S. Anne | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the rival: a reward roll with the battle) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -978,6 +979,13 @@ Vermilion City; four trainers):
 | Bellsprout | 15 | 22–25 |
 | Psyduck | 10 | 22–25 |
 
+The **S.S. Anne** (`Route` "ss_anne", a dungeon of 4 rooms docked at
+Vermilion City, open only while its quest is going on): no wild Pokémon,
+as in Red/Blue; its decks are `Theme.built` (flat, polished planks, the
+painted wall of portholes). Its trainers are its only Pokémon, among them
+the game's only Machop, Tentacool and Growlithe (not recruitable). The
+Captain stands in his cabin (`Room.folk`: talked to like townsfolk).
+
 The **Burgled House** (`Route` "cerulean_backyard", walked from the house
 at the end of Cerulean's street, open while quest *The Cerulean Burglar*
 is active): a short walk (30 tiles, no wild Pokémon) to its backyard,
@@ -1099,6 +1107,15 @@ always the same spot), with its team in a row.
 | Route 6, map 1 | Pond Pals (Jr. Trainer) | Psyduck 24, Goldeen 24 | ₽240 |
 | Route 6, map 2 | Spark Squad (Jr. Trainer) | Pikachu 25, Rattata 25, Raticate 24 | ₽240 |
 | Route 6, map 2 | Thicket Crawlers (Bug Catcher) | Venonat 25, Paras 25, Metapod 25 | ₽125 |
+| S.S. Anne 1F | Gentleman's Hounds (Gentleman) | Growlithe 26, Growlithe 26 | ₽910 |
+| S.S. Anne 1F | Seaside Lass (Lass) | Pidgey 25, Nidoran F 25, Jigglypuff 25 | ₽187 |
+| S.S. Anne 1F | Cabin Boys (Youngster) | Rattata 25, Ekans 25, Raticate 24 | ₽180 |
+| S.S. Anne B1F | Deckhands (Sailor) | Machop 26, Shellder 26 | ₽390 |
+| S.S. Anne B1F | Bosun's Crew (Sailor) | Machop 26, Tentacool 26, Horsea 26 | ₽390 |
+| S.S. Anne B1F | Fishing Party (Fisherman) | Goldeen 25, Tentacool 25, Staryu 25 | ₽437 |
+| S.S. Anne 2F | First Class (Gentleman) | Pikachu 28, Growlithe 27 | ₽945 |
+| S.S. Anne 2F | Ballroom Belles (Lass) | Jigglypuff 26, Clefairy 26 | ₽195 |
+| S.S. Anne 2F (boss) | Rival | Pidgeotto 22, Raticate 19, Kadabra 18, starter's next form 22 | ₽385 |
 | Route 22 (boss) | the rival | Pidgey 7, starter 6 | ₽105 |
 
 ---

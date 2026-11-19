@@ -316,7 +316,27 @@ yet.
   a Poké Mart, a Recruitment Center, the Pokémon Fan Club (scenery), the
   Vermilion Gym (a small tree grows over its door, as in Red/Blue: Cut
   comes from the S.S. Anne) and, at the east end, the dock where the S.S.
-  Anne lies (the next part).
+  Anne lies (quest 13).
+
+### 13. The S.S. Anne
+
+- **Starts:** automatically when quest 12 is done (Bill's S.S. Ticket gets
+  you aboard: the gangway is Vermilion's east doorway).
+- **The ship** (`Route` "ss_anne", a dungeon of rooms like Mt. Moon; no
+  wild Pokémon, as in Red/Blue): **1F** (the gangway out, three bands,
+  stairs down and up), **B1F** (the hold, a dead end: two sailors' bands
+  and a fisherman's), **2F** (two bands, and the **rival** guarding the
+  stairs up: Pidgeotto 22, Raticate 19, Kadabra 18 and his starter's next
+  form at 22; Gen 1's, a few levels up; about 64% in `tools/balance_sim.py`
+  at Lv27 + Lv26, as all four attack at once), and the **Captain's cabin**.
+- **Steps:** beat the rival (he tells you about the seasick "Cut master"),
+  then talk to the **Captain** in his cabin: you rub his back, and he
+  gives you **HM01 Cut** (a key item; it opens the Vermilion Gym in the
+  next part).
+- **Rewards:** ₽1,200, 1,000 XP, 3 Super Potions, a Revive and an Uncommon
+  gear piece (item level 25), on top of the rival's prize and boss loot.
+- **Afterwards** the S.S. Anne sets sail: the gangway is shut
+  (`Route.needs` "active": only while the quest is going on).
 
 ---
 
@@ -484,7 +504,9 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | Psyduck | 6 | Route 6 | 21–23 | Lv26 |
 
 Not every Pokémon comes this way: the starters, and those only met with
-trainers (Geodude, Onix), will have special quests.
+trainers (Geodude, Onix, and the S.S. Anne's Machop, Tentacool and
+Growlithe), will have special quests. Trainers' bands, gyms' waves and
+bosses don't count towards recruitment: only ordinary wild groups do.
 
 ---
 
