@@ -398,6 +398,22 @@ class Gear:
         return monster.level >= self.level
 
     @property
+    def value(self) -> int:
+        """What it's worth: by rarity, growing with its item level (`GEAR_PRICE`)."""
+        return gear_price(self.rarity.name, self.level)
+
+    @property
+    def price(self) -> int:
+        """What Persian (a Poké Mart's gear counter) asks for it: far more
+        than it's worth (`GEAR_MARKUP`), so gear is mostly won, not bought."""
+        return self.value * GEAR_MARKUP
+
+    @property
+    def sell_price(self) -> int:
+        """What Persian pays for it: half what it's worth, as for medicine."""
+        return self.value // 2
+
+    @property
     def mods(self) -> dict[str, int]:
         """All of its rolls added up."""
         total: dict[str, int] = {}
@@ -405,6 +421,18 @@ class Gear:
             for mod, value in roll.mods.items():
                 total[mod] = total.get(mod, 0) + value
         return total
+
+
+# Gear's worth: a Lv5 piece of each rarity is worth about this; it grows
+# with the item level, (level + 10) / 15 times (Lv20: ×2, Lv35: ×3), rounded
+# to ₽10. Persian sells gear for `GEAR_MARKUP` times its worth (it should
+# take some grinding to buy) and buys it for half its worth.
+GEAR_PRICE = {"Common": 200, "Uncommon": 500, "Rare": 1200, "Epic": 3000, "Legendary": 8000}
+GEAR_MARKUP = 5
+
+
+def gear_price(rarity: str, level: int) -> int:
+    return round(GEAR_PRICE[rarity] * (max(1, level) + 10) / 15 / 10) * 10
 
 
 @dataclass(frozen=True)

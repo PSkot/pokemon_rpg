@@ -259,9 +259,14 @@ non-commercial project.
   props; run by a Meowth: an idle
   animation, `props/meowth.png`, `tileset.npc_frames`): Up at the counter does a quest step there,
   else opens the shop (`ShopMenu`: buy the town's stock, `Town.mart`;
-  sell medicine for half; `Medicine.price`); Up at the door goes back
+  sell medicine for half; `Medicine.price`); Up at Persian by the door
+  (`props/persian.png`, towns with `Town.gear`) opens the gear counter
+  (`GearShop`: 6 pieces, `towns.gear_stock`, rolled from `Game.seed` and
+  the visit, restocked on arriving from a route, `Game.arrive`; buy at
+  `Gear.price` = 5× `Gear.value`, `GEAR_MARKUP`, sell bag gear for half
+  the value); Up at the door goes back
   out (`TownScene(arrive=building name)`). Saving inside saves the player
-  outside the shop. Only medicine is sold for now (gear later). The user
+  outside the shop. The user
   makes the PixelLab art themselves: don't generate it unasked.
   A new game starts in Pallet Town; arriving in
   a town heals the party and makes it the town a fainted party wakes up

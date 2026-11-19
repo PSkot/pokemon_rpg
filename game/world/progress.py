@@ -1,6 +1,7 @@
 """The player's progress through the world (what a save stores, apart from
 where the player stands)."""
 
+import random
 from collections import Counter
 from dataclasses import dataclass, field
 
@@ -29,6 +30,17 @@ class Game:
     trainers: set[str] = field(default_factory=set)  # the route trainers beaten (instance.Trainer.key)
     reserve: list[Monster] = field(default_factory=list)  # recruits not in the party (swapped at a Recruitment Center)
     defeated: Counter = field(default_factory=Counter)  # line (its first species) -> Pokémon of it defeated
+    # Gear counters (towns.gear_stock): this game's seed for their stock, and
+    # per town how often the player has arrived from a route (each arrival
+    # restocks it) and which of the pieces on offer they bought since.
+    seed: int = field(default_factory=lambda: random.randrange(1 << 30))
+    shop_visits: dict[str, int] = field(default_factory=dict)
+    shop_bought: dict[str, list[int]] = field(default_factory=dict)
+
+    def arrive(self, town: str) -> None:
+        """The player arrived in `town` from a route: its gear counter restocks."""
+        self.shop_visits[town] = self.shop_visits.get(town, 0) + 1
+        self.shop_bought.pop(town, None)
 
     @property
     def rival_starter(self) -> str:

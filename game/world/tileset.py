@@ -641,9 +641,9 @@ def mart_counter(s: pygame.Surface, x: int, ground: int, w: int) -> pygame.Rect:
     return draw_prop(s, "mart_counter", x + w // 2, ground)
 
 
-def mart_sign(s: pygame.Surface, center_x: int, y: int) -> pygame.Rect:
-    """The blue sign board over the counter (the scene writes on it)."""
-    sign = pygame.Rect(0, y, 120, 22)
+def mart_sign(s: pygame.Surface, center_x: int, y: int, w: int = 120) -> pygame.Rect:
+    """A blue sign board, `w` px wide (over the counter, over Persian; the scene writes on it)."""
+    sign = pygame.Rect(0, y, w, 22)
     sign.centerx = center_x
     pygame.draw.rect(s, MART_BLUE, sign, border_radius=3)
     pygame.draw.rect(s, (245, 245, 250), sign.inflate(-4, -4), 1, border_radius=2)

@@ -717,10 +717,11 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 - **Poké Dollars (₽)** are kept in the bag (`Bag.money`, saved) and shown
   in the pause menu and on the party screen. A new game starts with ₽0.
 - **Earned from quests** (every quest pays its `Quest.money`, see
-  `quests.md`), **trainer battles** (prize money, see *Trainer battles*)
-  and selling medicine.
-- **Spent at Poké Marts** (`game/scenes/mart.py`): medicine only for now
-  (gear comes later). Prices are `Medicine.price`, **half of Gen 1's**
+  `quests.md`), **trainer battles** (prize money, see *Trainer battles*),
+  Pay Day, and selling medicine and gear.
+- **Spent at Poké Marts** (`game/scenes/mart.py`): medicine from Meowth
+  at the counter, gear from Persian by the door (see *Gear counter*
+  below). Medicine prices are `Medicine.price`, **half of Gen 1's**
   (money only comes from quests so far); selling pays half the price
   (`Medicine.sell_price`, as in Gen 1). Up to 99 at a time.
 - The font has no ₽ sign, so `ui.text` draws it as a P with a bar.
@@ -749,6 +750,39 @@ the game doesn't have yet: Poké Balls, Repel):
 | --- | --- |
 | Viridian City | Potion, Antidote, Paralyze Heal, Burn Heal |
 | Pewter City | Potion, Super Potion, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal (Super Potion added: Gen 1 has it from Cerulean) |
+| Cerulean City, Vermilion City | Potion, Super Potion, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal, Ice Heal |
+
+### Gear counter
+
+`game/scenes/mart.py` (`GearShop`), `game/world/towns.py` (`Town.gear`,
+`gear_stock`), `game/mechanics/items.py` (`Gear.value`, `price`,
+`sell_price`)
+
+- **What gear is worth** (`Gear.value`): by rarity, growing with the item
+  level: `GEAR_PRICE` × (level + 10) / 15, rounded to ₽10 (Lv5: ×1, Lv20:
+  ×2, Lv35: ×3). `GEAR_PRICE`: Common ₽200, Uncommon ₽500, Rare ₽1,200,
+  Epic ₽3,000, Legendary ₽8,000.
+- **Persian sells gear for 5× its worth** (`GEAR_MARKUP`): gear is meant
+  to be won, and buying it a goal to save up for (every quest up to
+  Vermilion pays about ₽30,000 in all). **It buys gear for half its
+  worth** (`Gear.sell_price`, as for medicine): from the bag, not what's
+  equipped. The bag's gear info shows what a piece sells for.
+- **Stock:** 6 pieces (`GEAR_STOCK`), any item, at the town's item levels
+  and rarities (`Town.gear`). It restocks each time the player arrives in
+  the town from a route (`Game.arrive`; back out of a shop, a gym or a
+  trial doesn't count); what's bought is gone until then
+  (`Game.shop_bought`). The pieces are rolled from the game's seed and the
+  visit (`Game.seed`, `Game.shop_visits`, saved), so loading a save shows
+  the same ones.
+- Buying and selling is one piece at a time, each asked to confirm; a piece
+  nobody in the team is the level for yet says so (in red).
+
+| Town | Item levels | Rarities | Lv-range prices (buy) |
+| --- | --- | --- | --- |
+| Viridian City | 5–9 | Common | Common ₽1,000–1,250 |
+| Pewter City | 11–15 | Common 75%, Uncommon 25% | Common ₽1,400–1,650, Uncommon ₽3,500–4,150 |
+| Cerulean City | 17–22 | Common 60%, Uncommon 40% | Common ₽1,800–2,150, Uncommon ₽4,500–5,350 |
+| Vermilion City | 22–26 | Common 50%, Uncommon 45%, Rare 5% | Common ₽2,150–2,400, Uncommon ₽5,350–6,000, Rare ₽12,800–14,400 |
 
 ---
 

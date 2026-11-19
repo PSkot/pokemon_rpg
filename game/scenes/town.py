@@ -55,13 +55,14 @@ class TownScene(MapScene):
         self.chats: dict[str, int] = {}  # townsfolk key -> chat lines said
         if arrive == "home":
             self.place_player(town.home_col * TILE + TILE / 2, 1)
-        elif out_of:
+        elif out_of:  # (back out of a shop, a gym, ...)
             self.place_player(building_mid(out_of), 1)
             self.t = BANNER_TIME
         elif sent_by:  # back from a trial: next to who sent them
             self.place_player(sent_by.x - FOLK_REACH, 1)
             self.t = BANNER_TIME
-        else:
+        else:  # from a route: the gear counter restocks
+            game.arrive(town.key)
             where = town.exit_to(arrive)
             if where == "left":
                 self.place_player(level.entry_x + ARRIVE_GAP, 1)

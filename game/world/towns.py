@@ -8,9 +8,11 @@ gyms comes later. Townsfolk (`Folk`, Pokémon living there) can be talked to:
 they chat, and give and move on quests (quests.talk).
 """
 
+import random
 import zlib
 from dataclasses import dataclass
 
+from ..mechanics.items import ITEMS, Gear, Range
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import EMPTY, ROWS, SOLID, TILE, Level
 from .themes import MEADOW, Theme
@@ -85,6 +87,9 @@ class Town:
     theme: Theme = MEADOW           # tiles and background
     mart: tuple[str, ...] = ()      # what its Poké Mart sells (medicine names)
     folk: tuple[Folk, ...] = ()     # who lives there (between the buildings)
+    # Its Poké Mart's gear counter (Persian): the item levels and rarity
+    # weights its pieces come at (None: no gear counter).
+    gear: tuple[Range, tuple[tuple[str, int], ...]] | None = None
 
     def exit_to(self, route: str) -> str | int:
         """Where the exit onto `route` is ("left", "right" or a column)."""
@@ -95,6 +100,25 @@ class Town:
         surface = [ROWS - GROUND] * self.width
         grid = [[SOLID if row >= surface[col] else EMPTY for col in range(self.width)] for row in range(ROWS)]
         return Level(self.theme, zlib.crc32(self.key.encode()), grid, surface)
+
+
+GEAR_STOCK = 6  # pieces on Persian's counter at a time
+
+
+def gear_stock(town: Town, seed: int, visit: int) -> list[Gear]:
+    """The pieces on `town`'s gear counter for the player's `visit`-th
+    stay there (the same every time for one game, `seed`): any item, at the
+    town's item levels and rarities."""
+    if not town.gear:
+        return []
+    rng = random.Random(zlib.crc32(f"{seed}/{town.key}/{visit}".encode()))
+    levels, rarities = town.gear
+    stock = []
+    for _ in range(GEAR_STOCK):
+        rarity = rng.choices([r for r, _ in rarities], weights=[w for _, w in rarities])[0]
+        item = rng.choice([name for name, i in ITEMS.items() if i.drops_at(rarity)])
+        stock.append(Gear.roll(item, rarity, rng, level=rng.randint(*levels)))
+    return stock
 
 
 TOWNS = {t.key: t for t in [
@@ -115,6 +139,7 @@ TOWNS = {t.key: t for t in [
         Building("Viridian Gym", (FUNCTIONAL, 1), 53),
     ), exits=(("left", "route_1"), ("right", "viridian_forest"), (39, "route_22")), home_col=21, board_col=50,
        mart=("Potion", "Antidote", "Paralyze Heal", "Burn Heal"),
+       gear=((5, 9), (("Common", 1),)),
        folk=(
            Folk("viridian_rattata", "Rattata", "rattata", 27, (
                "Squeak! The Recruitment Center up the road finds you new friends.",
@@ -148,6 +173,7 @@ TOWNS = {t.key: t for t in [
         Building("Recruitment Center", (HOUSES, 2), 58, inside="recruit"),
     ), exits=(("left", "viridian_forest"), ("right", "route_3")), home_col=23, board_col=15,
        mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal"),
+       gear=((11, 15), (("Common", 75), ("Uncommon", 25))),
        folk=(
            Folk("pewter_elder", "Old {}", ELDER, 29, (
                "I was young once, like your {partner}. Every Pokémon grows up in its own time.",
@@ -187,6 +213,7 @@ TOWNS = {t.key: t for t in [
     ), exits=(("left", "route_4_east"), ("right", "nugget_bridge"), (82, "route_5_south")), home_col=22, board_col=41,
        mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal",
              "Ice Heal"),
+       gear=((17, 22), (("Common", 60), ("Uncommon", 40))),
        folk=(
            Folk("cerulean_sandshrew", "Sandshrew", "sandshrew", 15, (
                "Phew, you made it through Mt. Moon! Route 4 is all downhill from there.",
@@ -247,6 +274,7 @@ TOWNS = {t.key: t for t in [
     ), exits=(("left", "route_6_south"),), home_col=14, board_col=57,
        mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal",
              "Ice Heal"),
+       gear=((22, 26), (("Common", 50), ("Uncommon", 45), ("Rare", 5))),
        folk=(
            Folk("vermilion_jigglypuff", "Jigglypuff", "jigglypuff", 31, (
                "Puff! The Pokémon Fan Club meets next door. The chairman talks about his Pokémon for hours.",

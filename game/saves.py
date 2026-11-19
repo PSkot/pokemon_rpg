@@ -108,6 +108,9 @@ def snapshot(scene) -> dict:
         "quests": game.quests,
         "quest_counts": game.quest_counts,
         "trainers": sorted(game.trainers),
+        "seed": game.seed,
+        "shop_visits": game.shop_visits,
+        "shop_bought": game.shop_bought,
         "location": scene.location(),
     }
 
@@ -218,6 +221,10 @@ def load(info: SaveInfo):
                     dict(data.get("quests", {})), dict(data.get("quest_counts", {})),
                     set(data.get("trainers", [])), [_load_monster(m) for m in data.get("reserve", [])],
                     Counter(data.get("defeated", {})))
+        if "seed" in data:  # (older saves: a new seed, fresh counters)
+            game.seed = data["seed"]
+        game.shop_visits = dict(data.get("shop_visits", {}))
+        game.shop_bought = {town: list(bought) for town, bought in data.get("shop_bought", {}).items()}
         where = data["location"]
         if where["kind"] == "town":
             scene = TownScene(game, TOWNS[where["town"]])

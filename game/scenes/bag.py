@@ -231,6 +231,8 @@ class BagScreen:
             for mod, value in gear.mods.items():
                 ui.text(window, mod_text(mod, value), (x, y), GREEN if value > 0 else RED, size=22)
                 y += 13
+            ui.text(window, f"Sells for {money_text(gear.sell_price)} (Persian, at a Poké Mart)", (x, y + 4), ui.GREY,
+                    size=20)
             return
         name = item
         ui.text(window, name, (x, y), ui.YELLOW, size=26)
