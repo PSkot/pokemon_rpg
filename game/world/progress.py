@@ -10,11 +10,11 @@ from ..mechanics.pokemon import Monster
 
 START_TOWN = "pallet"
 MAX_PARTY = 6  # the party's size at its biggest; the rest wait in the reserve
-# The party's size for now: everyone in it fights. 1 at first, then one
-# more for each of these quests done (quests.active_limit): the rival on
-# Route 22, the S.S. Anne. Later up to MAX_PARTY.
+# The party's size: everyone in it fights. 1 at first; each Teamwork Ribbon
+# used from the bag adds a place (`Game.slots`, items.RIBBON), up to MAX_PARTY.
+# The quests that give one (the rival on Route 22, the S.S. Anne): saves from
+# before the ribbons get a place for each of these done.
 ACTIVE_STEPS = ("rival_22", "ss_anne")
-MAX_ACTIVE = 1 + len(ACTIVE_STEPS)
 STARTERS = ("bulbasaur", "charmander", "squirtle")  # what Professor Oak offers
 # The rival picks the starter that beats the player's.
 RIVAL_STARTERS = {"bulbasaur": "charmander", "charmander": "squirtle", "squirtle": "bulbasaur"}
@@ -38,6 +38,7 @@ class Game:
     seed: int = field(default_factory=lambda: random.randrange(1 << 30))
     shop_visits: dict[str, int] = field(default_factory=dict)
     shop_bought: dict[str, list[int]] = field(default_factory=dict)
+    slots: int = 1  # places in the party (how many fight): +1 per Teamwork Ribbon used
 
     def arrive(self, town: str) -> None:
         """The player arrived in `town` from a route: its gear counter restocks."""

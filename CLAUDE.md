@@ -359,7 +359,12 @@ non-commercial project.
   started cuts it, kept in `Game.trainers` "cut:<town>/<building>"); route
   "vermilion_gym" (`VERMILION_GYM`, built: steel; the Thunder Battalion's
   waves of Pikachu, Voltorb, Magnemite, then Raichu's band; `wave_team=3`,
-  tuned to need three: about 70% with three, 14% with two). After the badge
+  tuned to need three: about 70% with three, 14% with two; its puzzle,
+  `Route.puzzle` "trash_cans", `scenes/power_grid.py`: an electric fence
+  before the arena, two switches in 8 trash cans (`props/trash_can*.png`),
+  the first's can sparks, the second next to it, the wrong neighbour a
+  Voltorb ambush that moves both; solved for good, "puzzle:<route>" in
+  `Game.trainers`). After the badge
   (quests "to_route_11", "digletts_cave", "flash"): Vermilion's doorway by
   the dock (col 81) → route "route_11" (2 maps, five bands; wild Drowzee)
   → stop town "route_11" ("Route 11 Gate": the Diglett's Cave doorway, a
@@ -450,10 +455,13 @@ non-commercial project.
   player to the line's map (a generated route: only that species, a giant
   boss); beating it adds it (`Game.add_member`: to the party if it has
   room, else `Game.reserve`). Mr. Mime swaps party and reserve. The
-  party's size is how many fight (`quests.active_limit`: 1 until the
-  Route 22 rival is beaten, 2, then 3 after the S.S. Anne: `ACTIVE_STEPS`; `MAX_PARTY` = 6 later;
-  gyms' `TeamPick` too); `quests.fit_party` (every map scene) moves extras
-  to the reserve and fills new places from it. Party screen T moves a
+  party's size is how many fight (`quests.active_limit` = `Game.slots`:
+  1, +1 per **Teamwork Ribbon** used from the bag, `items.RIBBON`,
+  `quests.use_ribbon`; ribbons come from the Route 22 rival and the S.S.
+  Anne quests, stack (`items.STACKING`); old saves get `ACTIVE_STEPS`'
+  worth; `MAX_PARTY` = 6; gyms' `TeamPick` too); `quests.fit_party`
+  (every map scene) only moves extras to the reserve: new places stay
+  empty until filled at Mr. Mime. Party screen T moves a
   member to the front (the lead).
 - Tab on the map opens the party screen (`summary.py`): stats and gear;
   Enter on a slot lists the bag's gear for it (or Remove), previewing the

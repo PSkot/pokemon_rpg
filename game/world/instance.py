@@ -133,6 +133,7 @@ class Route:
     waves: tuple[Wave, ...] = ()
     wave_team: int = 2
     wave_species: tuple[str, ...] = ()  # only these can be picked for the waves (() = anyone)
+    puzzle: str = ""  # a puzzle on the way to the arena: "trash_cans" (the Vermilion Gym, scenes/power_grid.py)
     folk: str = ""                      # walked by talking to this townsfolk (a trial), not a doorway
 
     def other_end(self, town: str) -> str:
@@ -259,7 +260,7 @@ ROUTES = {r.key: r for r in [
           boss_chest="fancy", prize=99,
           waves=(Wave("Thunder Battalion Privates", (("pikachu", 27), ("voltorb", 27), ("magnemite", 27)), 30),
                  Wave("Thunder Battalion Sergeants", (("magnemite", 28), ("voltorb", 28), ("pikachu", 28)), 30)),
-          wave_team=3, wild=False, building="Vermilion Gym", cols=44,
+          wave_team=3, wild=False, building="Vermilion Gym", cols=44, puzzle="trash_cans",
           needs=("thunder_badge", "active"),
           blocked="A small, thorny tree has grown over the gym's door. It would have to be cut down to get in.",
           blocked_done="Raichu: Hey, kid! You've got the Thunder Badge already. Go show it off!"),

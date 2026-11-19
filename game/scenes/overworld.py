@@ -35,6 +35,7 @@ from ..world.towns import TOWNS
 from . import quest_ui
 from .battle import BattleScene
 from .gym import TeamPick
+from .power_grid import AMBUSH, PowerGrid
 from .summary import SummaryScene
 
 HELP = ("Left/Right: walk   Shift: run   Space: jump (hold = higher)   Up: open / go through"
@@ -597,6 +598,9 @@ class OverworldScene(MapScene):
         # special, only bosses leave one (`_boss_beaten`).
         self.chests: list[Chest] = []
         self.balls = [Ball(x, y) for x, y in level.balls] if route.wild else []
+        # The Vermilion Gym's trash cans and electric fence (solved once, it stays open).
+        self.grid = (PowerGrid(level, random.Random(instance.seed), self._puzzle_key() in game.trainers)
+                     if route.puzzle == "trash_cans" and self.boss else None)
         # The doorways in and out; a dungeon room has its stairs instead.
         art = level.theme.doorway
         self.entry = Doorway(level.entry_x, level.ground_y(level.entry_x), palette, art=art)
@@ -683,10 +687,32 @@ class OverworldScene(MapScene):
             self.chats[folk.key] = said + 1
             self.show(quest_ui.Dialogue([(folk.name_for(self.game.starter), folk.lines[said % len(folk.lines)])]))
 
+    def _puzzle_key(self) -> str:
+        return f"puzzle:{self.instance.route.key}"
+
+    def _search(self, i: int) -> None:
+        """Rummage in trash can `i` (the gym's puzzle)."""
+        lines, ambush = self.grid.search(i)
+        if self.grid.open:
+            self.game.trainers.add(self._puzzle_key())
+        if not ambush:
+            self.show(quest_ui.Dialogue([("", line) for line in lines]))
+            return
+        x = self.grid.cans[i]  # out it pops: a wild group standing there, which fights at once
+        voltorb = WildPokemon(Spawn(x, self.level.ground_y(x), list(AMBUSH)), level=self.level)
+        voltorb.armed = False
+        self.wild.append(voltorb)
+        self.show(quest_ui.Dialogue([("", line) for line in lines]), after=lambda: self._fight(voltorb))
+
     def interact(self) -> None:
         chest, ball = self._chest_at_player(), self._ball_at_player()
         folk = self._folk_at_player()
-        if folk:
+        can = self.grid.can_at(self.player.x) if self.grid else None
+        if can is not None:
+            self._search(can)
+        elif self.grid and self.grid.at_fence(self.player.x):
+            self.show(quest_ui.Dialogue([("", line) for line in self.grid.SIGN]))
+        elif folk:
             self._talk(folk[0])
         elif ball:
             self._pick_up(ball)
@@ -705,6 +731,12 @@ class OverworldScene(MapScene):
             self._take(at[0])
 
     def prompt(self) -> tuple[float, float] | None:
+        can = self.grid.can_at(self.player.x) if self.grid else None
+        if can is not None:
+            x = self.grid.cans[can]
+            return x, self.level.ground_y(x) - 34
+        if self.grid and self.grid.at_fence(self.player.x):
+            return self.grid.fence_x - 30, self.level.ground_y(self.grid.fence_x) - 44
         folk = self._folk_at_player()
         if folk:
             return folk[1], self._folk_top(*folk) - 12
@@ -829,6 +861,8 @@ class OverworldScene(MapScene):
             self._after_battle(*self.fighting)
             self.fighting = None
         super().update(dt)
+        if self.grid:  # the electric fence holds the player back
+            self.player.x = self.grid.blocks(self.player.x)
         if self.panel:
             return
         for wild in self.wild:
@@ -900,6 +934,8 @@ class OverworldScene(MapScene):
         else:
             self.entry.draw(layer)
             self.exit.draw(layer)
+        if self.grid:
+            self.grid.draw(layer, self.t)
         for chest in self.chests:
             chest.draw(layer)
         for ball in self.balls:

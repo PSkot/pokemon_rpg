@@ -750,18 +750,25 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 
 ## Party and reserve
 
-`game/world/progress.py` (`MAX_PARTY`, `ACTIVE_STEPS`, `Game.reserve`,
+`game/world/progress.py` (`MAX_PARTY`, `Game.slots`, `Game.reserve`,
 `Game.add_member`), `game/world/quests.py` (`active_limit`, `fit_party`,
-`fighters`)
+`fighters`, `use_ribbon`), `game/mechanics/items.py` (`RIBBON`)
 
-- The **party** is everyone who fights: **1** Pokémon at first, **2** once
-  the rival on Route 22 is beaten, **3** once the S.S. Anne quest is done
-  (`ACTIVE_STEPS`; `MAX_PARTY` = 6 is the size it will grow to). The first is the **lead** (the one on the map;
-  party screen T puts a member first). Recruits that don't fit wait in
-  the **reserve** (saved), and are swapped in at a Recruitment Center (Mr.
-  Mime → team). When the party grows, the reserve's first fills the new
-  place (`fit_party`, on every map; it also moves extra members of an
-  older save to the reserve). Gyms and trials pick at most that many too.
+- The **party** is everyone who fights: **1** Pokémon at first, and one
+  more place for each **Teamwork Ribbon** used (`Game.slots`, saved;
+  `MAX_PARTY` = 6 at most). A ribbon is a special key item, given by the
+  quests *Rival on Route 22* and *The S.S. Anne* (so far); the quest's
+  dialogue says so. Using it from the bag (Key items → Enter) adds the
+  place and uses it up ("Three Pokémon can now fight at your side!").
+  Ribbons can be saved up (key items you can hold more than one of:
+  `items.STACKING`). Saves from before the ribbons get one place per
+  ribbon quest done.
+- The first is the **lead** (the one on the map; party screen T puts a
+  member first). Recruits that don't fit wait in the **reserve** (saved).
+  A new place stays **empty** until the player fills it at a Recruitment
+  Center (Mr. Mime → team); recruited Pokémon join the party while it has
+  room. `fit_party` (on every map) only moves extra members (an older
+  save's) to the reserve. Gyms and trials pick at most that many too.
 - Arriving in a town heals the reserve too. Quest XP goes to the party;
   battle XP to the members still standing.
 
@@ -1087,6 +1094,28 @@ come one battle straight after another, ending with the boss group:
   roll and prize; the last also brings the boss loot and prize;
 - losing any wave is losing the gym: back to the last town, as when the
   party faints.
+
+**The Vermilion Gym's puzzle** (`Route.puzzle` "trash_cans",
+`scenes/power_grid.PowerGrid`; Red/Blue's trash cans, with a few twists):
+an **electric fence** (two hazard-striped pylons, crackling arcs, a lock
+box with a red light per lock) stands 7 tiles before the arena's band and
+holds the player back. 8 **trash cans** stand along the walk; Up at one
+rummages in it (its lid comes off):
+- the **first switch** is in any can (picked from the trip's seed), and
+  that can gives off a little **spark** every 2.6 s (for 0.3 s): a clue
+  for the watchful;
+- the **second switch** is always in a can **right next to** the first;
+- an empty can before the first switch is found holds **junk** (a random
+  line: "Dog tags reading \"Pvt. Pikachu\"", "a note: \"The switches are
+  NOT in the trash cans. - Lt. Surge\"", ...);
+- after the first, the wrong neighbour hides a **Voltorb** (Lv27): it
+  jumps out, a wild battle (it stands there as a group if you run), and
+  **both switches move** (all lids back on). The waves after it come with
+  no healing, so a miss costs;
+- both switches flipped: the fence shuts off, and stays off for good
+  (`Game.trainers` "puzzle:vermilion_gym"). Up at the fence reads its
+  sign ("DANGER: 10,000 VOLTS. Two switches cut the power." / "Hid 'em
+  where nobody'd ever look. Ha! - Lt. Surge").
 
 The starters' **trials** (`instance._trial`, quest *Coming of Age* in
 `quests.md`) work the same way, with one Pokémon (`wave_team=1`) that

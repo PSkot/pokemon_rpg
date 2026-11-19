@@ -22,7 +22,7 @@ from pathlib import Path
 from . import settings
 from .mechanics.items import AFFIX_BY_NAME, GEAR_EFFECTS, GEAR_VERSION, ITEMS, RARITIES, Bag, Gear, Roll, updated_gear
 from .mechanics.pokemon import SPECIES, Monster
-from .world.progress import Game
+from .world.progress import ACTIVE_STEPS, Game
 
 SAVE_DIR = settings.ROOT / "saves"
 AUTOSAVE = SAVE_DIR / "autosave.json"
@@ -110,6 +110,7 @@ def snapshot(scene) -> dict:
         "quest_counts": game.quest_counts,
         "trainers": sorted(game.trainers),
         "seed": game.seed,
+        "slots": game.slots,
         "shop_visits": game.shop_visits,
         "shop_bought": game.shop_bought,
         "location": scene.location(),
@@ -224,6 +225,10 @@ def load(info: SaveInfo):
                     Counter(data.get("defeated", {})))
         if "seed" in data:  # (older saves: a new seed, fresh counters)
             game.seed = data["seed"]
+        from .world.quests import QUESTS
+        # (older saves, from before the Teamwork Ribbons: a place per ribbon quest done)
+        game.slots = data.get("slots", 1 + sum(1 for k in ACTIVE_STEPS if k in game.quests
+                                               and game.quests[k] >= len(QUESTS[k].steps)))
         game.shop_visits = dict(data.get("shop_visits", {}))
         game.shop_bought = {town: list(bought) for town, bought in data.get("shop_bought", {}).items()}
         where = data["location"]

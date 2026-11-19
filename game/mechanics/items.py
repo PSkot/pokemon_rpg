@@ -576,6 +576,9 @@ MEDICINE = {m.name: m for m in [
 ]}
 ESCAPE_ROPE = "Escape Rope"
 
+RIBBON = "Teamwork Ribbon"  # a key item used up from the bag: one more place in the party (Game.slots)
+STACKING = {RIBBON}  # key items one can hold more than one of
+
 # Key items (`Bag.key_items`): story items from quests, never sold or used
 # up, except an evolution item, used up by evolving (from the bag or the
 # party screen; see quests.item_evolves).
@@ -588,6 +591,8 @@ KEY_ITEMS = {
     "S.S. Ticket": "A ticket for the S.S. Anne, from Bill. The ship docks at Vermilion City.",
     "HM01 Cut": "A hidden machine from the S.S. Anne's Captain. Its technique, Cut, clears small trees out of the "
                 "way, like the one over the Vermilion Gym's door.",
+    RIBBON: "A special ribbon, given for proving your team. Use it (here, in Key items): one more Pokémon "
+            "can fight at your side. Then fill the new place with Mr. Mime, at any Recruitment Center.",
     "HM05 Flash": "A hidden machine from Professor Oak's aide on Route 2. Its technique, Flash, lights up dark "
                   "caves.",
     "Metapod Shell": "An empty Metapod shell, hard as steel. Use it on a Caterpie at Lv7 or higher: it evolves "

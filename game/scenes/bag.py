@@ -17,10 +17,12 @@ import pygame
 
 from .. import settings
 from ..engine import ui
-from ..mechanics.items import EFFECT_COLOR, KEY_ITEMS, MEDICINE, RARITIES, SLOT_NAMES, SLOTS, Bag, Gear, mod_text, money_text
+from ..mechanics.items import (EFFECT_COLOR, KEY_ITEMS, MEDICINE, RARITIES, RIBBON, SLOT_NAMES, SLOTS, Bag, Gear, mod_text,
+                               money_text)
 from ..mechanics.pokemon import SPECIES
 from ..mechanics.status import STATUSES
 from ..world import quests
+from ..world.progress import MAX_PARTY
 from ..world.towns import TOWNS
 
 PAD = 9
@@ -120,6 +122,14 @@ class BagScreen:
             from .town import TownScene  # (town.py imports the map scenes, which import this)
             self.bag.use_medicine(item)
             self.loaded = TownScene(self.game, TOWNS[self.game.town])  # as after fainting
+            return
+        if POCKETS[self.pocket] == "Key items" and item == RIBBON:
+            if quests.active_limit(self.game) >= MAX_PARTY:
+                self.message = "Your team can't grow any bigger."
+                return
+            self.message = quests.use_ribbon(self.game)
+            entries = self._entries()  # (it's used up)
+            self.choice = min(self.choice, max(0, len(entries) - 1))
             return
         if POCKETS[self.pocket] == "Key items" and not quests.evolution_target(item):
             self.message = "There's no use for it right now."

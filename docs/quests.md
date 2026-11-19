@@ -162,7 +162,10 @@ they can't be sold, used or dropped.
   1. Defeat your **rival** at the end of Route 22 (Pidgey Lv7 and his
      starter Lv6: Gen 1's team two levels down, as both attack at once).
 - **Rewards:** ₽600, 300 XP, 2 Super Potions and an Uncommon gear piece
-  (item level 9), on top of the trainer battle's reward roll.
+  (item level 9), on top of the trainer battle's reward roll, and a
+  **Teamwork Ribbon** (a special key item: Prof. Oak sends it over the
+  Pokédex, "I'm sending you something special"; used from the bag, one
+  more Pokémon can fight, see `mechanics.md`, *Party and reserve*).
 - **Unlocks:** **Route 22** opens when the quest *starts* (its doorway is
   closed before that). Once it's *done*, Route 22's boss becomes a wild
   **Pidgey Lv9 and Spearow Lv9** (no trainer, still the reward roll, no
@@ -358,11 +361,11 @@ yet.
 - **Steps:** beat the rival (he tells you about the seasick "Cut master"),
   then talk to the **Captain** in his cabin: you rub his back, and he
   gives you **HM01 Cut** (a key item; it opens the Vermilion Gym in the
-  next part).
+  next part), and a **Teamwork Ribbon** ("My crew's finest wore it").
 - **Rewards:** ₽1,200, 1,000 XP, 3 Super Potions, a Revive and an Uncommon
   gear piece (item level 25), on top of the rival's prize and boss loot.
-- **Unlocks:** a third place in the party: three Pokémon fight from now on
-  (the reserve's first fills it).
+- **Unlocks:** with the ribbon used, a third place in the party (filled at
+  a Recruitment Center, from the reserve).
 - **Afterwards** the S.S. Anne sets sail: the gangway is shut
   (`Route.needs` "active": only while the quest is going on).
 

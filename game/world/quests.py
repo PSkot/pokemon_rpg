@@ -24,11 +24,11 @@ import random
 from dataclasses import dataclass, field
 
 from ..dev import DEV
-from ..mechanics.items import ITEMS, Gear, money_text
+from ..mechanics.items import ITEMS, RIBBON, STACKING, Gear, money_text
 from ..mechanics.loot import Reward
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, line_base
 from .instance import RECRUITS, Recruit
-from .progress import ACTIVE_STEPS
+from .progress import MAX_PARTY
 
 Line = tuple[str, str]  # (speaker, text) of a dialogue page
 
@@ -135,12 +135,15 @@ QUESTS = {q.key: q for q in [
         "rival_22", "Rival on Route 22",
         "Your rival is waiting for you on Route 22, west of Viridian City.",
         requires=("oaks_parcel",),
-        steps=(Step("defeat", "route_22", "Defeat your rival on Route 22 (west of Viridian City)"),),
+        steps=(Step("defeat", "route_22", "Defeat your rival on Route 22 (west of Viridian City)",
+                    gives=(RIBBON,)),),
         money=600, xp=300,
         rewards=(("medicine", "Super Potion", 2), ("gear", None, "Uncommon", 9)),
         done_dialogue=(("Rival", "What? I can't believe I lost! I'm off to Pewter City. Smell ya later!"),
-                       ("", "Your team has grown: two Pokémon can now go with you into battle. Recruits from "
-                            "the reserve fill the new place.")),
+                       ("Prof. Oak", "(over the Pokédex) Splendid battle! A team that wins together grows "
+                                     "together. I'm sending you something special."),
+                       ("", "You received a Teamwork Ribbon! A special item: use it in the bag (Key items), and "
+                            "one more Pokémon can fight at your side.")),
     ),
     Quest(
         "forest_bugs", "Bugs in the Forest",
@@ -557,13 +560,15 @@ QUESTS = {q.key: q for q in [
                               ("Captain", "Whew! Thank you! I feel much better. You want to see my Cut technique?"),
                               ("Captain", "I could show you if I wasn't so ill... I know! You can have this. "
                                           "Teach it to your Pokémon and you can see it Cut any time!"),
-                              ("", "You received HM01 Cut!")),
-                    gives=("HM01 Cut",))),
+                              ("", "You received HM01 Cut!"),
+                              ("Captain", "And for a sailor who stands by a seasick old man... this ribbon. My "
+                                          "crew's finest wore it."),
+                              ("", "You received a Teamwork Ribbon! A special item: use it in the bag (Key items), "
+                                   "and one more Pokémon can fight at your side.")),
+                    gives=("HM01 Cut", RIBBON))),
         money=1200, xp=1000,
         rewards=(("medicine", "Super Potion", 3), ("medicine", "Revive", 1), ("gear", None, "Uncommon", 25)),
-        done_dialogue=(("", "The S.S. Anne's horn sounds: she's about to set sail. Time to go ashore!"),
-                       ("", "Your team has grown: three Pokémon can now go with you into battle. Recruits from "
-                            "the reserve fill the new place.")),
+        done_dialogue=(("", "The S.S. Anne's horn sounds: she's about to set sail. Time to go ashore!"),),
     ),
     Quest(
         "thunder_badge", "The Thunder Badge",
@@ -776,20 +781,31 @@ def is_done(game, key: str) -> bool:
 
 
 def active_limit(game) -> int:
-    """The party's size, all of whom fight: 1, and one more for each quest
-    of `ACTIVE_STEPS` done (the Route 22 rival: 2; the S.S. Anne: 3)."""
-    return 1 + sum(is_done(game, key) for key in ACTIVE_STEPS)
+    """The party's size, all of whom fight: `Game.slots` (1, and one more
+    for each Teamwork Ribbon used)."""
+    return min(MAX_PARTY, game.slots)
 
 
 def fit_party(game) -> None:
-    """Keep the party at `active_limit`: extra members wait in the reserve
-    (e.g. from an older save), and once it grows the reserve's first fill
-    the new places."""
+    """Keep the party at most `active_limit`: extra members wait in the
+    reserve (e.g. from an older save). New places stay empty until the
+    player fills them (Mr. Mime, at a Recruitment Center)."""
     limit = active_limit(game)
     while len(game.party) > limit:
         game.reserve.insert(0, game.party.pop())
-    while len(game.party) < limit and game.reserve:
-        game.party.append(game.reserve.pop(0))
+
+
+def use_ribbon(game) -> str:
+    """Use a Teamwork Ribbon from the bag: one more place in the party.
+    Returns what to say."""
+    game.bag.key_items.remove(RIBBON)
+    game.slots += 1
+    n = active_limit(game)
+    words = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six"}.get(n, str(n))
+    text = f"{words} Pokémon can now fight at your side!"
+    if game.reserve:
+        text += " Mr. Mime, at any Recruitment Center, can bring one from your reserve."
+    return text
 
 
 def fighters(game) -> list[Monster]:
@@ -1051,7 +1067,7 @@ def _advance(game, quest: Quest, event: Event) -> None:
     for item in s.takes:
         if item in game.bag.key_items:
             game.bag.key_items.remove(item)
-    game.bag.key_items += [i for i in s.gives if i not in game.bag.key_items]
+    game.bag.key_items += [i for i in s.gives if i not in game.bag.key_items or i in STACKING]
     game.quests[quest.key] += 1
     game.quest_counts.pop(quest.key, None)
     if is_done(game, quest.key):
