@@ -231,7 +231,7 @@ SPECIES.update({
     "haunter": _animated("haunter", "Haunter", (45, 50, 45, 95, 115), ("ghost", "poison"), exp=126, hit=5),
     # (the Pokémon Tower's)
     "cubone": _animated("cubone", "Cubone", (50, 50, 95, 35, 40), ("ground",), exp=87, hit=5),
-    "marowak": _placeholder("105_marowak", "Marowak", (60, 80, 110, 45, 50), ('ground',), exp=124),
+    "marowak": _animated("marowak", "Marowak", (60, 80, 110, 45, 50), ("ground",), exp=124, hit=3),
     "gengar": _placeholder("094_gengar", "Gengar", (60, 65, 60, 110, 130), ('ghost', 'poison'), exp=190),
     "chansey": _placeholder("113_chansey", "Chansey", (250, 5, 5, 50, 105), ('normal',), exp=255),
     "scyther": _placeholder("123_scyther", "Scyther", (70, 110, 80, 105, 55), ('bug', 'flying'), exp=187),

@@ -652,7 +652,9 @@ you are working on.
   stray specks cleared; Golbat's run row is its walk); so were Gloom,
   Vileplume, Weepinbell, Victreebel, Clefable, Wigglytuff, Nidoqueen and
   Nidoking (48 px canvases, 56 px for the final forms; Nidoking's base and
-  Weepinbell's mirrored, as theirs faced left); Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
+  Weepinbell's mirrored, as theirs faced left), and the Pokémon Tower's
+  Gastly, Haunter (Zubat as style reference), Cubone and Marowak
+  (Sandshrew's); Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
   their candidates faced left). Placeholder quality: likely to be redone.
 - A move's `anim` plays if the species has that animation; otherwise the
   species' `fight_anim` does (no move-specific sheets for now).
