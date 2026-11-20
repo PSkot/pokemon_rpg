@@ -290,8 +290,8 @@ you are working on.
   `Gear.price` = 5× `Gear.value`, `GEAR_MARKUP`, sell bag gear for half
   the value); Up at the door goes back
   out (`TownScene(arrive=building name)`). Saving inside (the den too) saves the player
-  outside the shop. The user
-  makes the PixelLab art themselves: don't generate it unasked.
+  outside the shop. Art is made with
+  PixelLab (Claude may use its tools; the user picks from the candidates).
   A new game starts in Pallet Town; arriving in
   a town heals the party and makes it the town a fainted party wakes up
   in (`Game.town`). Progress lives in `progress.Game`

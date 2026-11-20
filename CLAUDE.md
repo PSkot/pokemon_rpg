@@ -52,6 +52,7 @@ Read only what the task needs:
   change. After changing talents, run `python tools/talent_docs.py`.
 - Keep `docs/architecture.md` current when a system's design changes, but
   don't add per-feature detail to this file: it loads every session.
-- The user makes the PixelLab art themselves: don't generate it unasked.
+- Claude may make art with PixelLab (the PixelLab MCP tools): show the candidates
+  (e.g. base poses) for the user to pick before animating and wiring them in.
 - Firefox on this machine is a snap and cannot open files under `/tmp`;
   write files it needs inside the project (e.g. `build/`).
