@@ -224,7 +224,12 @@ TOWNS = {t.key: t for t in [
        )),)),
     # Route 4, out of Mt. Moon's far side: a stop at the cave's exit, where
     # the road on (route_4_east) runs down to Cerulean City.
-    Town("route_4", "Route 4", 40, (), exits=(("left", "mt_moon_cave"), ("right", "route_4_east")), home_col=8),
+    Town("route_4", "Route 4", 40, (), exits=(("left", "mt_moon_cave"), ("right", "route_4_east")), home_col=8,
+         # Evolution quest: Ekans -> Arbok.
+         folk=(Folk("route_4_arbok", "Arbok", "arbok", 24, (
+             "Hsss... Mt. Moon's mouth is a fine place to sun yourself. Nobody bothers an Arbok.",
+             "Ssss. Cerulean City is down the hill. Too many people. Too few rocks to coil on.",
+         )),)),
     # Cerulean City: the water gym, Bill's road north over Nugget Bridge and
     # the burgled house.
     Town("cerulean", "Cerulean City", 100, (
@@ -292,7 +297,12 @@ TOWNS = {t.key: t for t in [
          folk=(Folk("route_6_psyduck", "Psyduck", "psyduck", 22, (
              "Psy...? The gate to Saffron City is shut on this side too. Everyone has to go under it.",
              "Vermilion City is down the road. It smells of the sea... Psyduck likes that.",
-         )),)),
+         )),
+               # Evolution quest: Zubat -> Golbat.
+               Folk("route_6_golbat", "Golbat", "golbat", 31, (
+                   "Skree! The Underground Path is dark and cool. Perfect for hanging upside down.",
+                   "Skreee... Every Zubat dreams of a mouth as big as mine. Give it time.",
+               )))),
     # Vermilion City, the port: Lt. Surge's gym (a little tree blocks its
     # door, as in Red/Blue: Cut comes from the S.S. Anne), the Pokémon Fan
     # Club and the dock where the S.S. Anne lies (the next part).
@@ -313,6 +323,11 @@ TOWNS = {t.key: t for t in [
            Folk("vermilion_jigglypuff", "Jigglypuff", "jigglypuff", 31, (
                "Puff! The Pokémon Fan Club meets next door. The chairman talks about his Pokémon for hours.",
                "Jiggly... Everyone's here for the S.S. Anne. It only comes to port once a year!",
+           )),
+           # Evolution quest: Meowth -> Persian.
+           Folk("vermilion_persian", "Persian", "persian", 44, (
+               "Mrrrow. The Fan Club's chairman feeds me the finest fish in Vermilion. Naturally.",
+               "Purr... A Meowth chases coins. A Persian has them brought to it.",
            )),
            Folk("vermilion_pikachu", "Pikachu", "pikachu", 69, (
                "Pika! Lt. Surge's gym is full of Electric Pokémon. He says only a full team can stand the shocks.",
@@ -373,6 +388,11 @@ TOWNS = {t.key: t for t in [
            Folk("lavender_drowzee", "Drowzee", "drowzee", 26, (
                "Drowzee... The tower's full of ghosts these days. They give even me bad dreams.",
                "Mr. Fuji looks after the Pokémon that lost their trainers. He's up in the tower every day.",
+           )),
+           # Evolution quest: Machop -> Machoke (the smith's apprentice).
+           Folk("lavender_machoke", "Machoke", "machoke", 38, (
+               "HUP! I'm the smith's apprentice. Well, I carry his coal. Someday he'll let me swing the hammer!",
+               "Rock Tunnel's boulders make the best weights. Two hundred lifts before breakfast!",
            )),
            Folk("lavender_jigglypuff", "Jigglypuff", "jigglypuff", 56, (
                "Puff... Lavender Town is so quiet. Everyone whispers here.",

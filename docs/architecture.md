@@ -533,7 +533,10 @@ you are working on.
   way), Oddish → Gloom (Cerulean's Gloom,
   `evolve_gloom`: collect Sweet Nectar, the Stench Patch) and Bellsprout →
   Weepinbell (the Route 24 Weepinbell, `evolve_weepinbell`: hunt Venonat,
-  Pitcher Grove).
+  Pitcher Grove), and Zubat, Ekans, Meowth and Machop (`evolve_golbat`,
+  `evolve_arbok`, `evolve_persian`, `evolve_machoke`: Route 6's Golbat,
+  Route 4's Arbok, Vermilion's Persian, Lavender's Machoke; their home
+  grounds `golbat_roost`, `snake_pit`, `alley_cats`, `training_grounds`).
 - Recruitment (`docs/quests.md` → Recruitment): won wild battles on routes
   (not trainers', gyms' or bosses': `won_battle(recruits=)`) count
   defeated Pokémon per line (`Game.defeated`, `pokemon.line_base`); at

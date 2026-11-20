@@ -713,6 +713,26 @@ City): Abra alone, Poison Pokémon that Psychic moves hit hard.
 | Last | Evolve Nidoran F into Nidorina | Evolve Nidoran M into Nidorino | Evolve Abra into Kadabra |
 | Rewards | ₽400, 300 XP | ₽600, 450 XP | ₽700, 500 XP |
 
+### Golbat, Arbok (Lv22), Persian and Machoke (Lv28)
+
+The same way: from a townsfolk of the evolved form, once your Zubat /
+Ekans (Lv22) or Meowth / Machop (Lv28) is at its level, in the party or
+the reserve; a home ground like the feud's (`instance._feud`), talking to
+the giver again to go there. Their evolved forms are placeholders for now
+(no PixelLab sheets yet). With a pair (the starter 3 levels up and the
+Pokémon at its level, 2 Super Potions), the home grounds are won about
+55–60% of the time (`tools/balance_sim.py`-style runs; the Persian, fast
+and hard-hitting, comes in lower).
+
+| | Wings in the Dark (`evolve_golbat`) | The Coil Clan (`evolve_arbok`) | Nine Lives (`evolve_persian`) | Heavy Lifting (`evolve_machoke`) |
+| --- | --- | --- | --- | --- |
+| Giver | Golbat, the Route 6 stop | Arbok, Route 4 (Mt. Moon's exit) | Persian, Vermilion City | Machoke, Lavender Town (the smith's apprentice) |
+| 1. | Hunt 6 Diglett (the Underground Path) | Hunt 6 Sandshrew (Routes 3 and 4) | Hunt 6 Mankey (Routes 5 and 6) | Hunt 6 Geodude (Rock Tunnel) |
+| 2. Talk | Report to Golbat | Report to Arbok | Report to Persian | Report to Machoke |
+| 3. | Defeat the **Night Swarm** in the Golbat Roost (Mt. Moon's look): giant Golbat 27, Zubat 22 ×2 | Defeat the **Coil Clan** in the Snake Pit (Route 4's look): giant Arbok 26, Ekans 22 ×2 | Defeat the **Alley Cats** in the Alley of Cats (Route 6's look): giant Persian 31, Meowth 27 ×2 | Defeat the **Iron Lifters** on the Training Grounds (Route 9's look): giant Machoke 33, Machop 28 ×2 |
+| Last | Evolve Zubat into Golbat | Evolve Ekans into Arbok | Evolve Meowth into Persian | Evolve Machop into Machoke |
+| Rewards | ₽700, 500 XP | ₽700, 500 XP | ₽900, 700 XP | ₽900, 700 XP |
+
 ### Dugtrio (Lv26)
 
 | | Three Heads Are Better (`evolve_dugtrio`) |

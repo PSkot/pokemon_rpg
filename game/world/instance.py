@@ -553,6 +553,17 @@ ROUTES.update({r.key: r for r in [
           (23, 19)),
     _feud("horn_hollow", "Horn Hollow", ROUTE_22, "nidoran_m", "nidorino", "Horn Brothers", "viridian_nidorino",
           (19, 15)),
+    # (quests evolve_golbat, evolve_arbok, evolve_persian, evolve_machoke; a
+    # pair a few levels up wins about 55-60%: tools/balance_sim.py-style runs.
+    # The Persian, fast and hard-hitting, comes in lower.)
+    _feud("golbat_roost", "Golbat Roost", MT_MOON, "zubat", "golbat", "Night Swarm", "route_6_golbat",
+          (27, 22), town="route_6"),
+    _feud("snake_pit", "Snake Pit", ROUTE_4, "ekans", "arbok", "Coil Clan", "route_4_arbok", (26, 22),
+          town="route_4"),
+    _feud("alley_cats", "Alley of Cats", ROUTE_6, "meowth", "persian", "Alley Cats", "vermilion_persian",
+          (31, 27), town="vermilion"),
+    _feud("training_grounds", "Training Grounds", ROUTE_9, "machop", "machoke", "Iron Lifters", "lavender_machoke",
+          (33, 28), town="lavender"),
     # (quests evolve_gloom, evolve_weepinbell: Route 24/25's grass lines)
     _feud("stench_patch", "Stench Patch", ROUTE_25, "oddish", "gloom", "Stench Patch", "cerulean_gloom",
           (26, 21), town="cerulean"),

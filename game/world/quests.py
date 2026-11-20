@@ -284,6 +284,79 @@ QUESTS = {q.key: q for q in [
                Step("evolve", "rattata", "Evolve your Rattata into Raticate (party screen: E)")),
         money=700, xp=500,
     ),
+    # Golbat, Arbok, Persian and Machoke: the same way (hunt, report, beat
+    # the line's giant leader on its home ground, evolve).
+    Quest(
+        "evolve_golbat", "Wings in the Dark",
+        "The Golbat at the Route 6 stop says a Zubat grows into a Golbat by ruling a roost. The Night Swarm's "
+        "roost is the one to take.",
+        giver="route_6_golbat",
+        offer=(("Golbat", "Skree! Your Zubat flaps well. But a Golbat needs a roost of its own."),
+               ("Golbat", "Diglett keep tunnelling into the Underground Path's ceiling and bringing our roosts down. "
+                          "Chase off 6 of them. Then come back.")),
+        steps=(hunt("diglett", 6, "the Underground Path"),
+               Step("talk", "route_6_golbat", "Report to Golbat (the Route 6 stop)", town="route_6",
+                    dialogue=(("Golbat", "Skreee! The ceiling holds. Now, the Night Swarm's roost..."),
+                              ("Golbat", "Their leader has the biggest mouth in Kanto. Talk to me when you're "
+                                         "ready."))),
+               Step("defeat", "golbat_roost", "Beat the Night Swarm in its roost (talk to Golbat, the Route 6 stop)",
+                    dialogue=(("Golbat", "The roost is yours! Your Zubat's wings will never be the same."),)),
+               Step("evolve", "zubat", "Evolve your Zubat into Golbat (party screen: E)")),
+        money=700, xp=500,
+    ),
+    Quest(
+        "evolve_arbok", "The Coil Clan",
+        "The Arbok sunning itself at Mt. Moon's exit says an Ekans grows into an Arbok by facing the Coil "
+        "Clan in their pit.",
+        giver="route_4_arbok",
+        offer=(("Arbok", "Hsss... Your Ekans is long enough to coil properly now. Is it brave enough?"),
+               ("Arbok", "The Sandshrew on Routes 3 and 4 keep digging up our sunning rocks. Drive off 6 of them.")),
+        steps=(hunt("sandshrew", 6, "Routes 3 and 4"),
+               Step("talk", "route_4_arbok", "Report to Arbok (Route 4, by Mt. Moon)", town="route_4",
+                    dialogue=(("Arbok", "Ssss. The rocks are ours again. Now, the Coil Clan..."),
+                              ("Arbok", "Their leader's hood frightens even me. Talk to me when you're ready."))),
+               Step("defeat", "snake_pit", "Beat the Coil Clan in the Snake Pit (talk to Arbok, Route 4)",
+                    dialogue=(("Arbok", "Hsss! Your Ekans stared down the Coil Clan. Its hood is coming in."),)),
+               Step("evolve", "ekans", "Evolve your Ekans into Arbok (party screen: E)")),
+        money=700, xp=500,
+    ),
+    Quest(
+        "evolve_persian", "Nine Lives",
+        "Vermilion City's Persian says a Meowth becomes a Persian by beating the Alley Cats at their own "
+        "game.",
+        giver="vermilion_persian",
+        offer=(("Persian", "Mrrrow. Your Meowth has... potential. Rough around the whiskers, but potential."),
+               ("Persian", "Those Mankey on Routes 5 and 6 keep stealing from my saucer. Teach 6 of them "
+                           "manners.")),
+        steps=(hunt("mankey", 6, "Routes 5 and 6"),
+               Step("talk", "vermilion_persian", "Report to Persian (Vermilion City)", town="vermilion",
+                    dialogue=(("Persian", "Purr... Adequate. Now the Alley Cats. They think the docks are theirs."),
+                              ("Persian", "Their boss has been sharpening his claws all week. Talk to me when "
+                                          "you're ready."))),
+               Step("defeat", "alley_cats", "Beat the Alley Cats (talk to Persian, Vermilion City)",
+                    dialogue=(("Persian", "Mrrrow! The alley bows to your Meowth. It's ready to become one of "
+                                          "us."),)),
+               Step("evolve", "meowth", "Evolve your Meowth into Persian (party screen: E)")),
+        money=900, xp=700,
+    ),
+    Quest(
+        "evolve_machoke", "Heavy Lifting",
+        "The smith's apprentice in Lavender Town, a Machoke, says a Machop grows into a Machoke by out-lifting "
+        "the Iron Lifters on their training grounds.",
+        giver="lavender_machoke",
+        offer=(("Machoke", "HUP! Your Machop's got muscles! Not as big as mine. Yet."),
+               ("Machoke", "First, weights! Beat 6 Geodude in Rock Tunnel. Best boulders in Kanto. Then come "
+                           "back.")),
+        steps=(hunt("geodude", 6, "Rock Tunnel"),
+               Step("talk", "lavender_machoke", "Report to Machoke (Lavender Town)", town="lavender",
+                    dialogue=(("Machoke", "HUP HUP! Now the Iron Lifters. They train out past Route 9."),
+                              ("Machoke", "Their leader can lift a Snorlax. Twice. Talk to me when you're "
+                                          "ready."))),
+               Step("defeat", "training_grounds", "Out-lift the Iron Lifters (talk to Machoke, Lavender Town)",
+                    dialogue=(("Machoke", "HUUUP! Your Machop out-lifted them all! Time for a growth spurt."),)),
+               Step("evolve", "machop", "Evolve your Machop into Machoke (party screen: E)")),
+        money=900, xp=700,
+    ),
     Quest(
         "evolve_nidorino", "Horn Rush",
         "Viridian City's Nidorino says a Nidoran M sharpens its horn on its rivals. Beat the Horn Brothers in "
