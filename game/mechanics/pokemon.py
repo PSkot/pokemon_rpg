@@ -195,7 +195,7 @@ SPECIES.update({
     "weezing": _placeholder("110_weezing", "Weezing", (65, 90, 120, 60, 85), ('poison',), exp=173),
     "grimer": _placeholder("088_grimer", "Grimer", (80, 80, 50, 25, 40), ('poison',), exp=90),
     "muk": _placeholder("089_muk", "Muk", (105, 105, 75, 50, 65), ('poison',), exp=157),
-    "golbat": _placeholder("042_golbat", "Golbat", (75, 80, 70, 90, 75), ('poison', 'flying'), exp=171),
+    "golbat": _animated("golbat", "Golbat", (75, 80, 70, 90, 75), ("poison", "flying"), exp=171, hit=3),
     "persian": _placeholder("053_persian", "Persian", (65, 70, 60, 115, 65), ('normal',), exp=148),
     "primeape": _placeholder("057_primeape", "Primeape", (65, 105, 60, 95, 60), ('fighting',), exp=149),
     "machoke": _placeholder("067_machoke", "Machoke", (80, 100, 70, 45, 50), ('fighting',), exp=146),
