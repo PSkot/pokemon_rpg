@@ -213,7 +213,7 @@ SPECIES.update({
     "gloom": _animated("gloom", "Gloom", (60, 65, 70, 40, 85), ("grass", "poison"), exp=132, hit=3),
     "vileplume": _animated("vileplume", "Vileplume", (75, 80, 85, 50, 100), ("grass", "poison"), exp=184, hit=4),
     "weepinbell": _placeholder("070_weepinbell", "Weepinbell", (65, 90, 50, 55, 85), ('grass', 'poison'), exp=151),
-    "victreebel": _placeholder("071_victreebel", "Victreebel", (80, 105, 65, 70, 100), ('grass', 'poison'), exp=191),
+    "victreebel": _animated("victreebel", "Victreebel", (80, 105, 65, 70, 100), ("grass", "poison"), exp=191, hit=5),
     "parasect": _placeholder("047_parasect", "Parasect", (60, 95, 80, 30, 80), ('bug', 'grass'), exp=128),
     "tentacruel": _placeholder("073_tentacruel", "Tentacruel", (80, 70, 65, 100, 120), ('water', 'poison'), exp=205),
     "arcanine": _placeholder("059_arcanine", "Arcanine", (90, 110, 80, 95, 80), ('fire',), exp=213),
