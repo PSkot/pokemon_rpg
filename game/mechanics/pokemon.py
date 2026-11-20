@@ -227,7 +227,7 @@ SPECIES.update({
     "magikarp": _placeholder("129_magikarp", "Magikarp", (20, 10, 55, 80, 20), ('water',), exp=20),
     "gyarados": _placeholder("130_gyarados", "Gyarados", (95, 125, 79, 81, 100), ('water', 'flying'), exp=214),
     "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60, 95), ('water', 'ice'), exp=219),
-    "gastly": _placeholder("092_gastly", "Gastly", (30, 35, 30, 80, 100), ('ghost', 'poison'), exp=95),
+    "gastly": _animated("gastly", "Gastly", (30, 35, 30, 80, 100), ("ghost", "poison"), exp=95, hit=4),
     "haunter": _placeholder("093_haunter", "Haunter", (45, 50, 45, 95, 115), ('ghost', 'poison'), exp=126),
     # (the Pokémon Tower's)
     "cubone": _placeholder("104_cubone", "Cubone", (50, 50, 95, 35, 40), ('ground',), exp=87),
