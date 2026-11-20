@@ -198,7 +198,7 @@ SPECIES.update({
     "golbat": _animated("golbat", "Golbat", (75, 80, 70, 90, 75), ("poison", "flying"), exp=171, hit=3),
     "persian": _animated("persian", "Persian", (65, 70, 60, 115, 65), ("normal",), exp=148, hit=6),
     "primeape": _placeholder("057_primeape", "Primeape", (65, 105, 60, 95, 60), ('fighting',), exp=149),
-    "machoke": _placeholder("067_machoke", "Machoke", (80, 100, 70, 45, 50), ('fighting',), exp=146),
+    "machoke": _animated("machoke", "Machoke", (80, 100, 70, 45, 50), ("fighting",), exp=146, hit=5),
     "machamp": _placeholder("068_machamp", "Machamp", (90, 130, 80, 55, 65), ('fighting',), exp=193),
     "graveler": _placeholder("075_graveler", "Graveler", (55, 95, 115, 35, 45), ('rock', 'ground'), exp=134),
     "golem": _placeholder("076_golem", "Golem", (80, 110, 130, 45, 55), ('rock', 'ground'), exp=177),

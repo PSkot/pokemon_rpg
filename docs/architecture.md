@@ -645,7 +645,11 @@ you are working on.
   36 px, Raichu's on 40 px with Pikachu as its style reference, Drowzee's and Dugtrio's on
   36 px, Dugtrio's with Diglett as its style reference; Meowth's idle is its base
   with 1 px breathing). Snorlax only sleeps for now: `snorlax.png` is one row,
-  a lying base (64×48) with 1 px breathing, drawn 1.5×; Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
+  a lying base (64×48) with 1 px breathing, drawn 1.5×; Golbat, Arbok,
+  Persian and Machoke were made by Claude the same way (48 px canvases,
+  the pre-evolution's sprite as style reference; the base padded into the
+  64 px cell, then pixminimax rows ending on the base so they loop; tiny
+  stray specks cleared; Golbat's run row is its walk); Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
   their candidates faced left). Placeholder quality: likely to be redone.
 - A move's `anim` plays if the species has that animation; otherwise the
   species' `fight_anim` does (no move-specific sheets for now).
