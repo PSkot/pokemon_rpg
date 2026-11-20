@@ -189,7 +189,7 @@ SPECIES.update({
     "arbok": _animated("arbok", "Arbok", (60, 85, 69, 80, 65), ("poison",), exp=147, hit=5),
     "sandslash": _placeholder("028_sandslash", "Sandslash", (75, 100, 110, 65, 55), ('ground',), exp=163),
     "nidoqueen": _animated("nidoqueen", "Nidoqueen", (90, 82, 87, 76, 75), ("poison", "ground"), exp=194, hit=5),
-    "nidoking": _placeholder("034_nidoking", "Nidoking", (81, 92, 77, 85, 75), ('poison', 'ground'), exp=195),
+    "nidoking": _animated("nidoking", "Nidoking", (81, 92, 77, 85, 75), ("poison", "ground"), exp=195, hit=4),
     # (Team Rocket's: the Rocket Hideout's bands)
     "koffing": _placeholder("109_koffing", "Koffing", (40, 65, 95, 35, 60), ('poison',), exp=114),
     "weezing": _placeholder("110_weezing", "Weezing", (65, 90, 120, 60, 85), ('poison',), exp=173),
