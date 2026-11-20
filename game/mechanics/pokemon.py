@@ -186,7 +186,7 @@ SPECIES.update({
 # sheet): the later forms and strong Pokémon met in the Battle Tower (and
 # Mew's special Pokémon: Dratini, Chansey, Lapras). Gen 1 stats.
 SPECIES.update({
-    "arbok": _placeholder("024_arbok", "Arbok", (60, 85, 69, 80, 65), ('poison',), exp=147),
+    "arbok": _animated("arbok", "Arbok", (60, 85, 69, 80, 65), ("poison",), exp=147, hit=5),
     "sandslash": _placeholder("028_sandslash", "Sandslash", (75, 100, 110, 65, 55), ('ground',), exp=163),
     "nidoqueen": _placeholder("031_nidoqueen", "Nidoqueen", (90, 82, 87, 76, 75), ('poison', 'ground'), exp=194),
     "nidoking": _placeholder("034_nidoking", "Nidoking", (81, 92, 77, 85, 75), ('poison', 'ground'), exp=195),
@@ -196,7 +196,7 @@ SPECIES.update({
     "grimer": _placeholder("088_grimer", "Grimer", (80, 80, 50, 25, 40), ('poison',), exp=90),
     "muk": _placeholder("089_muk", "Muk", (105, 105, 75, 50, 65), ('poison',), exp=157),
     "golbat": _animated("golbat", "Golbat", (75, 80, 70, 90, 75), ("poison", "flying"), exp=171, hit=3),
-    "persian": _placeholder("053_persian", "Persian", (65, 70, 60, 115, 65), ('normal',), exp=148),
+    "persian": _animated("persian", "Persian", (65, 70, 60, 115, 65), ("normal",), exp=148, hit=6),
     "primeape": _placeholder("057_primeape", "Primeape", (65, 105, 60, 95, 60), ('fighting',), exp=149),
     "machoke": _placeholder("067_machoke", "Machoke", (80, 100, 70, 45, 50), ('fighting',), exp=146),
     "machamp": _placeholder("068_machamp", "Machamp", (90, 130, 80, 55, 65), ('fighting',), exp=193),
