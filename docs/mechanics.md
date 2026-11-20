@@ -1536,6 +1536,12 @@ The bag keeps the gems (`Bag.gems`, shown in the Key items pocket), and
 - **God mode:** hits on the party deal 0 damage and burn/poison don't hurt
   it (statuses still land); every hit on an enemy deals exactly its
   remaining HP, and Endure can't save it.
+- **Skip packs:** walking into a wild pack or a map trainer's band
+  (blocking ones too: the rival on Nugget Bridge, the hideout's guards)
+  starts no battle: the player walks straight through. Bosses (an area's
+  end group, a gym's arena, a dungeon room's boss) still fight, as they
+  guard the way out. Skipped trainers stay unbeaten, so quest steps that
+  need them aren't done.
 - **Teleport** (Left/Right: town, Enter: go) takes the party to any town,
   arriving as after fainting (healed; it becomes the town you wake up in).
 - **Add item** rolls gear with `Gear.roll(..., affixes=[...], values=...)`:

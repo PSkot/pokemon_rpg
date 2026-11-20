@@ -1,8 +1,9 @@
 """Dev mode: tools for testing, switched on in the pause menu.
 
 While it's on: XP from battles can be multiplied, god mode makes the party
-take no damage and knocks out every enemy it hits, and items can be made
-to order (pause menu → Add item). The settings only last until the game
+take no damage and knocks out every enemy it hits, pack skipping lets the
+player walk through wild packs and map trainers' bands (not bosses), and
+items can be made to order (pause menu → Add item). The settings only last until the game
 is closed; they aren't saved.
 """
 
@@ -17,6 +18,7 @@ class DevMode:
     enabled: bool = False
     xp_boost: int = 1   # one of XP_BOOSTS
     god: bool = False
+    skip: bool = False  # walk through packs (wild groups and map trainers; bosses still fight)
     unlocked: bool = False  # the password was given (this session: asked once)
 
     @property
@@ -27,6 +29,10 @@ class DevMode:
     def god_mode(self) -> bool:
         return self.enabled and self.god
 
+    @property
+    def skip_packs(self) -> bool:
+        return self.enabled and self.skip
+
     def summary(self) -> str:
         """What's on, e.g. "DEV  XP×5  GOD" ("" while dev mode is off)."""
         if not self.enabled:
@@ -36,6 +42,8 @@ class DevMode:
             parts.append(f"XP×{self.xp_boost}")
         if self.god:
             parts.append("GOD")
+        if self.skip:
+            parts.append("SKIP")
         return "  ".join(parts)
 
 

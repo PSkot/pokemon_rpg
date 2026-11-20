@@ -959,6 +959,9 @@ class OverworldScene(MapScene):
         for wild in self.wild:
             wild.facing = 1 if self.player.x > wild.x else -1
             touching = wild.touches(self.player.body_rect, self.level)
+            if DEV.skip_packs and wild is not self.boss:  # (dev mode: walk straight through ...
+                wild.armed = not touching                   # ... and not caught in it once switched off)
+                continue
             if touching and wild.armed:
                 if wild is self.boss and self.instance.route.waves:  # a gym's arena: pick the team first
                     pick = TeamPick(self.instance.route, self.party, quests.active_limit(self.game))
