@@ -523,7 +523,9 @@ yet.
   poster, down into the **Rocket Hideout** (route "rocket_hideout", a
   dungeon: `ROCKET_HIDEOUT`, steel halls with Team Rocket banners, drawn in
   code; no wild Pokémon). Four floors straight down, B1F to B4F, two
-  Rocket bands on each; on B1F the **Poster Guard** stands first and can't
+  Rocket bands on each; B2F and B3F are **spinner floors** (arrow, stop
+  and launch pads under a catwalk: `mechanics.md`, *The Rocket Hideout's
+  spinner floors*); on B1F the **Poster Guard** stands first and can't
   be got past, and on B4F the **Lift Key Guard** blocks the lift. Beating
   him gives the **Lift Key**. (2) The lift goes down to the **Boss's
   Office**, where the **Rocket Boss** waits: a Persian (Giovanni's

@@ -31,6 +31,7 @@ from ..world.instance import RIVAL_STARTER, RIVAL_STARTER_EVOLVED, Instance, Sta
 from ..world.level import EMPTY, PLATFORM, SOLID, TILE, Level, Spawn, extra_member
 from ..world.player import Controls, Player
 from ..world import quests
+from ..world.spinners import layout_of
 from ..world.progress import Game
 from ..world.themes import Palette
 from ..world.towns import TOWNS
@@ -38,6 +39,7 @@ from . import quest_ui
 from .battle import BattleScene
 from .gym import TeamPick
 from .power_grid import AMBUSH, PowerGrid
+from .spinners import SpinnerFloor
 from .spores import SporeGarden
 from .summary import SummaryScene
 
@@ -437,6 +439,14 @@ class MapScene(Scene):
     def draw_things(self, layer: pygame.Surface) -> None:
         """What's on the map, behind the player (in map coordinates)."""
 
+    def steer(self, controls: Controls) -> Controls:
+        """The player's input this frame, as the map lets it be (a spinner
+        pad carries them along)."""
+        return controls
+
+    def moved(self) -> None:
+        """After the player has moved this frame."""
+
     def markers(self) -> list[tuple[float, float, tuple]]:
         """(x, top, mark) in map coordinates of things quests need here: a
         quest to take or a step's place (`quest_mark`), or quests to hand in
@@ -501,14 +511,15 @@ class MapScene(Scene):
         lead = self.party[0]  # (it may have evolved or learned moves since)
         self.player.become(lead.species)
         keys = touch.pressed()  # (keyboard and touch buttons)
-        self.player.update(dt, Controls(
+        self.player.update(dt, self.steer(Controls(
             left=keys[pygame.K_LEFT],
             right=keys[pygame.K_RIGHT],
             run=keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT],
             jump=self.jump,
             jump_held=keys[pygame.K_SPACE],
-        ), self.level)
+        )), self.level)
         self.jump = False
+        self.moved()
         self._follow()
 
     def _follow(self) -> None:
@@ -637,6 +648,9 @@ class OverworldScene(MapScene):
                      if route.puzzle == "trash_cans" and self.boss else None)
         # The Celadon Gym's drifting spore clouds.
         # (the Power Plant's loose sparks work the same way; both need the arena's boss)
+        # The Rocket Hideout's spinner floors.
+        layout = layout_of(instance.room.puzzle) if instance.room else None
+        self.spinners = SpinnerFloor(level, layout) if layout else None
         self.spores = (SporeGarden(level, random.Random(instance.seed), sparks=route.puzzle == "sparks")
                        if route.puzzle in ("spores", "sparks") and level.boss else None)
         # The doorways in and out; a dungeon room has its stairs instead.
@@ -1014,6 +1028,13 @@ class OverworldScene(MapScene):
         self.battle_event = quests.Event()
         self.next_scene = Transition(self, battle(0))
 
+    def steer(self, controls: Controls) -> Controls:
+        return self.spinners.steer(controls) if self.spinners else controls
+
+    def moved(self) -> None:
+        if self.spinners:
+            self.spinners.update(self.player)
+
     def draw_things(self, layer: pygame.Surface) -> None:
         if self.stairs:
             for _, thing in self.stairs:
@@ -1023,6 +1044,8 @@ class OverworldScene(MapScene):
             self.exit.draw(layer)
         if self.grid:
             self.grid.draw(layer, self.t)
+        if self.spinners:
+            self.spinners.draw(layer, self.t)
         if self.spores:
             self.spores.draw(layer, self.t)
         for chest in self.chests:

@@ -31,6 +31,7 @@ from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
                      ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_11, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
                      UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, PoolEntry, Theme)
+from .spinners import carve, layout_of
 from .towns import Folk
 
 # Stands in a boss group for the rival's starter, which depends on the
@@ -90,6 +91,7 @@ class Room:
     # Who's there to talk to (as townsfolk: quests.talk): (how far along
     # the room, as `Stair.at`; who), on flat ground.
     folk: tuple[tuple[float, Folk], ...] = ()
+    puzzle: str = ""  # "spinners:<layout>": the Rocket Hideout's spinner floors (world/spinners.py)
 
 
 @dataclass(frozen=True)
@@ -295,8 +297,9 @@ ROUTES = {r.key: r for r in [
                   "by a poster at the back...",
           rooms=(
               Room("b1", "B1F", 90, (Stair("out", "celadon_square", 0), Stair("down", "b2", 1))),
-              Room("b2", "B2F", 100, (Stair("up", "b1", 0.05), Stair("down", "b3", 0.95))),
-              Room("b3", "B3F", 100, (Stair("up", "b2", 0.05), Stair("down", "b4", 0.95))),
+              # (B2F and B3F: spinner floors, as in Red/Blue: world/spinners.py)
+              Room("b2", "B2F", 100, (Stair("up", "b1", 0.05), Stair("down", "b3", 0.95)), puzzle="spinners:b2"),
+              Room("b3", "B3F", 100, (Stair("up", "b2", 0.05), Stair("down", "b4", 0.95)), puzzle="spinners:b3"),
               Room("b4", "B4F", 80, (Stair("up", "b3", 0.05), Stair("down", "office", 1))),
               # (the Boss guards the back door out, up to the Game Corner)
               Room("office", "Boss's Office", 50, (Stair("up", "b4", 0.1), Stair("out", "celadon_square", 1)),
@@ -735,6 +738,8 @@ class Instance:
                 spawn.encounter = encounter(self.theme, rng)
             if level.boss:
                 level.boss.encounter = list(room.boss_group)
+            if layout_of(room.puzzle):
+                carve(level, layout_of(room.puzzle))
             return level
         level = generate(self.theme, self.seed * 101 + self.index, final=self.final and self.route.boss,
                          cols=self.route.cols or None)

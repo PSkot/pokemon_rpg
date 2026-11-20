@@ -426,7 +426,11 @@ you are working on.
   in code: `CaveLook.lamps` + `banners`, `tileset._rocket_banner`); its
   blocking map trainers (`Trainer.first`/`blocks`) are the poster guard
   and the Lift Key guard (a "defeat" step on its key gives the Lift Key);
-  the office's boss guards its back door out. The Battle Tower (`world/tower.py`, `scenes/battle_tower.py`;
+  the office's boss guards its back door out. B2F/B3F are spinner floors
+  (`Room.puzzle` "spinners:<key>": `world/spinners.py` has the layouts,
+  as strings, and carves the catwalk into the generated room;
+  `scenes/spinners.SpinnerFloor` carries and launches the player through
+  `MapScene.steer`/`moved` hooks and `Controls.carried`). The Battle Tower (`world/tower.py`, `scenes/battle_tower.py`;
   `Building.inside` "tower", open after `tower.OPENS_AFTER` "rainbow_badge"
   or in dev mode): post-story content. Its lobby (`TowerLobbyScene`,
   `rooms/tower_*.png`) has Mew floating, drawn 2× (`props/mew.png`), with

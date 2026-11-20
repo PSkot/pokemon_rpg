@@ -1239,6 +1239,29 @@ rummages in it (its lid comes off):
   sign ("DANGER: 10,000 VOLTS. Two switches cut the power." / "Hid 'em
   where nobody'd ever look. Ha! - Lt. Surge").
 
+**The Rocket Hideout's spinner floors** (`Room.puzzle` "spinners:b2" /
+"spinners:b3", `world/spinners.py`, `scenes/spinners.SpinnerFloor`):
+after Red/Blue's arrow mazes, on B2F (42 tiles) and B3F (52 tiles), from
+20 tiles into the room. The floor is covered in pads, and a **catwalk**
+(one-way platforms) runs **5 tiles** over it, with gaps: too high to jump
+up to (a full jump is under 4).
+- **Arrow pads** (yellow chevrons): stepping or landing on one carries the
+  player along its way at **210 px/s**, out of control (idle pose), until
+  a **stop pad** (red) or a wall. Other arrows on the way turn them (more
+  than 8 turns in one slide stop it). Carried off the catwalk's end, they
+  keep going as they fall (about 5 tiles further).
+- **Launch pads** (green, floor only): shoot the player straight up
+  (500 px/s, about 110 px) onto the catwalk above; landing back on the pad
+  it fired from doesn't fire it again.
+- Arrow fields are 6+ tiles wide (wider than a jump clears from the
+  floor); every arrow leads somewhere with a way on, so the player can't
+  be trapped (layouts checked with a solver, and with the real physics).
+  The way through: up, the right gaps, jumping over the catwalk's
+  back-arrows, and a **running jump** off the catwalk's end past the last
+  field (walking off lands on back-arrows that return you to a launch).
+- No Pokémon, chests or platforms stand in the puzzle (2 tiles clear
+  either side); the floor's Rocket bands are before and after it.
+
 **The Celadon Gym's spores** (`Route.puzzle` "spores",
 `scenes/spores.SporeGarden`): Erika's greenhouse is a longer walk (60
 tiles) with trellis platforms, and **8 clouds of spores** drift over it,

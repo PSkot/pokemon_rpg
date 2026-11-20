@@ -40,6 +40,7 @@ class Controls:
     run: bool = False
     jump: bool = False       # True only on the frame the button is pressed
     jump_held: bool = False
+    carried: float = 0.0     # px/s: carried along (a spinner pad), in the idle pose, instead of walking
 
 
 class Player:
@@ -117,7 +118,7 @@ class Player:
             else:
                 return
 
-        moving = c.left != c.right
+        moving = c.left != c.right and not c.carried
         self.set_state(("run" if c.run else "walk") if moving else "idle")
 
     def _span(self, x: float | None = None) -> tuple[float, float]:
@@ -130,7 +131,7 @@ class Player:
         if not direction:
             return
         self.facing = direction
-        speed = RUN_SPEED if c.run else WALK_SPEED
+        speed = c.carried or (RUN_SPEED if c.run else WALK_SPEED)
         x = self.x + direction * speed * dt
         left, right = self._span(x)
         if level.hits_solid(left, self.feet_y - HITBOX_H, right, self.feet_y):
