@@ -22,6 +22,8 @@ class Move:
     # Moves with a charge message spend a round charging (the first half of
     # the animation) and fire the next round (the second half).
     charge: str = ""
+    airborne: bool = False  # Fly: while charging, the user is up high and attacks can't reach it
+    perch: bool = False     # Perch (a sky battle): the user lands, losing its Flying type until it acts again
     status: str = ""    # a status (see status.STATUSES) the move inflicts ...
     status_chance: int = 0  # ... with this % chance (a status move's chance to work)
     stages: tuple[tuple[str, int], ...] = ()  # stat stage changes on the target ("attack", -1)
@@ -151,6 +153,9 @@ MOVES = {m.name: m for m in [
     Move("Peck", 35, "enemy", type="flying"),
     Move("Drill Peck", 80, "enemy", type="flying"),
     Move("Wing Attack", 35, "enemy", type="flying"),
+    # Fly and Perch: lent to Flying-type party members in a sky battle (sky.py)
+    Move("Fly", 90, "enemy", type="flying", charge="{user} flew up high!", airborne=True),
+    Move("Perch", 0, "self", type="flying", heal=0.125, perch=True, priority=1),
     Move("Sky Attack", 140, "enemy", type="flying", charge="{user} is glowing!", crit_ratio=8),
     # Grass
     Move("Absorb", 20, "enemy", type="grass", drain=0.5),
@@ -247,7 +252,7 @@ MOVES = {m.name: m for m in [
 # work is their status_chance or confuse instead).
 GEN1_ACCURACY = {
     "Tackle": 95, "Hyper Fang": 90, "Super Fang": 90, "Slam": 75, "Take Down": 85, "Hyper Beam": 90,
-    "Fury Attack": 85, "Fury Swipes": 80, "Double Slap": 85, "Wrap": 85, "Bind": 75, "Sky Attack": 90,
+    "Fury Attack": 85, "Fury Swipes": 80, "Double Slap": 85, "Wrap": 85, "Bind": 75, "Sky Attack": 90, "Fly": 95,
     "Razor Leaf": 95, "Pin Missile": 85, "Fire Spin": 70, "Fire Blast": 85, "Rock Throw": 65, "Rock Slide": 90,
     "Thunder": 70, "Clamp": 75, "Hydro Pump": 80, "Blizzard": 90,
     "Mega Punch": 85, "Mega Kick": 75, "Comet Punch": 85, "Egg Bomb": 75, "Smog": 70, "Screech": 85, "Low Kick": 90, "Submission": 80, "Sonic Boom": 90, "String Shot": 95, "Kinesis": 80, "Leech Seed": 90, "Whirlwind": 85,
@@ -292,8 +297,12 @@ def describe(m: Move) -> str:
         parts.append(f"{m.accuracy}% accurate.")
     if m.priority:
         parts.append("Always goes first.")
-    if m.charge:
+    if m.airborne:
+        parts.append("Flies up high for a round first, out of reach of attacks.")
+    elif m.charge:
         parts.append("Charges for a round first.")
+    if m.perch:
+        parts.append("Lands to rest its wings: no wing fatigue, but Ground moves hit it until it acts again.")
     if m.crit_ratio == 8:
         parts.append("High critical-hit ratio.")
     elif m.crit_ratio > 1:

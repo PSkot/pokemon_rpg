@@ -62,7 +62,7 @@ def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.
     BattleScene._misses), plus talents
     and gear. `share`: the part of the damage each target takes (a move
     that hits every enemy)."""
-    m, types = user.monster, target.monster.species.types
+    m, types = user.monster, getattr(target, "types", target.monster.species.types)  # (a perched flier: not Flying)
     if move.halve:  # Super Fang: half the target's HP, whatever the stats
         multiplier = effectiveness(move.type, types)
         return Hit(max(1, target.monster.hp // 2) if multiplier else 0, False, multiplier, [])

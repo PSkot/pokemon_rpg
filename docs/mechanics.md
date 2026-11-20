@@ -1512,6 +1512,39 @@ The bag keeps the gems (`Bag.gems`, shown in the Key items pocket), and
 
 ---
 
+## Sky battles
+
+`game/mechanics/sky.py`; `BattleScene(sky=True)`
+
+The rules of the "Learn to Fly" trial. A **flier** is a Flying-type party
+member (enemies are never fliers). Fliers hover above their place in line.
+
+- **Sky command** (in place of Run, as a trial can't be fled), for fliers
+  only:
+  - **Fly**: Flying, 90 power, 95% accurate. The first round the user flies
+    up high: every attack aimed at it, status moves too, misses ("out of
+    reach"). The next round it strikes.
+  - **Perch**: always goes first; the user lands and heals 1/8 of its max HP.
+    While perched, it isn't Flying (Ground moves hit it; a pure Flying type
+    counts as Normal) and its wings don't tire. It takes off again when it
+    next uses any other move.
+- **Wind**: a new wind every round (never the same twice in a row), on the
+  fliers only. The next round's wind is shown in the top-right corner,
+  so the player can plan ahead.
+
+  | Wind | Weight | Effect on fliers |
+  | --- | --- | --- |
+  | Calm | 30 | none |
+  | Tailwind | 25 | Speed ×1.5; Flying moves' power ×1.3 |
+  | Headwind | 25 | Speed ×2/3; chance to hit ×0.85 |
+  | Updraft | 20 | Fly strikes at once (no round up high) |
+
+- **Wing fatigue**: at the end of every round, each flier that isn't
+  perched loses 1/16 of its max HP (at least 1), after the other
+  round-end damage.
+
+---
+
 ## Types
 
 `game/mechanics/type_chart.py`

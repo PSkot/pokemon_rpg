@@ -23,6 +23,7 @@ from ..mechanics.items import MEDICINE, Bag, Medicine
 from ..mechanics.loot import LootTable, Reward, merge, wild_loot, worn_drops
 from ..mechanics.moves import Move
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, animations
+from ..mechanics.sky import FATIGUE, SKY_MOVES, WINDS, Wind, roll_wind
 from ..mechanics.status import FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES, THAW_CHANCE
 from ..mechanics.type_chart import COLORS, effectiveness
 from ..mechanics.type_chart import name as type_name
@@ -43,6 +44,7 @@ MESSAGE_WINDOW = pygame.Rect(6, 6, 628, PAD * 2 + ROW_H)
 INFO_WINDOW = MESSAGE_WINDOW.move(0, 16)  # item descriptions, below the key hints
 
 COMMANDS = ["Fight", "Skills", "Item", "Run"]
+SKY_COMMANDS = ["Fight", "Skills", "Item", "Sky"]  # a sky battle (no running): Fly and Perch
 TARGET_TEXT = {"enemy": "Enemy", "ally": "Ally", "self": "Self"}
 SPREAD_TEXT = {"enemy": "All", "ally": "Party"}
 STAT_NAMES = {"attack": "attack", "defense": "defense", "speed": "speed", "accuracy": "accuracy"}
@@ -96,6 +98,16 @@ HP_DRAIN_TIME = 0.6  # seconds for an HP bar to drain completely
 BERRY_REGEN_ROUNDS = 3  # a Lingering berry heals for this many rounds
 POPUP_TIME = 0.9     # seconds a damage number stays up
 FAINTED_OPACITY = 0.35  # fainted party members stay visible, dimmed
+# A sky battle's fliers: px above their place in line ...
+HOVER_LIFT = 12   # ... in the air (bobbing by HOVER_BOB)
+HOVER_BOB = 3
+UP_HIGH_LIFT = 92  # ... up high (Fly's first round)
+LIFT_RATE = 5      # how fast they get there (share of the way a second, roughly)
+WIND_MESSAGE_TIME = 1.6  # the round's wind, when it changes
+FATIGUE_COLOR = (200, 200, 255)
+WIND_WINDOW = pygame.Rect(452, 48, 182, 40)  # top right: this round's wind and the next
+WIND_COLORS = {"Calm": (190, 190, 200), "Tailwind": (130, 220, 130), "Headwind": (240, 130, 110),
+               "Updraft": (130, 200, 250)}
 
 # Feet positions for the player's side, by party size: a diagonal column, as
 # in the classic Final Fantasy games. Enemies use the mirror image.
@@ -175,6 +187,13 @@ class Combatant:
         self.evolving: Animation | None = None  # the new form's idle pose, while evolving
         self.evolve_time = 0.0
         self.shown_xp = self.xp_goal = self.xp_fraction  # the XP bar fills towards its goal
+        # A sky battle (sky.py): a flier is a Flying-type party member. It
+        # hovers (drawn `lift` px up), perches, and feels the wind.
+        self.flier = False
+        self.perched = False
+        self.wind = WINDS["Calm"]
+        self.lift = 0.0
+        self.bob = random.random() * math.tau
 
     @property
     def alive(self) -> bool:
@@ -202,8 +221,21 @@ class Combatant:
 
     @property
     def speed(self) -> float:
-        speed = self.monster.speed * stage_factor(self.stages["speed"])
+        speed = self.monster.speed * stage_factor(self.stages["speed"]) * self.wind.speed
         return speed * PARALYSIS_SPEED if self.status == "paralysis" else speed
+
+    @property
+    def up_high(self) -> bool:
+        """Fly's first round: out of reach of attacks."""
+        return self.charging is not None and self.charging.choice.airborne
+
+    @property
+    def types(self) -> tuple[str, ...]:
+        """Its types in battle: a perched flier isn't Flying (Ground moves hit it)."""
+        types = self.monster.species.types
+        if not self.perched:
+            return types
+        return tuple(t for t in types if t != "flying") or ("normal",)
 
     @property
     def xp_fraction(self) -> float:
@@ -241,7 +273,13 @@ class Combatant:
     @property
     def body_rect(self) -> pygame.Rect:
         """The standing pose's body, at its place in line (for cursors, effects)."""
-        return self.anims["idle"].body_rect(0, self.x, self.sprite_feet_y, self.flip)
+        return self.anims["idle"].body_rect(0, self.x, self.sprite_feet_y - round(self.lift), self.flip)
+
+    @property
+    def lift_goal(self) -> float:
+        if not self.flier or not self.alive or self.perched:
+            return 0.0
+        return UP_HIGH_LIFT if self.up_high else HOVER_LIFT
 
     def play(self, anim: Animation) -> None:
         self.anim, self.anim_time = anim, 0.0
@@ -252,6 +290,11 @@ class Combatant:
     def update(self, dt: float) -> None:
         self.anim_time += dt
         self.step += (self.step_goal - self.step) * min(1.0, dt * 14)
+        self.bob += dt * 3
+        goal = self.lift_goal
+        if goal == HOVER_LIFT:
+            goal += math.sin(self.bob) * HOVER_BOB
+        self.lift += (goal - self.lift) * min(1.0, dt * LIFT_RATE)
         self.hit_time = max(0.0, self.hit_time - dt)
         self.heal_time = max(0.0, self.heal_time - dt)
         if not self.hit_time:  # a fainting hit finishes shaking before the fade
@@ -269,7 +312,8 @@ class Combatant:
             return
         x = self.draw_x
         if self.alive:
-            shadow = pygame.Rect(0, 0, round(self.body_rect.w * 0.8), 8)
+            high = max(0.3, 1 - self.lift / (UP_HIGH_LIFT * 1.4))  # (smaller the higher it flies)
+            shadow = pygame.Rect(0, 0, round(self.body_rect.w * 0.8 * high), round(8 * high))
             shadow.center = (round(x), self.feet_y)
             pygame.draw.ellipse(surface, shadow_color, shadow)
         if self.evolving:
@@ -282,7 +326,7 @@ class Combatant:
         if self.opacity < 1:
             frame = frame.copy()
             frame.set_alpha(round(255 * self.opacity))
-        box = self.anim.place(i, x, self.sprite_feet_y, self.flip)
+        box = self.anim.place(i, x, self.sprite_feet_y - round(self.lift), self.flip)
         surface.blit(frame, box)
         hats.draw_worn(surface, self.monster, self.anim, i, box, self.flip, round(255 * self.opacity))
         if self.shield and self.alive:
@@ -296,7 +340,7 @@ class Combatant:
         t = self.evolve_time
         cycles = t + 1.125 * t * t
         anim = self.evolving if math.sin(cycles * 2 * math.pi) > 0 else self.anims["idle"]
-        box = anim.place(0, self.draw_x, self.sprite_feet_y, self.flip)
+        box = anim.place(0, self.draw_x, self.sprite_feet_y - round(self.lift), self.flip)
         surface.blit(_silhouette(anim.frame(0, self.flip)), box)
 
     def _draw_sparkles(self, surface: pygame.Surface) -> None:
@@ -392,6 +436,26 @@ def _side(monsters: list[Monster], enemy: bool) -> list[Combatant]:
 
 
 @cache
+def _wind_icon(surface: pygame.Surface, wind: str, center: tuple[int, int]) -> None:
+    """A small sign for a wind: arrows towards the enemies (a tailwind),
+    back at the party (a headwind) or up (an updraft); a dash when calm."""
+    x, y = center
+    color = WIND_COLORS[wind]
+    if wind == "Calm":
+        pygame.draw.line(surface, color, (x - 5, y), (x + 5, y), 2)
+        return
+    for dy in (-3, 3):
+        if wind == "Updraft":
+            ax = x + dy
+            pygame.draw.line(surface, color, (ax, y + 5), (ax, y - 4))
+            pygame.draw.lines(surface, color, False, [(ax - 2, y - 2), (ax, y - 4), (ax + 2, y - 2)])
+        else:
+            d = -1 if wind == "Tailwind" else 1  # (the party faces left, at the enemies)
+            pygame.draw.line(surface, color, (x - 5, y + dy), (x + 5, y + dy))
+            tip = x + 5 * d
+            pygame.draw.lines(surface, color, False, [(tip - 2 * d, y + dy - 2), (tip, y + dy), (tip - 2 * d, y + dy + 2)])
+
+
 def _background(b: Backdrop) -> pygame.Surface:
     w, _ = settings.LOGICAL_SIZE
     if b.art:
@@ -422,6 +486,7 @@ class BattleScene(Scene):
     Menus (`self.menu`):
       command  Fight / Skills / Item / Run for the current party member
       skills   the member's moves
+      sky      a sky battle's flier: Fly and Perch (`SKY_MOVES`)
       items    medicine from the bag
       target   pick who the chosen move or item is aimed at
       busy     a script is playing (intro, or the round's actions)
@@ -434,7 +499,8 @@ class BattleScene(Scene):
     def __init__(self, return_to: Scene, party: list[Monster], enemies: list[Monster], bag: Bag,
                  loot: LootTable | None = None, backdrop: Backdrop = MEADOW_BACKDROP, boss: bool = False,
                  trainer: str = "", bonus: LootTable | None = None, on_win=None, prize: int = 0,
-                 evolves=None, wave: tuple[int, int] | None = None, next_battle=None, drops: bool = True):
+                 evolves=None, wave: tuple[int, int] | None = None, next_battle=None, drops: bool = True,
+                 sky: bool = False):
         self.return_to = return_to
         # A gym's arena: (this wave, how many), and what makes the next
         # wave's battle, which follows straight on from a win (None: back
@@ -455,6 +521,18 @@ class BattleScene(Scene):
         self.evolves = evolves
         self.party = _side(party, enemy=False)
         self.enemies = _side(enemies, enemy=True)
+        # A sky battle (sky.py): the party's fliers get the Sky command, and
+        # the wind changes every round; this round's and the next.
+        self.sky = sky
+        self.commands = SKY_COMMANDS if sky else COMMANDS
+        self.wind = self.next_wind = WINDS["Calm"]
+        if sky:
+            for c in self.party:
+                c.flier = "flying" in c.monster.species.types
+                c.lift = HOVER_LIFT if c.flier and c.alive else 0.0
+            self.wind = WINDS[roll_wind()]
+            self.next_wind = WINDS[roll_wind(self.wind.name)]
+        self.sky_choice = 0  # the Sky list's cursor
         self.bag = bag
         self.loot = loot or wild_loot()  # rolled once per enemy when the party wins (at its level)
         self.drops = drops  # False: no loot or worn gear drops (the Battle Tower)
@@ -492,7 +570,7 @@ class BattleScene(Scene):
 
     @property
     def choosing(self) -> bool:
-        return self.menu in ("command", "skills", "items", "target")
+        return self.menu in ("command", "skills", "sky", "items", "target")
 
     def _available(self, medicine: Medicine) -> int:
         """How many are left in the bag, minus those already picked this round."""
@@ -607,12 +685,12 @@ class BattleScene(Scene):
         if self.menu == "command":
             self.message = ""  # (e.g. "no running" from the last key)
             if key in (pygame.K_UP, pygame.K_DOWN):
-                self.command = (self.command + (1 if key == pygame.K_DOWN else -1)) % len(COMMANDS)
+                self.command = (self.command + (1 if key == pygame.K_DOWN else -1)) % len(self.commands)
             elif key in CONFIRM_KEYS:
-                command = COMMANDS[self.command]
+                command = self.commands[self.command]
                 if command != "Run":
                     self.actor.last_command = self.command
-                if command in ("Fight", "Skills") and self.actor.dozing:  # it sleeps through the turn
+                if command in ("Fight", "Skills", "Sky") and self.actor.dozing:  # it sleeps through the turn
                     self.actions.append(Action(self.actor, None, self.actor))
                     self._next_actor()
                 elif command == "Fight":
@@ -621,6 +699,10 @@ class BattleScene(Scene):
                     self.menu = "skills"
                 elif command == "Item" and self._medicine():
                     self.menu = "items"
+                elif command == "Sky" and self.actor.flier:
+                    self.menu = "sky"
+                elif command == "Sky":
+                    self.message = f"{self.actor.label} can't fly!"
                 elif command == "Run" and self.trainer:
                     self.message = "You can't run from a challenge!"
                 elif command == "Run":
@@ -641,6 +723,13 @@ class BattleScene(Scene):
             elif key in CONFIRM_KEYS:
                 self.actor.last_skill = self.skill
                 self._choose(moves[self.skill])
+            elif key in CANCEL_KEYS:
+                self.menu = "command"
+        elif self.menu == "sky":
+            if key in (pygame.K_UP, pygame.K_DOWN):
+                self.sky_choice = (self.sky_choice + (1 if key == pygame.K_DOWN else -1)) % len(SKY_MOVES)
+            elif key in CONFIRM_KEYS:
+                self._choose(SKY_MOVES[self.sky_choice])
             elif key in CANCEL_KEYS:
                 self.menu = "command"
         elif self.menu == "items":
@@ -698,6 +787,8 @@ class BattleScene(Scene):
         for c in self.everyone:  # e.g. a status from the last battle, cured by a berry
             yield from self._berry(c)
         self.message = ""
+        if self.sky:
+            yield from self._blow(self.wind)
         self._start_round()
 
     def _auras(self):
@@ -732,6 +823,32 @@ class BattleScene(Scene):
                         self._change_stage(c, stat, -stages)
                     self.message = f"{holder.label} unnerves the enemies! Their {STAT_NAMES[stat]} fell!"
                     yield STATUS_MESSAGE_TIME
+
+    def _blow(self, wind: Wind):
+        """A sky battle: `wind` blows on the fliers this round."""
+        for c in self.party:
+            c.wind = wind if c.flier else WINDS["Calm"]
+        self.message = wind.text
+        yield WIND_MESSAGE_TIME
+        self.message = ""
+
+    def _fatigue(self):
+        """A sky battle's round end: fliers still in the air (not perched)
+        tire, losing `FATIGUE` of their max HP."""
+        tired = [c for c in self.party if c.flier and c.alive and not c.perched]
+        for c in tired:
+            if DEV.god_mode:
+                continue
+            lost = min(c.monster.hp, max(1, round(c.monster.max_hp * FATIGUE)))
+            c.monster.hp -= lost
+            self._popup(c, str(lost), FATIGUE_COLOR)
+        if tired:
+            names = " and ".join(c.label for c in tired)
+            self.message = f"{names}'s wings are tiring!"
+            yield STATUS_MESSAGE_TIME
+            for c in tired:
+                if not c.alive:
+                    yield from self._faint(c)
 
     def _enemy_action(self, enemy: Combatant) -> Action:
         # Random for now; smarter choices can go here later.
@@ -796,6 +913,8 @@ class BattleScene(Scene):
             yield from self._afflictions()
         if not self._over():
             yield from self._regen()
+        if self.sky and not self._over():
+            yield from self._fatigue()
         self.message = ""
         for c in self.everyone:
             c.shield = max(0, c.shield - 1)
@@ -815,6 +934,9 @@ class BattleScene(Scene):
                 self._give_rewards()
             self.menu = "end"
         else:
+            if self.sky:
+                self.wind, self.next_wind = self.next_wind, WINDS[roll_wind(self.next_wind.name)]
+                yield from self._blow(self.wind)
             self._start_round()
 
     def _won_text(self) -> str:
@@ -1201,6 +1323,10 @@ class BattleScene(Scene):
             return
         if not (yield from self._can_act(user)) or move is None:
             return  # (an action without a choice only ever wakes up or thaws)
+        if user.perched and not move.perch:
+            user.perched = False  # takes off again
+        if user.wind.power != 1 and move.type == "flying" and move.damaging:  # (a tailwind)
+            move = replace(move, scale=move.scale * user.wind.power)
         candidates = self._candidates(user, move)
         if not candidates:
             return
@@ -1215,7 +1341,8 @@ class BattleScene(Scene):
             targets = [user] + [c for c in (self.enemies if user.enemy else self.party) if c.alive and c is not user]
 
         anim = user.anims[user.monster.anim_for(move)]
-        charging = bool(move.charge) and user.charging is None and move.charge_skip not in user.used
+        charging = (bool(move.charge) and user.charging is None and move.charge_skip not in user.used
+                    and not (move.airborne and user.wind.updraft))
         if move.charge:
             half = len(anim.frames) // 2
             anim = anim.sub(0, half) if charging else anim.sub(half, len(anim.frames))
@@ -1231,10 +1358,13 @@ class BattleScene(Scene):
             user.charging = Action(user, move, targets[0])
         else:
             user.charging = None
-            if self._misses(user, move):
+            reachable = [t for t in targets if not t.up_high] if move.target == "enemy" else targets
+            if not reachable:  # (Fly's first round)
+                self.message = f"{targets[0].label} is up high, out of reach!"
+            elif self._misses(user, move):
                 self.message = f"{user.label}'s attack missed!"
             else:
-                self._apply(user, move, targets)
+                self._apply(user, move, reachable)
             if move.self_ko and not (DEV.god_mode and not user.enemy):  # (Self-Destruct: hit or miss)
                 user.monster.hp = 0
                 user.hit_time = HIT_TIME
@@ -1262,7 +1392,7 @@ class BattleScene(Scene):
         misses."""
         if move.sure_hit:
             return False
-        return random.random() >= move.accuracy / 100 * hit_chance(user.stages["accuracy"])
+        return random.random() >= move.accuracy / 100 * hit_chance(user.stages["accuracy"]) * user.wind.accuracy
 
     def _faint(self, c: Combatant):
         """A script: `c` has just fainted (which clears its status and seed)."""
@@ -1566,6 +1696,10 @@ class BattleScene(Scene):
             target.focused = True
             self._popup(target, "FOCUS", ui.YELLOW)
             notes.append(f"{target.label} is getting pumped!")
+        if move.perch:
+            target.perched = True
+            self._popup(target, "PERCH", FATIGUE_COLOR, offset=(0, -14), delay=0.3)
+            notes.append(f"{target.label} lands to rest its wings.")
         if move.rest:
             m = target.monster
             m.cure()
@@ -1714,10 +1848,15 @@ class BattleScene(Scene):
 
     @property
     def _list_open(self) -> str:
-        """"skills" or "items" while that list covers the enemy and command
-        windows (also while aiming what was picked from it), else ""."""
+        """"skills", "sky" or "items" while that list covers the enemy and
+        command windows (also while aiming what was picked from it), else ""."""
         menu = self.aim_from if self.menu == "target" else self.menu
-        return menu if menu in ("skills", "items") else ""
+        return menu if menu in ("skills", "sky", "items") else ""
+
+    @property
+    def _listed_moves(self) -> list[Move]:
+        """The moves in the open list: the Skills (the actor's) or the Sky list."""
+        return list(SKY_MOVES) if self._list_open == "sky" else self.actor.monster.moves
 
     @property
     def _aimed(self) -> list[Combatant]:
@@ -1804,6 +1943,7 @@ class BattleScene(Scene):
         return {
             "command": "Up/Down: choose   Enter: confirm   X: back",
             "skills": "Up/Down: choose skill   Enter: confirm   O: reorder   X: back",
+            "sky": "Fly: up high for a round, then strike   Perch: land and rest   X: back",
             "items": "Up/Down: choose item   Enter: confirm   X: back",
             "target": "Arrows or tap: choose target   Enter / tap again: confirm   X: back",
         }.get(self.menu, "")
@@ -1823,7 +1963,7 @@ class BattleScene(Scene):
             ui.cursor(canvas, COMMAND_WINDOW.x + 16, COMMAND_WINDOW.y + PAD + 5 + self.command * ROW_H)
         if self._list_open:
             ui.window_box(canvas, SKILL_WINDOW)
-            row = self.skill if self._list_open == "skills" else self.item - self.item_top
+            row = {"skills": self.skill, "sky": self.sky_choice}.get(self._list_open, self.item - self.item_top)
             ui.cursor(canvas, SKILL_WINDOW.x + 16, SKILL_WINDOW.y + PAD + 5 + row * ROW_H)
         if self._list_open == "items":  # scroll arrows
             x = SKILL_WINDOW.right - 10
@@ -1833,8 +1973,8 @@ class BattleScene(Scene):
             if self.item_top + LIST_ROWS < len(self._medicine()):
                 y = SKILL_WINDOW.bottom - 9
                 pygame.draw.polygon(canvas, ui.WHITE, [(x - 3, y), (x + 3, y), (x, y + 4)])
-        if self._list_open == "skills":
-            for i, move in enumerate(self.actor.monster.moves):
+        if self._list_open in ("skills", "sky"):
+            for i, move in enumerate(self._listed_moves):
                 if move.type:
                     ui.badge(canvas, self._badge_pos(i), COLORS[move.type])
         if self.menu == "items":
@@ -1860,6 +2000,10 @@ class BattleScene(Scene):
             pygame.draw.polygon(canvas, ui.SHADOW, [(x - size + 1, tip - h + 1), (x + size + 1, tip - h + 1), (x + 1, tip + 2)])
             pygame.draw.polygon(canvas, ui.YELLOW, [(x - size, tip - h), (x + size, tip - h), (x, tip)])
             pygame.draw.polygon(canvas, ui.SHADOW, [(x - size, tip - h), (x + size, tip - h), (x, tip)], 1)
+        if self.sky and not self.rewards:
+            ui.window_box(canvas, WIND_WINDOW)
+            for row, wind in enumerate((self.wind, self.next_wind)):
+                _wind_icon(canvas, wind.name, (WIND_WINDOW.x + 14, WIND_WINDOW.y + 11 + row * 16))
         if self.message:
             ui.window_box(canvas, MESSAGE_WINDOW)
         if self.rewards:
@@ -1890,6 +2034,13 @@ class BattleScene(Scene):
                     ui.text(window, label, (body.centerx, top + 4 + 11 * i), TARGETED_COLOR, size=20,
                             align="center")
 
+        if self.sky and not self.rewards:
+            for row, (label, wind) in enumerate((("Wind", self.wind), ("Next", self.next_wind))):
+                y = WIND_WINDOW.y + 4 + row * 16
+                ui.text(window, f"{label}: {wind.name}", (WIND_WINDOW.x + 26, y), WIND_COLORS[wind.name] if row == 0
+                        else ui.GREY, size=20)
+                ui.text(window, wind.effect, (WIND_WINDOW.right - 8, y + 1), ui.WHITE if row == 0 else ui.GREY,
+                        size=16, align="right")
         if self.rewards:
             self.rewards.draw_overlay(window)
         if self.menu == "items":
@@ -1903,8 +2054,10 @@ class BattleScene(Scene):
                 ui.text(window, medicine.name, (SKILL_WINDOW.x + 22, y))
                 ui.text(window, f"x{self._available(medicine)}", (SKILL_WINDOW.x + 210, y), align="right")
                 ui.text(window, "Fainted" if medicine.revive else "Ally", (SKILL_WINDOW.x + 222, y), ui.GREY)
-        elif self._list_open == "skills":
-            for i, move in enumerate(self.actor.monster.moves):
+        elif self._list_open in ("skills", "sky"):
+            for i, move in enumerate(self._listed_moves):
+                if move.type == "flying" and move.damaging and self.actor.flier:  # (a tailwind: shown stronger)
+                    move = replace(move, scale=move.scale * self.wind.power)
                 y = SKILL_WINDOW.y + PAD + i * ROW_H
                 carried = self.ordering and i == self.skill
                 ui.text(window, move.name, (SKILL_WINDOW.x + 22, y), ui.YELLOW if carried else ui.WHITE)
@@ -1928,10 +2081,11 @@ class BattleScene(Scene):
                 else:
                     ui.text(window, f"Lv{c.monster.level}", (ENEMY_WINDOW.right - 12, y), ui.GREY, size=size,
                             align="right")
-            for i, name in enumerate(COMMANDS):
+            for i, name in enumerate(self.commands):
                 unavailable = ((name == "Item" and not self._medicine()) or (name == "Run" and self.trainer)
                                or (name == "Skills" and self.choosing and not self.actor.monster.moves)
-                               or (name in ("Fight", "Skills") and self.choosing and self.actor.dozing))
+                               or (name == "Sky" and self.choosing and not self.actor.flier)
+                               or (name in ("Fight", "Skills", "Sky") and self.choosing and self.actor.dozing))
                 color = ui.GREY if unavailable else ui.WHITE
                 y = COMMAND_WINDOW.y + PAD + i * ROW_H
                 ui.text(window, name, (COMMAND_WINDOW.x + 22, y), color)
@@ -1940,7 +2094,7 @@ class BattleScene(Scene):
             row_h = self._party_row_h
             m, y = c.monster, PARTY_WINDOW.y + PAD + i * row_h
             size = 28 if row_h == ROW_H else 24 if row_h == 15 else 21
-            if c in aimed or (self.menu in ("command", "skills", "items") and c is self.actor):
+            if c in aimed or (self.menu in ("command", "skills", "sky", "items") and c is self.actor):
                 color = ui.YELLOW
             elif not c.alive:
                 color = ui.GREY

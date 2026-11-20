@@ -194,7 +194,13 @@ you are working on.
   Self-Destruct/Explosion (`Move.self_ko`: the user faints), Pay Day (`Move.pay_day`:
   money picked up after a win, `BattleScene.scattered`), set-off
   moves (`Move.triggers`, `BattleScene._apply`), reach/spill
-  (`_beside`).
+  (`_beside`). Sky battles (`BattleScene(sky=True)`, rules in
+  `mechanics/sky.py`): the party's Flying types (`Combatant.flier`) get a
+  Sky command (Fly, Perch: `SKY_MOVES`) in place of Run, feel the round's
+  wind (`Combatant.wind`; `BattleScene.wind`/`next_wind`, `_blow`) and tire
+  (`_fatigue`); Fly's first round is `Combatant.up_high` (attacks on it
+  miss, `_perform`), a perched one loses its Flying type
+  (`Combatant.types`, read by `combat.damage`).
 - Evolution (`pokemon.py`): `EVOLUTIONS` lists every Red/Blue level
   evolution (species key → `Evolution(into, level)`); trade evolutions
   aren't in yet. Stones (`STONE_EVOLUTIONS`: stone → {from: into}, any
