@@ -188,7 +188,7 @@ SPECIES.update({
 SPECIES.update({
     "arbok": _animated("arbok", "Arbok", (60, 85, 69, 80, 65), ("poison",), exp=147, hit=5),
     "sandslash": _placeholder("028_sandslash", "Sandslash", (75, 100, 110, 65, 55), ('ground',), exp=163),
-    "nidoqueen": _placeholder("031_nidoqueen", "Nidoqueen", (90, 82, 87, 76, 75), ('poison', 'ground'), exp=194),
+    "nidoqueen": _animated("nidoqueen", "Nidoqueen", (90, 82, 87, 76, 75), ("poison", "ground"), exp=194, hit=5),
     "nidoking": _placeholder("034_nidoking", "Nidoking", (81, 92, 77, 85, 75), ('poison', 'ground'), exp=195),
     # (Team Rocket's: the Rocket Hideout's bands)
     "koffing": _placeholder("109_koffing", "Koffing", (40, 65, 95, 35, 60), ('poison',), exp=114),
@@ -217,7 +217,7 @@ SPECIES.update({
     "parasect": _placeholder("047_parasect", "Parasect", (60, 95, 80, 30, 80), ('bug', 'grass'), exp=128),
     "tentacruel": _placeholder("073_tentacruel", "Tentacruel", (80, 70, 65, 100, 120), ('water', 'poison'), exp=205),
     "arcanine": _placeholder("059_arcanine", "Arcanine", (90, 110, 80, 95, 80), ('fire',), exp=213),
-    "wigglytuff": _placeholder("040_wigglytuff", "Wigglytuff", (140, 70, 45, 45, 50), ('normal',), exp=109),
+    "wigglytuff": _animated("wigglytuff", "Wigglytuff", (140, 70, 45, 45, 50), ("normal",), exp=109, hit=5),
     "clefable": _animated("clefable", "Clefable", (95, 70, 73, 60, 85), ("normal",), exp=129, hit=5),
     "hypno": _placeholder("097_hypno", "Hypno", (85, 73, 70, 67, 115), ('psychic',), exp=165),
     "dratini": _placeholder("147_dratini", "Dratini", (41, 64, 45, 50, 50), ('dragon',), exp=67),
