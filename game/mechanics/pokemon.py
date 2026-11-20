@@ -211,7 +211,7 @@ SPECIES.update({
     "cloyster": _placeholder("091_cloyster", "Cloyster", (50, 95, 180, 70, 85), ('water', 'ice'), exp=203),
     "venomoth": _placeholder("049_venomoth", "Venomoth", (70, 65, 60, 90, 90), ('bug', 'poison'), exp=138),
     "gloom": _animated("gloom", "Gloom", (60, 65, 70, 40, 85), ("grass", "poison"), exp=132, hit=3),
-    "vileplume": _placeholder("045_vileplume", "Vileplume", (75, 80, 85, 50, 100), ('grass', 'poison'), exp=184),
+    "vileplume": _animated("vileplume", "Vileplume", (75, 80, 85, 50, 100), ("grass", "poison"), exp=184, hit=4),
     "weepinbell": _placeholder("070_weepinbell", "Weepinbell", (65, 90, 50, 55, 85), ('grass', 'poison'), exp=151),
     "victreebel": _placeholder("071_victreebel", "Victreebel", (80, 105, 65, 70, 100), ('grass', 'poison'), exp=191),
     "parasect": _placeholder("047_parasect", "Parasect", (60, 95, 80, 30, 80), ('bug', 'grass'), exp=128),
