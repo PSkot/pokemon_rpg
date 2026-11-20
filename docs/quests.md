@@ -514,6 +514,26 @@ yet.
   **Rare** gear piece (item level 38). Winning the badge opens the
   **Battle Tower** (floors 1–5).
 
+### Planned: Learn to Fly (with Route 16)
+
+Not built yet: it comes with **Route 16** (west of Celadon), where Red/Blue
+gives HM02 Fly. Its battle rules are already in: *Sky battles* in
+`mechanics.md` (`BattleScene(sky=True)`, `mechanics/sky.py`).
+
+- **Giver:** a Bird Keeper in the Route 16 house; on offer once a Fearow,
+  Pidgeotto or Pidgeot is in the party or reserve.
+- **Steps:** (1) win 5 wild battles on Route 7/8/16 with only the bird
+  fighting; (2) talk to the keeper; (3) the **Sky Trial** on a new map,
+  **Skyward Cliffs**: the bird alone (`wave_species`: the Pidgey and
+  Spearow lines), a sky battle: two waves of anti-air Pokémon (Rock and
+  Electric: Geodude/Graveler, Magnemite/Voltorb; Ground ones like Diglett
+  and Sandshrew can't touch it), then a giant boss (Dodrio, "the bird that
+  never flew", once it has art; else a giant Onix).
+- **On the map:** the player can glide (hold jump to fall slowly) on
+  Skyward Cliffs only, to cross its gaps.
+- **Reward:** money and XP, and **Fly**: fast travel from the pause menu
+  to any town already visited.
+
 ### A Hammer Fit for a Smith (side quest)
 
 - **Starts:** from the **Machamp smith** (Lavender Town and the major towns
