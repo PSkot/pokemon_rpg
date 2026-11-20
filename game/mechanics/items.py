@@ -647,6 +647,9 @@ KEY_ITEMS = {
     "S.S. Ticket": "A ticket for the S.S. Anne, from Bill. The ship docks at Vermilion City.",
     "HM01 Cut": "A hidden machine from the S.S. Anne's Captain. Its technique, Cut, clears small trees out of the "
                 "way, like the one over the Vermilion Gym's door.",
+    "Lift Key": "A key with a big \"R\" on it. It works the lift down to the Boss's office in Team Rocket's "
+                "Hideout.",
+    "Silph Scope": "A scope made by Silph Co. It makes unseen things visible: even ghosts can't hide from it.",
     BONE: "A huge, heavy bone, harder than stone. It must have belonged to a mighty Pokémon. Surely someone "
           "could put it to good use...",
     RIBBON: "A special ribbon, given for proving your team. Use it (here, in Key items): one more Pokémon "

@@ -751,6 +751,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Cerulean Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Cascade Crew: the fancy chest) |
 | Vermilion Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Thunder Battalion: the fancy chest) |
 | Celadon Gym | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Blossom Troupe, the fancy chest) |
+| Rocket Hideout | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Lift Key Guard and the Rocket Boss, a reward roll with each battle, no chest) |
 | Route 3 | Common | (no boss) |
 | Mt. Moon | Common | Common 60%, Uncommon 40% (Team Rocket: a reward roll with the battle, no chest) |
 | Route 4 | Common | (no boss) |
@@ -1393,6 +1394,16 @@ always the same spot), with its team in a row.
 | S.S. Anne 2F | Ballroom Belles (Lass) | Jigglypuff 26, Clefairy 26 | ₽195 |
 | S.S. Anne 2F (boss) | Rival | Pidgeotto 22, Raticate 19, Kadabra 18, starter's next form 22 | ₽385 |
 | Route 22 (boss) | the rival | Pidgey 7, starter 6 | ₽105 |
+| Rocket Hideout B1F (blocks the way) | Poster Guard (Team Rocket Grunt) | Raticate 37, Zubat 37 | ₽555 |
+| Rocket Hideout B1F | Rocket Gang (Team Rocket Grunt) | Koffing 37, Grimer 37, Ekans 37 | ₽555 |
+| Rocket Hideout B1F | Rocket Gang (Team Rocket Grunt) | Machop 38, Drowzee 38 | ₽570 |
+| Rocket Hideout B2F | Rocket Gang (Team Rocket Grunt) | Golbat 38, Arbok 38 | ₽570 |
+| Rocket Hideout B2F | Rocket Gang (Team Rocket Grunt) | Raticate 38, Koffing 38, Zubat 37 | ₽555 |
+| Rocket Hideout B3F | Rocket Gang (Team Rocket Grunt) | Machoke 39, Grimer 38 | ₽570 |
+| Rocket Hideout B3F | Rocket Gang (Team Rocket Grunt) | Drowzee 39, Koffing 39, Ekans 38 | ₽570 |
+| Rocket Hideout B4F (blocks the lift; the boss loot) | Lift Key Guard (Team Rocket Grunt) | Koffing 40, Golbat 40, Raticate 40 | ₽600 |
+| Rocket Hideout B4F | Rocket Gang (Team Rocket Grunt) | Hypno 39, Arbok 39 | ₽585 |
+| Rocket Hideout, Boss's Office (boss) | Rocket Boss (Giovanni) | Persian 43, Onix 41, Rhyhorn 41, Kangaskhan 42 (fought by three: won about 78% at Lv40/39 with 3 Hyper Potions and a Revive, `tools/balance_sim.py`) | ₽2,079 |
 
 ---
 

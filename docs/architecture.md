@@ -402,14 +402,14 @@ you are working on.
   "dept" → `scenes/dept_store.DeptStoreScene`, `FLOORS`: 1F guide, 2F
   medicine, 3F Persian's gear, 4F materials, `MaterialShop`, rooftop
   vending machines selling drinks, `rooms/roof_*.png`; stairs props),
-  "celadon_square" (Game Corner shut for now, the Celadon Gym, Recruitment
+  "celadon_square" (the Game Corner, the Celadon Gym, Recruitment
   Center, smith) and "celadon_west" (Mansion, the Battle Tower);
   big buildings have their own sheets (`towns.DEPT_STORE`, `MANSION`,
   `GAME_CORNER`, `BATTLE_TOWER`, `tileset.BUILDING_CELLS`). The smith
   (`towns.smith(col)`, `Folk.npc` = "machamp_smith": drawn from
   `props/machamp_smith.png` with `props/furnace.png`, its glow, and
   `props/anvil.png`; one in each major town from Lavender on): quest
-  "smith_hammer" wants the Thick Bone (`items.BONE`, from the Tower's
+  "smith_hammer" (on offer once "rocket_hideout" is done) wants the Thick Bone (`items.BONE`, from the Tower's
   Marowak later; `Step.takes` + `waiting`: a talk step only once the item
   is in the bag), then `scenes/smith.SmithMenu`: salvage gear into its
   rarity's material (`items.MATERIALS`, `Bag.materials`), enhance to +5
@@ -420,7 +420,13 @@ you are working on.
   Vileplume's band with Tangela; `wave_team=3`, about 69% with three; its
   hazard, `Route.puzzle` "spores", `scenes/spores.py`: 8 drifting clouds
   of Sleep Powder / Poison Powder / Stun Spore that give a party member
-  their status on touch, carried into the waves). The Battle Tower (`world/tower.py`, `scenes/battle_tower.py`;
+  their status on touch, carried into the waves). Then quest
+  "rocket_hideout": route "rocket_hideout" from the Game Corner
+  (`Route.building`), a dungeon of 5 rooms (`ROCKET_HIDEOUT`, built, drawn
+  in code: `CaveLook.lamps` + `banners`, `tileset._rocket_banner`); its
+  blocking map trainers (`Trainer.first`/`blocks`) are the poster guard
+  and the Lift Key guard (a "defeat" step on its key gives the Lift Key);
+  the office's boss guards its back door out. The Battle Tower (`world/tower.py`, `scenes/battle_tower.py`;
   `Building.inside` "tower", open after `tower.OPENS_AFTER` "rainbow_badge"
   or in dev mode): post-story content. Its lobby (`TowerLobbyScene`,
   `rooms/tower_*.png`) has Mew floating, drawn 2× (`props/mew.png`), with

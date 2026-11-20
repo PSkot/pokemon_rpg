@@ -30,7 +30,7 @@ from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
                      ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_11, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
-                     UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, PoolEntry, Theme)
+                     UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, PoolEntry, Theme)
 from .towns import Folk
 
 # Stands in a boss group for the rival's starter, which depends on the
@@ -281,6 +281,41 @@ ROUTES = {r.key: r for r in [
           blocked="The gym's glass doors are locked. A sign: \"Closed for watering. - Erika\"",
           blocked_done="Vileplume: Oh, it's you again... The Rainbow Badge suits you. Do come back to smell the "
                        "flowers."),
+    # Team Rocket's Hideout under the Celadon Game Corner (quest
+    # "rocket_hideout"), as in Red/Blue: four basement floors of Rockets
+    # (bands; no wild Pokémon). A guard at the poster blocks the way in; on
+    # B4F a Rocket with the Lift Key blocks the lift down to the boss's
+    # office, where the Boss (a Persian, with Gen 1's Giovanni's team) has
+    # the Silph Scope. Rocket Pokémon stand in for Gen 1's: Koffing, Grimer,
+    # Raticate, Zubat/Golbat, Ekans/Arbok, Machop/Machoke, Drowzee/Hypno.
+    Route("rocket_hideout", "Rocket Hideout", ROCKET_HIDEOUT, maps=5, towns=("celadon_square", "celadon_square"),
+          boss_chest="battle", boss_loot=MID_BOSS, wild=False, building="Game Corner",
+          needs=("rocket_hideout", "started"),
+          blocked="The Game Corner. Slot machines jingle and clatter inside. A grumpy-looking man in black stands "
+                  "by a poster at the back...",
+          rooms=(
+              Room("b1", "B1F", 90, (Stair("out", "celadon_square", 0), Stair("down", "b2", 1))),
+              Room("b2", "B2F", 100, (Stair("up", "b1", 0.05), Stair("down", "b3", 0.95))),
+              Room("b3", "B3F", 100, (Stair("up", "b2", 0.05), Stair("down", "b4", 0.95))),
+              Room("b4", "B4F", 80, (Stair("up", "b3", 0.05), Stair("down", "office", 1))),
+              # (the Boss guards the back door out, up to the Game Corner)
+              Room("office", "Boss's Office", 50, (Stair("up", "b4", 0.1), Stair("out", "celadon_square", 1)),
+                   boss_group=(("persian", 43), ("onix", 41), ("rhyhorn", 41), ("kangaskhan", 42)),
+                   trainer="Rocket Boss", prize=99),
+          ),
+          trainers=(  # (`map`: the room's place in `rooms`)
+              Trainer("hideout_poster_guard", "Poster Guard", (("raticate", 37), ("zubat", 37)), 0, 30,
+                      first=True, blocks=True),
+              Trainer("hideout_b1_1", "Rocket Gang", (("koffing", 37), ("grimer", 37), ("ekans", 37)), 0, 30),
+              Trainer("hideout_b1_2", "Rocket Gang", (("machop", 38), ("drowzee", 38)), 0, 30),
+              Trainer("hideout_b2_1", "Rocket Gang", (("golbat", 38), ("arbok", 38)), 1, 30),
+              Trainer("hideout_b2_2", "Rocket Gang", (("raticate", 38), ("koffing", 38), ("zubat", 37)), 1, 30),
+              Trainer("hideout_b3_1", "Rocket Gang", (("machoke", 39), ("grimer", 38)), 2, 30),
+              Trainer("hideout_b3_2", "Rocket Gang", (("drowzee", 39), ("koffing", 39), ("ekans", 38)), 2, 30),
+              Trainer("hideout_lift_rocket", "Lift Key Guard", (("koffing", 40), ("golbat", 40), ("raticate", 40)),
+                      3, 30, first=True, blocks=True, boss_loot=True),
+              Trainer("hideout_b4", "Rocket Gang", (("hypno", 39), ("arbok", 39)), 3, 30),
+          )),
     # The S.S. Anne, docked at Vermilion City (quest "ss_anne"), as in
     # Red/Blue: cabins full of trainers (sailors, gentlemen, a fisherman),
     # the rival waiting on the upper deck, and the seasick Captain, who

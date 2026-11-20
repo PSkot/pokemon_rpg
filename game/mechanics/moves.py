@@ -246,6 +246,7 @@ MOVES = {m.name: m for m in [
     Move("Thunder Punch", 75, "enemy", type="electric", **_status("paralysis", 10)),
     Move("Fire Punch", 75, "enemy", type="fire", **_status("burn", 10)),
     Move("Smog", 20, "enemy", type="poison", **_status("poison", 40)),
+    Move("Sludge", 65, "enemy", type="poison", **_status("poison", 30)),
 ]}
 
 # Red/Blue accuracy of the moves that could miss (status moves' chance to

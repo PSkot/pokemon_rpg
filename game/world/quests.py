@@ -763,11 +763,12 @@ QUESTS = {q.key: q for q in [
     # The smith (a Machamp at an anvil, in the major towns from Lavender on):
     # bring him something strong enough for a hammer (the Thick Bone, from
     # the Pokémon Tower's Marowak, later), and he salvages and enhances gear.
+    # On offer once the Silph Scope is in hand (the way into the Tower).
     Quest(
         "smith_hammer", "A Hammer Fit for a Smith",
         "Machamp the smith broke his hammer, and no ordinary hammer survives four arms. He needs something "
         "truly strong to make a new one.",
-        giver=SMITH, requires=("rock_tunnel",),
+        giver=SMITH, requires=("rocket_hideout",),
         offer=(("Machamp", "HAH! A traveller! Look at this. My hammer. Snapped clean in two."),
                ("Machamp", "Four arms, kid. Nothing they sell in a Mart lasts a day in these hands."),
                ("Machamp", "Bring me something STRONG. Stronger than iron. I'll make a hammer worth swinging, "
@@ -822,6 +823,30 @@ QUESTS = {q.key: q for q in [
         rewards=(("medicine", "Hyper Potion", 2), ("medicine", "Full Heal", 3), ("gear", None, "Rare", 38)),
         done_dialogue=(("", "Word of your badge spreads fast. Out in Celadon's west end, the Battle Tower throws "
                             "open its doors!"),),
+    ),
+    # After the Rainbow Badge, as in Red/Blue: Team Rocket's hideout under
+    # the Game Corner (route "rocket_hideout"), for the Silph Scope.
+    Quest(
+        "rocket_hideout", "Team Rocket's Hideout",
+        "Men in black keep slipping in and out of the Celadon Game Corner, and never seem to play the slots. A "
+        "Rocket stands guard by a poster at the back. What's behind it?",
+        requires=("rainbow_badge",),
+        steps=(Step("defeat", "hideout_lift_rocket", "Get behind the poster in the Game Corner (Celadon Square), "
+                                                     "and find the key to the hideout's lift",
+                    dialogue=(("Rocket", "Ugh! You'll never get past the Boss! ...Oops. I dropped something."),
+                              ("", "You picked up the Lift Key!")),
+                    gives=("Lift Key",)),
+               Step("defeat", "rocket_hideout", "Take the lift down to the Boss's office, and defeat the Boss",
+                    dialogue=(("Persian", "Mrrrow... So. You've beaten the Boss of Team Rocket. Impressive."),
+                              ("Persian", "Take this, then. We have no more use for it."),
+                              ("", "You received the Silph Scope! It makes unseen things visible."),
+                              ("Persian", "Team Rocket will not forget this. Until we meet again..."),
+                              ("", "The Persian slinks into the shadows, and is gone.")),
+                    takes=("Lift Key",), gives=("Silph Scope",))),
+        money=2000, xp=1900,
+        rewards=(("medicine", "Hyper Potion", 3), ("medicine", "Revive", 2), ("gear", None, "Rare", 40)),
+        done_dialogue=(("", "With the Silph Scope, ghosts can't hide any more. Lavender Town's Pokémon Tower is "
+                            "said to be full of them..."),),
     ),
     # The evolution stones: one quest each, from after the Rainbow Badge (the
     # Fire and Water Stones come later, with Cinnabar and the coast). A stone

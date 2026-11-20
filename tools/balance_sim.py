@@ -158,11 +158,13 @@ STORY = [
      {"Hyper Potion": 3, "Full Heal": 2}),
     ("Moon Stone: Moonlit Crater (Clefable)", "mt_moon_crater", (39, 38), False, {"Hyper Potion": 2}),
     ("Thunder Stone: Power Plant (Electabuzz)", "power_plant", (39, 38), False, {"Hyper Potion": 2}),
+    ("Rocket Hideout Boss", "rocket_hideout", (40, 39), False, {"Hyper Potion": 3, "Revive": 1}),
 ]
 # How many fight in each story battle: 1 (solo), 2, or 3 from the S.S. Anne on.
 TEAM_SIZE = {"Vermilion Gym (2 waves + battalion)": 3, "Diglett's Cave boss": 3, "Rock Tunnel Hiker Crew": 3,
              "Celadon Gym (2 waves + troupe)": 3, "Leaf Stone: Overgrown Wing (2 waves + Exeggutor)": 3,
-             "Moon Stone: Moonlit Crater (Clefable)": 3, "Thunder Stone: Power Plant (Electabuzz)": 3}
+             "Moon Stone: Moonlit Crater (Clefable)": 3, "Thunder Stone: Power Plant (Electabuzz)": 3,
+             "Rocket Hideout Boss": 3}
 PARTNERS = ["pidgey", "rattata", "nidoran_m", "spearow", "caterpie", "pikachu"]
 
 

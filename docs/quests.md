@@ -44,6 +44,7 @@ script that walks every route's maps; the major fights in
 | Underground Path (west) | 35 | 740 | 1,500 |
 | Celadon City | 36 | | |
 | Celadon Gym | 37 | | 1,700 |
+| Rocket Hideout | 38–40 | | 1,900 |
 
 (Before this check, battles gave ×0.5 / ×1.5 to every member unsplit:
 about 62,000 battle XP each from Pewter to Vermilion against 14,000
@@ -486,7 +487,7 @@ yet.
     vending machines: Fresh Water ₽200, Soda Pop ₽300, Lemonade ₽350, which
     restore 50/60/80 HP; and the view over the city).
   - **Celadon Square** ("celadon_square"): the Game Corner (Team
-    Rocket's, later), the Celadon Gym (quest 22), the Recruitment Center
+    Rocket's Hideout under it, quest 23), the Celadon Gym (quest 22), the Recruitment Center
     and the smith.
   - **Celadon West End** ("celadon_west"): the Celadon Mansion and the
     **Battle Tower**. It opens after the Rainbow Badge: 25 floors of wave
@@ -514,6 +515,25 @@ yet.
   **Rare** gear piece (item level 38). Winning the badge opens the
   **Battle Tower** (floors 1–5).
 
+### 23. Team Rocket's Hideout
+
+- **Starts:** automatically when quest 22 is done.
+- **Steps:** (1) Up at the **Game Corner** (Celadon Square; shut before the
+  quest, its note says a man in black guards a poster) goes behind the
+  poster, down into the **Rocket Hideout** (route "rocket_hideout", a
+  dungeon: `ROCKET_HIDEOUT`, steel halls with Team Rocket banners, drawn in
+  code; no wild Pokémon). Four floors straight down, B1F to B4F, two
+  Rocket bands on each; on B1F the **Poster Guard** stands first and can't
+  be got past, and on B4F the **Lift Key Guard** blocks the lift. Beating
+  him gives the **Lift Key**. (2) The lift goes down to the **Boss's
+  Office**, where the **Rocket Boss** waits: a Persian (Giovanni's
+  cat) with Gen 1 Giovanni's team (Onix, Rhyhorn, Kangaskhan; see
+  `mechanics.md`, *Trainer battles*). Beating it takes the Lift Key and
+  gives the **Silph Scope**, and opens the office's back door up to the
+  Game Corner.
+- **Rewards:** ₽2,000, 1,900 XP, 3 Hyper Potions, 2 Revives and a **Rare**
+  gear piece (item level 40). The smith's hammer quest goes on offer.
+
 ### Planned: Learn to Fly (with Route 16)
 
 Not built yet: it comes with **Route 16** (west of Celadon), where Red/Blue
@@ -537,7 +557,8 @@ gives HM02 Fly. Its battle rules are already in: *Sky battles* in
 ### A Hammer Fit for a Smith (side quest)
 
 - **Starts:** from the **Machamp smith** (Lavender Town and the major towns
-  after it), once quest 19 is done: his hammer snapped, and nothing from a
+  after it), once quest 23 is done (the Silph Scope, the way into the
+  Pokémon Tower, is in hand): his hammer snapped, and nothing from a
   Mart survives four arms. "Bring me something STRONG."
 - **Steps:** bring him something strong enough for a hammer: the
   **Thick Bone** (a key item; it comes from the Pokémon Tower's Marowak,

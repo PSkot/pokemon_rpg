@@ -63,6 +63,8 @@ class CaveLook:
     # A built tunnel's far wall instead of rock: courses of wall tiles, and a
     # lamp (in `glow`'s colours) every `lamps` px (the Underground Path).
     lamps: int = 0
+    banners: bool = False  # ... and a Team Rocket banner (a red "R") between every two lamps
+    lamp_glow: int = 6     # ... how strong a lamp's pool of light is (alpha per ring)
 
 
 @dataclass(frozen=True)
@@ -434,6 +436,26 @@ CELADON_GYM = Theme(
     art="cave",
     cave=CaveLook(sky_top=(150, 200, 190), sky_bottom=(210, 236, 214), far_rock=(120, 160, 120),
                   near_rock=(110, 150, 110), glow=None, wall="celadon_gym.png", dim=20, near_rocks=False),
+    doorway="",
+    built=True,
+)
+
+# Team Rocket's Hideout under the Celadon Game Corner: steel corridors,
+# drawn in code (no painted wall or backdrop yet): wall plates and red
+# warning lamps, a flat built floor. No wild Pokémon: only Rockets.
+ROCKET_HIDEOUT = Theme(
+    "rocket_hideout", "Rocket Hideout",
+    Palette(fill=(70, 72, 82), fill_dark=(46, 48, 56), fill_light=(100, 104, 116),
+            top=(132, 136, 148), top_dark=(98, 102, 114), top_light=(170, 174, 186),
+            platform=(150, 60, 60), platform_dark=(96, 36, 40), platform_light=(200, 96, 90)),
+    pool=(PoolEntry("koffing", 1, (36, 38)),),
+    backdrop=Backdrop(sky_top=(30, 30, 38), sky_bottom=(62, 62, 74), hills=((52, 52, 62), (46, 46, 56)),
+                      field_far=(104, 106, 118), field_near=(84, 86, 98), stripe=(96, 98, 110),
+                      shadow=(54, 56, 66)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(26, 26, 34), sky_bottom=(56, 56, 68), far_rock=(40, 40, 50), near_rock=(30, 30, 38),
+                  glow=((170, 40, 40), (255, 110, 90)), near_rocks=False, lamps=128, banners=True, lamp_glow=10),
     doorway="",
     built=True,
 )

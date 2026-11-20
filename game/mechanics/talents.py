@@ -250,6 +250,14 @@ LEARNSETS = {
         ('Pound', 0), ('Sing', 0), ('Defense Curl', 19), ('Double Slap', 24), ('Rest', 29),
         ('Body Slam', 34), ('Double-Edge', 39),
     ),
+    # (Gen 1's; Team Rocket's.)
+    ('koffing', 'weezing'): (
+        ('Tackle', 0), ('Smog', 0), ('Sludge', 32), ('Smokescreen', 37), ('Self-Destruct', 40),
+        ('Explosion', 48, 1),
+    ),
+    ('grimer', 'muk'): (
+        ('Pound', 0), ('Poison Gas', 30), ('Sludge', 37), ('Harden', 42), ('Screech', 48),
+    ),
     ('zubat', 'golbat'): (
         ('Leech Life', 0), ('Supersonic', 10), ('Bite', 15), ('Confuse Ray', 21), ('Wing Attack', 28),
         ('Swift', 32), ('Double-Edge', 38, 1),

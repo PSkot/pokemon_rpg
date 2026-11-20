@@ -569,12 +569,33 @@ def _tunnel_wall(far: pygame.Surface, look) -> None:
     dim, bright = look.glow
     glow = pygame.Surface((90, 90), pygame.SRCALPHA)
     for r in range(45, 0, -5):  # a soft pool of lamplight
-        pygame.draw.circle(glow, (*dim, 6), (45, 45), r)
+        pygame.draw.circle(glow, (*dim, look.lamp_glow), (45, 45), r)
     for x in range(look.lamps // 2, w, look.lamps):
         far.blit(glow, (x - 45, 70 - 45))
         pygame.draw.rect(far, look.near_rock, (x - 4, 62, 9, 4))   # the bracket
         pygame.draw.rect(far, dim, (x - 3, 66, 7, 6))
         pygame.draw.rect(far, bright, (x - 2, 67, 5, 4))
+        if look.banners:
+            _rocket_banner(far, x + look.lamps // 2, 96)
+
+
+# A pixel "R", 5×7 (Team Rocket's banners).
+_R = ("####.", "#...#", "#...#", "####.", "#.#..", "#..#.", "#...#")
+
+
+def _rocket_banner(surface: pygame.Surface, cx: int, top: int) -> None:
+    """A hanging Team Rocket banner: black cloth, red trim, a red "R"."""
+    w, h, px = 34, 64, 4
+    left = cx - w // 2
+    pygame.draw.rect(surface, (40, 36, 40), (left - 3, top - 4, w + 6, 4))       # the rod
+    pygame.draw.rect(surface, (22, 20, 24), (left, top, w, h))                     # the cloth ...
+    pygame.draw.polygon(surface, (22, 20, 24), [(left, top + h), (cx, top + h + 8), (left + w, top + h)])
+    pygame.draw.rect(surface, (150, 30, 34), (left, top, w, h), 2)                 # ... its trim
+    x0, y0 = cx - 5 * px // 2, top + (h - 7 * px) // 2
+    for row, line in enumerate(_R):
+        for col, c in enumerate(line):
+            if c == "#":
+                pygame.draw.rect(surface, (210, 40, 44), (x0 + col * px, y0 + row * px, px, px))
 
 
 def _painting(surface: pygame.Surface, name: str, dim: int = 0) -> None:

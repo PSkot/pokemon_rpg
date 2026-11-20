@@ -190,6 +190,11 @@ SPECIES.update({
     "sandslash": _placeholder("028_sandslash", "Sandslash", (75, 100, 110, 65, 55), ('ground',), exp=163),
     "nidoqueen": _placeholder("031_nidoqueen", "Nidoqueen", (90, 82, 87, 76, 75), ('poison', 'ground'), exp=194),
     "nidoking": _placeholder("034_nidoking", "Nidoking", (81, 92, 77, 85, 75), ('poison', 'ground'), exp=195),
+    # (Team Rocket's: the Rocket Hideout's bands)
+    "koffing": _placeholder("109_koffing", "Koffing", (40, 65, 95, 35, 60), ('poison',), exp=114),
+    "weezing": _placeholder("110_weezing", "Weezing", (65, 90, 120, 60, 85), ('poison',), exp=173),
+    "grimer": _placeholder("088_grimer", "Grimer", (80, 80, 50, 25, 40), ('poison',), exp=90),
+    "muk": _placeholder("089_muk", "Muk", (105, 105, 75, 50, 65), ('poison',), exp=157),
     "golbat": _placeholder("042_golbat", "Golbat", (75, 80, 70, 90, 75), ('poison', 'flying'), exp=171),
     "persian": _placeholder("053_persian", "Persian", (65, 70, 60, 115, 65), ('normal',), exp=148),
     "primeape": _placeholder("057_primeape", "Primeape", (65, 105, 60, 95, 60), ('fighting',), exp=149),

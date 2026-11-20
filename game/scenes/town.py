@@ -293,7 +293,10 @@ class TownScene(MapScene):
                 marks.append((self.board_x, ground - 60, HAND_IN_MARK))
         for quest in quests.active(self.game):
             step = quests.current(self.game, quest.key)
-            route = ROUTES.get(step.target) if step.kind == "defeat" else None
+            route = None
+            if step.kind == "defeat":  # a route's boss, or one of its map trainers (the Lift Key Guard)
+                route = ROUTES.get(step.target) or next(
+                    (r for r in ROUTES.values() if any(t.key == step.target for t in r.trainers)), None)
             route = route if route and route.building else None
             # (A route without towns, a recruitment map, starts in every such building.)
             if (step.kind == "visit" and step.town == self.town.key) or (
