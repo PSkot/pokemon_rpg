@@ -29,7 +29,7 @@ from ..world import tileset
 from ..world import tower
 from ..world.instance import RIVAL_STARTER, RIVAL_STARTER_EVOLVED, Instance, Stair, Trainer
 from ..world.level import EMPTY, PLATFORM, SOLID, TILE, Level, Spawn, extra_member
-from ..world.player import Controls, Player
+from ..world.player import FOOT_SINK, Controls, Player
 from ..world import quests
 from ..world.spinners import layout_of
 from ..world.progress import Game
@@ -147,7 +147,8 @@ class WildPokemon:
             ground = self.level.ground_y(x) if self.level and not self.boss else self.ground_y
             # The leader's neighbours stand behind it; a boss looms behind its escort instead.
             back = abs(pos - lead) % 2 == 1 and not self.boss
-            feet = ground + self.members[i].foot_sink * self.scales[i] - (BACK_ROW_LIFT if back else 0)
+            # (sunk into the ground like the player, `FOOT_SINK`: the sheets' feet are drawn at a 3/4 angle)
+            feet = ground + (self.members[i].foot_sink + FOOT_SINK) * self.scales[i] - (BACK_ROW_LIFT if back else 0)
             spots.append((back, (i == 0) != self.boss, self.members[i], anims[i], x, feet))
         spots.sort(key=lambda s: (not s[0], s[1]))
         return [(sp, anim, x, feet, back) for back, _, sp, anim, x, feet in spots]
@@ -724,7 +725,7 @@ class OverworldScene(MapScene):
 
     def _folk_top(self, folk, x: float) -> float:
         species, anim = self._folk_anim(folk)
-        return anim.body_rect(0, x, self.level.ground_y(x) + species.foot_sink).top
+        return anim.body_rect(0, x, self.level.ground_y(x) + species.foot_sink + FOOT_SINK).top
 
     def markers(self) -> list[tuple[float, float, tuple]]:
         """Over a room's folk: a quest step that waits for them."""
@@ -1061,7 +1062,8 @@ class OverworldScene(MapScene):
         for folk, x in self.folk:  # facing the player
             species, anim = self._folk_anim(folk)
             flip, index = self.player.x < x, anim.index_at(self.t)
-            layer.blit(anim.frame(index, flip), anim.place(index, x, self.level.ground_y(x) + species.foot_sink, flip))
+            layer.blit(anim.frame(index, flip), anim.place(index, x, self.level.ground_y(x) + species.foot_sink + FOOT_SINK,
+                                                           flip))
 
     def draw_overlay(self, window: pygame.Surface) -> None:
         super().draw_overlay(window)

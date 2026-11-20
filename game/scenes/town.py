@@ -24,6 +24,7 @@ from ..world import quests
 from ..world.quests import QUESTS
 from ..world.instance import ROUTES, Instance
 from ..world.level import TILE
+from ..world.player import FOOT_SINK
 from ..world.progress import Game
 from ..mechanics.pokemon import SPECIES, animations
 from ..world.towns import TOWNS, Building, Folk, Town, building_mid
@@ -36,8 +37,8 @@ from .overworld import HAND_IN_MARK, QUEST_MARK, Doorway, MapScene, OverworldSce
 
 BANNER_TIME = 2.5   # seconds the town's name shows on arrival
 ARRIVE_GAP = 3 * TILE  # how far from the doorway the player arrives
-class _NPC:  # what an NPC townsfolk stands like (`Folk.npc`): no foot sink
-    foot_sink = 0
+class _NPC:  # what an NPC townsfolk stands like (`Folk.npc`): drawn flat on the ground
+    foot_sink = -FOOT_SINK  # (cancels the sink every species' sprite gets, below)
 
 
 @cache
@@ -153,7 +154,7 @@ class TownScene(MapScene):
 
     def _folk_top(self, folk: Folk) -> float:
         species, anim = self._folk_anim(folk)
-        return anim.body_rect(0, folk.x, self.level.ground_y(0) + species.foot_sink).top
+        return anim.body_rect(0, folk.x, self.level.ground_y(0) + species.foot_sink + FOOT_SINK).top
 
     def _trial_from(self, folk: Folk):
         """The route `folk` sends the player to now (an active quest is at
@@ -340,7 +341,8 @@ class TownScene(MapScene):
             species, anim = self._folk_anim(folk)
             flip = self.player.x < folk.x and not folk.asleep
             index = anim.index_at(self.t)
-            layer.blit(anim.frame(index, flip), anim.place(index, folk.x, ground + species.foot_sink, flip))
+            # (sunk into the ground like the player: the sheets' feet are drawn at a 3/4 angle)
+            layer.blit(anim.frame(index, flip), anim.place(index, folk.x, ground + species.foot_sink + FOOT_SINK, flip))
         for side in ("left", "right"):
             if all(where != side for _, _, where in self.doors):  # the town ends here (for now)
                 x = TILE if side == "left" else self.level.width - 5 * TILE

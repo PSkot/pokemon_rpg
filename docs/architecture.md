@@ -656,6 +656,10 @@ you are working on.
   Gastly, Haunter (Zubat as style reference), Cubone and Marowak
   (Sandshrew's); Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
   their candidates faced left). Placeholder quality: likely to be redone.
+- On maps, every species' sprite is drawn 3 px into the ground like the
+  player's (`player.FOOT_SINK`: the sheets' feet are at a 3/4 angle), so
+  townsfolk and wild packs stand in the grass, not on top of it; props
+  (the smith, `town._NPC`) aren't sunk. Battles don't sink sprites.
 - A move's `anim` plays if the species has that animation; otherwise the
   species' `fight_anim` does (no move-specific sheets for now).
 - Every species' animations are defined in `pokemon.py` (`AnimSpec`: sheet,
