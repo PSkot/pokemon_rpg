@@ -206,6 +206,9 @@ class PauseMenu:
             keys = list(TOWNS)
             self.teleport_to = keys[(keys.index(self.teleport_to) + step) % len(keys)]
             return
+        prefs = saves.load_prefs()  # remembered for the next start (in the browser: its localStorage)
+        prefs["dev"] = DEV.prefs()
+        saves.save_prefs(prefs)
         pygame.display.set_caption(" ".join(p for p in (settings.TITLE, DEV.summary() and f"[{DEV.summary()}]") if p))
 
     def _handle_saves(self, event: pygame.event.Event) -> None:

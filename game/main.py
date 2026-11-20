@@ -20,6 +20,7 @@ import traceback
 import pygame
 
 from . import saves, settings
+from .dev import DEV
 from .engine import touch, ui
 from .engine.scene import Scene, Transition
 from .scenes.pause import PauseMenu
@@ -50,11 +51,13 @@ def fit_canvas(size: tuple[int, int]) -> None:
 async def main() -> None:
     pygame.init()
     touch.init()
-    touch.configure(saves.load_prefs().get("touch", {}))
+    prefs = saves.load_prefs()
+    touch.configure(prefs.get("touch", {}))
+    DEV.configure(prefs.get("dev", {}))  # (the dev password and settings, if this machine or browser has them)
     # With touch controls, the window has side panels for them; the game is
     # drawn in the middle (`window`).
     screen, window = _make_window()
-    pygame.display.set_caption(settings.TITLE)
+    pygame.display.set_caption(" ".join(p for p in (settings.TITLE, DEV.summary() and f"[{DEV.summary()}]") if p))
     canvas = pygame.Surface(settings.LOGICAL_SIZE)
     clock = pygame.time.Clock()
 

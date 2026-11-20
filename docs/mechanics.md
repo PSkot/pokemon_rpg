@@ -1524,12 +1524,17 @@ The bag keeps the gems (`Bag.gems`, shown in the Key items pocket), and
 
 ## Dev mode
 
-`game/dev.py` (switched on in the pause menu, for testing; not saved)
+`game/dev.py` (switched on in the pause menu, for testing; never part of a save)
 
-- **Password:** switching it on the first time in a session asks for a
-  password (`dev.PASSWORD`; `scenes/dev_menu.PasswordPrompt`): typed on a
+- **Password:** switching it on the first time asks for a password
+  (`dev.PASSWORD`; `scenes/dev_menu.PasswordPrompt`): typed on a
   keyboard (Enter checks it), or picked letter by letter without one
   (Up/Down, Space adds, Left deletes, "OK" checks). Esc cancels.
+- **Remembered:** once the password is given, that machine or browser
+  doesn't ask again. Dev mode's on/off and its settings (XP boost, God
+  mode, Skip packs) come back on the next start too. They're kept in the
+  player's settings (`saves/settings.json`, key "dev", `DevMode.prefs` /
+  `configure`), which in the browser live in its localStorage.
 
 - **XP boost** ×3/×5/×10/×20 multiplies the total XP of a won battle
   before it's shared out, and a quest's XP.

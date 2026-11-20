@@ -3,8 +3,10 @@
 While it's on: XP from battles can be multiplied, god mode makes the party
 take no damage and knocks out every enemy it hits, pack skipping lets the
 player walk through wild packs and map trainers' bands (not bosses), and
-items can be made to order (pause menu → Add item). The settings only last until the game
-is closed; they aren't saved.
+items can be made to order (pause menu → Add item). Once the password has
+been given, it and these settings are remembered in the player's settings
+(saves.save_prefs: settings.json, and in the browser its localStorage), so
+they come back on the next start; they're never part of a save.
 """
 
 from dataclasses import dataclass
@@ -19,7 +21,7 @@ class DevMode:
     xp_boost: int = 1   # one of XP_BOOSTS
     god: bool = False
     skip: bool = False  # walk through packs (wild groups and map trainers; bosses still fight)
-    unlocked: bool = False  # the password was given (this session: asked once)
+    unlocked: bool = False  # the password was given (asked once; remembered in the player's settings)
 
     @property
     def xp_multiplier(self) -> int:
@@ -32,6 +34,22 @@ class DevMode:
     @property
     def skip_packs(self) -> bool:
         return self.enabled and self.skip
+
+    def prefs(self) -> dict:
+        """What's remembered in the player's settings ({} until unlocked)."""
+        if not self.unlocked:
+            return {}
+        return {"unlocked": True, "enabled": self.enabled, "xp_boost": self.xp_boost, "god": self.god,
+                "skip": self.skip}
+
+    def configure(self, prefs: dict) -> None:
+        """Back as remembered (`prefs`), at the start."""
+        if not prefs.get("unlocked"):
+            return
+        self.unlocked = True
+        self.enabled = bool(prefs.get("enabled"))
+        self.xp_boost = prefs.get("xp_boost") if prefs.get("xp_boost") in XP_BOOSTS else 1
+        self.god, self.skip = bool(prefs.get("god")), bool(prefs.get("skip"))
 
     def summary(self) -> str:
         """What's on, e.g. "DEV  XP×5  GOD" ("" while dev mode is off)."""
