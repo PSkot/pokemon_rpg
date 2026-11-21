@@ -237,7 +237,7 @@ SPECIES.update({
     "scyther": _placeholder("123_scyther", "Scyther", (70, 110, 80, 105, 55), ('bug', 'flying'), exp=187),
     "kangaskhan": _placeholder("115_kangaskhan", "Kangaskhan", (105, 95, 80, 90, 40), ('normal',), exp=175),
     "tauros": _placeholder("128_tauros", "Tauros", (75, 100, 95, 110, 70), ('normal',), exp=211),
-    "rhyhorn": _placeholder("111_rhyhorn", "Rhyhorn", (80, 85, 95, 25, 30), ('ground', 'rock'), exp=135),
+    "rhyhorn": _animated("rhyhorn", "Rhyhorn", (80, 85, 95, 25, 30), ("ground", "rock"), exp=135, hit=4),
     "rhydon": _placeholder("112_rhydon", "Rhydon", (105, 130, 120, 40, 45), ('ground', 'rock'), exp=204),
     "exeggcute": _placeholder("102_exeggcute", "Exeggcute", (60, 40, 80, 40, 60), ('grass', 'psychic'), exp=98),
     "exeggutor": _placeholder("103_exeggutor", "Exeggutor", (95, 95, 85, 55, 125), ('grass', 'psychic'), exp=212),
