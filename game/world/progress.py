@@ -40,6 +40,7 @@ class Game:
     shop_bought: dict[str, list[int]] = field(default_factory=dict)
     slots: int = 1  # places in the party (how many fight): +1 per Teamwork Ribbon used
     tower_best: int = 0  # the Battle Tower's highest floor cleared (world/tower.py)
+    visited: set[str] = field(default_factory=set)  # towns and routes been to (the Town Map, world/townmap.py)
 
     def arrive(self, town: str) -> None:
         """The player arrived in `town` from a route: its gear counter restocks."""

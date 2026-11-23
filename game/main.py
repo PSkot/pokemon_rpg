@@ -139,10 +139,10 @@ def _frame(clock, canvas, screen, window, scene, pause):
                 pause = None
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and scene.pausable:
             pause = PauseMenu(scene.save_point(), scene.bag)
-        elif (event.type == pygame.KEYDOWN and event.key in (pygame.K_i, pygame.K_q) and scene.touch_map
-              and scene.save_point() is not None):  # the bag or the quest log, straight from a map
+        elif (event.type == pygame.KEYDOWN and event.key in (pygame.K_i, pygame.K_q, pygame.K_m) and scene.touch_map
+              and scene.save_point() is not None):  # the bag, the quest log or the Town Map, straight from a map
             pause = PauseMenu(scene.save_point(), scene.bag)
-            pause.open_bag() if event.key == pygame.K_i else pause.open_quests()
+            {pygame.K_i: pause.open_bag, pygame.K_q: pause.open_quests, pygame.K_m: pause.open_map}[event.key]()
         else:
             scene.handle_event(event)
     for pos, drag in touch.taps():

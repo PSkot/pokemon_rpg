@@ -585,8 +585,20 @@ you are working on.
   `Scene.bag`) and Teleport (Left/Right picks a town; Enter goes there,
   as a fresh arrival: healed, it becomes the respawn town; from map scenes
   only). Active settings show in the window title and on the map.
+- Town Map (`world/townmap.py` data, `scenes/town_map.TownMap` screen; M or
+  the Map touch pill on a map, hosted by the pause menu like the bag and
+  quest log): a schematic Kanto (`NODES` grid spots for towns, Celadon's
+  parts as one; `EDGES` route lines: road, cave or tunnel). Shows places
+  in `Game.visited` (saved; older saves: cleared routes, shopped towns,
+  the last town), dimmed and unnamed what leads out of them, a blinking
+  ring where the player is (`here`: a gym, in-town dungeon or home ground
+  is its town's place), and quest marks (`marks`: "!" a quest to take,
+  a diamond an active step's place, "?" hand-ins; evolution quests in
+  pink). The cursor (arrows) picks a place; `info` lists its buildings,
+  givers (evolution givers still waiting: the species and level they
+  need), steps there, and a route's wild Pokémon.
 - Controls: arrows move, Up opens chests, Shift runs, Space jumps, I bag,
-  Q quest log, Tab party, Esc pause menu. X (B on touch) goes back / closes
+  Q quest log, M Town Map, Tab party, Esc pause menu. X (B on touch) goes back / closes
   in every menu and panel (the pause menu too). (There are
   no attacks on the map: fights happen in battles.)
 - Touch controls (`engine/touch.py`, for phones): a virtual gamepad in

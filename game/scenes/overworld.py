@@ -44,7 +44,7 @@ from .spores import SporeGarden
 from .summary import SummaryScene
 
 HELP = ("Left/Right: walk   Shift: run   Space: jump (hold = higher)   Up: open / go through"
-        "   Tab: party   I: bag   Q: quests   Esc: menu")
+        "   Tab: party   I: bag   Q: quests   M: map   Esc: menu")
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z, pygame.K_UP)
 BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE)  # also close a panel (B on touch screens)
 
@@ -415,7 +415,7 @@ class MapScene(Scene):
     Subclasses put things on it."""
 
     touch_map = True
-    touch_keys = ((pygame.K_i, "Bag"), (pygame.K_q, "Quests"))
+    touch_keys = ((pygame.K_i, "Bag"), (pygame.K_q, "Quests"), (pygame.K_m, "Map"))
 
     def __init__(self, game: Game, level: Level):
         self.game = game
@@ -606,6 +606,7 @@ class OverworldScene(MapScene):
         self.instance = instance
         level, palette = self.level, self.level.theme.palette
         route = instance.route
+        game.visited.add(route.key)
         # Trainers stand in for some of the map's wild groups (each always at
         # the same one, beaten or not); a gym has nothing else.
         trainers = [t for t in route.trainers if t.map == instance.index]

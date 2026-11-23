@@ -12,6 +12,7 @@ from .bag import BagScreen
 from .dev_menu import ItemMaker, PasswordPrompt
 from ..world.towns import TOWNS
 from .quest_ui import QuestLog
+from .town_map import TownMap
 from .town import TownScene
 from .save_menu import DELETE_PILL, NEW_SAVE, SaveList
 
@@ -29,7 +30,7 @@ class PauseMenu:
     Resume, Save, Load, Fullscreen (in the browser), Dev mode or Quit. Esc
     (or X / B) again resumes, so a stray Esc does no harm. It also hosts the
     in-game screens opened straight from a map (the bag: I, the quest log:
-    Q), which close back to the game. Dev mode's settings (dev.py) are toggled here, with
+    Q, the Town Map: M), which close back to the game. Dev mode's settings (dev.py) are toggled here, with
     Enter or Left/Right.
 
     `save_point` is what the scene underneath can be saved as (see
@@ -48,6 +49,7 @@ class PauseMenu:
         self.items: ItemMaker | None = None  # dev mode's item maker, when open
         self.password: PasswordPrompt | None = None  # asked before dev mode first switches on
         self.log: QuestLog | None = None     # the quest log, when open
+        self.town_map: TownMap | None = None  # the Town Map, when open
         self.controls: ControlsMenu | None = None  # the touch controls' layout, when open
         self.bag_screen: BagScreen | None = None   # the bag, when open
         self.only = False  # opened straight from the map for one screen (bag, quest log): closing it resumes
@@ -94,6 +96,11 @@ class PauseMenu:
     def open_quests(self) -> None:
         """Just the quest log (Q on a map): closing it resumes."""
         self.log, self.only = QuestLog(self.save_point.game), True
+
+    def open_map(self) -> None:
+        """Just the Town Map (M on a map): closing it resumes."""
+        from ..world import townmap
+        self.town_map, self.only = TownMap(self.save_point.game, townmap.here(self.save_point)), True
 
     def _label(self, option: str) -> str:
         if option == "Dev mode":
@@ -143,6 +150,11 @@ class PauseMenu:
         if self.log:
             if event.type == pygame.KEYDOWN and self.log.handle_key(event.key):
                 self.log = None
+                self.done = self.only
+            return
+        if self.town_map:
+            if event.type == pygame.KEYDOWN and self.town_map.handle_key(event.key):
+                self.town_map = None
                 self.done = self.only
             return
         if self.controls:
@@ -251,6 +263,9 @@ class PauseMenu:
             return
         if self.log:
             self.log.draw_overlay(window)
+            return
+        if self.town_map:
+            self.town_map.draw_overlay(window)
             return
         if self.controls:
             self.controls.draw_overlay(window)

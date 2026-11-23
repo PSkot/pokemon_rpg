@@ -67,6 +67,7 @@ class TownScene(MapScene):
         super().__init__(game, town.level())
         self.town = town
         game.town = town.key
+        game.visited.add(town.key)
         self.healed = game.heal()
         level, palette = self.level, self.level.theme.palette
         ground = level.ground_y(0)
