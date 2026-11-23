@@ -1461,8 +1461,9 @@ Mew opens its menu: Climb, the gem exchange (gear or Pokémon), how the
 tower works, and Leave. Up at the stairs also starts a climb.
 
 - **25 floors**, in five tiers of five. Each floor is a short hall up to an
-  arena, fought like a gym: pick the team (as many as the party's places),
-  then **waves** of challengers one after another, then the floor master's
+  arena, fought like a gym: pick the team (`tower.TEAM` by tier: **3** on
+  floors 1–10, 4 on 11–15, 5 on 16–20, 6 on 21–25; more if the party has
+  more places), from the party **and the reserve** alike, then **waves** of challengers one after another, then the floor master's
   band. Every run **starts on floor 1**, and Mew heals the team first.
 - **Gates:** floors 1–5 open with the tower (the Rainbow Badge, the 4th
   badge). The next fives need more badges, in any order
@@ -1481,13 +1482,13 @@ tower works, and Leave. Up at the stairs also starts a climb.
 - **Saving:** a run isn't saved. A save in the lobby or on a floor is a
   save outside the tower's doors (`battle_tower.lobby_location`).
 
-| Tier | Floors | Look | Waves + master | Band (master's) | Talents | Gear worn (pieces; master +1) |
-| --- | --- | --- | --- | --- | --- | --- |
-| Marble Halls | 1–5 | marble and gold | 2 + 1 | 3 (4) | half | 1: Common 3 / Uncommon 2 |
-| Sky Gardens | 6–10 | ruins in the clouds | 3 + 1 | 3 (4) | half | 1: Uncommon 3 / Rare 1 |
-| Storm Spire | 11–15 | lightning and crystals | 3 + 1 | 4 (5) | all | 2: Uncommon 1 / Rare 3 / Epic 1 |
-| Celestial Summit | 16–20 | the edge of space | 4 + 1 | 4 (5) | all | 2: Rare 2 / Epic 3 |
-| Eclipse Throne | 21–25 | black and gold under an eclipse | 4 + 1 | 5 (6) | all | 3: Rare 1 / Epic 5 |
+| Tier | Floors | Look | Team | Waves + master | Band (master's) | Talents | Gear worn (pieces; master +1) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Marble Halls | 1–5 | marble and gold | 3 | 2 + 1 | 3 (4) | half | 1: Common 3 / Uncommon 2 |
+| Sky Gardens | 6–10 | ruins in the clouds | 3 | 3 + 1 | 3 (4) | half | 1: Uncommon 3 / Rare 1 |
+| Storm Spire | 11–15 | lightning and crystals | 4 | 3 + 1 | 4 (5) | all | 2: Uncommon 1 / Rare 3 / Epic 1 |
+| Celestial Summit | 16–20 | the edge of space | 5 | 4 + 1 | 4 (5) | all | 2: Rare 2 / Epic 3 |
+| Eclipse Throne | 21–25 | black and gold under an eclipse | 6 | 4 + 1 | 5 (6) | all | 3: Rare 1 / Epic 5 |
 
 - **Levels:** each tier starts about at the party's expected level when it
   opens (Lv38 after the Celadon Gym, about 48 at 6 badges, 52 at 7, 56 at

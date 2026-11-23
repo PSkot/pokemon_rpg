@@ -69,6 +69,9 @@ POOLS = (
 BOSS_FLOORS = {5: "nidoking", 10: "gengar", 15: "gyarados", 20: "aerodactyl", 25: "dragonite"}
 WAVES = (2, 3, 3, 4, 4)     # waves before the master's band, by tier
 BAND = (3, 3, 4, 4, 5)      # Pokémon in a band, by tier (a master's band: one more)
+# The team the player picks for a floor, by tier: from the party and the
+# reserve alike, whatever the party's places (`Game.slots`).
+TEAM = (3, 3, 4, 5, 6)
 # The gear the tower's Pokémon wear: rarities and pieces (each, and the master), by tier.
 WORN = ((("Common", 3), ("Uncommon", 2)), (("Uncommon", 3), ("Rare", 1)), (("Uncommon", 1), ("Rare", 3), ("Epic", 1)),
         (("Rare", 2), ("Epic", 3)), (("Rare", 1), ("Epic", 5)))
@@ -159,7 +162,7 @@ def _floor(floor: int) -> Route:
     name = f"{TIER_NAMES[t]}: Floor {floor}"
     return Route(floor_key(floor), name, TOWER_THEMES[t], maps=1, towns=(LOBBY_TOWN, LOBBY_TOWN), boss=True,
                  boss_group=master, boss_scale=2 if leader else 1, trainer=f"Floor {floor} Master", boss_chest="",
-                 waves=waves, wave_team=6, wild=False, cols=44, loot=WORN[t], boss_loot=WORN[t], tower=floor)
+                 waves=waves, wave_team=TEAM[t], wild=False, cols=44, loot=WORN[t], boss_loot=WORN[t], tower=floor)
 
 
 TOWER_ROUTES = {r.key: r for r in map(_floor, range(1, FLOORS + 1))}

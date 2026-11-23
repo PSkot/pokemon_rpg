@@ -22,11 +22,14 @@ class TeamPick:
     RECT = pygame.Rect(150, 60, 340, 240)
     ROW_H = 18
     PAD = 9
+    SHOWN = 7  # Pokémon rows on screen at once (the list scrolls)
 
-    def __init__(self, route: Route, party: list[Monster], limit: int):
+    def __init__(self, route: Route, party: list[Monster], limit: int, bench: list[Monster] = ()):
         self.route = route
-        self.limit = limit  # at most this many (quests.active_limit)
-        self.party = party
+        self.limit = limit  # at most this many (quests.active_limit; the tower's team size)
+        self.party = party  # who may be picked (the tower: the party, then the reserve)
+        self.bench = bench  # those of them from the reserve (marked as such)
+        self.top = 0        # the first Pokémon row shown
         self.picked: list[Monster] = []
         self.choice = 0
         self.team: list[Monster] | None = None
@@ -60,14 +63,35 @@ class TeamPick:
                     self.choice = len(rows) - 1  # on to Fight!
         elif key in BACK_KEYS:
             return True
+        self._scroll()
         return False
+
+    def _scroll(self) -> None:
+        """Keep the cursor's row on screen (Fight! is always shown)."""
+        if self.choice < len(self.party):
+            self.top = min(self.choice, max(self.top, self.choice - self.SHOWN + 1))
+
+    def _shown(self) -> list[tuple[int, Monster | None]]:
+        """(screen row, row) for what's on screen: a window of Pokémon, then Fight!."""
+        mons = list(enumerate(self.party))[self.top:self.top + self.SHOWN]
+        return [(i, m) for i, (_, m) in enumerate(mons)] + [(len(mons), None)]
+
+    def _screen_row(self) -> int:
+        return min(self.choice - self.top, self.SHOWN) if self.choice < len(self.party) else len(self._shown()) - 1
 
     def _row_y(self, i: int) -> int:
         return self.RECT.y + self.PAD + 60 + i * self.ROW_H
 
     def draw(self, canvas: pygame.Surface) -> None:
         ui.window_box(canvas, self.RECT)
-        ui.cursor(canvas, self.RECT.x + 14, self._row_y(self.choice) + 5)
+        ui.cursor(canvas, self.RECT.x + 14, self._row_y(self._screen_row()) + 5)
+        x = self.RECT.x + 140  # more above / below: small arrows by the list
+        if self.top:
+            y = self._row_y(0) - 5
+            pygame.draw.polygon(canvas, ui.GREY, [(x - 4, y + 3), (x + 4, y + 3), (x, y - 1)])
+        if self.top + self.SHOWN < len(self.party):
+            y = self._row_y(self.SHOWN) - 3
+            pygame.draw.polygon(canvas, ui.GREY, [(x - 4, y - 3), (x + 4, y - 3), (x, y + 1)])
 
     def draw_overlay(self, window: pygame.Surface) -> None:
         r, route = self.RECT, self.route
@@ -82,7 +106,7 @@ class TeamPick:
         else:
             ui.text(window, f"Only your {SPECIES[route.wave_species[0]].name} can take this on (in the party, standing).",
                     (r.x + 12, r.y + self.PAD + 32), ui.GREY, size=20)
-        for i, m in enumerate(self._rows()):
+        for i, m in self._shown():
             y = self._row_y(i)
             if m is None:
                 ready = self.needed and len(self.picked) == self.needed
@@ -90,6 +114,8 @@ class TeamPick:
                 continue
             color = PICKED_COLOR if m in self.picked else ui.WHITE if self.can_pick(m) else ui.GREY
             ui.text(window, m.name, (r.x + 22, y), color, size=24)
+            if any(m is b for b in self.bench):
+                ui.text(window, "reserve", (r.x + 150, y + 2), ui.GREY, size=20)
             ui.text(window, f"Lv{m.level}   {m.hp}/{m.max_hp}", (r.right - 12, y + 2), ui.GREY, size=20,
                     align="right")
         ui.text(window, "Enter: pick   X: not yet", (r.right - 12, r.bottom - self.PAD - 9), ui.GREY, size=20,
