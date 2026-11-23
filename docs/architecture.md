@@ -662,7 +662,8 @@ you are working on.
   Gastly, Haunter (Zubat as style reference), Cubone and Marowak
   (Sandshrew's); and the Rocket Hideout's Koffing (Gastly's), Grimer
   (Ekans'), Hypno (Drowzee's), Rhyhorn (Nidorino's) and Kangaskhan
-  (Drowzee's outline and shading only); Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
+  (Drowzee's outline and shading only); and Sandslash, Graveler and
+  Parasect (their pre-evolutions'); Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
   their candidates faced left). Placeholder quality: likely to be redone.
 - On maps, every species' sprite is drawn 3 px into the ground like the
   player's (`player.FOOT_SINK`: the sheets' feet are at a 3/4 angle), so
