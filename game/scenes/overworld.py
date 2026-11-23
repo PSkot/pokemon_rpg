@@ -989,12 +989,7 @@ class OverworldScene(MapScene):
                 continue
             if touching and wild.armed:
                 if wild is self.boss and self.instance.route.waves:  # a gym's arena: pick the team first
-                    route = self.instance.route
-                    if route.tower:  # the Battle Tower: its own team size, from the party and the reserve
-                        pick = TeamPick(route, self.party + self.game.reserve,
-                                        max(route.wave_team, quests.active_limit(self.game)), bench=self.game.reserve)
-                    else:
-                        pick = TeamPick(route, self.party, quests.active_limit(self.game))
+                    pick = TeamPick(self.instance.route, self.party, quests.active_limit(self.game))
                     self.show(pick, after=lambda: pick.team and self._start_waves(wild, pick.team))
                 else:
                     self._fight(wild)

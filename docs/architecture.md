@@ -445,8 +445,7 @@ you are working on.
   for a piece, slot picked; `GEM_POKEMON`: Dratini/Chansey/Lapras, each
   once, "mew:<species>" in `Game.trainers`). 25 floors (`TOWER_ROUTES`,
   "tower_1".."tower_25", `Route.tower` = the floor): each a gym-like hall of
-  waves then a master's band (`trainer`; the team, `wave_team` = `TEAM` by tier, is picked
-  in `TeamPick` from the party and the reserve, `bench`), Lv35 → Lv68
+  waves then a master's band (`trainer`), Lv35 → Lv68
   (`floor_level`, `TIER_LEVELS`), five tiers (`TIER_NAMES`, `POOLS`, `WAVES`, `BAND`,
   `WORN`, `TALENTS`; themes `TOWER_THEMES`, walls and backdrops
   `tower_1..5.png`; giant masters on every fifth, `BOSS_FLOORS`), opening
