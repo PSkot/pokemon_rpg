@@ -221,7 +221,12 @@ TOWNS = {t.key: t for t in [
        folk=(Folk("mt_moon_clefairy", "Clefairy", "clefairy", 32, (
            "Clefairy! Clefairy come from the moon, you know. Up in the crater, on clear nights, we dance.",
            "Fairy... The cave's Zubat are so rude. They never come to the dances.",
-       )),)),
+       )),
+             # Evolution quest: Sandshrew -> Sandslash.
+             Folk("mt_moon_sandslash", "Sandslash", "sandslash", 8, (
+                 "Shhh-rrk. Route 3 is all sand and stones. A Sandslash's paradise.",
+                 "My spines? They grow back. Takes a week, though. Don't ask how I know.",
+             )))),
     # Route 4, out of Mt. Moon's far side: a stop at the cave's exit, where
     # the road on (route_4_east) runs down to Cerulean City.
     Town("route_4", "Route 4", 40, (), exits=(("left", "mt_moon_cave"), ("right", "route_4_east")), home_col=8,
@@ -290,6 +295,11 @@ TOWNS = {t.key: t for t in [
                "Dig dig! We dug the Underground Path out again. It runs under Saffron City to Route 6.",
                "Dig...? Some of us stayed down in the tunnel. They don't like being stepped on. Dig dig!",
            )),
+           # Evolution quest: Paras -> Parasect.
+           Folk("route_5_parasect", "Parasect", "parasect", 40, (
+               "...The mushroom says hello. I mostly do what the mushroom says.",
+               "...The Day Care's garden has the softest soil. The mushroom likes it there.",
+           )),
        )),
     # The top of Route 6, at the Underground Path's south end: Saffron
     # City's south gate (shut too), and the road on down to Vermilion.
@@ -352,6 +362,11 @@ TOWNS = {t.key: t for t in [
                  "Snorlax is snoring loudly. Pushing, shouting... nothing wakes it. (Maybe something will, one "
                  "day.)",
              ), asleep=True),
+             # Evolution quest: Drowzee -> Hypno.
+             Folk("route_11_hypno", "Hypno", "hypno", 13, (
+                 "Look into the pendulum... no? Pity. You'd have slept so well.",
+                 "That Snorlax has the sweetest dreams in Kanto. I've been snacking on them for a week.",
+             )),
          )),
     # Route 2's north end, at the far end of Diglett's Cave: Professor Oak's
     # aide waits by the cave with HM05 Flash (as in Red/Blue).
@@ -368,7 +383,12 @@ TOWNS = {t.key: t for t in [
          folk=(Folk("route_10_voltorb", "Voltorb", "voltorb", 32, (
              "Bzzt! The Power Plant is down the river from here. It's been shut for ages... Bzzt.",
              "Rock Tunnel is right there. Pitch dark! Even we Voltorb don't glow enough to light it.",
-         )),)),
+         )),
+               # Evolution quest: Geodude -> Graveler.
+               Folk("route_10_graveler", "Graveler", "graveler", 9, (
+                   "Grrrock. Rock Tunnel's my home. Dark, cool, full of rocks. What more could you want?",
+                   "Four arms, and I still can't scratch my own back. It's a rock thing.",
+               )))),
     # Lavender Town, at Rock Tunnel's south end: a small, quiet town, home
     # of the Pokémon Tower, where Pokémon are laid to rest (its ghosts are
     # for later: the tower is shut for now).

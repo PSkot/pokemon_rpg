@@ -537,7 +537,12 @@ you are working on.
   Pitcher Grove), and Zubat, Ekans, Meowth and Machop (`evolve_golbat`,
   `evolve_arbok`, `evolve_persian`, `evolve_machoke`: Route 6's Golbat,
   Route 4's Arbok, Vermilion's Persian, Lavender's Machoke; their home
-  grounds `golbat_roost`, `snake_pit`, `alley_cats`, `training_grounds`).
+  grounds `golbat_roost`, `snake_pit`, `alley_cats`, `training_grounds`),
+  and Sandshrew, Paras, Geodude and Drowzee (`evolve_sandslash`,
+  `evolve_parasect`, `evolve_graveler`, `evolve_hypno`: the Mt. Moon
+  Center's Sandslash, Route 5's Parasect, the Route 10 Center's Graveler,
+  the Route 11 Gate's Hypno; `spike_burrows`, `mushroom_hollow`,
+  `rumbling_quarry`, `dreamers_hollow`).
 - Recruitment (`docs/quests.md` → Recruitment): won wild battles on routes
   (not trainers', gyms' or bosses': `won_battle(recruits=)`) count
   defeated Pokémon per line (`Game.defeated`, `pokemon.line_base`); at

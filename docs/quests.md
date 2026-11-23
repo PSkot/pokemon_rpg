@@ -733,6 +733,21 @@ and hard-hitting, comes in lower).
 | Last | Evolve Zubat into Golbat | Evolve Ekans into Arbok | Evolve Meowth into Persian | Evolve Machop into Machoke |
 | Rewards | ₽700, 500 XP | ₽700, 500 XP | ₽900, 700 XP | ₽900, 700 XP |
 
+### Sandslash (Lv22), Parasect (Lv24), Graveler (Lv25) and Hypno (Lv26)
+
+The same way again (the second batch). Tuned like the first: with a pair
+(the starter 3 levels up, the Pokémon at its level, 2 Super Potions), the
+home grounds are won about 55–63% of the time.
+
+| | Sharp as Spines (`evolve_sandslash`) | The Mushroom Decides (`evolve_parasect`) | Rolling Stones (`evolve_graveler`) | Sweet Dreams (`evolve_hypno`) |
+| --- | --- | --- | --- | --- |
+| Giver | Sandslash, the Mt. Moon Pokémon Center | Parasect, the Route 5 stop | Graveler, the Route 10 Pokémon Center | Hypno, the Route 11 Gate |
+| 1. | Hunt 6 Ekans (Routes 3 and 4) | Hunt 6 Bellsprout (Routes 24, 25 and 5) | Hunt 6 Machop (Rock Tunnel) | Hunt 6 Spearow (Route 11) |
+| 2. Talk | Report to Sandslash | Report to Parasect | Report to Graveler | Report to Hypno |
+| 3. | Defeat the **Spike Pack** in the Spike Burrows (Route 3's look): giant Sandslash 30, Sandshrew 25 ×2 | Defeat the **Spore Colony** in Mushroom Hollow (the forest's look): giant Parasect 31, Paras 25 ×2 | Defeat the **Boulder Rollers** in the Rumbling Quarry (Diglett's Cave's look): giant Graveler 35, Geodude 28 ×2 | Defeat the **Dream Eaters** in Dreamer's Hollow (Route 11's look): giant Hypno 29, Drowzee 23 ×2 |
+| Last | Evolve Sandshrew into Sandslash | Evolve Paras into Parasect | Evolve Geodude into Graveler | Evolve Drowzee into Hypno |
+| Rewards | ₽700, 500 XP | ₽800, 600 XP | ₽800, 600 XP | ₽900, 700 XP |
+
 ### Dugtrio (Lv26)
 
 | | Three Heads Are Better (`evolve_dugtrio`) |

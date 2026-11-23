@@ -564,6 +564,17 @@ ROUTES.update({r.key: r for r in [
           (31, 27), town="vermilion"),
     _feud("training_grounds", "Training Grounds", ROUTE_9, "machop", "machoke", "Iron Lifters", "lavender_machoke",
           (33, 28), town="lavender"),
+    # (quests evolve_sandslash, evolve_parasect, evolve_graveler, evolve_hypno;
+    # tuned like the four above: about 55-63%. Hypno's band, with Hypnosis,
+    # comes in lower; Graveler's, hard to dent, higher.)
+    _feud("spike_burrows", "Spike Burrows", ROUTE_3, "sandshrew", "sandslash", "Spike Pack", "mt_moon_sandslash",
+          (30, 25), town="mt_moon"),
+    _feud("mushroom_hollow", "Mushroom Hollow", FOREST, "paras", "parasect", "Spore Colony", "route_5_parasect",
+          (31, 25), town="route_5"),
+    _feud("rumbling_quarry", "Rumbling Quarry", DIGLETTS_CAVE, "geodude", "graveler", "Boulder Rollers",
+          "route_10_graveler", (35, 28), town="route_10"),
+    _feud("dreamers_hollow", "Dreamer's Hollow", ROUTE_11, "drowzee", "hypno", "Dream Eaters", "route_11_hypno",
+          (29, 23), town="route_11"),
     # (quests evolve_gloom, evolve_weepinbell: Route 24/25's grass lines)
     _feud("stench_patch", "Stench Patch", ROUTE_25, "oddish", "gloom", "Stench Patch", "cerulean_gloom",
           (26, 21), town="cerulean"),
