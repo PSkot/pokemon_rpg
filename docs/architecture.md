@@ -260,7 +260,8 @@ you are working on.
   behind its escort). A group
   can't be jumped over: it also catches the player in a column up to
   `GROUP_REACH` above it, stopped by a platform or ceiling overhead
-  (`WildPokemon.reach_rects`), so platforms still get past. With two
+  (`WildPokemon.reach_rects`; a group partly under a platform is capped
+  there all along), so platforms still get past. With two
   fighting, about half the wild groups get one more Pokémon
   (`overworld.EXTRA_FOE_CHANCE`, `level.extra_member`; seeded by the map).
   Area levels track the party's expected level (`docs/quests.md`).
@@ -654,7 +655,9 @@ you are working on.
   Nidoking (48 px canvases, 56 px for the final forms; Nidoking's base and
   Weepinbell's mirrored, as theirs faced left), and the Pokémon Tower's
   Gastly, Haunter (Zubat as style reference), Cubone and Marowak
-  (Sandshrew's); Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
+  (Sandshrew's); and the Rocket Hideout's Koffing (Gastly's), Grimer
+  (Ekans'), Hypno (Drowzee's), Rhyhorn (Nidorino's) and Kangaskhan
+  (Drowzee's outline and shading only); Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
   their candidates faced left). Placeholder quality: likely to be redone.
 - On maps, every species' sprite is drawn 3 px into the ground like the
   player's (`player.FOOT_SINK`: the sheets' feet are at a 3/4 angle), so

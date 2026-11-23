@@ -936,7 +936,17 @@ each group catches the player in an invisible column over it, up to
 ~62 px), so it can't be jumped over from the ground. The column stops at
 the first tile overhead (a platform, also one a column to the side, or a
 cave's ceiling): a group can still be passed on a platform over it, or
-with a jump from a platform.
+with a jump from a platform. A group that is only partly under a platform
+is capped at that platform all along (the part sticking out past its end
+too), so a jump off the platform clears the whole group.
+
+**Running away** (wild battles only; trainers and bosses can't be run
+from): the chosen party member tries, with a chance by its level minus the
+highest enemy level: **75%** at an even match, **±8%** per level, between
+**10%** and **100%** (`battle.RUN_EVEN`, `RUN_PER_LEVEL`, `RUN_MIN`). So
+5 levels under the strongest enemy it's 35%, and 4 or more over it's
+sure. Failing ("Can't escape!") costs that member its turn. The hint line
+shows the chance while Run is highlighted.
 
 Route 1 (Meadow pool; Red/Blue's Route 1: only Pidgey and Rattata):
 

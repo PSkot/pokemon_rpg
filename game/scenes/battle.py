@@ -62,6 +62,12 @@ BLEED_ROUNDS = 3  # rounds a wound hurts (buffs that wound, Move.bleed)
 REST_ROUNDS = 2
 EFFECT_ROUNDS = 3  # rounds Exposing and Spiked last
 HEAL_COLOR = (120, 230, 120)
+# Running away (wild battles): the chance, in %, by the runner's level minus
+# the highest enemy level: RUN_EVEN at an even match, RUN_PER_LEVEL more
+# or less per level, between RUN_MIN and 100.
+RUN_EVEN = 75
+RUN_PER_LEVEL = 8
+RUN_MIN = 10
 XP_COLOR = (88, 168, 248)
 ENEMY_BAR = (30, 5)  # an enemy's HP bar under its feet (w, h)
 ENEMY_BAR_GAP = 5    # feet to the bar's top
@@ -612,6 +618,21 @@ class BattleScene(Scene):
             self.menu = "command"
             self._restore_cursor()
 
+    def run_chance(self, runner: Combatant) -> int:
+        """The % chance that `runner` gets the party away (`RUN_EVEN` ...)."""
+        top = max((c.monster.level for c in self.enemies if c.alive), default=0)
+        return max(RUN_MIN, min(100, RUN_EVEN + RUN_PER_LEVEL * (runner.monster.level - top)))
+
+    def _try_to_run(self) -> None:
+        """The current party member tries to run: away, or it loses its turn."""
+        if random.random() * 100 < self.run_chance(self.actor):
+            self.next_scene = Transition(self, self.return_to, flashes=0)
+            return
+        self.message = "Can't escape!"
+        self._popup(self.actor, "FAILED", ui.GREY)
+        self.actions.append(Action(self.actor, None, self.actor))  # (its turn is spent)
+        self._next_actor()
+
     def _candidates(self, user: Combatant, choice: Choice) -> list[Combatant]:
         """Who `user` can aim `choice` at."""
         own_side = self.enemies if user.enemy else self.party
@@ -706,7 +727,7 @@ class BattleScene(Scene):
                 elif command == "Run" and self.trainer:
                     self.message = "You can't run from a challenge!"
                 elif command == "Run":
-                    self.next_scene = Transition(self, self.return_to, flashes=0)
+                    self._try_to_run()
             elif key in CANCEL_KEYS:
                 self._previous_actor()
         elif self.menu == "skills":
@@ -1930,6 +1951,8 @@ class BattleScene(Scene):
         return ((pygame.K_o, "Reorder moves"),) if self.menu == "skills" else ()
 
     def _hint(self) -> str:
+        if self.menu == "command" and self.commands[self.command] == "Run" and not self.trainer:
+            return f"Run: {self.run_chance(self.actor)}% chance to get away   Enter: try   X: back"
         if self.menu == "skills" and self.ordering:
             return "Up/Down: move the skill   Enter / O: put it down"
         if self.menu == "target" and self._spread_aim:

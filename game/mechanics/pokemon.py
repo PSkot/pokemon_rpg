@@ -235,7 +235,7 @@ SPECIES.update({
     "gengar": _placeholder("094_gengar", "Gengar", (60, 65, 60, 110, 130), ('ghost', 'poison'), exp=190),
     "chansey": _placeholder("113_chansey", "Chansey", (250, 5, 5, 50, 105), ('normal',), exp=255),
     "scyther": _placeholder("123_scyther", "Scyther", (70, 110, 80, 105, 55), ('bug', 'flying'), exp=187),
-    "kangaskhan": _placeholder("115_kangaskhan", "Kangaskhan", (105, 95, 80, 90, 40), ('normal',), exp=175),
+    "kangaskhan": _animated("kangaskhan", "Kangaskhan", (105, 95, 80, 90, 40), ("normal",), exp=175, hit=4),
     "tauros": _placeholder("128_tauros", "Tauros", (75, 100, 95, 110, 70), ('normal',), exp=211),
     "rhyhorn": _animated("rhyhorn", "Rhyhorn", (80, 85, 95, 25, 30), ("ground", "rock"), exp=135, hit=4),
     "rhydon": _placeholder("112_rhydon", "Rhydon", (105, 130, 120, 40, 45), ('ground', 'rock'), exp=204),

@@ -182,7 +182,9 @@ class WildPokemon:
             return rects + [pygame.Rect(body.left, 0, body.w, body.bottom)]
         feet_row = math.ceil(self.ground_y / TILE - 0.001)
         lowest = self.ground_y - GROUP_REACH
-        for col in level._cols(body.left, body.right):
+        cols = list(level._cols(body.left, body.right))
+        tops, under_platform = {}, []
+        for col in cols:
             top = lowest
             for row in range(feet_row - 1, math.floor(lowest / TILE) - 1, -1):
                 # A platform also caps the columns next to it, so a group
@@ -190,7 +192,15 @@ class WildPokemon:
                 # jumping up onto it.
                 if level.tile(col, row) != EMPTY or PLATFORM in (level.tile(col - 1, row), level.tile(col + 1, row)):
                     top = max(lowest, (row + 1) * TILE)
+                    if PLATFORM in (level.tile(col - 1, row), level.tile(col, row), level.tile(col + 1, row)):
+                        under_platform.append(top)
                     break
+            tops[col] = top
+        # A group partly under a platform is capped there all along: from the
+        # platform, the player can jump clean over the part sticking out past it.
+        cap = max(under_platform, default=None)
+        for col in cols:
+            top = tops[col] if cap is None else max(tops[col], cap)
             left, right = max(body.left, col * TILE), min(body.right, (col + 1) * TILE)
             if top < body.bottom and left < right:
                 rects.append(pygame.Rect(left, math.floor(top), right - left, body.bottom - math.floor(top)))
