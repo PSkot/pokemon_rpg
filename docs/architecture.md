@@ -429,7 +429,7 @@ you are working on.
   and the Lift Key guard (a "defeat" step on its key gives the Lift Key);
   the office's boss guards its back door out. Then quest "pokemon_tower":
   route "pokemon_tower" from Lavender's Tower (7 rooms, `POKEMON_TOWER`,
-  drawn in code with `CaveLook.graves`, `tileset._graves`); the rival and
+  painted `walls/` and `backdrops/pokemon_tower.png`); the rival and
   the 6F Restless Spirits are blocking map trainers (the spirits drawn
   see-through, `Trainer.spirit`, `overworld._ghostly`; beating them gives
   the Thick Bone), 7F's room boss is the Rockets; Mr. Fuji's house's note

@@ -461,8 +461,8 @@ ROCKET_HIDEOUT = Theme(
     built=True,
 )
 
-# Lavender Town's Pokémon Tower: a hall of graves, seven floors high, drawn
-# in code: dim violet stone, candle lamps and rows of gravestones. Its
+# Lavender Town's Pokémon Tower: a hall of graves, seven floors high: dim
+# violet stone, candles and gravestones (painted wall and backdrop). Its
 # ghosts (Gastly, Haunter) and the Cubone that mourn there.
 POKEMON_TOWER = Theme(
     "pokemon_tower", "Pokémon Tower",
@@ -474,13 +474,13 @@ POKEMON_TOWER = Theme(
         PoolEntry("haunter", 20, (39, 41)),
         PoolEntry("cubone", 30, (37, 40)),
     ),
-    backdrop=Backdrop(sky_top=(26, 20, 36), sky_bottom=(58, 46, 76), hills=((44, 36, 58), (40, 32, 52)),
+    backdrop=Backdrop(art="pokemon_tower.png", sky_top=(26, 20, 36), sky_bottom=(58, 46, 76), hills=((44, 36, 58), (40, 32, 52)),
                       field_far=(96, 86, 112), field_near=(78, 68, 94), stripe=(88, 78, 104),
                       shadow=(46, 38, 58)),
     ceiling=True,
     art="cave",
     cave=CaveLook(sky_top=(22, 16, 32), sky_bottom=(52, 42, 70), far_rock=(38, 30, 52), near_rock=(30, 24, 42),
-                  glow=((120, 90, 200), (220, 200, 255)), near_rocks=False, lamps=144, graves=True, lamp_glow=8),
+                  glow=None, wall="pokemon_tower.png", dim=15, near_rocks=False),
     doorway="",
     built=True,
 )
