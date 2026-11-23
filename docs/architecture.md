@@ -593,8 +593,8 @@ you are working on.
   the last town), dimmed and unnamed what leads out of them, a blinking
   ring where the player is (`here`: a gym, in-town dungeon or home ground
   is its town's place), and quest marks (`marks`: "!" a quest to take,
-  a diamond an active step's place, "?" hand-ins; evolution quests in
-  pink). The cursor (arrows) picks a place; `info` lists its buildings,
+  a diamond an active step's place (a hunt: the routes its text names,
+  `hunt_places`), "?" hand-ins; evolution quests in pink). The cursor (arrows) picks a place; `info` lists its buildings,
   givers (evolution givers still waiting: the species and level they
   need), steps there, and a route's wild Pokémon.
 - Controls: arrows move, Up opens chests, Shift runs, Space jumps, I bag,

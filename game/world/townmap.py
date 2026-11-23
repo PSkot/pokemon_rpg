@@ -13,6 +13,8 @@ of a visited town, and the town at its far end.
 
 from __future__ import annotations
 
+import re
+
 from dataclasses import dataclass
 
 from ..mechanics.pokemon import SPECIES
@@ -155,13 +157,45 @@ def step_places(game, step) -> list[str]:
         route = _route_of(step.target)
         return [place_of_route(route, game)] if route else []
     if step.kind == "hunt":
-        return [k for k in EDGES if any(e.species == step.target for e in ROUTES[k].theme.pool)
-                and ROUTES[k].wild]
+        return hunt_places(step)
     if step.kind == "collect":
         return [step.route] if step.route in EDGES else []
     if step.kind == "hand_in":
         return sorted(BOARDS)
     return []
+
+
+ALSO_NAMED = {"nugget_bridge": "Route 24"}  # (Nugget Bridge is Route 24's south end)
+
+
+def _names(key: str) -> set[str]:
+    return {ROUTES[key].name} | ({ALSO_NAMED[key]} if key in ALSO_NAMED else set())
+
+
+def _lives_on(key: str, species: str) -> bool:
+    return ROUTES[key].wild and any(e.species == species for e in ROUTES[key].theme.pool)
+
+
+def hunt_places(step) -> list[str]:
+    """A hunt's places: the routes its text names ("Defeat 6 Ekans (Routes 3
+    and 4)": "Route 3" and "Route 4"; "(the Underground Path (west))"). Of
+    routes sharing a name, those where the species lives; if the text names
+    none, every route it lives on."""
+    where = step.text[step.text.find("(") + 1:step.text.rfind(")")]
+    names = {f"Route {n}" for n in re.findall(r"\d+", where)} if "Route" in where else set()
+    names |= {ROUTES[k].name for k in EDGES if not ROUTES[k].name.startswith("Route ") and ROUTES[k].name in where}
+    named = [k for k in EDGES if _names(k) & names]
+    if "(west)" in where:
+        named = [k for k in named if k != "underground_path"]
+    by_name: dict[str, list[str]] = {}
+    for k in named:
+        for n in _names(k) & names:
+            by_name.setdefault(n, []).append(k)
+    places = []
+    for keys in by_name.values():  # (of routes with one name, where it lives: else all of them)
+        living = [k for k in keys if _lives_on(k, step.target)]
+        places += [k for k in living or keys if k not in places]
+    return places or [k for k in EDGES if _lives_on(k, step.target)]
 
 
 @dataclass(frozen=True)
