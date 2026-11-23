@@ -1455,7 +1455,7 @@ always the same spot), with its team in a row.
 `game/world/tower.py`, `game/scenes/battle_tower.py`
 
 Celadon's west end has the Battle Tower, open once the Rainbow Badge is won
-(`tower.OPENS_AFTER`; always with dev mode's Tower floors: All). It's meant for the end of the
+(`tower.OPENS_AFTER`; always in dev mode). It's meant for the end of the
 story and after it. Its lobby is a marble hall where **Mew** floats. Up at
 Mew opens its menu: Climb, the gem exchange (gear or Pokémon), how the
 tower works, and Leave. Up at the stairs also starts a climb.
@@ -1468,7 +1468,7 @@ tower works, and Leave. Up at the stairs also starts a climb.
   badge). The next fives need more badges, in any order
   (`tower.GATES`, `top_floor`): floors 6–10 at 6 badges, 11–15 at 7 and
   16–20 at all 8. Floors 21–25 open once you're the Champion
-  (`tower.LEAGUE`). With dev mode's **Tower floors: All** every floor is open (dev mode alone doesn't open any). On the last open
+  (`tower.LEAGUE`). In dev mode every floor is open. On the last open
   floor, the way up is sealed and you can only claim the chest.
 - **No healing** between waves or floors. Losing any battle ends the run
   with **nothing**: back to the last town, no chest.
@@ -1552,7 +1552,7 @@ The bag keeps the gems (`Bag.gems`, shown in the Key items pocket), and
   (Up/Down, Space adds, Left deletes, "OK" checks). Esc cancels.
 - **Remembered:** once the password is given, that machine or browser
   doesn't ask again. Dev mode's on/off and its settings (XP boost, God
-  mode, Skip packs, Tower floors) come back on the next start too. They're kept in the
+  mode, Skip packs) come back on the next start too. They're kept in the
   player's settings (`saves/settings.json`, key "dev", `DevMode.prefs` /
   `configure`), which in the browser live in its localStorage.
 
@@ -1567,8 +1567,6 @@ The bag keeps the gems (`Bag.gems`, shown in the Key items pocket), and
   end group, a gym's arena, a dungeon room's boss) still fight, as they
   guard the way out. Skipped trainers stay unbeaten, so quest steps that
   need them aren't done.
-- **Tower floors:** By badges (the default: the Battle Tower and its floors
-  open as usual, `tower.GATES`) or All (the tower open, all 25 floors).
 - **Teleport** (Left/Right: town, Enter: go) takes the party to any town,
   arriving as after fainting (healed; it becomes the town you wake up in).
 - **Add item** rolls gear with `Gear.roll(..., affixes=[...], values=...)`:

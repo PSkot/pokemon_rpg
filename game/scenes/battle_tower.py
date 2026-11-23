@@ -47,7 +47,7 @@ GEM_COLORS = {"Quartz": (236, 236, 246), "Jade": (100, 214, 140), "Sapphire": (1
 def is_open(game: Game) -> bool:
     """Open once the Rainbow Badge is won (in dev mode: always)."""
     from ..dev import DEV
-    return DEV.tower_open or (tower.OPENS_AFTER in quests.QUESTS and quests.is_done(game, tower.OPENS_AFTER))
+    return DEV.enabled or (tower.OPENS_AFTER in quests.QUESTS and quests.is_done(game, tower.OPENS_AFTER))
 
 
 def lobby_location() -> dict:

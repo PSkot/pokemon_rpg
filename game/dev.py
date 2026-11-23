@@ -2,9 +2,8 @@
 
 While it's on: XP from battles can be multiplied, god mode makes the party
 take no damage and knocks out every enemy it hits, pack skipping lets the
-player walk through wild packs and map trainers' bands (not bosses), all
-the Battle Tower's floors can be opened (otherwise badges open them, as
-usual), and items can be made to order (pause menu → Add item). Once the password has
+player walk through wild packs and map trainers' bands (not bosses), and
+items can be made to order (pause menu → Add item). Once the password has
 been given, it and these settings are remembered in the player's settings
 (saves.save_prefs: settings.json, and in the browser its localStorage), so
 they come back on the next start; they're never part of a save.
@@ -22,7 +21,6 @@ class DevMode:
     xp_boost: int = 1   # one of XP_BOOSTS
     god: bool = False
     skip: bool = False  # walk through packs (wild groups and map trainers; bosses still fight)
-    tower: bool = False  # the Battle Tower open, with all its floors (off: as badges open them)
     unlocked: bool = False  # the password was given (asked once; remembered in the player's settings)
 
     @property
@@ -37,16 +35,12 @@ class DevMode:
     def skip_packs(self) -> bool:
         return self.enabled and self.skip
 
-    @property
-    def tower_open(self) -> bool:
-        return self.enabled and self.tower
-
     def prefs(self) -> dict:
         """What's remembered in the player's settings ({} until unlocked)."""
         if not self.unlocked:
             return {}
         return {"unlocked": True, "enabled": self.enabled, "xp_boost": self.xp_boost, "god": self.god,
-                "skip": self.skip, "tower": self.tower}
+                "skip": self.skip}
 
     def configure(self, prefs: dict) -> None:
         """Back as remembered (`prefs`), at the start."""
@@ -56,7 +50,6 @@ class DevMode:
         self.enabled = bool(prefs.get("enabled"))
         self.xp_boost = prefs.get("xp_boost") if prefs.get("xp_boost") in XP_BOOSTS else 1
         self.god, self.skip = bool(prefs.get("god")), bool(prefs.get("skip"))
-        self.tower = bool(prefs.get("tower"))
 
     def summary(self) -> str:
         """What's on, e.g. "DEV  XP×5  GOD" ("" while dev mode is off)."""
@@ -69,8 +62,6 @@ class DevMode:
             parts.append("GOD")
         if self.skip:
             parts.append("SKIP")
-        if self.tower:
-            parts.append("TOWER")
         return "  ".join(parts)
 
 

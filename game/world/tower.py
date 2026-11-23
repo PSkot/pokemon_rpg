@@ -108,11 +108,11 @@ def badges(game) -> int:
 
 
 def tier_open(game, t: int) -> bool:
-    """Whether tier `t`'s floors are open (dev mode's "Tower floors: All": all)."""
+    """Whether tier `t`'s floors are open (dev mode: all)."""
     from ..dev import DEV
     from . import quests
     gate = GATES[t]
-    if DEV.tower_open:
+    if DEV.enabled:
         return True
     if gate == "league":
         return LEAGUE in quests.QUESTS and quests.is_done(game, LEAGUE)

@@ -439,7 +439,7 @@ you are working on.
   `scenes/spinners.SpinnerFloor` carries and launches the player through
   `MapScene.steer`/`moved` hooks and `Controls.carried`). The Battle Tower (`world/tower.py`, `scenes/battle_tower.py`;
   `Building.inside` "tower", open after `tower.OPENS_AFTER` "rainbow_badge"
-  or with dev mode's "Tower floors: All", `DEV.tower_open`): post-story content. Its lobby (`TowerLobbyScene`,
+  or in dev mode): post-story content. Its lobby (`TowerLobbyScene`,
   `rooms/tower_*.png`) has Mew floating, drawn 2× (`props/mew.png`), with
   `MewMenu`: Climb (heals, floor 1), gem exchange (`GEM_GEAR`: 12 of a gem
   for a piece, slot picked; `GEM_POKEMON`: Dratini/Chansey/Lapras, each
