@@ -187,7 +187,7 @@ SPECIES.update({
 # Mew's special Pokémon: Dratini, Chansey, Lapras). Gen 1 stats.
 SPECIES.update({
     "arbok": _animated("arbok", "Arbok", (60, 85, 69, 80, 65), ("poison",), exp=147, hit=5),
-    "sandslash": _placeholder("028_sandslash", "Sandslash", (75, 100, 110, 65, 55), ('ground',), exp=163),
+    "sandslash": _animated("sandslash", "Sandslash", (75, 100, 110, 65, 55), ("ground",), exp=163, hit=4),
     "nidoqueen": _animated("nidoqueen", "Nidoqueen", (90, 82, 87, 76, 75), ("poison", "ground"), exp=194, hit=5),
     "nidoking": _animated("nidoking", "Nidoking", (81, 92, 77, 85, 75), ("poison", "ground"), exp=195, hit=4),
     # (Team Rocket's: the Rocket Hideout's bands)
