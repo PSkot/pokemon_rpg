@@ -427,7 +427,13 @@ you are working on.
   in code: `CaveLook.lamps` + `banners`, `tileset._rocket_banner`); its
   blocking map trainers (`Trainer.first`/`blocks`) are the poster guard
   and the Lift Key guard (a "defeat" step on its key gives the Lift Key);
-  the office's boss guards its back door out. B2F/B3F are spinner floors
+  the office's boss guards its back door out. Then quest "pokemon_tower":
+  route "pokemon_tower" from Lavender's Tower (7 rooms, `POKEMON_TOWER`,
+  drawn in code with `CaveLook.graves`, `tileset._graves`); the rival and
+  the 6F Restless Spirits are blocking map trainers (the spirits drawn
+  see-through, `Trainer.spirit`, `overworld._ghostly`; beating them gives
+  the Thick Bone), 7F's room boss is the Rockets; Mr. Fuji's house's note
+  changes once it's done (`Building.note_after`). B2F/B3F are spinner floors
   (`Room.puzzle` "spinners:<key>": `world/spinners.py` has the layouts,
   as strings, and carves the catwalk into the generated room;
   `scenes/spinners.SpinnerFloor` carries and launches the player through

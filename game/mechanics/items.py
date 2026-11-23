@@ -649,6 +649,7 @@ KEY_ITEMS = {
                 "way, like the one over the Vermilion Gym's door.",
     "Lift Key": "A key with a big \"R\" on it. It works the lift down to the Boss's office in Team Rocket's "
                 "Hideout.",
+    "Poké Flute": "A flute from Mr. Fuji. Its tune wakes even the deepest sleeper.",
     "Silph Scope": "A scope made by Silph Co. It makes unseen things visible: even ghosts can't hide from it.",
     BONE: "A huge, heavy bone, harder than stone. It must have belonged to a mighty Pokémon. Surely someone "
           "could put it to good use...",

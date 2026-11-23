@@ -211,9 +211,11 @@ class WildPokemon:
 
     def draw(self, surface: pygame.Surface, level: Level, debug: bool = False) -> None:
         flip = self.facing < 0
+        spirit = self.trainer is not None and self.trainer.spirit
         for _, anim, x, y, back in self._placed():
             frame = anim.frame(0, flip)
-            surface.blit(_shaded(frame) if back else frame, anim.place(0, x, y, flip))
+            frame = _ghostly(frame) if spirit else _shaded(frame) if back else frame
+            surface.blit(frame, anim.place(0, x, y, flip))
         if debug:
             color = (255, 0, 0) if self.boss else (255, 255, 0)
             for rect in self.reach_rects(level):
@@ -221,6 +223,18 @@ class WildPokemon:
 
 
 _SHADED: dict[int, pygame.Surface] = {}
+_GHOSTLY: dict[int, pygame.Surface] = {}
+GHOST_TINT = (190, 170, 255, 150)  # a spirit's colours × this (pale violet, see-through)
+
+
+def _ghostly(frame: pygame.Surface) -> pygame.Surface:
+    """`frame` as a pale, see-through spirit (`Trainer.spirit`), cached."""
+    key = id(frame)
+    if key not in _GHOSTLY:
+        ghost = frame.copy()
+        ghost.fill(GHOST_TINT, special_flags=pygame.BLEND_RGBA_MULT)
+        _GHOSTLY[key] = ghost
+    return _GHOSTLY[key]
 
 
 def _shaded(frame: pygame.Surface) -> pygame.Surface:

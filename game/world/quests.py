@@ -113,6 +113,12 @@ class Quest:
         return next((s.target for s in self.steps if s.kind == "evolve"), "")
 
 
+# What the player sees when the Thick Bone turns up (the Pokémon Tower's
+# Marowak; dev mode's item maker too).
+BONE_FOUND = (("", f"You found a {BONE}! It's heavier than stone, and not a scratch on it."),
+              ("", "Something this strong must be good for more than gathering dust..."))
+
+
 QUESTS = {q.key: q for q in [
     Quest(
         "oaks_parcel", "Oak's Parcel",
@@ -982,6 +988,35 @@ QUESTS = {q.key: q for q in [
         done_dialogue=(("", "With the Silph Scope, ghosts can't hide any more. Lavender Town's Pokémon Tower is "
                             "said to be full of them..."),),
     ),
+    # After the Silph Scope, as in Red/Blue: up the Pokémon Tower (route
+    # "pokemon_tower") past the rival and the ghost of Marowak, to Team Rocket
+    # holding Mr. Fuji at the top; he gives the Poké Flute.
+    Quest(
+        "pokemon_tower", "The Pokémon Tower",
+        "With the Silph Scope, the ghosts of the Pokémon Tower can be seen for what they are. Mr. Fuji went up "
+        "the tower days ago and never came back down.",
+        requires=("rocket_hideout",),
+        steps=(Step("defeat", "tower_marowak", "Climb the Pokémon Tower (Lavender Town): something bars the "
+                                               "stairs on 6F",
+                    dialogue=(("", "The Silph Scope reveals the ghost: a Marowak, a mother still guarding her "
+                                   "young."),
+                              ("", "The ghost fades... At last, it can rest."),
+                              ("", "Where it stood lies a huge, heavy bone.")) + BONE_FOUND,
+                    gives=(BONE,)),
+               Step("defeat", "pokemon_tower", "Rescue Mr. Fuji from Team Rocket at the top of the Tower",
+                    dialogue=(("Mr. Fuji", "Heh? You came to save me? Thank you. Team Rocket wanted the Pokémon "
+                                           "here for... I'd rather not say."),
+                              ("Mr. Fuji", "Come to my house, by the tower. I have something for you."))),
+               Step("visit", "Mr. Fuji's House", "See Mr. Fuji at his house (Lavender Town)", town="lavender",
+                    dialogue=(("Mr. Fuji", "I am Mr. Fuji. I look after the Pokémon that lose their trainers."),
+                              ("Mr. Fuji", "Please, take this. Its tune wakes even the deepest sleeper."),
+                              ("", "You received the Poké Flute!")),
+                    gives=("Poké Flute",))),
+        money=2200, xp=2100,
+        rewards=(("medicine", "Hyper Potion", 3), ("medicine", "Revive", 2), ("gear", None, "Rare", 42)),
+        done_dialogue=(("", "The Poké Flute... A Snorlax is said to be asleep across the road east of Vermilion, on "
+                            "Route 12."),),
+    ),
     # The evolution stones: one quest each, from after the Rainbow Badge (the
     # Fire and Water Stones come later, with Cinnabar and the coast). A stone
     # evolves one Pokémon and is used up (bag: Key items).
@@ -1241,12 +1276,6 @@ def fit_party(game) -> None:
 def smith_open(game) -> bool:
     """Whether the smith salvages and enhances gear (his hammer is made)."""
     return is_done(game, "smith_hammer")
-
-
-# What the player sees when the Thick Bone turns up (the Pokémon Tower's
-# Marowak, later; dev mode's item maker meanwhile).
-BONE_FOUND = (("", f"You found a {BONE}! It's heavier than stone, and not a scratch on it."),
-              ("", "Something this strong must be good for more than gathering dust..."))
 
 
 def use_ribbon(game) -> str:

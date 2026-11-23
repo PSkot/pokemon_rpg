@@ -30,7 +30,8 @@ from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
                      ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_11, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
-                     UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, PoolEntry, Theme)
+                     UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, POKEMON_TOWER, PoolEntry,
+                     Theme)
 from .spinners import carve, layout_of
 from .towns import Folk
 
@@ -57,6 +58,7 @@ class Trainer:
     first: bool = False
     blocks: bool = False
     boss_loot: bool = False
+    spirit: bool = False  # drawn as a pale, see-through ghost on the map (the Pokémon Tower's Marowak)
 
 
 @dataclass(frozen=True)
@@ -318,6 +320,44 @@ ROUTES = {r.key: r for r in [
               Trainer("hideout_lift_rocket", "Lift Key Guard", (("koffing", 40), ("golbat", 40), ("raticate", 40)),
                       3, 30, first=True, blocks=True, boss_loot=True),
               Trainer("hideout_b4", "Rocket Gang", (("hypno", 39), ("arbok", 39)), 3, 30),
+          )),
+    # Lavender Town's Pokémon Tower (quest "pokemon_tower"), as in Red/Blue:
+    # seven floors of graves, with wild ghosts (Gastly, Haunter) and Cubone,
+    # and Channelers' bands. The rival waits on 2F; on 6F Marowak's restless
+    # ghost bars the stairs (it leaves the Thick Bone); on 7F Team Rocket
+    # holds Mr. Fuji, and guards the back stairs out.
+    Route("pokemon_tower", "Pokémon Tower", POKEMON_TOWER, maps=7, towns=("lavender", "lavender"),
+          boss_chest="battle", boss_loot=MID_BOSS, building="Pokémon Tower",
+          needs=("pokemon_tower", "started"),
+          blocked="The Pokémon Tower, where Pokémon are laid to rest. A cold draught blows from the door... "
+                  "Something moves inside, but you can't make out what. You'd need a way to see it.",
+          rooms=(
+              Room("1f", "1F", 70, (Stair("out", "lavender", 0), Stair("up", "2f", 1))),
+              Room("2f", "2F", 80, (Stair("down", "1f", 0.05), Stair("up", "3f", 0.95))),
+              Room("3f", "3F", 90, (Stair("down", "2f", 0.05), Stair("up", "4f", 0.95))),
+              Room("4f", "4F", 90, (Stair("down", "3f", 0.05), Stair("up", "5f", 0.95))),
+              Room("5f", "5F", 90, (Stair("down", "4f", 0.05), Stair("up", "6f", 0.95))),
+              Room("6f", "6F", 70, (Stair("down", "5f", 0.05), Stair("up", "7f", 1))),
+              # (the Rockets guard the back stairs down and out)
+              Room("7f", "7F", 50, (Stair("down", "6f", 0.1), Stair("out", "lavender", 1)),
+                   boss_group=(("arbok", 43), ("golbat", 42), ("koffing", 42), ("raticate", 42)),
+                   trainer="Rocket Gang", prize=30),
+          ),
+          trainers=(  # (`map`: the room's place in `rooms`)
+              Trainer("tower_rival", "Rival", (("pidgeotto", 40), ("growlithe", 39), ("kadabra", 39),
+                                               (RIVAL_STARTER_EVOLVED, 42)), 1, 35,
+                      first=True, blocks=True, boss_loot=True),
+              Trainer("tower_channeler_1", "Channeler's Spirits", (("gastly", 39), ("gastly", 39)), 2, 30),
+              Trainer("tower_channeler_2", "Channeler's Spirits", (("haunter", 40),), 2, 30),
+              Trainer("tower_channeler_3", "Channeler's Spirits", (("gastly", 40), ("cubone", 39), ("gastly", 39)),
+                      3, 30),
+              Trainer("tower_channeler_4", "Channeler's Spirits", (("haunter", 40), ("gastly", 40)), 3, 30),
+              Trainer("tower_channeler_5", "Channeler's Spirits", (("haunter", 41), ("haunter", 40)), 4, 30),
+              Trainer("tower_channeler_6", "Channeler's Spirits", (("cubone", 41), ("gastly", 41)), 4, 30),
+              # (Marowak alone would fall at once to three: the lost spirits gather round her)
+              Trainer("tower_marowak", "Restless Spirits", (("marowak", 50), ("haunter", 44), ("gastly", 44),
+                                                            ("haunter", 44)), 5, 0, first=True, blocks=True,
+                      spirit=True),
           )),
     # The S.S. Anne, docked at Vermilion City (quest "ss_anne"), as in
     # Red/Blue: cabins full of trainers (sailors, gentlemen, a fisherman),

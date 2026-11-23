@@ -751,6 +751,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Cerulean Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Cascade Crew: the fancy chest) |
 | Vermilion Gym | (no wild Pokémon or chests) | Common 60%, Uncommon 40% (the Thunder Battalion: the fancy chest) |
 | Celadon Gym | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Blossom Troupe, the fancy chest) |
+| Pokémon Tower | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the rival and the Rockets, a reward roll with each battle, no chest) |
 | Rocket Hideout | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Lift Key Guard and the Rocket Boss, a reward roll with each battle, no chest) |
 | Route 3 | Common | (no boss) |
 | Mt. Moon | Common | Common 60%, Uncommon 40% (Team Rocket: a reward roll with the battle, no chest) |
@@ -1355,7 +1356,7 @@ always the same spot), with its team in a row.
 - **prize money:** the base prize of the Gen 1 trainer class it stands in
   for × the level of its last Pokémon, **halved** like the shop's prices
   (`overworld.prize_money`): Bug Catcher 10, Youngster 15, Lass 15, Jr.
-  Trainer 20, Team Rocket Grunt 30, the rival 35, Hiker 35, Brock 99
+  Trainer 20, Team Rocket Grunt 30, Channeler 30, the rival 35, Hiker 35, Brock 99
   (Lv16 Onix → ₽792);
 - map trainers fight **once**: beaten ones are saved (`Game.trainers`) and
   don't come back on later trips.
@@ -1436,6 +1437,15 @@ always the same spot), with its team in a row.
 | Rocket Hideout B3F | Rocket Gang (Team Rocket Grunt) | Drowzee 39, Koffing 39, Ekans 38 | ₽570 |
 | Rocket Hideout B4F (blocks the lift; the boss loot) | Lift Key Guard (Team Rocket Grunt) | Koffing 40, Golbat 40, Raticate 40 | ₽600 |
 | Rocket Hideout B4F | Rocket Gang (Team Rocket Grunt) | Hypno 39, Arbok 39 | ₽585 |
+| Pokémon Tower 2F (blocks the way; the boss loot) | Rival | Pidgeotto 40, Growlithe 39, Kadabra 39, starter's next form 42 | ₽735 |
+| Pokémon Tower 3F | Channeler's Spirits (Channeler) | Gastly 39, Gastly 39 | ₽585 |
+| Pokémon Tower 3F | Channeler's Spirits (Channeler) | Haunter 40 | ₽600 |
+| Pokémon Tower 4F | Channeler's Spirits (Channeler) | Gastly 40, Cubone 39, Gastly 39 | ₽585 |
+| Pokémon Tower 4F | Channeler's Spirits (Channeler) | Haunter 40, Gastly 40 | ₽600 |
+| Pokémon Tower 5F | Channeler's Spirits (Channeler) | Haunter 41, Haunter 40 | ₽600 |
+| Pokémon Tower 5F | Channeler's Spirits (Channeler) | Cubone 41, Gastly 41 | ₽615 |
+| Pokémon Tower 6F (blocks the stairs) | Restless Spirits (Marowak's ghost) | Marowak 50, Haunter 44, Gastly 44, Haunter 44 | – |
+| Pokémon Tower 7F (boss) | Rocket Gang (Team Rocket Grunt) | Arbok 43, Golbat 42, Koffing 42, Raticate 42 | ₽630 |
 | Rocket Hideout, Boss's Office (boss) | Rocket Boss (Giovanni) | Persian 43, Onix 41, Rhyhorn 41, Kangaskhan 42 (fought by three: won about 78% at Lv40/39 with 3 Hyper Potions and a Revive, `tools/balance_sim.py`) | ₽2,079 |
 
 ---

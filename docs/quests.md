@@ -45,6 +45,7 @@ script that walks every route's maps; the major fights in
 | Celadon City | 36 | | |
 | Celadon Gym | 37 | | 1,700 |
 | Rocket Hideout | 38–40 | | 1,900 |
+| Pokémon Tower | 40–42 | | 2,100 |
 
 (Before this check, battles gave ×0.5 / ×1.5 to every member unsplit:
 about 62,000 battle XP each from Pewter to Vermilion against 14,000
@@ -556,6 +557,28 @@ gives HM02 Fly. Its battle rules are already in: *Sky battles* in
 - **Reward:** money and XP, and **Fly**: fast travel from the pause menu
   to any town already visited.
 
+### 24. The Pokémon Tower
+
+- **Starts:** automatically when quest 23 is done (the Silph Scope).
+- **Steps:** (1) Up at the **Pokémon Tower** (Lavender Town; shut before the
+  quest) goes in: route "pokemon_tower", a dungeon of 7 floors
+  (`POKEMON_TOWER`: violet stone, candle lamps and rows of gravestones,
+  drawn in code), with wild Gastly, Haunter and Cubone (Lv37–41) and
+  **Channelers' bands** (3F–5F). The **rival** waits on 2F and can't be got
+  past (Pidgeotto 40, Growlithe 39, Kadabra 39, his starter's next form 42).
+  On 6F the **Restless Spirits** bar the stairs up: Marowak's ghost (50)
+  with the lost spirits round her (Haunter 44, Gastly 44, Haunter 44),
+  drawn pale and see-through (`Trainer.spirit`). Beating them lays her to
+  rest and leaves the **Thick Bone** (the smith's hammer). (2) On 7F,
+  **Team Rocket** holds Mr. Fuji (Arbok 43, Golbat 42, Koffing 42, Raticate
+  42), guarding the back stairs out. (3) Up at **Mr. Fuji's House**: he
+  gives the **Poké Flute**.
+- **Balance:** a party of three at Lv41/40/40 with 3 Hyper Potions wins
+  about 85% against the rival, 78% against the spirits and 74% against the
+  Rockets (`tools/balance_sim.py`-style runs).
+- **Rewards:** ₽2,200, 2,100 XP, 3 Hyper Potions, 2 Revives and a **Rare**
+  gear piece (item level 42). The Poké Flute wakes Snorlax (Route 12, later).
+
 ### A Hammer Fit for a Smith (side quest)
 
 - **Starts:** from the **Machamp smith** (Lavender Town and the major towns
@@ -564,7 +587,7 @@ gives HM02 Fly. Its battle rules are already in: *Sky battles* in
   Mart survives four arms. "Bring me something STRONG."
 - **Steps:** bring him something strong enough for a hammer: the
   **Thick Bone** (a key item; it comes from the Pokémon Tower's Marowak,
-  later). Until it's in the bag, talking to him says to keep looking (and
+  quest 24). Until it's in the bag, talking to him says to keep looking (and
   no "!" shows over him: `Step.takes`/`waiting`). When it turns up:
   "You found a Thick Bone! It's heavier than stone, and not a scratch on
   it. / Something this strong must be good for more than gathering

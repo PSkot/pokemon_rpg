@@ -64,6 +64,7 @@ class CaveLook:
     # lamp (in `glow`'s colours) every `lamps` px (the Underground Path).
     lamps: int = 0
     banners: bool = False  # ... and a Team Rocket banner (a red "R") between every two lamps
+    graves: bool = False   # ... or rows of gravestones along the foot of the wall (the Pokémon Tower)
     lamp_glow: int = 6     # ... how strong a lamp's pool of light is (alpha per ring)
 
 
@@ -456,6 +457,30 @@ ROCKET_HIDEOUT = Theme(
     art="cave",
     cave=CaveLook(sky_top=(26, 26, 34), sky_bottom=(56, 56, 68), far_rock=(40, 40, 50), near_rock=(30, 30, 38),
                   glow=((170, 40, 40), (255, 110, 90)), near_rocks=False, lamps=128, banners=True, lamp_glow=10),
+    doorway="",
+    built=True,
+)
+
+# Lavender Town's Pokémon Tower: a hall of graves, seven floors high, drawn
+# in code: dim violet stone, candle lamps and rows of gravestones. Its
+# ghosts (Gastly, Haunter) and the Cubone that mourn there.
+POKEMON_TOWER = Theme(
+    "pokemon_tower", "Pokémon Tower",
+    Palette(fill=(72, 62, 86), fill_dark=(48, 40, 60), fill_light=(100, 88, 118),
+            top=(132, 120, 150), top_dark=(100, 90, 118), top_light=(168, 156, 186),
+            platform=(110, 96, 130), platform_dark=(70, 60, 88), platform_light=(150, 136, 170)),
+    pool=(
+        PoolEntry("gastly", 50, (37, 40)),
+        PoolEntry("haunter", 20, (39, 41)),
+        PoolEntry("cubone", 30, (37, 40)),
+    ),
+    backdrop=Backdrop(sky_top=(26, 20, 36), sky_bottom=(58, 46, 76), hills=((44, 36, 58), (40, 32, 52)),
+                      field_far=(96, 86, 112), field_near=(78, 68, 94), stripe=(88, 78, 104),
+                      shadow=(46, 38, 58)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(22, 16, 32), sky_bottom=(52, 42, 70), far_rock=(38, 30, 52), near_rock=(30, 24, 42),
+                  glow=((120, 90, 200), (220, 200, 255)), near_rocks=False, lamps=144, graves=True, lamp_glow=8),
     doorway="",
     built=True,
 )

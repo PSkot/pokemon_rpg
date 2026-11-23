@@ -260,6 +260,8 @@ class TownScene(MapScene):
                 saves.autosave(self)
             elif early := quests.early_text(self.game, self.town.key, building.name):
                 self.show(quest_ui.Dialogue([("", early)]))
+            elif building.note_after and quests.is_done(self.game, building.note_after[0]):
+                self.show(quest_ui.Dialogue([("", building.note_after[1])]))
             elif building.note:
                 self.show(quest_ui.Dialogue([("", building.note)]))
             return

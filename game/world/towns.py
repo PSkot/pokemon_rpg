@@ -37,6 +37,7 @@ class Building:
     # Battle Tower's lobby, scenes/battle_tower.py, once open), or "" (nothing).
     inside: str = ""
     note: str = ""  # what Up there says, if nothing else happens there (a shut gym)
+    note_after: tuple[str, str] = ()  # (quest key, note): once that quest is done, Up there says this instead
     # A small tree grows over its door until this quest has started (then the
     # first Up there cuts it down: the Vermilion Gym and HM01 Cut).
     tree: str = ""
@@ -395,11 +396,12 @@ TOWNS = {t.key: t for t in [
     Town("lavender", "Lavender Town", 72, (
         Building("Pokémon Center", (FUNCTIONAL, 0), 6),
         Building("Poké Mart", (FUNCTIONAL, 2), 18, inside="mart"),
-        Building("Pokémon Tower", (TOWER, 0), 28,
-                 note="The Pokémon Tower, where Pokémon are laid to rest. A cold draught blows from the door... "
-                      "Something moves inside, but you can't make out what. You'd need a way to see it."),
+        # (walked from: route "pokemon_tower", once the Silph Scope is in hand)
+        Building("Pokémon Tower", (TOWER, 0), 28),
         Building("Mr. Fuji's House", (HOUSES, 0), 46,
-                 note="Nobody's home. A note on the door: \"Gone to the Tower. Back soon. - Mr. Fuji\""),
+                 note="Nobody's home. A note on the door: \"Gone to the Tower. Back soon. - Mr. Fuji\"",
+                 note_after=("pokemon_tower", "Mr. Fuji smiles and waves from his window. The Pokémon he cares "
+                                              "for play in the yard.")),
     ), exits=(("left", "rock_tunnel"), ("right", "route_8")), home_col=14, board_col=41, theme=LAVENDER,
        mart=("Potion", "Super Potion", "Hyper Potion", "Revive", "Escape Rope", "Antidote", "Burn Heal", "Awakening",
              "Paralyze Heal", "Ice Heal"),

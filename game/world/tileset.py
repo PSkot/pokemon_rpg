@@ -577,6 +577,28 @@ def _tunnel_wall(far: pygame.Surface, look) -> None:
         pygame.draw.rect(far, bright, (x - 2, 67, 5, 4))
         if look.banners:
             _rocket_banner(far, x + look.lamps // 2, 96)
+    if look.graves:
+        _graves(far, look)
+
+
+def _graves(surface: pygame.Surface, look) -> None:
+    """Rows of small gravestones along the foot of the wall, two deep (the
+    back row darker), each a little different (the Pokémon Tower)."""
+    w, h = surface.get_size()
+    rng = random.Random(7)
+    for row, (y, shade) in enumerate(((h - 52, 0.8), (h - 40, 1.0))):
+        x = 10 + row * 16
+        while x < w:
+            gw, gh = rng.choice((12, 14, 16)), rng.choice((16, 18, 22))
+            stone = [round(c * shade) for c in (118, 108, 134)]
+            dark = [round(c * shade) for c in (70, 62, 84)]
+            rect = pygame.Rect(x, y - gh, gw, gh)
+            pygame.draw.rect(surface, stone, rect.inflate(0, -gw // 2).move(0, gw // 4))
+            pygame.draw.ellipse(surface, stone, (x, y - gh, gw, gw))
+            pygame.draw.line(surface, dark, (x + gw // 2, y - gh + 5), (x + gw // 2, y - gh + 11))  # a cross
+            pygame.draw.line(surface, dark, (x + gw // 2 - 3, y - gh + 7), (x + gw // 2 + 3, y - gh + 7))
+            pygame.draw.rect(surface, dark, (x - 1, y - 2, gw + 2, 3))  # its plinth
+            x += gw + rng.randint(14, 30)
 
 
 # A pixel "R", 5×7 (Team Rocket's banners).
