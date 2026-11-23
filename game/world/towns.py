@@ -269,6 +269,11 @@ TOWNS = {t.key: t for t in [
                "Glooom... Don't mind the smell. Everyone says it's lovely, really. From far away.",
                "An Oddish grows into a Gloom once it's ready (Lv21), and once it's proved itself.",
            )),
+           # Evolution quest: Psyduck -> Golduck.
+           Folk("cerulean_golduck", "Golduck", "golduck", 78, (
+               "Duck. The headache's gone, you know. All that pressure went into swimming. Fast swimming.",
+               "A Psyduck grows into a Golduck once it's ready (Lv33), and once its headache clears for good.",
+           )),
        )),
     # The top of Route 24, past Nugget Bridge: a stop where Route 25 turns
     # east to Bill's Sea Cottage.
@@ -281,7 +286,12 @@ TOWNS = {t.key: t for t in [
            Folk("route_24_weepinbell", "Weepinbell", "weepinbell", 32, (
              "Weepin'... Mmm, bugs. Route 25's full of them. A Bellsprout's best friend.",
              "A Bellsprout grows into a Weepinbell once it's ready (Lv21), and once it's earned it.",
-         )),)),
+         )),
+           # Evolution quest: Venonat -> Venomoth.
+           Folk("route_24_venomoth", "Venomoth", "venomoth", 15, (
+               "Flutter... Mind the dust on my wings. A pinch of it and you'll sneeze for a week.",
+               "A Venonat grows into a Venomoth once it's ready (Lv31), and once its wings have something to prove.",
+           )),)),
     # The bottom of Route 5: the Day Care, Saffron City's gate (shut) and the
     # Underground Path to Route 6 (being dug out: the next part).
     Town("route_5", "Route 5", 48, (
@@ -389,6 +399,11 @@ TOWNS = {t.key: t for t in [
                Folk("route_10_graveler", "Graveler", "graveler", 9, (
                    "Grrrock. Rock Tunnel's my home. Dark, cool, full of rocks. What more could you want?",
                    "Four arms, and I still can't scratch my own back. It's a rock thing.",
+               )),
+               # Evolution quest: Voltorb -> Electrode.
+               Folk("route_10_electrode", "Electrode", "electrode", 28, (
+                   "BZZRT! Don't startle me. Things get... explosive when I'm startled.",
+                   "A Voltorb grows into an Electrode once it's ready (Lv30), and once it's proved it can hold a charge.",
                )))),
     # Lavender Town, at Rock Tunnel's south end: a small, quiet town, home
     # of the Pokémon Tower, where Pokémon are laid to rest (its ghosts are
@@ -429,7 +444,12 @@ TOWNS = {t.key: t for t in [
          folk=(Folk("route_8_guard", "Gate Guard", "nidorino", 24, (
              "Saffron City is shut. Nobody in, nobody out. I'm so thirsty I could drink a Psyduck...",
              "Want to go west? Take the Underground Path. It comes out on Route 7, right by Celadon City.",
-         )),)),
+         )),
+               # Evolution quest: Mankey -> Primeape.
+               Folk("route_8_primeape", "Primeape", "primeape", 34, (
+                   "WHAT ARE YOU LOOKING AT?! ...Sorry. I'm working on it. Deep breaths.",
+                   "A Mankey grows into a Primeape once it's ready (Lv28), and once it's angry enough. Grrr.",
+               )))),
     # Celadon City, the city of rainbow dreams (as in Red/Blue), in three
     # parts joined by doorways ("town:<key>" exits): the east end, where the
     # Underground Path comes up (the Pokémon Center and the huge Department

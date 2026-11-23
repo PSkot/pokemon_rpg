@@ -615,6 +615,18 @@ ROUTES.update({r.key: r for r in [
           "route_10_graveler", (35, 28), town="route_10"),
     _feud("dreamers_hollow", "Dreamer's Hollow", ROUTE_11, "drowzee", "hypno", "Dream Eaters", "route_11_hypno",
           (29, 23), town="route_11"),
+    # (quests evolve_primeape, evolve_electrode, evolve_venomoth,
+    # evolve_golduck; tuned like the eight above, about 56-60%. Primeape's
+    # band, hard-hitting, comes in lower; Electrode's, which may blow
+    # itself up, higher.)
+    _feud("brawlers_ring", "Brawlers' Ring", ROUTE_8, "mankey", "primeape", "Rage Brawlers", "route_8_primeape",
+          (31, 26), town="route_8_gate"),
+    _feud("static_field", "Static Field", ROUTE_9, "voltorb", "electrode", "Spark Rollers", "route_10_electrode",
+          (38, 33), town="route_10"),
+    _feud("moth_glade", "Moth Glade", FOREST, "venonat", "venomoth", "Dust Wings", "route_24_venomoth",
+          (37, 31), town="route_24"),
+    _feud("duck_pond", "Headache Pond", ROUTE_6, "psyduck", "golduck", "Headache Club", "cerulean_golduck",
+          (39, 33), town="cerulean"),
     # (quests evolve_gloom, evolve_weepinbell: Route 24/25's grass lines)
     _feud("stench_patch", "Stench Patch", ROUTE_25, "oddish", "gloom", "Stench Patch", "cerulean_gloom",
           (26, 21), town="cerulean"),

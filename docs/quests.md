@@ -771,6 +771,21 @@ home grounds are won about 55–63% of the time.
 | Last | Evolve Sandshrew into Sandslash | Evolve Paras into Parasect | Evolve Geodude into Graveler | Evolve Drowzee into Hypno |
 | Rewards | ₽700, 500 XP | ₽800, 600 XP | ₽800, 600 XP | ₽900, 700 XP |
 
+### Primeape (Lv28), Electrode (Lv30), Venomoth (Lv31) and Golduck (Lv33)
+
+The third batch, the same way. Tuned like the others (a pair, 2 Super
+Potions): about 56–60%. Primeape's band, hard-hitting, comes in lower;
+Electrode's, whose Voltorb may blow themselves up, higher.
+
+| | Anger Management (`evolve_primeape`) | Full Charge (`evolve_electrode`) | Dust to Wings (`evolve_venomoth`) | Clear Headed (`evolve_golduck`) |
+| --- | --- | --- | --- | --- |
+| Giver | Primeape, the Route 8 Gate | Electrode, the Route 10 Pokémon Center | Venomoth, the top of Route 24 | Golduck, Cerulean City |
+| 1. | Hunt 6 Growlithe (Route 8) | Hunt 6 Sandshrew (Routes 9 and 11) | Hunt 6 Pidgey (Routes 24 and 25) | Hunt 6 Meowth (Routes 6 and 8) |
+| 2. Talk | Report to Primeape | Report to Electrode | Report to Venomoth | Report to Golduck |
+| 3. | Defeat the **Rage Brawlers** in the Brawlers' Ring (Route 8's look): giant Primeape 31, Mankey 26 ×2 | Defeat the **Spark Rollers** on the Static Field (Route 9's look): giant Electrode 38, Voltorb 33 ×2 | Defeat the **Dust Wings** in the Moth Glade (the forest's look): giant Venomoth 37, Venonat 31 ×2 | Defeat the **Headache Club** on Headache Pond (Route 6's look): giant Golduck 39, Psyduck 33 ×2 |
+| Last | Evolve Mankey into Primeape | Evolve Voltorb into Electrode | Evolve Venonat into Venomoth | Evolve Psyduck into Golduck |
+| Rewards | ₽900, 700 XP | ₽900, 700 XP | ₽900, 700 XP | ₽1000, 800 XP |
+
 ### Dugtrio (Lv26)
 
 | | Three Heads Are Better (`evolve_dugtrio`) |

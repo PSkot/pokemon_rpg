@@ -548,7 +548,11 @@ you are working on.
   `evolve_parasect`, `evolve_graveler`, `evolve_hypno`: the Mt. Moon
   Center's Sandslash, Route 5's Parasect, the Route 10 Center's Graveler,
   the Route 11 Gate's Hypno; `spike_burrows`, `mushroom_hollow`,
-  `rumbling_quarry`, `dreamers_hollow`).
+  `rumbling_quarry`, `dreamers_hollow`), and Mankey, Voltorb, Venonat and
+  Psyduck (`evolve_primeape`, `evolve_electrode`, `evolve_venomoth`,
+  `evolve_golduck`: the Route 8 Gate's Primeape, the Route 10 Center's
+  Electrode, Route 24's Venomoth, Cerulean's Golduck; `brawlers_ring`,
+  `static_field`, `moth_glade`, `duck_pond`).
 - Recruitment (`docs/quests.md` → Recruitment): won wild battles on routes
   (not trainers', gyms' or bosses': `won_battle(recruits=)`) count
   defeated Pokémon per line (`Game.defeated`, `pokemon.line_base`); at
