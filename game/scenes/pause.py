@@ -18,7 +18,7 @@ from .save_menu import DELETE_PILL, NEW_SAVE, SaveList
 PAD = 9
 ROW_H = 19
 OPTIONS = ["Resume", "Save game", "Load game", "Dev mode", "Quit game"]
-DEV_OPTIONS = ["XP boost", "God mode", "Skip packs", "Add item", "Teleport"]  # shown under "Dev mode" while it's on
+DEV_OPTIONS = ["XP boost", "God mode", "Skip packs", "Tower floors", "Add item", "Teleport"]  # shown under "Dev mode" while it's on
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 BACK_KEYS = (pygame.K_ESCAPE, pygame.K_x, pygame.K_BACKSPACE)  # resume (B on touch screens)
 WIDTH = 216
@@ -106,6 +106,8 @@ class PauseMenu:
             return f"God mode: {'On' if DEV.god else 'Off'}"
         if option == "Skip packs":
             return f"Skip packs: {'On' if DEV.skip else 'Off'}"
+        if option == "Tower floors":
+            return f"Tower floors: {'All' if DEV.tower else 'By badges'}"
         if option in ("Add item", "Controls"):
             return f"{option}..."
         if option == "Teleport":
@@ -181,7 +183,7 @@ class PauseMenu:
                     self.done = True
                 else:
                     self.message = "Not during a battle."
-            elif option in ("Fullscreen", "Dev mode", "XP boost", "God mode", "Skip packs"):
+            elif option in ("Fullscreen", "Dev mode", "XP boost", "God mode", "Skip packs", "Tower floors"):
                 self._toggle(option, 1)
             else:
                 self.quit = option == "Quit game"
@@ -202,6 +204,8 @@ class PauseMenu:
             DEV.god = not DEV.god
         elif option == "Skip packs":
             DEV.skip = not DEV.skip
+        elif option == "Tower floors":
+            DEV.tower = not DEV.tower
         elif option == "Teleport":
             keys = list(TOWNS)
             self.teleport_to = keys[(keys.index(self.teleport_to) + step) % len(keys)]
