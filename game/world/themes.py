@@ -441,22 +441,22 @@ CELADON_GYM = Theme(
     built=True,
 )
 
-# Team Rocket's Hideout under the Celadon Game Corner: steel corridors,
-# drawn in code (no painted wall or backdrop yet): wall plates and red
-# warning lamps, a flat built floor. No wild Pokémon: only Rockets.
+# Team Rocket's Hideout under the Celadon Game Corner: steel corridors
+# (painted wall and backdrop): wall plates, R banners and consoles, a flat
+# built floor. No wild Pokémon: only Rockets.
 ROCKET_HIDEOUT = Theme(
     "rocket_hideout", "Rocket Hideout",
     Palette(fill=(70, 72, 82), fill_dark=(46, 48, 56), fill_light=(100, 104, 116),
             top=(132, 136, 148), top_dark=(98, 102, 114), top_light=(170, 174, 186),
             platform=(150, 60, 60), platform_dark=(96, 36, 40), platform_light=(200, 96, 90)),
     pool=(PoolEntry("koffing", 1, (36, 38)),),
-    backdrop=Backdrop(sky_top=(30, 30, 38), sky_bottom=(62, 62, 74), hills=((52, 52, 62), (46, 46, 56)),
+    backdrop=Backdrop(art="rocket_hideout.png", sky_top=(30, 30, 38), sky_bottom=(62, 62, 74), hills=((52, 52, 62), (46, 46, 56)),
                       field_far=(104, 106, 118), field_near=(84, 86, 98), stripe=(96, 98, 110),
                       shadow=(54, 56, 66)),
     ceiling=True,
     art="cave",
     cave=CaveLook(sky_top=(26, 26, 34), sky_bottom=(56, 56, 68), far_rock=(40, 40, 50), near_rock=(30, 30, 38),
-                  glow=((170, 40, 40), (255, 110, 90)), near_rocks=False, lamps=128, banners=True, lamp_glow=10),
+                  glow=None, wall="rocket_hideout.png", dim=25, near_rocks=False),
     doorway="",
     built=True,
 )

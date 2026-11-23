@@ -423,8 +423,8 @@ you are working on.
   of Sleep Powder / Poison Powder / Stun Spore that give a party member
   their status on touch, carried into the waves). Then quest
   "rocket_hideout": route "rocket_hideout" from the Game Corner
-  (`Route.building`), a dungeon of 5 rooms (`ROCKET_HIDEOUT`, built, drawn
-  in code: `CaveLook.lamps` + `banners`, `tileset._rocket_banner`); its
+  (`Route.building`), a dungeon of 5 rooms (`ROCKET_HIDEOUT`, built, painted
+  `walls/` and `backdrops/rocket_hideout.png`); its
   blocking map trainers (`Trainer.first`/`blocks`) are the poster guard
   and the Lift Key guard (a "defeat" step on its key gives the Lift Key);
   the office's boss guards its back door out. Then quest "pokemon_tower":
