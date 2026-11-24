@@ -120,9 +120,10 @@ def dress(monster, rarity: Rarities, pieces: int, rng: random.Random | None = No
 
 
 def worn_drops(monster, rng: random.Random | None = None) -> list[Reward]:
-    """What a beaten enemy's gear leaves behind (`WORN_DROP_CHANCE` each)."""
+    """What a beaten enemy's gear leaves behind (`WORN_DROP_CHANCE` each;
+    a unique piece, `Item.unique`, always)."""
     rng = rng or random.Random()
-    return [Reward(gear=g) for g in monster.gear.values() if rng.random() * 100 < WORN_DROP_CHANCE]
+    return [Reward(gear=g) for g in monster.gear.values() if g.item.unique or rng.random() * 100 < WORN_DROP_CHANCE]
 
 
 # Rarity weights for areas. Early on only Common gear drops; bosses can

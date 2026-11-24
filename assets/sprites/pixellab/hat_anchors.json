@@ -398,6 +398,13 @@
       "2": [[33, 35], [36, 35], [38, 35], [41, 35], [43, 35], [44, 35], [45, 35], [45, 35]],
       "3": [[31, 35], [31, 36], [31, 37], [31, 38], [47, 36], [47, 36], [41, 36]],
       "4": [[32, 43], [32, 20], [31, 17], [29, 41]]
+    },
+    "kangaskhan.png": {
+      "0": [[40, 21], [40, 21], [40, 21], [40, 21], [40, 21], [40, 21], [40, 21], [40, 21]],
+      "1": [[40, 21], [40, 21], [40, 20], [41, 19], [41, 19], [41, 19], [41, 20], [41, 20]],
+      "2": [[40, 21], [40, 18], [40, 13], [40, 9], [40, 6], [40, 8], [40, 13], [40, 17]],
+      "3": [[40, 21], [36, 21], [35, 21], [50, 19], [50, 19], [48, 19]],
+      "4": [[46, 23], [43, 3], [42, 3], [40, 21]]
     }
   },
   "sheets": {
@@ -409,11 +416,12 @@
       }
     },
     "hats_new.png": {
-      "scale": {"bulbasaur": 0.7, "ivysaur": 0.85, "venusaur": 1.0, "charmander": 0.65, "charmeleon": 0.7, "charizard": 0.8, "squirtle": 0.7, "wartortle": 0.8, "blastoise": 0.9, "pidgey": 0.6, "pidgeotto": 0.75, "pidgeot": 0.8, "spearow": 0.6, "fearow": 0.6, "nidoran f": 0.65, "nidoran m": 0.6, "rattata": 0.6, "caterpie": 0.6, "metapod": 0.65, "weedle": 0.6, "kakuna": 0.65, "pikachu": 0.7, "geodude": 0.8, "onix": 0.9, "diglett": 0.65, "sandshrew": 0.7, "ekans": 0.6, "jigglypuff": 0.85, "zubat": 0.6, "paras": 0.6, "clefairy": 0.8, "oddish": 0.6, "bellsprout": 0.6, "abra": 0.65, "venonat": 0.7, "goldeen": 0.6, "staryu": 0.6, "starmie": 0.7, "horsea": 0.6, "shellder": 0.65, "psyduck": 0.65, "butterfree": 0.65, "beedrill": 0.65, "raticate": 0.65, "nidorina": 0.7, "nidorino": 0.7, "kadabra": 0.7, "meowth": 0.65, "mankey": 0.7, "machop": 0.7, "tentacool": 0.65, "growlithe": 0.7, "raichu": 0.75, "voltorb": 0.6, "magnemite": 0.6, "drowzee": 0.7, "dugtrio": 0.6},
+      "scale": {"bulbasaur": 0.7, "ivysaur": 0.85, "venusaur": 1.0, "charmander": 0.65, "charmeleon": 0.7, "charizard": 0.8, "squirtle": 0.7, "wartortle": 0.8, "blastoise": 0.9, "pidgey": 0.6, "pidgeotto": 0.75, "pidgeot": 0.8, "spearow": 0.6, "fearow": 0.6, "nidoran f": 0.65, "nidoran m": 0.6, "rattata": 0.6, "caterpie": 0.6, "metapod": 0.65, "weedle": 0.6, "kakuna": 0.65, "pikachu": 0.7, "geodude": 0.8, "onix": 0.9, "diglett": 0.65, "sandshrew": 0.7, "ekans": 0.6, "jigglypuff": 0.85, "zubat": 0.6, "paras": 0.6, "clefairy": 0.8, "oddish": 0.6, "bellsprout": 0.6, "abra": 0.65, "venonat": 0.7, "goldeen": 0.6, "staryu": 0.6, "starmie": 0.7, "horsea": 0.6, "shellder": 0.65, "psyduck": 0.65, "butterfree": 0.65, "beedrill": 0.65, "raticate": 0.65, "nidorina": 0.7, "nidorino": 0.7, "kadabra": 0.7, "meowth": 0.65, "mankey": 0.7, "machop": 0.7, "tentacool": 0.65, "growlithe": 0.7, "raichu": 0.75, "voltorb": 0.6, "magnemite": 0.6, "drowzee": 0.7, "dugtrio": 0.6, "kangaskhan": 0.85},
       "smooth": true,
       "keep": [16, 17, 19, 20, 24, 26, 27, 28, 29, 31, 32, 36, 37, 38, 39, 40, 41, 42, 43, 45, 56, 61, 62, 63],
       "hats": {
-        "27": {"anchor": [15, 25], "flip": false, "keep_face": false}
+        "27": {"anchor": [15, 25], "flip": false, "keep_face": false},
+        "64": {"anchor": [16, 12], "flip": true}
       }
     }
   }

@@ -149,9 +149,12 @@ class Item:
     cures: tuple[str, ...] = ()  # berries: statuses it cures (once per battle)
     sprite: int = -1   # hats: its cell in the hat sheet (hats.SHEET)
     min_rarity: str = "Common"  # it only drops at this rarity or better
+    # One of a kind: never rolled as loot or stock; a boss wears it
+    # (`Route.boss_wears`), and it always drops when that boss is beaten.
+    unique: bool = False
 
     def drops_at(self, rarity: str) -> bool:
-        return RARITY_ORDER.index(rarity) >= RARITY_ORDER.index(self.min_rarity)
+        return not self.unique and RARITY_ORDER.index(rarity) >= RARITY_ORDER.index(self.min_rarity)
 
 
 TYPE_ITEMS = {  # type -> (held item that powers up its moves, description)
@@ -204,6 +207,9 @@ ITEMS = {i.name: i for i in [
     # Head: hats.
     *(Item(name, "head", description, mods, sprite=cell, min_rarity="Epic" if "endure" in mods else "Common")
       for cell, name, description, mods in HATS),
+    # Tony's (the skate road's boss): one of a kind.
+    Item("Bike Helmet", "head", "Tony's own helmet, scuffed from a thousand wipeouts. Nothing gets through it.",
+         {"defense": (24, 30), "hp": (14, 18)}, sprite=64, unique=True),
     # Held: type items and battle tools.
     *(Item(name, "held", f"{description} Powers up {type_chart.name(t)} moves.", {f"power:{t}": (18, 24)})
       for t, (name, description) in TYPE_ITEMS.items()),
