@@ -47,6 +47,13 @@ REFS = {
     "machop": (34, 35), "tentacool": (33, 36), "growlithe": (38, 35),
     "raichu": (39, 35), "voltorb": (32, 46), "magnemite": (31, 46), "drowzee": (32, 35), "dugtrio": (31, 35),
     "kangaskhan": (40, 21),
+    "arbok": (36, 33), "sandslash": (43, 33), "nidoqueen": (46, 26), "nidoking": (42, 30), "koffing": (37, 36),
+    "grimer": (38, 37), "golbat": (38, 43), "persian": (44, 35), "primeape": (36, 38), "machoke": (36, 32),
+    "graveler": (33, 40), "magneton": (34, 37), "electrode": (36, 38), "golduck": (43, 28), "seaking": (41, 44),
+    "venomoth": (39, 44), "gloom": (33, 42), "vileplume": (32, 36), "weepinbell": (33, 40), "victreebel": (36, 31),
+    "parasect": (28, 38), "wigglytuff": (34, 41), "clefable": (36, 36), "hypno": (32, 34), "gastly": (36, 42),
+    "haunter": (34, 41), "cubone": (37, 36), "marowak": (39, 35), "rhyhorn": (41, 40), "exeggcute": (32, 41),
+    "exeggutor": (38, 20), "electabuzz": (37, 30), "tangela": (34, 40),
 }
 
 # Hat size, relative to Bulbasaur's head (about 18 px across).
@@ -66,6 +73,12 @@ SCALES = {
     "machop": 0.7, "tentacool": 0.65, "growlithe": 0.7,
     "raichu": 0.75, "voltorb": 0.6, "magnemite": 0.6, "drowzee": 0.7, "dugtrio": 0.6,
     "kangaskhan": 0.85,
+    "arbok": 0.7, "sandslash": 0.7, "nidoqueen": 0.8, "nidoking": 0.8, "koffing": 0.8, "grimer": 0.7,
+    "golbat": 0.65, "persian": 0.65, "primeape": 0.85, "machoke": 0.7, "graveler": 0.9, "magneton": 0.6,
+    "electrode": 0.85, "golduck": 0.7, "seaking": 0.65, "venomoth": 0.6, "gloom": 0.8, "vileplume": 1.0,
+    "weepinbell": 0.7, "victreebel": 0.8, "parasect": 0.8, "wigglytuff": 0.85, "clefable": 0.8, "hypno": 0.7,
+    "gastly": 0.8, "haunter": 0.75, "cubone": 0.7, "marowak": 0.7, "rhyhorn": 0.8, "exeggcute": 0.6,
+    "exeggutor": 0.9, "electabuzz": 0.75, "tangela": 0.85,
 }
 
 
