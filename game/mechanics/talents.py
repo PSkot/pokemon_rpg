@@ -829,11 +829,11 @@ TALENTS = {t.key: t for t in [
     _t("Sandblast", "move:Swift", "Swift has a 50% chance to lower the target's accuracy 1 stage.",
        ("Swift", {"stages": (("accuracy", -1),), "stage_chance": 50})),
     _t("Sand Stream", "ground", "At the start of each battle, every enemy's accuracy falls 2 stages.", lower__accuracy=2),
-    _t("Crush Claw", "move:Slash", "Slash has a 50% chance to lower the target's Defense 1 stage.",
-       ("Slash", {"stages": (("defense", -1),), "stage_chance": 50})),
+    _t("Crush Claw", "move:Slash", "Slash has a 30% chance to lower the target's Defense 1 stage.",
+       ("Slash", {"stages": (("defense", -1),), "stage_chance": 30})),
     _t("Spiked Armor", "own", "Whoever hits the user loses 1/8 of its max HP.", thorns=1 / 8),
-    _t("Rending Claws", "move:Slash", "Slash and Fury Swipes wound the target: 1/8 of its max HP each round, for 3 rounds.",
-       ("Slash", {"bleed": 1 / 8}), ("Fury Swipes", {"bleed": 1 / 8})),
+    _t("Rending Claws", "move:Slash", "Slash and Fury Swipes wound the target: 1/12 of its max HP each round, for 3 rounds.",
+       ("Slash", {"bleed": 1 / 12}), ("Fury Swipes", {"bleed": 1 / 12})),
     _t("Impregnable", "own", "The first hit the user takes in each battle deals no damage, and super-effective hits "
        "deal half.", sturdy=1.0, filter=0.5),
     # Ekans
