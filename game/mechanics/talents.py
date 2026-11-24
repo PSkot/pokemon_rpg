@@ -1066,9 +1066,9 @@ TALENTS = {t.key: t for t in [
     _t("Sheltering Wings", "own", "While the user stands, the whole party takes 15% less damage.",
        ancient_roots=0.15),
     # Rattata
-    _t("Gnawing Tackle", "own", "Tackle wounds the target: 1/16 of its max HP each round, for 3 rounds.",
-       ("Tackle", {"bleed": 1 / 16})),
-    _t("Nip", "own", "Tackle has a 20% chance to make the target flinch.", ("Tackle", {"flinch": 20})),
+    _t("Gnawing Tackle", "own", "Tackle wounds the target: 1/12 of its max HP each round, for 3 rounds.",
+       ("Tackle", {"bleed": 1 / 12})),
+    _t("Nip", "own", "Tackle has a 30% chance to make the target flinch.", ("Tackle", {"flinch": 30})),
     _t("Overtake", "own", "Quick Attack is 4× as likely to be a critical hit.", ("Quick Attack", {"crit_ratio": 3.0})),
     _t("Crushing Fang", "own", "Hyper Fang has a 50% chance to lower the target's Defense 1 stage.",
        ("Hyper Fang", {"stages": (("defense", -1),), "stage_chance": 50})),
@@ -1082,7 +1082,7 @@ TALENTS = {t.key: t for t in [
        "rest after a knockout.", ("Hyper Beam", {"bleed": 1 / 8, "ko_no_recharge": True})),
     # Spearow
     _t("Pecking Order", "move:Peck", "Peck has a 30% chance to make the target flinch.", ("Peck", {"flinch": 30})),
-    _t("Rapid Pecks", "own", "Peck hits twice, at 60% power each.", ("Peck", {"hits": (2, 2), "scale": -0.4})),
+    _t("Rapid Pecks", "own", "Peck hits twice, at 70% power each.", ("Peck", {"hits": (2, 2), "scale": -0.3})),
     _t("Screech Growl", "own", "Growl lowers Attack 2 stages.", ("Growl", {"stages": (("attack", -1),)})),
     _t("Harrier", "own", "Fury Attack becomes a Flying move.", ("Fury Attack", {"type": "flying"})),
     _t("Mob Rule", "own", "Leer also makes every enemy attack the user, this round and the next.",
