@@ -354,6 +354,12 @@ rewards). Meowth's Amulet Coin talent doubles it.
   Ray 100%), unless the
   target already has a status or its type is immune. Every other status
   move always works.
+- **On every enemy** (Drowsy Dust, Numbing Cloud, Pollen Cloud, Chorus,
+  Spore Cloud, Mass Hypnosis, Echo, Chain Lightning, Fungal Bloom, the
+  Megaphone gear effect): each enemy rolls its own chance, at **half** the
+  move's (`moves.SPREAD_STATUS`): Sleep Powder 37.5% each, Spore 50% each.
+  A lucky use can put the whole team to sleep, an unlucky one nobody, but
+  on average about a third of them (not three in four).
 - **Immune types:** Leech Seed doesn't affect Grass types, Thunder Wave
   doesn't affect Ground types.
 - **Stat stages** (Growl, Growth, Sand-Attack, ...): see *Stat stages*.

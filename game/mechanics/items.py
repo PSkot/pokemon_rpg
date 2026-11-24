@@ -372,7 +372,7 @@ GEAR_EFFECTS = {e.key: e for e in [
             "Why hit one when you can hit them all?", ("basic", {"spread": True, "spread_share": 0.5})),
     _effect("Double Tap", "The basic attack hits twice, at 65% power each.", "Two for the price of one.",
             ("basic", {"hits": (2, 2), "scale": -0.35})),
-    _effect("Megaphone", "The wearer's status moves work on every Pokémon on the side they aim at.",
+    _effect("Megaphone", "The wearer's status moves work on every Pokémon on the side they aim at (on enemies, each at half the chance).",
             "CAN YOU HEAR ME IN THE BACK?", ("status_moves", {"spread": True})),
     _effect("Ricochet", "The wearer's damaging moves also hit an enemy next to the target, at half damage.",
             "Nobody stands next to me twice.", ("damaging", {"reach": 0.5})),
@@ -689,13 +689,23 @@ def updated_gear(gear: Gear, rng: random.Random | None = None) -> Gear:
     """Gear rolled under older rules, rolled again under today's: the same
     item (or, if it can't drop at its rarity any more, e.g. Endure below
     Epic, another of the same slot), rarity, level and affixes, with new
-    values."""
+    values. Its affixes come to as many as its rarity gives today: the
+    first ones kept, the gaps (affixes the game no longer has) filled at
+    random."""
     rng = rng or random.Random()
     item = gear.item
     if not item.drops_at(gear.rarity.name):
         item = ITEMS[rng.choice([n for n, i in ITEMS.items() if i.slot == item.slot and i.drops_at(gear.rarity.name)])]
-    names = {a.name for a in affixes_for(item.slot)}
+    pool = affixes_for(item.slot)
+    names = {a.name for a in pool}
     affixes = [r.affix.name for r in gear.rolls if r.affix and r.affix.name in names]
+    low, high = gear.rarity.affixes if pool else (0, 0)
+    old_count = sum(1 for r in gear.rolls if r.affix)
+    want = max(low, min(high, old_count))
+    affixes = affixes[:want]
+    if len(affixes) < want:
+        rest = [a for a in pool if a.name not in affixes]
+        affixes += [a.name for a in _pick_affixes(want - len(affixes), rng, rest)]
     return Gear.roll(item.name, gear.rarity.name, rng, affixes=affixes, level=gear.level, effect=gear.effect)
 
 

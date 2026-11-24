@@ -91,6 +91,17 @@ class Move:
         return self.power > 0 or self.halve or self.fixed
 
 
+# A status move that hits every enemy (Drowsy Dust, Megaphone, ...): each
+# enemy rolls its own chance, at this share of the move's (Sleep Powder 75%:
+# 37.5% each). Lucky, everyone sleeps; unlucky, nobody does.
+SPREAD_STATUS = 0.5
+
+
+def spread_status_share(move: "Move") -> float:
+    """The share of a move's status and confusion chances each target gets."""
+    return SPREAD_STATUS if move.spread and not move.power and move.target == "enemy" else 1.0
+
+
 def _status(key: str, chance: int = 100) -> dict:
     return {"status": key, "status_chance": chance}
 
@@ -319,12 +330,15 @@ def describe(m: Move) -> str:
         if m.damaging:
             parts.append(f"{m.status_chance}% chance to {verb}.")
         else:
-            chance = "" if m.status_chance >= 100 else f" ({m.status_chance}% chance)"
+            share = spread_status_share(m)
+            pct = m.status_chance * share
+            chance = ("" if pct >= 100 else f" ({pct:g}% chance each)" if share < 1 else f" ({pct:g}% chance)")
             parts.append(f"{verb.capitalize()}s {who}{chance}." if verb != "put to sleep"
                          else f"Puts {who} to sleep{chance}.")
     if m.confuse:
-        parts.append(f"{m.confuse}% chance to confuse." if m.damaging or m.confuse < 100
-                     else f"Confuses {who}.")
+        pct = m.confuse * spread_status_share(m)
+        parts.append(f"{pct:g}% chance to confuse{' each' if spread_status_share(m) < 1 else ''}."
+                     if m.damaging or pct < 100 else f"Confuses {who}.")
     if m.flinch:
         parts.append(f"{m.flinch}% chance to make it flinch.")
     for stat, change in m.stages:

@@ -67,7 +67,9 @@ def _gear(g: Gear) -> dict:
 
 
 def _load_gear(d: dict) -> Gear:
-    rolls = [Roll(AFFIX_BY_NAME[r["affix"]] if r["affix"] else None, r["mods"]) for r in d["rolls"]]
+    # (an affix the game no longer has: dropped; the piece is rolled again below)
+    rolls = [Roll(AFFIX_BY_NAME[r["affix"]] if r["affix"] else None, r["mods"]) for r in d["rolls"]
+             if not r["affix"] or r["affix"] in AFFIX_BY_NAME]
     effect = d.get("effect", "") if d.get("effect") in GEAR_EFFECTS else ""
     gear = Gear(ITEMS[d["item"]], RARITIES[d["rarity"]], rolls, d.get("level", 1), effect, d.get("plus", 0))
     if d.get("v", 1) < GEAR_VERSION:

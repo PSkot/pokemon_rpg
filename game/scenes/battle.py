@@ -21,7 +21,7 @@ from ..engine.scene import Scene, Transition
 from ..mechanics.combat import MAX_STAGE, STAGE_STATS, Hit, damage, hit_chance, stage_factor
 from ..mechanics.items import MEDICINE, Bag, Medicine
 from ..mechanics.loot import LootTable, Reward, merge, wild_loot, worn_drops
-from ..mechanics.moves import Move
+from ..mechanics.moves import Move, spread_status_share
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, animations
 from ..mechanics.sky import FATIGUE, SKY_MOVES, WINDS, Wind, roll_wind
 from ..mechanics.status import FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES, THAW_CHANCE
@@ -1668,12 +1668,15 @@ class BattleScene(Scene):
         return f"{target.label} was wounded!"
 
     def _effect(self, user: Combatant, move: Move, target: Combatant) -> list[str]:
-        """A status move works on `target`. Returns notes for the message."""
+        """A status move works on `target`. Returns notes for the message.
+        A status move that hits every enemy rolls its status and confusion
+        chances for each of them, at `SPREAD_STATUS` of the move's."""
         if set(move.immune) & set(target.monster.species.types):
             return [f"It doesn't affect {target.label}..."]
         notes = []
+        share = spread_status_share(move)
         if move.status:
-            if random.random() * 100 < move.status_chance:
+            if random.random() * 100 < move.status_chance * share:
                 inflicted = self._inflict(target, move.status, move)
                 notes.append(inflicted or f"It didn't affect {target.label}...")
                 if inflicted:
@@ -1681,7 +1684,7 @@ class BattleScene(Scene):
             else:
                 notes.append(f"{target.label} avoided it!")
         if move.confuse:
-            if random.random() * 100 < move.confuse:
+            if random.random() * 100 < move.confuse * share:
                 was = target.confused
                 notes.append(self._confuse(target))
                 if not was:
