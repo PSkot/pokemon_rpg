@@ -46,7 +46,7 @@ REFS = {
     "meowth": (35, 39), "mankey": (38, 43),
     "machop": (34, 35), "tentacool": (33, 36), "growlithe": (38, 35),
     "raichu": (39, 35), "voltorb": (32, 46), "magnemite": (31, 46), "drowzee": (32, 35), "dugtrio": (31, 35),
-    "kangaskhan": (40, 21), "snorlax": (36, 9),
+    "kangaskhan": (40, 21), "snorlax": (33, 9),
     "arbok": (36, 33), "sandslash": (43, 33), "nidoqueen": (46, 26), "nidoking": (42, 30), "koffing": (37, 36),
     "grimer": (38, 37), "golbat": (38, 43), "persian": (44, 35), "primeape": (36, 38), "machoke": (36, 32),
     "graveler": (33, 40), "magneton": (34, 37), "electrode": (36, 38), "golduck": (43, 28), "seaking": (41, 44),
