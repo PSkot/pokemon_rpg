@@ -1245,7 +1245,9 @@ QUESTS = {q.key: q for q in [
         "learn_to_fly", "Learn to Fly",
         "The old Pidgeot at the Route 16 Gate says a grown bird can learn to carry its trainer anywhere they've "
         "been. First it has to lead the way, then pass the Sky Trial on its own.",
-        giver="route_16_pidgeot", requires=("snorlax_west",), needs_species=FLY_SPECIES,
+        # (No quest needed first: he's only reachable past the Celadon Snorlax anyway, and a
+        # requirement here only ever hid the quest from a player who got there another way.)
+        giver="route_16_pidgeot", needs_species=FLY_SPECIES,
         offer=(("Old Pidgeot", "Kaaw... That bird of yours. Strong wings. Strong enough to carry you, one day."),
                ("Old Pidgeot", "A bird that carries its trainer has to lead. Let it go first into 5 wild battles, "
                                "anywhere from Route 8 on."),

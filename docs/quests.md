@@ -645,9 +645,9 @@ Electrode 44) and **Deep Sea Haul** (Seaking 44, Shellder 43, Horsea 43).
 
 ### Learn to Fly (side quest)
 
-- **Giver:** the **Old Pidgeot** at the Route 16 Gate, once quest 25 is
-  done, and only with a **Pidgeotto, Pidgeot or Fearow** in the party or
-  reserve (`Quest.needs_species`, `quests.FLY_SPECIES`).
+- **Giver:** the **Old Pidgeot** at the Route 16 Gate (reachable once the
+  Celadon Snorlax is awake; no quest needed first), only with a
+  **Pidgeotto, Pidgeot or Fearow** in the party or reserve (`Quest.needs_species`, `quests.FLY_SPECIES`).
 - **Steps:**
   1. Win **5 wild battles** with one of those birds **leading** the party
      (`Step` "lead_wins"), on Route 8 or any route after it.
