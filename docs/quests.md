@@ -661,7 +661,12 @@ Electrode 44) and **Deep Sea Haul** (Seaking 44, Shellder 43, Horsea 43).
      Hyper Potions that perches when hurt wins about 70% (Pidgeotto 70%,
      Pidgeot 76%, Fearow 60%); Fly's dodge and the winds are left out of
      that, so a player reading them does better. (Rock types resist every
-     move the birds have: they'd make it unwinnable.)
+     move the birds have: they'd make it unwinnable.) **A bird to borrow:**
+     if no Pidgeotto, Pidgeot or Fearow in the party is Lv42 or higher, the
+     team picker also offers the Old Pidgeot's own **Pidgeot (Lv45,
+     lent)** (`Route.wave_loan`, `wave_loan_below`); it fights the trial
+     and goes back afterwards, so a young bird needn't be leveled up for
+     it.
 - **Rewards:** ₽2,400, 2,200 XP, 2 Hyper Potions, and **Fly**.
 - **Fly:** on the **Town Map** (M), Enter on a town visited flies there
   (arriving by its Pokémon Center; it becomes the town a fainted party

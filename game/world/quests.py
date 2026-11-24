@@ -1256,8 +1256,9 @@ QUESTS = {q.key: q for q in [
                     dialogue=(("Old Pidgeot", "Kaaw! It leads well. Now: the Skyward Cliffs."),
                               ("Old Pidgeot", "Up there your bird fights alone, in the air, one foe after another, "
                                               "and the winds change every moment."),
-                              ("Old Pidgeot", "Perch to rest its wings, fly up out of reach, and read the wind. "
-                                              "Talk to me when you're ready."))),
+                              ("Old Pidgeot", "Perch to rest its wings, fly up out of reach, and read the wind."),
+                              ("Old Pidgeot", "And if your bird's still a bit young for it (under Lv42), you can "
+                                              "borrow my old partner. Talk to me when you're ready."))),
                Step("defeat", "sky_trial", "Pass the Sky Trial on the Skyward Cliffs (talk to the old Pidgeot)",
                     dialogue=(("Old Pidgeot", "KAAAW! It flew like it was born up there. Because it was."),
                               ("Old Pidgeot", "Your bird can carry you now: anywhere you've been. Open the Town Map "

@@ -26,7 +26,12 @@ class TeamPick:
     def __init__(self, route: Route, party: list[Monster], limit: int):
         self.route = route
         self.limit = limit  # at most this many (quests.active_limit)
-        self.party = party
+        # A Pokémon lent for it (`Route.wave_loan`) when no one in the party
+        # that may fight is strong enough: listed last, "(lent)".
+        self.loaner: Monster | None = None
+        if route.wave_loan and not any(self.can_pick(m) and m.level >= route.wave_loan_below for m in party):
+            self.loaner = Monster.create(*route.wave_loan, talents="half")
+        self.party = list(party) + ([self.loaner] if self.loaner else [])
         self.picked: list[Monster] = []
         self.choice = 0
         self.team: list[Monster] | None = None
@@ -75,6 +80,9 @@ class TeamPick:
         ui.text(window, route.name, (r.x + 12, r.y + self.PAD), ui.YELLOW)
         ui.text(window, f"{waves} waves in a row, no healing in between.", (r.x + 12, r.y + self.PAD + 18),
                 ui.GREY, size=20)
+        if self.loaner:  # (under the list)
+            ui.text(window, f"Not strong enough yet (Lv{route.wave_loan_below})? You can borrow a "
+                            f"{self.loaner.name}.", (r.x + 12, r.bottom - self.PAD - 26), ui.GREY, size=18)
         if self.needed:
             alone = " alone" if self.needed == 1 else ""
             ui.text(window, f"Pick {self.needed} Pokémon to fight them all{alone}: {len(self.picked)}/{self.needed}",
@@ -89,7 +97,7 @@ class TeamPick:
                 ui.text(window, "Fight!", (r.x + 22, y), ui.YELLOW if ready else ui.GREY, size=24)
                 continue
             color = PICKED_COLOR if m in self.picked else ui.WHITE if self.can_pick(m) else ui.GREY
-            ui.text(window, m.name, (r.x + 22, y), color, size=24)
+            ui.text(window, m.name + (" (lent)" if m is self.loaner else ""), (r.x + 22, y), color, size=24)
             ui.text(window, f"Lv{m.level}   {m.hp}/{m.max_hp}", (r.right - 12, y + 2), ui.GREY, size=20,
                     align="right")
         ui.text(window, "Enter: pick   X: not yet", (r.right - 12, r.bottom - self.PAD - 9), ui.GREY, size=20,

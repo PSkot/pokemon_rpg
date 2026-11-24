@@ -141,6 +141,11 @@ class Route:
     waves: tuple[Wave, ...] = ()
     wave_team: int = 2
     wave_species: tuple[str, ...] = ()  # only these can be picked for the waves (() = anyone)
+    # A Pokémon lent for the waves (species, level) when none in the party
+    # that may fight them is at `wave_loan_below` or higher (the Sky Trial:
+    # the Old Pidgeot's own Pidgeot). It fights, and goes back afterwards.
+    wave_loan: tuple[str, int] = ()
+    wave_loan_below: int = 0
     puzzle: str = ""  # a puzzle on the way to the arena: "trash_cans" (the Vermilion Gym, scenes/power_grid.py)
     tower: int = 0    # a Battle Tower floor (world/tower.py): its number
     sky: bool = False  # its battles are sky battles (mechanics/sky.py: the Sky Trial)
@@ -591,6 +596,7 @@ ROUTES = {r.key: r for r in [
           waves=(Wave("Cliff Climber", (("primeape", 42),), 0),
                  Wave("Static Spark", (("magneton", 42),), 0)),
           wave_team=1, wave_species=("pidgeotto", "pidgeot", "fearow"), wild=False, cols=30, sky=True,
+          wave_loan=("pidgeot", 45), wave_loan_below=42,
           folk="route_16_pidgeot",
           folk_line="Up you go. Remember: read the wind, perch to rest, and fly out of reach."),
     # Route 2's north end, from the cave up to Pewter City: a short walk.

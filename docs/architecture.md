@@ -500,7 +500,9 @@ you are working on.
 - Fly (quest `learn_to_fly`): `Quest.needs_species` gates the offer; a
   "lead_wins" step counts wild battles won with one of `Step.species`
   leading the party (`quests.won_battle`); `Route.sky` makes a route's
-  battles sky battles (the Sky Trial). The Town Map gets a `fly` mode
+  battles sky battles (the Sky Trial); `Route.wave_loan` adds a lent
+  Pokémon to the team picker (`TeamPick.loaner`) when no one in the party
+  that may fight is at `wave_loan_below` or higher. The Town Map gets a `fly` mode
   (`TownMap.fly`, set by `PauseMenu.open_map` from `quests.can_fly` and
   `pause._fly_from`); Enter on a known town sets `fly_to`, and the pause
   menu switches to that `TownScene` (autosaved).
