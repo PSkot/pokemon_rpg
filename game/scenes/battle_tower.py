@@ -130,6 +130,11 @@ class TowerLobbyScene(MapScene):
             town = TownScene(self.game, TOWNS[tower.LOBBY_TOWN], arrive=NAME)
             self.next_scene = Transition(self, town, flashes=0)
 
+    def door_here(self) -> tuple[str, float] | None:
+        if self._at_stairs():
+            return "Up the tower", STAIRS_X
+        return (TOWNS[tower.LOBBY_TOWN].name, DOOR_X) if self._at_door() else None
+
     def prompt(self) -> tuple[float, float] | None:
         if self._at_mew():
             x, y = self.mew_pos

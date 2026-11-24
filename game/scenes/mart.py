@@ -103,6 +103,11 @@ class MartScene(MapScene):
             from .town import TownScene  # (town.py enters this scene)
             self.next_scene = Transition(self, TownScene(self.game, self.town, arrive=NAME), flashes=0)
 
+    def door_here(self) -> tuple[str, float] | None:
+        if self._at_back():
+            return "Persian's gallery", BACK_X
+        return (self.town.name, DOOR_X) if self._at_door() else None
+
     def prompt(self) -> tuple[float, float] | None:
         if self._at_counter():
             return MEOWTH_X, self._meowth_top - 12
@@ -187,6 +192,9 @@ class DenScene(MapScene):
             self.show(GearShop(self.town, self.game))
         elif self._at_curtain():
             self.next_scene = Transition(self, MartScene(self.game, self.town, from_den=True), flashes=0)
+
+    def door_here(self) -> tuple[str, float] | None:
+        return ("Poké Mart", DEN_CURTAIN_X) if self._at_curtain() else None
 
     def prompt(self) -> tuple[float, float] | None:
         if self._at_persian():

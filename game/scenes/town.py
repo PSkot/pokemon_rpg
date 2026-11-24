@@ -33,7 +33,7 @@ from .mart import MartScene
 from .recruit import RecruitScene
 from .smith import SmithMenu
 from .dept_store import DeptStoreScene
-from .overworld import HAND_IN_MARK, QUEST_MARK, Doorway, MapScene, OverworldScene, quest_mark
+from .overworld import HAND_IN_MARK, QUEST_MARK, Doorway, MapScene, OverworldScene, door_label, quest_mark
 
 BANNER_TIME = 2.5   # seconds the town's name shows on arrival
 ARRIVE_GAP = 3 * TILE  # how far from the doorway the player arrives
@@ -359,9 +359,8 @@ class TownScene(MapScene):
     def draw_overlay(self, window: pygame.Surface) -> None:
         super().draw_overlay(window)
         door = self._door_at_player()
-        if door and not isinstance(door[2], str) and not self.panel:  # a doorway in the town: where it leads
-            ui.text(window, _door_name(door[1]), (door[0].x - self.camera, door[0].rect.top - 16), ui.WHITE,
-                    size=26, align="center")
+        if door and not self.panel:  # any doorway (in the town, or at its ends): where it leads
+            door_label(window, _door_name(door[1]), door[0].x - self.camera, door[0].rect.top)
         for sleeper in (f for f in self.folk if f.asleep):  # Zzz rising over it, by turns
             top = self._folk_top(sleeper)
             for i, letter in enumerate("zZZ"):

@@ -178,6 +178,10 @@ class DeptStoreScene(MapScene):
                 self.show(ShopMenu(self.town, self.bag, DRINKS, "The machine hums. A cold drink, anyone?",
                                    "Vending machine"))
 
+    def door_here(self) -> tuple[str, float] | None:
+        # (the stairs have their own signs: "Down to 1F", "Up to 3F")
+        return (self.town.name, LEFT_X) if self.index == 0 and self._at_left() else None
+
     def prompt(self) -> tuple[float, float] | None:
         if self._at_left():
             return LEFT_X, self.ground - 84

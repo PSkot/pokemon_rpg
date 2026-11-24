@@ -78,6 +78,14 @@ def quest_mark(quest: quests.Quest) -> tuple[str, tuple[int, int, int]]:
     return EVOLVE_MARK if quest.evolves else QUEST_MARK
 
 
+def door_label(window: pygame.Surface, text: str, x: float, top: float) -> None:
+    """Where a doorway or stair leads, over it (`x` on screen, `top` its
+    top), kept on screen at the map's ends."""
+    half = ui.font(26).size(text)[0] / settings.SCALE / 2
+    x = max(half + 4, min(settings.LOGICAL_SIZE[0] - half - 4, x))
+    ui.text(window, text, (x, top - 30), ui.WHITE, size=26, align="center")  # (above the Up arrow)
+
+
 def draw_prompt(surface: pygame.Surface, x: float, top: float, t: float) -> None:
     """A bobbing arrow: press Up here."""
     x, top = round(x), round(top + math.sin(t * 6) * 2)
@@ -472,6 +480,11 @@ class MapScene(Scene):
     def moved(self) -> None:
         """After the player has moved this frame."""
 
+    def door_here(self) -> tuple[str, float] | None:
+        """(where it leads, its x in map coordinates) of the door or stairs
+        the player stands at, inside a building (shown over its Up arrow)."""
+        return None
+
     def markers(self) -> list[tuple[float, float, tuple]]:
         """(x, top, mark) in map coordinates of things quests need here: a
         quest to take or a step's place (`quest_mark`), or quests to hand in
@@ -571,6 +584,11 @@ class MapScene(Scene):
             self.panel.draw(canvas)
 
     def draw_overlay(self, window: pygame.Surface) -> None:
+        door = None if self.panel else self.door_here()
+        if door:  # (inside a building: where its door or stairs lead)
+            text, x = door
+            prompt = self.prompt()
+            door_label(window, text, x - self.camera, (prompt[1] if prompt else self.level.ground_y(x) - 84) + 4)
         ui.text(window, HELP, (6, 4), size=20)
         ui.text(window, self.where(), (6, 15), ui.WHITE, size=20)
         if DEV.enabled:  # what dev mode has on, after the location
@@ -1096,6 +1114,7 @@ class OverworldScene(MapScene):
             return
         if self.spores and self.spores.toast_t:  # what a spore cloud just did
             ui.text(window, self.spores.toast, (320, 300), ui.WHITE, size=24, align="center")
+        self._draw_door_label(window)
         near = self._folk_at_player()
         if near:  # their name, over them
             ui.text(window, near[0].name_for(self.game.starter), (near[1] - self.camera, self._folk_top(*near) - 26),
@@ -1106,6 +1125,29 @@ class OverworldScene(MapScene):
                 box = wild.body_rect
                 ui.text(window, name, (box.centerx - self.camera, box.top - 14), ui.YELLOW, size=24,
                         align="center")
+
+    def _draw_door_label(self, window: pygame.Surface) -> None:
+        """Standing at a way on: where it leads (the next map, the town at
+        the end, or a dungeon room's stair: its floor or town)."""
+        inst, route = self.instance, self.instance.route
+        at = self._stair_at_player() if self.stairs else None
+        if at:
+            stair, thing = at
+            if stair.kind == "out":
+                text = TOWNS[stair.to].name
+            else:
+                room = next((r for r in route.rooms if r.key == stair.to), None)
+                text = f"{route.name} {room.name}" if room else stair.to
+            top = thing.prompt_top + 12 if isinstance(thing, Ladder) else thing.rect.top
+            door_label(window, text, thing.x - self.camera, top)
+        elif not self.stairs and self._at_exit():
+            if route.tower:
+                text = "Climb on, or claim the chest"
+            elif inst.final:
+                text = TOWNS[inst.destination].name
+            else:
+                text = f"{route.name}, map {inst.index + 2}/{inst.maps}"
+            door_label(window, text, self.exit.x - self.camera, self.exit.rect.top)
 
     # ----------------------------------------------------------------- saves
 

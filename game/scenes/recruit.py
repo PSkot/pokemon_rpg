@@ -123,6 +123,9 @@ class RecruitScene(MapScene):
         saves.autosave(first_map)
         self.next_scene = Transition(self, first_map)
 
+    def door_here(self) -> tuple[str, float] | None:
+        return (self.town.name, DOOR_X) if self._at_door() else None
+
     def prompt(self) -> tuple[float, float] | None:
         if self._at_board():
             return BOARD.centerx, BOARD.top - 12
