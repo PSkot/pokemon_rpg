@@ -810,6 +810,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Underground Path (west) | Common | (no boss) |
 | Route 16 | Common | (no boss) |
 | Route 12 | Common | (no boss) |
+| Route 18 | Common | (no boss) |
 | Hidden Spring | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Spring Squatters, a chest) |
 | Skate Road | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: Tony's crew, a chest); Tony's Bike Helmet always drops, once |
 | Snorlax's Rude Awakening (both) | (no wild Pokémon or chests) | none: the Snack Pack / Dream Eaters drop nothing; Snorlax joins the first time (quest *The Sleeping Giant*) |
@@ -892,6 +893,7 @@ the game doesn't have yet: Poké Balls, Repel):
 | Viridian City | Potion, Antidote, Paralyze Heal, Burn Heal |
 | Pewter City | Potion, Super Potion, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal (Super Potion added: Gen 1 has it from Cerulean) |
 | Cerulean City, Vermilion City | Potion, Super Potion, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal, Ice Heal |
+| Fuchsia City | Super Potion, Hyper Potion, Revive, Full Heal, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal, Ice Heal |
 
 ### The smith: salvage and enhancement
 
@@ -954,6 +956,7 @@ then Up at him opens his menu:
 | Pewter City | 11–15 | Common 75%, Uncommon 25% | Common ₽1,400–1,650, Uncommon ₽3,500–4,150 |
 | Cerulean City | 17–22 | Common 60%, Uncommon 40% | Common ₽1,800–2,150, Uncommon ₽4,500–5,350 |
 | Vermilion City | 22–26 | Common 50%, Uncommon 45%, Rare 5% | Common ₽2,150–2,400, Uncommon ₽5,350–6,000, Rare ₽12,800–14,400 |
+| Fuchsia City | 42–46 | Common 20%, Uncommon 45%, Rare 35% | (as the formula above) |
 
 ---
 
@@ -1510,6 +1513,9 @@ always the same spot), with its team in a row.
 | Skate Road, map 2 | Half-Pipe Hogs (Biker) | Raticate 45, Fearow 45 | ₽1,800 |
 | Skate Road, map 2 | Ollie Outlaws (Biker) | Koffing 45, Grimer 45, Koffing 45 | ₽1,800 |
 | Skate Road, map 3 | Rail Riders (Biker) | Arbok 46, Golbat 45 | ₽1,800 |
+| Route 18, map 1 | Coast Flock (Bird Keeper) | Pidgeotto 46, Spearow 45, Spearow 45 | ₽1,125 |
+| Route 18, map 2 | Beak Brigade (Bird Keeper) | Fearow 46, Fearow 46 | ₽1,150 |
+| Route 18, map 2 | Sea Breeze (Bird Keeper) | Pidgeot 47, Pidgeotto 46 | ₽1,150 |
 | Skate Road (boss) | Tony | Kangaskhan 50 (in the Bike Helmet), Primeape 45, Machoke 45, Raticate 45 | ₽0 |
 | Route 12, map 1 | Pier Anglers (Fisherman) | Goldeen 43, Tentacool 43, Goldeen 43 | ₽1,505 |
 | Route 12, map 1 | Seaside Pals (Jr. Trainer) | Nidorina 43, Weepinbell 43 | ₽860 |

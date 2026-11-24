@@ -21,7 +21,7 @@ FLY_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 DIRS = {pygame.K_LEFT: (-1, 0), pygame.K_RIGHT: (1, 0), pygame.K_UP: (0, -1), pygame.K_DOWN: (0, 1)}
 
 GRID = 19          # px between grid units
-CITIES = {"pallet", "viridian", "pewter", "cerulean", "vermilion", "lavender", "celadon"}
+CITIES = {"pallet", "viridian", "pewter", "cerulean", "vermilion", "lavender", "celadon", "fuchsia"}
 LAND = (58, 92, 62)
 LAND_EDGE = (40, 66, 46)
 ROAD = (226, 200, 140)

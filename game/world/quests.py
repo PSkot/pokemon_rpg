@@ -1270,6 +1270,18 @@ QUESTS = {q.key: q for q in [
         money=2400, xp=2200,
         rewards=(("medicine", "Hyper Potion", 2),),
     ),
+    # Down the skate road and along Route 18 to Fuchsia City (as in
+    # Red/Blue, by Cycling Road).
+    Quest(
+        "to_fuchsia", "Fuchsia City",
+        "Past the bottom of the skate road, Route 18 runs east along the coast to Fuchsia City.",
+        requires=("king_of_the_hill",),
+        steps=(Step("reach", "fuchsia", "Follow Route 18 east from the Route 18 Gate to Fuchsia City"),),
+        money=2800, xp=2600,
+        rewards=(("medicine", "Hyper Potion", 2), ("gear", None, "Rare", 46)),
+        done_dialogue=(("", "Fuchsia City: a town by the sea, home of the Safari Zone and of Koga, the ninja gym "
+                            "leader."),),
+    ),
     # The evolution stones: one quest each, from after the Rainbow Badge (the
     # Fire and Water Stones come later, with Cinnabar and the coast). A stone
     # evolves one Pokémon and is used up (bag: Key items).

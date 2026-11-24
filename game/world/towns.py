@@ -547,11 +547,43 @@ TOWNS = {t.key: t for t in [
                )))),
     # The Route 18 Gate, at the bottom of the skate road (Fuchsia City lies
     # on past it, later).
-    Town("route_18", "Route 18 Gate", 40, (), exits=(("left", "skate_road"),), home_col=10,
+    Town("route_18", "Route 18 Gate", 40, (), exits=(("left", "skate_road"), ("right", "route_18_east")), home_col=10,
          folk=(Folk("route_18_raticate", "Raticate", "raticate", 26, (
              "Squeak! You came down the whole skate road? And you beat TONY? Respect.",
-             "Fuchsia City is on past here, by the sea. The gate's shut while they fix the road. Squeak.",
+             "Fuchsia City is on past here, along Route 18, by the sea. Watch out for the bird keepers. Squeak.",
          )),)),
+    # Fuchsia City, by the sea at Route 18's east end (as in Red/Blue):
+    # Koga's gym (shut, for later), the Warden's house, and the Safari
+    # Zone (later: it isn't built yet).
+    Town("fuchsia", "Fuchsia City", 96, (
+        Building("Pokémon Center", (FUNCTIONAL, 0), 8),
+        Building("Poké Mart", (FUNCTIONAL, 2), 20, inside="mart"),
+        Building("Recruitment Center", (HOUSES, 3), 32, inside="recruit"),
+        Building("Fuchsia Gym", (FUNCTIONAL, 1), 50,
+                 note="The Fuchsia Gym. The doors are shut, and something hisses on the other side. A sign: "
+                      "\"Closed for ninja training. Intruders will be poisoned.\""),
+        Building("Warden's House", (HOUSES, 0), 66,
+                 note="The Safari Zone Warden's house. Someone inside is mumbling: \"My teeth... where did I put "
+                      "my teeth...\""),
+    ), exits=(("left", "route_18_east"),), home_col=12, board_col=44,
+       mart=("Super Potion", "Hyper Potion", "Revive", "Full Heal", "Escape Rope", "Antidote", "Burn Heal",
+             "Awakening", "Paralyze Heal", "Ice Heal"),
+       gear=((42, 46), (("Common", 20), ("Uncommon", 45), ("Rare", 35))),
+       folk=(
+           Folk("fuchsia_venomoth", "Venomoth", "venomoth", 30, (
+               "Flutter... Koga's gym is full of Poison Pokémon. And walls you can't see. Bring Antidotes.",
+               "The gym's ninjas are always training. You'll hear them before you see them. If you see them.",
+           )),
+           Folk("fuchsia_kangaskhan", "Kangaskhan", "kangaskhan", 60, (
+               "The Safari Zone is just north of town. Rare Pokémon live there, like me! Well, my cousins.",
+               "My cousin Tony rides the skate road. He never takes that helmet off. Not even to sleep.",
+           )),
+           Folk("fuchsia_seaking", "Seaking", "seaking", 78, (
+               "Blub. Fuchsia's by the sea. The fishing's the best in Kanto, if you've got the patience.",
+               "Blub blub. The Warden lost his teeth again. He talks very strangely without them.",
+           )),
+           smith(86),
+       )),
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a
     # Clefairy in his teleporter (quest "bill").
     Town("sea_cottage", "Sea Cottage", 40, (

@@ -634,6 +634,23 @@ yet.
 - **Rewards:** ₽2,600, 2,400 XP, 2 Hyper Potions, a Revive, and the Bike
   Helmet (a Rare head item, item level 45: Defense and HP).
 
+### Fuchsia City
+
+- **Starts:** automatically when *King of the Hill* is done (past Tony, the
+  skate road's bottom: the Route 18 Gate).
+- **Steps:** follow **Route 18** (route "route_18_east", 2 maps, wild
+  Fearow, Spearow, Raticate, Rattata and Pidgeotto at Lv42–46, three Bird
+  Keeper bands: **Coast Flock** (Pidgeotto 46, Spearow 45, Spearow 45),
+  **Beak Brigade** (Fearow 46, Fearow 46), **Sea Breeze** (Pidgeot 47,
+  Pidgeotto 46)) east to **Fuchsia City**.
+- **There:** a Pokémon Center, a Poké Mart (with a gear counter, item level
+  42–46), a Recruitment Center, a quest board, the smith, the **Fuchsia
+  Gym** (shut: Koga's, next) and the **Warden's House** (he's lost his
+  teeth: the Safari Zone and Strength, later). Townsfolk: a Venomoth, a
+  Kangaskhan (Tony's cousin) and a Seaking.
+- **Rewards:** ₽2,800, 2,600 XP, 2 Hyper Potions and a **Rare** gear piece
+  (item level 46).
+
 ### Route 12
 
 From the Route 11 Gate's east doorway (past its Snorlax) up to Lavender

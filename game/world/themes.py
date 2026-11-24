@@ -412,6 +412,23 @@ SKATE_ROAD = Theme(
 # "learn_to_fly"): Route 16's windy cliffs (no wild Pokémon).
 SKYWARD_CLIFFS = replace(ROUTE_16, key="skyward_cliffs", name="Skyward Cliffs")
 
+# Route 18, from the Route 18 Gate (the skate road's bottom) east to
+# Fuchsia City: Red/Blue's Route 18 birds and rats (Spearow, Fearow,
+# Rattata, Raticate; Doduo has no art yet), with Pidgeotto off the coast,
+# a few levels under the party after Tony.
+ROUTE_18 = Theme(
+    "route_18", "Route 18",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("fearow", 25, (44, 46)),
+        PoolEntry("spearow", 15, (42, 44)),
+        PoolEntry("raticate", 25, (44, 46)),
+        PoolEntry("rattata", 10, (42, 44)),
+        PoolEntry("pidgeotto", 25, (44, 46)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+)
+
 # Rock Tunnel, from the Route 10 Pokémon Center to Lavender Town: pitch
 # dark (Flash lights a circle around the player); Gen 1's Zubat, Geodude,
 # Machop and Onix.

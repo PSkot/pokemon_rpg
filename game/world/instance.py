@@ -29,7 +29,7 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
-                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_18, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
                      UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, POKEMON_TOWER, PoolEntry,
                      Theme)
 from .spinners import carve, layout_of
@@ -599,6 +599,16 @@ ROUTES = {r.key: r for r in [
           wave_loan=("pidgeot", 45), wave_loan_below=42,
           folk="route_16_pidgeot",
           folk_line="Up you go. Remember: read the wind, perch to rest, and fly out of reach."),
+    # Route 18, from the Route 18 Gate (the skate road's bottom) east to
+    # Fuchsia City: Gen 1's Bird Keepers, as bands, about level with the
+    # party after Tony. (Its key isn't "route_18": that's the gate.)
+    Route("route_18_east", "Route 18", ROUTE_18, maps=2, towns=("route_18", "fuchsia"),
+          trainers=(
+              Trainer("route_18_bird_keeper_1", "Coast Flock", (("pidgeotto", 46), ("spearow", 45), ("spearow", 45)),
+                      0, 25),
+              Trainer("route_18_bird_keeper_2", "Beak Brigade", (("fearow", 46), ("fearow", 46)), 1, 25),
+              Trainer("route_18_bird_keeper_3", "Sea Breeze", (("pidgeot", 47), ("pidgeotto", 46)), 1, 25),
+          )),
     # Route 2's north end, from the cave up to Pewter City: a short walk.
     Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}
@@ -800,7 +810,7 @@ class Recruit:
 # (easier) ones don't count.
 STORY_ORDER = ("route_1", "route_22", "viridian_forest", "route_3", "mt_moon_cave", "route_4_east", "nugget_bridge",
                "route_25", "route_5_south", "underground_path", "route_6_south", "route_11", "digletts_cave",
-               "route_9", "rock_tunnel", "route_8", "underground_west", "route_16", "route_12", "skate_road")
+               "route_9", "rock_tunnel", "route_8", "underground_west", "route_16", "route_12", "skate_road", "route_18_east")
 
 
 def from_route(first: str, route: str) -> bool:
