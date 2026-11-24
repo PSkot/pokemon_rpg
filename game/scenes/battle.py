@@ -21,7 +21,7 @@ from ..engine.scene import Scene, Transition
 from ..mechanics.combat import MAX_STAGE, STAGE_STATS, Hit, damage, hit_chance, stage_factor
 from ..mechanics.items import MEDICINE, Bag, Medicine
 from ..mechanics.loot import LootTable, Reward, merge, wild_loot, worn_drops
-from ..mechanics.moves import Move, spread_status_share
+from ..mechanics.moves import Move, describe, spread_status_share
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, animations
 from ..mechanics.sky import FATIGUE, SKY_MOVES, WINDS, Wind, roll_wind
 from ..mechanics.status import FULLY_PARALYZED, PARALYSIS_SPEED, ROUND_DAMAGE, STATUSES, THAW_CHANCE
@@ -41,7 +41,8 @@ ROW_H = 19   # menu line height
 LIST_ROWS = 4  # rows that fit in the skill/item list
 PAD = 9      # space above the first line in a window
 MESSAGE_WINDOW = pygame.Rect(6, 6, 628, PAD * 2 + ROW_H)
-INFO_WINDOW = MESSAGE_WINDOW.move(0, 16)  # item descriptions, below the key hints
+INFO_WINDOW = MESSAGE_WINDOW.move(0, 16)  # item and skill descriptions, below the key hints
+INFO_SIZE, INFO_LINE_H = 24, 14  # a skill's description: font size and line height (it can take a few lines)
 
 COMMANDS = ["Fight", "Skills", "Item", "Run"]
 SKY_COMMANDS = ["Fight", "Skills", "Item", "Sky"]  # a sky battle (no running): Fly and Perch
@@ -64,10 +65,11 @@ EFFECT_ROUNDS = 3  # rounds Exposing and Spiked last
 HEAL_COLOR = (120, 230, 120)
 # Running away (wild battles): the chance, in %, by the runner's level minus
 # the highest enemy level: RUN_EVEN at an even match, RUN_PER_LEVEL more
-# or less per level, between RUN_MIN and 100.
-RUN_EVEN = 75
-RUN_PER_LEVEL = 8
+# or less per level, between RUN_MIN and RUN_MAX (never sure).
+RUN_EVEN = 50
+RUN_PER_LEVEL = 5
 RUN_MIN = 10
+RUN_MAX = 90
 XP_COLOR = (88, 168, 248)
 ENEMY_BAR = (30, 5)  # an enemy's HP bar under its feet (w, h)
 ENEMY_BAR_GAP = 5    # feet to the bar's top
@@ -540,6 +542,7 @@ class BattleScene(Scene):
             self.wind = WINDS[roll_wind()]
             self.next_wind = WINDS[roll_wind(self.wind.name)]
         self.sky_choice = 0  # the Sky list's cursor
+        self.run_tried = False  # (reset each round: `_start_round`)
         self.bag = bag
         self.loot = loot or wild_loot()  # rolled once per enemy when the party wins (at its level)
         self.drops = drops  # False: no loot or worn gear drops (the Battle Tower)
@@ -590,6 +593,7 @@ class BattleScene(Scene):
 
     def _start_round(self) -> None:
         self.actions = []
+        self.run_tried = False  # one try at running a round (undoing a failed try doesn't give another)
         self.actor_index = -1
         self._next_actor()
 
@@ -622,10 +626,11 @@ class BattleScene(Scene):
     def run_chance(self, runner: Combatant) -> int:
         """The % chance that `runner` gets the party away (`RUN_EVEN` ...)."""
         top = max((c.monster.level for c in self.enemies if c.alive), default=0)
-        return max(RUN_MIN, min(100, RUN_EVEN + RUN_PER_LEVEL * (runner.monster.level - top)))
+        return max(RUN_MIN, min(RUN_MAX, RUN_EVEN + RUN_PER_LEVEL * (runner.monster.level - top)))
 
     def _try_to_run(self) -> None:
         """The current party member tries to run: away, or it loses its turn."""
+        self.run_tried = True
         if random.random() * 100 < self.run_chance(self.actor):
             self.next_scene = Transition(self, self.return_to, flashes=0)
             return
@@ -727,6 +732,8 @@ class BattleScene(Scene):
                     self.message = f"{self.actor.label} can't fly!"
                 elif command == "Run" and self.trainer:
                     self.message = "You can't run from a challenge!"
+                elif command == "Run" and self.run_tried:
+                    self.message = "Already failed to escape this round!"
                 elif command == "Run":
                     self._try_to_run()
             elif key in CANCEL_KEYS:
@@ -1889,6 +1896,18 @@ class BattleScene(Scene):
         return list(SKY_MOVES) if self._list_open == "sky" else self.actor.monster.moves
 
     @property
+    def _skill_info(self) -> list[str]:
+        """The highlighted skill's description (its talents' changes
+        included), wrapped for the info window; [] when no skill list is open."""
+        if self.menu not in ("skills", "sky") or self.ordering:
+            return []
+        moves = self._listed_moves
+        index = self.sky_choice if self.menu == "sky" else self.skill
+        if not 0 <= index < len(moves):
+            return []
+        return ui.wrap(describe(moves[index]), INFO_SIZE, INFO_WINDOW.w - 24)
+
+    @property
     def _aimed(self) -> list[Combatant]:
         """Who the target menu has picked: the one under the cursor, or
         everyone a spread move on the own side hits."""
@@ -1960,7 +1979,7 @@ class BattleScene(Scene):
         return ((pygame.K_o, "Reorder moves"),) if self.menu == "skills" else ()
 
     def _hint(self) -> str:
-        if self.menu == "command" and self.commands[self.command] == "Run" and not self.trainer:
+        if self.menu == "command" and self.commands[self.command] == "Run" and not self.trainer and not self.run_tried:
             return f"Run: {self.run_chance(self.actor)}% chance to get away   Enter: try   X: back"
         if self.menu == "skills" and self.ordering:
             return "Up/Down: move the skill   Enter / O: put it down"
@@ -2011,6 +2030,9 @@ class BattleScene(Scene):
                     ui.badge(canvas, self._badge_pos(i), COLORS[move.type])
         if self.menu == "items":
             ui.window_box(canvas, INFO_WINDOW)
+        info = self._skill_info
+        if info:
+            ui.window_box(canvas, INFO_WINDOW.inflate(0, (len(info) - 1) * INFO_LINE_H).move(0, (len(info) - 1) * INFO_LINE_H // 2))
         for i, c in enumerate(self.party):
             row_h = self._party_row_h
             bar = pygame.Rect(PARTY_WINDOW.x + 168, PARTY_WINDOW.y + PAD + 3 + i * row_h, 90, 6 if row_h > 12 else 5)
@@ -2078,6 +2100,8 @@ class BattleScene(Scene):
         if self.menu == "items":
             description = self._medicine()[self.item].description
             ui.text(window, description, (INFO_WINDOW.x + 12, INFO_WINDOW.y + PAD))
+        for i, line in enumerate(self._skill_info):
+            ui.text(window, line, (INFO_WINDOW.x + 12, INFO_WINDOW.y + PAD + i * INFO_LINE_H), size=INFO_SIZE)
 
         if self._list_open == "items":  # covers the enemy and command windows
             shown = self._medicine()[self.item_top:self.item_top + LIST_ROWS]
@@ -2114,7 +2138,7 @@ class BattleScene(Scene):
                     ui.text(window, f"Lv{c.monster.level}", (ENEMY_WINDOW.right - 12, y), ui.GREY, size=size,
                             align="right")
             for i, name in enumerate(self.commands):
-                unavailable = ((name == "Item" and not self._medicine()) or (name == "Run" and self.trainer)
+                unavailable = ((name == "Item" and not self._medicine()) or (name == "Run" and (self.trainer or self.run_tried))
                                or (name == "Skills" and self.choosing and not self.actor.monster.moves)
                                or (name == "Sky" and self.choosing and not self.actor.flier)
                                or (name in ("Fight", "Skills", "Sky") and self.choosing and self.actor.dozing))

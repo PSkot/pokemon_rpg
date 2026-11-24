@@ -698,7 +698,8 @@ you are working on.
   (Ekans'), Hypno (Drowzee's), Rhyhorn (Nidorino's) and Kangaskhan
   (Drowzee's outline and shading only); and Sandslash, Graveler and
   Parasect (their pre-evolutions'); Goldeen's, Butterfree's, Raticate's and Nidorino's bases were mirrored, as
-  their candidates faced left). Placeholder quality: likely to be redone.
+  their candidates faced left; Graveler's whole sheet was mirrored afterwards, as it
+  faced left). Placeholder quality: likely to be redone.
 - On maps, every species' sprite is drawn 3 px into the ground like the
   player's (`player.FOOT_SINK`: the sheets' feet are at a 3/4 angle), so
   townsfolk and wild packs stand in the grass, not on top of it; props

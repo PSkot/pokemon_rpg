@@ -224,8 +224,8 @@ out in these steps:
    "high critical-hit ratio": 15%; ×20 or more: always), × 4 with Focus
    Energy, plus the user's gear `crit` (and Lucky Strikes) in percentage
    points (e.g. +3 → 8%), at most 100%. There's no cap: gear's crit is
-   small (an all-crit set of top Legendary Lv60 rolls reaches 27%; Slash 37%). Always a crit with Keen Edge on a target below half HP (Apex
-   Predator: below ⅓). A crit
+   small (an all-crit set of top Legendary Lv60 rolls reaches 27%; Slash 37%). Always a crit with Keen Edge on a target below half HP; Apex
+   Predator adds **+30** points on a target below ⅓ HP. A crit
    multiplies `base` by **×1.5** (Gen 2+ style; *not* Gen 1's level-based
    crits; ×2 with the Sniper talent).
 5. **Leaf Shield:** if the target is shielded, `base` × **0.5**.
@@ -978,10 +978,12 @@ too), so a jump off the platform clears the whole group.
 
 **Running away** (wild battles only; trainers and bosses can't be run
 from): the chosen party member tries, with a chance by its level minus the
-highest enemy level: **75%** at an even match, **±8%** per level, between
-**10%** and **100%** (`battle.RUN_EVEN`, `RUN_PER_LEVEL`, `RUN_MIN`). So
-5 levels under the strongest enemy it's 35%, and 4 or more over it's
-sure. Failing ("Can't escape!") costs that member its turn. The hint line
+highest enemy level: **50%** at an even match, **±5%** per level, between
+**10%** and **90%** (`battle.RUN_EVEN`, `RUN_PER_LEVEL`, `RUN_MIN`,
+`RUN_MAX`). So 5 levels under the strongest enemy it's 25%, and 8 or more
+over it's 90%: never sure. Failing ("Can't escape!") costs that member its
+turn, like a failed attack, and the enemies still act. Only one party member
+may try per round (Run is greyed out after a failed try). The hint line
 shows the chance while Run is highlighted.
 
 Route 1 (Meadow pool; Red/Blue's Route 1: only Pidgey and Rattata):

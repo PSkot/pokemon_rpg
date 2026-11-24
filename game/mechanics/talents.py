@@ -298,7 +298,7 @@ class LearnedMove:
 
 ADDED = {"status_chance", "stage_chance", "confuse", "flinch", "seed", "bind", "shield", "drain", "heal",
          "priority", "sleep_bonus", "scale", "crit_ratio", "recoil", "reach", "empower", "spikes",
-         "contagious", "siphon", "nightmare"}
+         "contagious", "siphon", "nightmare", "hunt_crit"}
 CHANCES = {"status_chance", "stage_chance", "confuse", "flinch", "contagious"}
 
 
@@ -328,7 +328,7 @@ def apply_changes(move: Move, changes: dict) -> Move:
             new[name] = value
         elif name in ADDED:
             new[name] = old + value
-        elif name in ("keen", "power", "bleed") or (name == "spread_share" and move.spread):
+        elif name in ("keen", "hunt", "power", "bleed") or (name == "spread_share" and move.spread):
             new[name] = max(old, value)  # (a later talent never weakens an earlier one's: Apex Predator, Keen Edge)
         elif name in ("stages", "self_stages"):
             new[name] = _add_stages(old, value)
@@ -448,8 +448,8 @@ TALENTS = {t.key: t for t in [
        ambush=0.3),
     _t("Gang Up", "any", "The user's moves deal 30% more to a target a partner already hit this round.",
        gang=0.3),
-    _t("Apex Predator", "any", "The user's moves are always critical hits on a target below 1/3 HP.",
-       ("damaging", {"keen": 1 / 3})),
+    _t("Apex Predator", "any", "The user's moves have +30% critical-hit chance on a target below 1/3 HP.",
+       ("damaging", {"hunt": 1 / 3, "hunt_crit": 30})),
     _t("Blur", "any", "The user's damaging moves go before others' (as Quick Attack does).",
        ("damaging", {"priority": 1})),
     _t("Unbreakable", "any", "A hit that would knock the user out has a 50% chance to leave it 1 HP.", endure=50),

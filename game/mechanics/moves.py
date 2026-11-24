@@ -80,6 +80,8 @@ class Move:
     # From talents (talents.py):
     taunt: int = 0          # enemies attack the user for this many rounds (this one included)
     keen: float = 0.0       # always a critical hit on a target below this share of its max HP
+    hunt: float = 0.0       # `hunt_crit` more crit chance (points) on a target below this share of its max HP
+    hunt_crit: int = 0
     charge_skip: str = ""   # no charging once the user has used this move in the battle
     ko_no_recharge: bool = False  # no recharge after knocking an enemy out
     soothe: bool = False    # also cures the user's side's status conditions
@@ -415,6 +417,8 @@ def describe(m: Move) -> str:
         parts.append("Enemies attack the user this round and the next.")
     if m.keen:
         parts.append(f"Always a critical hit on a target below {_fraction(m.keen)} HP.")
+    if m.hunt and m.hunt_crit:
+        parts.append(f"+{m.hunt_crit}% critical-hit chance on a target below {_fraction(m.hunt)} HP.")
     if m.charge_skip:
         parts.append(f"No charging once the user has used {m.charge_skip}.")
     if m.ko_no_recharge:

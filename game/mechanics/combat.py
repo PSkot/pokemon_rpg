@@ -155,7 +155,10 @@ def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.
     power = move.power * move.scale + m.gear_bonus("power")
     level_factor = 2 * m.level / 5 + 2
     base = level_factor * power * attack / defense / 50 + 2
-    crit = random.random() * 100 < crit_chance(m, move, user.focused)
+    chance = crit_chance(m, move, user.focused)
+    if move.hunt and target.monster.hp < target.monster.max_hp * move.hunt:  # (Apex Predator)
+        chance += move.hunt_crit
+    crit = random.random() * 100 < chance
     if move.keen and target.monster.hp < target.monster.max_hp * move.keen:  # (Keen Edge)
         crit = True
     if crit:
