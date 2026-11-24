@@ -195,7 +195,7 @@ SPECIES.update({
     "nidoking": _animated("nidoking", "Nidoking", (81, 92, 77, 85, 75), ("poison", "ground"), exp=195, hit=4),
     # (Team Rocket's: the Rocket Hideout's bands)
     "koffing": _animated("koffing", "Koffing", (40, 65, 95, 35, 60), ("poison",), exp=114, hit=6),
-    "weezing": _placeholder("110_weezing", "Weezing", (65, 90, 120, 60, 85), ('poison',), exp=173),
+    "weezing": _animated("weezing", "Weezing", (65, 90, 120, 60, 85), ("poison",), exp=173, hit=4),
     "grimer": _animated("grimer", "Grimer", (80, 80, 50, 25, 40), ("poison",), exp=90, hit=5),
     "muk": _placeholder("089_muk", "Muk", (105, 105, 75, 50, 65), ('poison',), exp=157),
     "golbat": _animated("golbat", "Golbat", (75, 80, 70, 90, 75), ("poison", "flying"), exp=171, hit=3),

@@ -717,7 +717,8 @@ you are working on.
   with 1 px breathing, drawn 1.5×; awake (`snorlax`, quest
   "snorlax_west") it battles and joins, with its own sheet (`snorlax.png`:
   a standing base on a 60 px canvas, the sleeping sheet as its style
-  reference, pixminimax rows; hats fit); Golbat, Arbok,
+  reference, pixminimax rows; hats fit); Weezing likewise (Koga's gym: a 48 px base,
+  Koffing as its style reference, mirrored to face right); Golbat, Arbok,
   Persian and Machoke were made by Claude the same way (48 px canvases,
   the pre-evolution's sprite as style reference; the base padded into the
   64 px cell, then pixminimax rows ending on the base so they loop; tiny
