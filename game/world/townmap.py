@@ -25,11 +25,11 @@ from .towns import TOWNS
 
 # Grid positions of the towns (x right, y down; drawn GRID px apart).
 NODES: dict[str, tuple[float, float]] = {
-    "pallet": (2, 14), "viridian": (2, 10), "pewter": (2, 4), "route_2": (5, 7),
+    "pallet": (2, 14), "viridian": (2, 10), "pewter": (2, 4), "route_2": (5, 6),
     "mt_moon": (6, 2), "route_4": (9, 2), "cerulean": (12, 2), "route_24": (12, 0),
     "sea_cottage": (16, 0), "route_5": (12, 5), "route_6": (12, 10), "vermilion": (12, 13),
     "route_11": (15.5, 13), "route_10": (17, 2), "lavender": (17, 7.5), "route_8_gate": (14.5, 7.5),
-    "celadon": (7.5, 7.5),
+    "celadon": (7.5, 7.5), "route_16": (3.6, 7.5),
 }
 # The cities' names on the map: (dx, dy) from their spot in logical px, and alignment.
 CITY_LABELS = {"pallet": (8, -6, "left"), "viridian": (8, -6, "left"), "pewter": (8, -6, "left"),
@@ -60,6 +60,7 @@ EDGES: dict[str, tuple[tuple, str]] = {
     "rock_tunnel": (("route_10", "lavender"), "cave"),
     "route_8": (("lavender", "route_8_gate"), "road"),
     "underground_west": (("route_8_gate", (13.5, 8.8), (9, 8.8), "celadon"), "tunnel"),
+    "route_16": (("route_16", "celadon"), "road"),
 }
 
 

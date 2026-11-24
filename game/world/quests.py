@@ -1075,8 +1075,57 @@ QUESTS = {q.key: q for q in [
                     gives=("Poké Flute",))),
         money=2200, xp=2100,
         rewards=(("medicine", "Hyper Potion", 3), ("medicine", "Revive", 2), ("gear", None, "Rare", 42)),
-        done_dialogue=(("", "The Poké Flute... A Snorlax is said to be asleep across the road east of Vermilion, on "
-                            "Route 12."),),
+        done_dialogue=(("", "The Poké Flute... Word is a Snorlax has fallen asleep right across the road west of "
+                            "Celadon City, to Route 16."),),
+    ),
+    # The Poké Flute isn't enough on its own: the Snorlax west of Celadon
+    # (blocking Route 16) only wakes up hungry. A feast (snacks won back from
+    # Route 8's Meowth and Mankey, and a crate of Soda Pop from the
+    # Department Store's roof), the flute, and a battle to calm it down;
+    # then it joins.
+    Quest(
+        "snorlax_west", "The Sleeping Giant",
+        "A Snorlax is fast asleep across the road west of Celadon City, and nobody can get to Route 16. Perhaps "
+        "the Poké Flute will wake it.",
+        requires=("pokemon_tower",),
+        steps=(Step("talk", "celadon_snorlax", "Play the Poké Flute for the sleeping Snorlax (Celadon West End)",
+                    town="celadon_west",
+                    dialogue=(("", "You played the Poké Flute. A soft, bright tune drifts over Snorlax..."),
+                              ("", "Snorlax snorts, scratches its belly, rolls over... and goes on snoring."),
+                              ("", "It's too deep asleep for a tune alone. Maybe someone in town knows how to wake "
+                                   "it."))),
+               Step("talk", "celadon_hypno", "Ask around Celadon West End how to wake Snorlax",
+                    town="celadon_west",
+                    dialogue=(("Old Hypno", "The Poké Flute didn't do it? Of course not. That Snorlax is dreaming "
+                                            "of dinner."),
+                              ("Old Hypno", "A Snorlax only ever wakes up hungry. Put a feast under its nose, THEN "
+                                            "play your flute."),
+                              ("Old Hypno", "The Meowth and Mankey on Route 8 have been raiding the market stalls. "
+                                            "Win the snacks back, and buy it something to wash them down."))),
+               collect("Stolen Snack", 6, "route_8", ("meowth", "mankey"), 50, "Meowth and Mankey on Route 8"),
+               Step("visit", "Rooftop", "Buy a crate of Soda Pop at the Department Store's rooftop (Celadon City)",
+                    town="celadon",
+                    dialogue=(("", "The vending machine rumbles and rumbles... and rumbles. A whole crate of Soda Pop "
+                                   "rattles out!"),
+                              ("", "You received a Soda Pop Crate! That should be enough for a Snorlax. Maybe.")),
+                    gives=("Soda Pop Crate",)),
+               Step("talk", "celadon_snorlax", "Lay out the feast for Snorlax and play the Poké Flute (Celadon West End)",
+                    town="celadon_west", takes=("Soda Pop Crate",),
+                    dialogue=(("", "You set out the snacks and the Soda Pop in front of Snorlax, and play the Poké "
+                                   "Flute..."),
+                              ("", "Its nose twitches. Its belly rumbles. One eye opens..."),
+                              ("", "Snorlax wolfs down the whole feast in three bites... and it's still hungry. And "
+                                   "grumpy!"),
+                              ("", "And there's a rustling in the bushes: the Meowth gang's boss, a Primeape and a "
+                                   "Raticate, back for the leftovers!"))),
+               Step("defeat", "snorlax_wakes", "Calm down the grumpy Snorlax and see off the snack thieves (talk to "
+                                               "it, Celadon West End)",
+                    dialogue=(("", "Snorlax flops down, puffing... then looks at you, and at your bag. You fed it, "
+                                   "after all."),
+                              ("", "Snorlax yawns, stretches, and lumbers along after you. It wants to come along!")))),
+        money=2400, xp=2300,
+        rewards=(("pokemon", "snorlax", 40),),
+        done_dialogue=(("", "The road west of Celadon City is clear: Route 16 is open."),),
     ),
     # The evolution stones: one quest each, from after the Rainbow Badge (the
     # Fire and Water Stones come later, with Cinnabar and the coast). A stone

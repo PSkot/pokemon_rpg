@@ -194,6 +194,11 @@ LEARNSETS = {
         ('Bone Club', 0), ('Growl', 0), ('Leer', 25), ('Focus Energy', 31), ('Thrash', 38),
         ('Bonemerang', 43),
     ),
+    # (Gen 1's; Defense Curl for Amnesia.)
+    ('snorlax',): (
+        ('Headbutt', 0), ('Defense Curl', 0), ('Rest', 0), ('Body Slam', 35), ('Harden', 41), ('Double-Edge', 48),
+        ('Hyper Beam', 56),
+    ),
     ('chansey',): (
         ('Pound', 0), ('Double Slap', 0), ('Sing', 24), ('Growl', 30), ('Softboiled', 34), ('Defense Curl', 38),
         ('Light Screen', 44), ('Seismic Toss', 46), ('Egg Bomb', 48), ('Double-Edge', 54),

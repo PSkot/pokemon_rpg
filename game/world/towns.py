@@ -62,6 +62,7 @@ class Folk:
     # Chat, one line per talk in turn; "{partner}" = the player's starter's name.
     lines: tuple[str, ...] = ()
     asleep: bool = False  # fast asleep (Snorlax): doesn't turn to face the player, Zzz over it
+    gone_after: str = ""  # not there any more once this quest is done
     npc: str = ""  # drawn as this NPC's idle animation (props/<npc>.png, tileset.npc_frames), not a species
 
     @property
@@ -368,7 +369,7 @@ TOWNS = {t.key: t for t in [
                  "Dig! That's Diglett's Cave. We dug it all the way to Route 2, near Pewter City!",
                  "Dig dig... The Dugtrio deep inside don't like visitors. Watch your feet.",
              )),
-             Folk("route_12_snorlax", "Snorlax", "snorlax", 43, (
+             Folk("route_12_snorlax", "Snorlax", "snorlax_asleep", 43, (
                  "A huge Pokémon is fast asleep, sprawled right across the road to Route 12. It won't budge.",
                  "Snorlax is snoring loudly. Pushing, shouting... nothing wakes it. (Maybe something will, one "
                  "day.)",
@@ -500,8 +501,19 @@ TOWNS = {t.key: t for t in [
         Building("Battle Tower", (BATTLE_TOWER, 0), 30, inside="tower",
                  note="The Battle Tower. A banner over its doors: \"GRAND OPENING SOON! Twenty-five floors "
                       "of the toughest battles in Kanto!\""),
-    ), exits=(("right", "town:celadon_square"),), home_col=24,
+    ), exits=(("left", "route_16"), ("right", "town:celadon_square")), home_col=24,
        folk=(
+           # Asleep across the road west to Route 16, until it's woken with
+           # a feast and the Poké Flute (quest "snorlax_west"): then it joins.
+           Folk("celadon_snorlax", "Snorlax", "snorlax_asleep", 3, (
+               "A huge Pokémon is fast asleep, sprawled right across the road west. It won't budge.",
+               "Snorlax is snoring like thunder. Its belly rumbles even in its sleep.",
+           ), asleep=True, gone_after="snorlax_west"),
+           # ... and an old Hypno who knows a thing or two about sleep.
+           Folk("celadon_hypno", "Old Hypno", "hypno", 46, (
+               "Sleep is a fine thing. A Snorlax sleeps better than anyone. And eats better, too.",
+               "I've watched a great many dreams, young one. That Snorlax only ever dreams of food.",
+           )),
            # The starters' last evolutions: a master of the player's starter's
            # line, retired to the Mansion (quests master_<form>).
            Folk("celadon_master", "Master {}", ELDER, 19, (
@@ -513,6 +525,13 @@ TOWNS = {t.key: t for t in [
            "Fairy... Someone pink and tiny was floating around the tower last night. Clefairy saw it!",
        )),
        )),
+    # The Route 16 Gate, at the west end of Route 16: the road on (Cycling
+    # Road, down to Fuchsia City) is for later.
+    Town("route_16", "Route 16 Gate", 44, (), exits=(("right", "route_16"),), home_col=14,
+         folk=(Folk("route_16_guard", "Gate Guard", "fearow", 24, (
+             "Cycling Road starts past this gate. It's closed while they finish the downhill stretch.",
+             "Route 16 is a windy one. The bird Pokémon round here ride the gusts off the cliffs.",
+         )),)),
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a
     # Clefairy in his teleporter (quest "bill").
     Town("sea_cottage", "Sea Cottage", 40, (

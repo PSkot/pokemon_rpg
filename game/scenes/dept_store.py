@@ -40,6 +40,7 @@ COUNTER_X = 232               # the counter, with the clerk behind it
 CLERK_X = COUNTER_X + COUNTER_W // 2
 SHELVES = [392, 472]
 VENDING = (248, 320, 392)     # the rooftop's machines
+ROOFTOP = "Rooftop"           # quest "visit" steps at its machines (Step.target, town "celadon")
 REACH = 24
 MARKET = ("Potion", "Super Potion", "Hyper Potion", "Max Potion", "Revive", "Full Heal", "Escape Rope",
           "Antidote", "Burn Heal", "Awakening", "Paralyze Heal", "Ice Heal")
@@ -169,6 +170,11 @@ class DeptStoreScene(MapScene):
             elif kind == "materials":
                 self.show(MaterialShop(self.bag))
             else:
+                from ..world import quests
+                event = quests.visit(self.game, self.town.key, ROOFTOP)  # (a quest's errand here: the Soda Pop crate)
+                if event:
+                    self.show_event(event)
+                    return
                 self.show(ShopMenu(self.town, self.bag, DRINKS, "The machine hums. A cold drink, anyone?",
                                    "Vending machine"))
 

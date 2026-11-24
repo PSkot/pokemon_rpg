@@ -537,14 +537,42 @@ yet.
 - **Rewards:** ₽2,000, 1,900 XP, 3 Hyper Potions, 2 Revives and a **Rare**
   gear piece (item level 40). The smith's hammer quest goes on offer.
 
+### 25. The Sleeping Giant
+
+- **Starts:** automatically when quest 24 is done (the Poké Flute).
+- **There:** a **Snorlax** fast asleep across the doorway at Celadon West
+  End's west end, blocking **Route 16** (`Folk` "celadon_snorlax",
+  `snorlax_asleep`, gone once the quest is done: `Folk.gone_after`), and
+  an **Old Hypno** by the Battle Tower.
+- **Steps:**
+  1. Play the Poké Flute for Snorlax (talk to it): it rolls over and snores
+     on. Too deep asleep for a tune alone.
+  2. Ask the Old Hypno: a Snorlax only wakes up hungry. Put a feast under its
+     nose, then play the flute. Route 8's Meowth and Mankey have been raiding
+     the market stalls.
+  3. Collect **6 Stolen Snacks** (Meowth and Mankey on Route 8 or later,
+     50% each).
+  4. Buy a **Soda Pop Crate** at the Department Store's rooftop vending
+     machines (a "visit" step at `dept_store.ROOFTOP`).
+  5. Lay out the feast and play the flute (talk to Snorlax, takes the
+     crate): it wakes, wolfs it down, and is still hungry and grumpy; the
+     snack thieves come back for the leftovers.
+  6. Calm it down (talk to it again): **Snack Pack**, Snorlax 48 (giant)
+     with Persian 42, Primeape 42 and Raticate 42 (route "snorlax_wakes",
+     `Route.folk_line`). A party of three at Lv42/41/41 with 3 Hyper Potions
+     wins about 75%.
+- **Rewards:** ₽2,400, 2,300 XP, and **Snorlax (Lv40) joins** (the party,
+  or the reserve). Route 16 opens.
+
 ### Planned: Learn to Fly (with Route 16)
 
-Not built yet: it comes with **Route 16** (west of Celadon), where Red/Blue
-gives HM02 Fly. Its battle rules are already in: *Sky battles* in
+Not built yet: Route 16 is in (west of Celadon, past the Snorlax), the
+quest comes next; Red/Blue gives HM02 Fly there. Its battle rules are already in: *Sky battles* in
 `mechanics.md` (`BattleScene(sky=True)`, `mechanics/sky.py`).
 
-- **Giver:** a Bird Keeper in the Route 16 house; on offer once a Fearow,
-  Pidgeotto or Pidgeot is in the party or reserve.
+- **Giver:** a Bird Keeper at the Route 16 Gate; on offer once a Pidgey or
+  Spearow has evolved (a Pidgeotto, Pidgeot or Fearow in the party or
+  reserve).
 - **Steps:** (1) win 5 wild battles on Route 7/8/16 with only the bird
   fighting; (2) talk to the keeper; (3) the **Sky Trial** on a new map,
   **Skyward Cliffs**: the bird alone (`wave_species`: the Pidgey and

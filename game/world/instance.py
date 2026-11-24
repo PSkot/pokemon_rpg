@@ -29,7 +29,7 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
-                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_11, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
                      UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, POKEMON_TOWER, PoolEntry,
                      Theme)
 from .spinners import carve, layout_of
@@ -140,6 +140,7 @@ class Route:
     puzzle: str = ""  # a puzzle on the way to the arena: "trash_cans" (the Vermilion Gym, scenes/power_grid.py)
     tower: int = 0    # a Battle Tower floor (world/tower.py): its number
     folk: str = ""                      # walked by talking to this townsfolk (a trial), not a doorway
+    folk_line: str = ""                 # ... who says this, sending the player there ("" = a trial's words)
 
     def other_end(self, town: str) -> str:
         return self.towns[1] if town == self.towns[0] else self.towns[0]
@@ -504,6 +505,26 @@ ROUTES = {r.key: r for r in [
     # The Underground Path's west-east tunnel, from the Route 8 Gate under
     # Saffron City to Route 7, by Celadon City (no trainers, as in Red/Blue).
     Route("underground_west", "Underground Path", UNDERGROUND_WEST, maps=2, towns=("route_8_gate", "celadon")),
+    # Route 16, west of Celadon West End (once the Snorlax asleep across it
+    # is awake and gone, quest "snorlax_west"), to the Route 16 Gate:
+    # Gen 1's Bikers, as bands.
+    Route("route_16", "Route 16", ROUTE_16, maps=2, towns=("route_16", "celadon_west"),
+          needs=("snorlax_west", "done"),
+          blocked="A huge Pokémon is fast asleep right across the road west. There's no getting past it.",
+          trainers=(
+              Trainer("route_16_biker", "Road Hogs", (("raticate", 41), ("fearow", 41)), 0, 40),
+              Trainer("route_16_biker_2", "Exhaust Pipes", (("koffing", 41), ("grimer", 41), ("koffing", 41)), 1, 40),
+          )),
+    # Snorlax, woken with a feast and the Poké Flute (quest "snorlax_west"):
+    # grumpy, it has to be calmed down in a battle, with the Route 8 snack
+    # thieves, back for the leftovers (alone, it's no match for a team of
+    # three; this way a party of three at Lv42/41/41 with 3 Hyper Potions
+    # wins about 75%, tools/balance_sim.py-style runs). Then it joins.
+    Route("snorlax_wakes", "Snorlax's Rude Awakening", ROUTE_16, maps=1, towns=("celadon_west", "celadon_west"),
+          boss=True, boss_group=(("snorlax", 48), ("persian", 42), ("primeape", 42), ("raticate", 42)), boss_scale=2,
+          boss_chest="", wild=False, cols=30, trainer="Snack Pack", folk="celadon_snorlax",
+          folk_line="SNOOORT! Snorlax heaves itself up, grumpy and still hungry, and the snack thieves are back "
+                    "for the leftovers. Calm them all down!"),
     # Route 2's north end, from the cave up to Pewter City: a short walk.
     Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}
@@ -705,7 +726,7 @@ class Recruit:
 # (easier) ones don't count.
 STORY_ORDER = ("route_1", "route_22", "viridian_forest", "route_3", "mt_moon_cave", "route_4_east", "nugget_bridge",
                "route_25", "route_5_south", "underground_path", "route_6_south", "route_11", "digletts_cave",
-               "route_9", "rock_tunnel", "route_8", "underground_west")
+               "route_9", "rock_tunnel", "route_8", "underground_west", "route_16")
 
 
 def from_route(first: str, route: str) -> bool:

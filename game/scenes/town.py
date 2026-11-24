@@ -132,12 +132,17 @@ class TownScene(MapScene):
         """Whether a small tree still grows over `building`'s door (`Building.tree`)."""
         return bool(building.tree) and self._tree_key(building) not in self.game.trainers
 
+    @property
+    def folk(self) -> list[Folk]:
+        """The town's townsfolk who are here (not gone after their quest: `Folk.gone_after`)."""
+        return [f for f in self.town.folk if not (f.gone_after and quests.is_done(self.game, f.gone_after))]
+
     def _building_at_player(self) -> Building | None:
         return next((b for b in self.town.buildings
                      if b.name and b.x <= self.player.x < b.x + tileset.building(b.sprite)[0].get_width()), None)
 
     def _folk_at_player(self) -> Folk | None:
-        return next((f for f in self.town.folk if abs(self.player.x - f.x) < FOLK_REACH), None)
+        return next((f for f in self.folk if abs(self.player.x - f.x) < FOLK_REACH), None)
 
     def _folk_anim(self, folk: Folk):
         if folk.npc:  # (an NPC's own animation: the smith)
@@ -175,8 +180,8 @@ class TownScene(MapScene):
                 first_map = OverworldScene(Instance(trial, self.town.key), self.game)
                 saves.autosave(first_map)
                 self.next_scene = Transition(self, first_map, flashes=0)
-            self.show(quest_ui.Dialogue([(name, f"The {trial.name} awaits. Go, and show me what you've learned!")]),
-                      after=go)
+            line = trial.folk_line or f"The {trial.name} awaits. Go, and show me what you've learned!"
+            self.show(quest_ui.Dialogue([(name if not trial.folk_line else "", line)]), after=go)
             return
         if folk.key == quests.SMITH and quests.smith_open(self.game):  # the smithy: salvage, enhance, smelt
             self.show(SmithMenu(self.game), after=lambda: saves.autosave(self))
@@ -313,7 +318,7 @@ class TownScene(MapScene):
             for b in self.town.buildings:  # a recruitment has opened
                 if b.inside == "recruit":
                     marks.append((building_mid(b), ground - tileset.building(b.sprite)[1] - 20, QUEST_MARK))
-        for folk in self.town.folk:  # a quest to give or to move on, or a trial to send the player to
+        for folk in self.folk:  # a quest to give or to move on, or a trial to send the player to
             if folk is self._folk_at_player():
                 continue  # (their name and the Up arrow show instead)
             top = self._folk_top(folk) - 4
@@ -335,12 +340,12 @@ class TownScene(MapScene):
             tileset.quest_board(layer, round(self.board_x), ground, len(quests.can_take(self.game, self.town.key)))
         for door, _, _ in self.doors:
             door.draw(layer)
-        for folk in self.town.folk:  # the smith's furnace behind him and anvil beside him
+        for folk in self.folk:  # the smith's furnace behind him and anvil beside him
             if folk.key == quests.SMITH:
                 tileset.draw_prop(layer, "furnace", round(folk.x - 46), ground)
                 self._forge_glow(layer, round(folk.x - 46) + 5, ground - 17)  # (its fire, in the painting)
                 tileset.draw_prop(layer, "anvil", round(folk.x + 32), ground)
-        for folk in self.town.folk:  # facing the player (unless fast asleep)
+        for folk in self.folk:  # facing the player (unless fast asleep)
             species, anim = self._folk_anim(folk)
             flip = self.player.x < folk.x and not folk.asleep
             index = anim.index_at(self.t)
@@ -357,7 +362,7 @@ class TownScene(MapScene):
         if door and not isinstance(door[2], str) and not self.panel:  # a doorway in the town: where it leads
             ui.text(window, _door_name(door[1]), (door[0].x - self.camera, door[0].rect.top - 16), ui.WHITE,
                     size=26, align="center")
-        for sleeper in (f for f in self.town.folk if f.asleep):  # Zzz rising over it, by turns
+        for sleeper in (f for f in self.folk if f.asleep):  # Zzz rising over it, by turns
             top = self._folk_top(sleeper)
             for i, letter in enumerate("zZZ"):
                 phase = (self.t * 0.6 + i / 3) % 1

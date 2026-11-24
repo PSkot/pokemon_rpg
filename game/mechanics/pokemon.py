@@ -176,10 +176,13 @@ SPECIES.update({
     # Route 11 and Diglett's Cave.
     "drowzee": _animated("drowzee", "Drowzee", (60, 48, 45, 42, 90), ("psychic",), exp=102, hit=4),
     "dugtrio": _animated("dugtrio", "Dugtrio", (35, 80, 50, 120, 70), ("ground",), exp=153, hit=5),
-    # Asleep across the road to Route 12 (only met as townsfolk for now): its
-    # sheet has just the sleeping row, breathing.
-    "snorlax": Species("Snorlax", 160, 110, 65, 30, 65, ("normal",), fight_anim="idle", anims={
-        "idle": AnimSpec("snorlax.png", 0, fps=2, loop=True)}, base_exp=154, size=1.5),
+    # Snorlax asleep (the townsfolk across the roads to Route 12 and Route
+    # 16: a look, never met in battle): its sheet has just the sleeping row,
+    # breathing. Awake, woken by the Poké Flute (quest "snorlax_west"), it
+    # battles and joins: "snorlax".
+    "snorlax_asleep": Species("Snorlax", 160, 110, 65, 30, 65, ("normal",), fight_anim="idle", anims={
+        "idle": AnimSpec("snorlax_asleep.png", 0, fps=2, loop=True)}, base_exp=154, size=1.5),
+    "snorlax": _placeholder("143_snorlax", "Snorlax", (160, 110, 65, 30, 65), ("normal",), exp=154),
 })
 
 # Placeholders (their icon as a still sprite, until they get a PixelLab

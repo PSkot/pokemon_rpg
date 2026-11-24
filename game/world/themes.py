@@ -335,6 +335,22 @@ ROUTE_8 = Theme(
     backdrop=MEADOW_BACKDROP,
 )
 
+# Route 16, west of Celadon City (past the Snorlax asleep across it, quest
+# "snorlax_west"): Gen 1's Spearow, Rattata and their evolutions, with
+# Pidgeotto riding the cliff winds.
+ROUTE_16 = Theme(
+    "route_16", "Route 16",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("spearow", 25, (39, 41)),
+        PoolEntry("fearow", 15, (41, 43)),
+        PoolEntry("rattata", 15, (38, 40)),
+        PoolEntry("raticate", 20, (40, 42)),
+        PoolEntry("pidgeotto", 25, (40, 42)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+)
+
 # Rock Tunnel, from the Route 10 Pokémon Center to Lavender Town: pitch
 # dark (Flash lights a circle around the player); Gen 1's Zubat, Geodude,
 # Machop and Onix.

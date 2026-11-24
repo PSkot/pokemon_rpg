@@ -785,6 +785,8 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Rock Tunnel | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Hiker Crew, a chest) |
 | Route 8 | Common | (no boss) |
 | Underground Path (west) | Common | (no boss) |
+| Route 16 | Common | (no boss) |
+| Snorlax's Rude Awakening | (no wild Pokémon or chests) | none: the Snack Pack drops nothing, Snorlax joins (quest *The Sleeping Giant*) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -1211,6 +1213,18 @@ from the Route 8 Gate under Saffron to Celadon City; no trainers):
 | Ekans | 15 | 32–35 |
 | Dugtrio | 15 | 33–36 |
 
+**Route 16** (`Route` "route_16", theme `ROUTE_16`: 2 maps west of
+Celadon West End to the Route 16 Gate; shut until the Snorlax across it is
+awake, quest *The Sleeping Giant*):
+
+| Species | Weight | Levels |
+| --- | --- | --- |
+| Spearow | 25 | 39–41 |
+| Pidgeotto | 25 | 40–42 |
+| Raticate | 20 | 40–42 |
+| Fearow | 15 | 41–43 |
+| Rattata | 15 | 38–40 |
+
 **Rock Tunnel** (`Route` "rock_tunnel", a dungeon of 3 rooms from the
 Route 10 Pokémon Center to Lavender Town: 1F, B1F, then the south 1F;
 needs Flash). It's **pitch dark** (`Theme.dark`): the screen is black
@@ -1434,6 +1448,9 @@ always the same spot), with its team in a row.
 | Route 8, map 1 | Pretty Pals (Lass) | Clefairy 34, Jigglypuff 34, Nidorina 33 | ₽247 |
 | Route 8, map 2 | Gadget Nerds (Super Nerd) | Magnemite 35, Voltorb 35, Magnemite 35 | ₽437 |
 | Route 8, map 2 | Twin Tails (Twins) | Nidoran F 35, Nidoran M 35 | ₽350 |
+| Route 16, map 1 | Road Hogs (Biker) | Raticate 41, Fearow 41 | ₽820 |
+| Route 16, map 2 | Exhaust Pipes (Biker) | Koffing 41, Grimer 41, Koffing 41 | ₽820 |
+| Celadon West End | Snack Pack (Snorlax, woken) | Snorlax 48, Persian 42, Primeape 42, Raticate 42 | ₽0 |
 | S.S. Anne 1F | Gentleman's Hounds (Gentleman) | Growlithe 26, Growlithe 26 | ₽910 |
 | S.S. Anne 1F | Seaside Lass (Lass) | Pidgey 25, Nidoran F 25, Jigglypuff 25 | ₽187 |
 | S.S. Anne 1F | Cabin Boys (Youngster) | Rattata 25, Ekans 25, Raticate 24 | ₽180 |

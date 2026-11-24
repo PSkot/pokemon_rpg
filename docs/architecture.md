@@ -473,6 +473,14 @@ you are working on.
   own sky gradient and a tint multiplied into the clouds and strips
   (`Theme.sky`/`tint`: Lavender Town's dusk, `themes.LAVENDER`, `Town.theme`). `backgrounds()`
   returns (layer, parallax) pairs. The player collides with a fixed hitbox.
+- Townsfolk can leave: `Folk.gone_after` (a quest key) hides them once
+  it's done (`TownScene.folk`); a route walked by talking to a townsfolk
+  (`Route.folk`) can have its own send-off (`Route.folk_line`). Quest 25
+  (`snorlax_west`): Celadon West End's Snorlax blocks Route 16 (route
+  "route_16", to the Route 16 Gate) until woken with a feast (a collect
+  step, the Department Store rooftop's machines as a "visit" step,
+  `dept_store.ROOFTOP`) and the Poké Flute, then a boss battle (route
+  "snorlax_wakes"); it joins as the quest's reward.
 - Saves (`saves.py`): JSON files in `saves/`: one `autosave.json` (written
   after every won battle, opened chest, party faint and leaving a map) and
   numbered manual saves (pause menu → Save game; not during battles). A
@@ -674,8 +682,10 @@ you are working on.
   Voltorb's and Magnemite's on 32 px canvases, Machop's and Growlithe's on
   36 px, Raichu's on 40 px with Pikachu as its style reference, Drowzee's and Dugtrio's on
   36 px, Dugtrio's with Diglett as its style reference; Meowth's idle is its base
-  with 1 px breathing). Snorlax only sleeps for now: `snorlax.png` is one row,
-  a lying base (64×48) with 1 px breathing, drawn 1.5×; Golbat, Arbok,
+  with 1 px breathing). Snorlax asleep (the species `snorlax_asleep`, a look for
+  townsfolk only): `snorlax_asleep.png` is one row, a lying base (64×48)
+  with 1 px breathing, drawn 1.5×; awake (`snorlax`, quest
+  "snorlax_west") it battles and joins; Golbat, Arbok,
   Persian and Machoke were made by Claude the same way (48 px canvases,
   the pre-evolution's sprite as style reference; the base padded into the
   64 px cell, then pixminimax rows ending on the base so they loop; tiny
