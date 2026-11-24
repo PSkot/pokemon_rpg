@@ -390,7 +390,7 @@ GEAR_EFFECTS = {e.key: e for e in [
             retaliate__paralysis=30),
     _effect("Plague Charm", "At the start of each battle, each enemy has a 40% chance to be poisoned.",
             "Something's in the air.", aura__poison=40),
-    _effect("Dread Mask", "At the start of each battle, every enemy's Attack falls 1 stage.", "Everyone flinched.",
+    _effect("Dread Mask", "At the start of each battle, each enemy's Attack has a 50% chance to fall 1 stage.", "Everyone flinched.",
             lower__attack=1),
     _effect("Hunter's Mark", "The wearer's moves deal 50% more to a target that hasn't moved this round.",
             "Strike first. Strike hard.", ambush=0.5),

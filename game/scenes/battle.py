@@ -85,6 +85,7 @@ WIND_UP_TIME = 0.4       # stepping forward, with the move's name shown
 IMPACT_HOLD = 0.35       # extra time on the last frame after the hit lands
 STEP_BACK_TIME = 0.4     # stepping back into line
 STATUS_MESSAGE_TIME = 1.0  # "is fast asleep", "is hurt by poison", ...
+LOWER_CHANCE = 50  # % each enemy's stat falls to Intimidate, Sand Veil or a Dread Mask at a battle's start
 QUICK_MESSAGE_TIME = 0.7   # "is quick to act!"
 REGEN_MESSAGE_TIME = 0.8   # "restored 2 HP."
 ACTION_PAUSE = 0.6       # quiet gap (no message) before the next action
@@ -837,12 +838,14 @@ class BattleScene(Scene):
             if hit:
                 self.message = " ".join([f"{holder.label}'s aura spreads!"] + [self._confuse(c) for c in hit])
                 yield STATUS_MESSAGE_TIME
-            for stat in STAGE_STATS:  # (Intimidate: Attack; Sand Veil: accuracy)
+            for stat in STAGE_STATS:  # (Intimidate: Attack; Sand Veil: accuracy): each enemy at LOWER_CHANCE
                 stages = round(m.talent(f"lower:{stat}"))
-                if stages and foes:
-                    for c in foes:
+                hit = [c for c in foes if stages and random.random() * 100 < LOWER_CHANCE]
+                if hit:
+                    for c in hit:
                         self._change_stage(c, stat, -stages)
-                    self.message = f"{holder.label} unnerves the enemies! Their {STAT_NAMES[stat]} fell!"
+                    names = ", ".join(c.label for c in hit)
+                    self.message = f"{holder.label} unnerves {names}! {STAT_NAMES[stat]} fell!"
                     yield STATUS_MESSAGE_TIME
 
     def _blow(self, wind: Wind):
@@ -1552,7 +1555,8 @@ class BattleScene(Scene):
                     notes.append(STATUSES[c.monster.status].cured.format(c.label))
                     c.monster.cure()
                     c.toxic = 0
-        if move.self_confuse and user.alive and not user.confused:
+        if (move.self_confuse and user.alive and not user.confused
+                and random.random() * 100 < move.self_confuse_chance):
             user.confused = random.randint(*CONFUSION_ROUNDS)
             self._popup(user, "CONF", CONFUSED_COLOR, offset=(0, -14), delay=0.3)
             notes.append(f"{user.label} became confused due to fatigue!")

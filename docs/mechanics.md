@@ -244,14 +244,14 @@ out in these steps:
 
 11. **Talents** (`BattleScene._talent_factor`, applied with step 6's
     share): pinch (Overgrow, Cornered, Swarm, Surge: ×1.5 for the user's
-    moves of that type below ⅓ HP), streak (Ripening, Momentum, ...: +15–25%
-    per move of the type in a row before it, up to 3), Ambush (+30% on a
+    moves of that type below ⅓ HP), streak (Ripening, Momentum, ...: +15–20%
+    per move of the type in a row before it, up to 3), Ambush (+30%, Pop Up and Stalker +35%, on a
     target that hasn't moved this round), Gang Up (+30% on a target a
     partner already hit this round), Gale Force (+25% for spread moves),
     prey (+25–50% on a target with a status), spot (+30% on a target with
     a lowered stat), Sapping (×0.8 for a poisoned attacker against a
     Sapping Pokémon's side), Ancient Roots and its copies (×0.85 on its
-    side), Sturdy (×0.5 on its first hit taken in a battle; Juggernaut
+    side), Sturdy (×0.65 on its first hit taken in a battle; Juggernaut
     ×0), Solid Rock (×0.75 for super-effective hits on it), Squeeze (+30%
     on a bound target). See `talents.md`.
 
@@ -450,8 +450,8 @@ single-target moves go to the user (`Combatant.taunt`).
 
 **Talents at the battle's start** (`BattleScene._auras`): Miasma (50% per
 foe: poisoned), Thunder Cloud (30%: paralyzed), Heat Haze, Absolute Zero,
-Bedtime Story and the like (burned, frozen, asleep), Intimidate (every
-foe's Attack −1), Sand Veil (every foe's accuracy −1). **When hit** (`_hit`): Static / Poison Point (25%: the
+Bedtime Story and the like (burned, frozen, asleep), Intimidate (each
+foe's Attack −1 at 50%: `battle.LOWER_CHANCE`), Sand Veil (each foe's accuracy −1 at 50%). **When hit** (`_hit`): Static / Poison Point (25%: the
 attacker is paralyzed / poisoned), Thorny Hide (the attacker loses 1/16 of
 its max HP); Guardian and its copies (once a battle, a partner hit for its
 last HP keeps 1).
@@ -721,7 +721,7 @@ price and what it sells for).
 | Phoenix Feather | Once a battle, ending a round below 1/3 HP heals half max HP | second_wind 0.5 |
 | Storm Cell | Whoever hits the wearer: 30% chance to be paralyzed | retaliate:paralysis 30 |
 | Plague Charm | Battle start: each enemy 40% chance to be poisoned | aura:poison 40 |
-| Dread Mask | Battle start: every enemy's Attack −1 stage | lower:attack 1 |
+| Dread Mask | Battle start: each enemy's Attack −1 stage, 50% each | lower:attack 1 |
 | Hunter's Mark | +50% damage to a target that hasn't moved this round | ambush 0.5 |
 | Pack Tactics | +40% damage to a target a partner already hit this round | gang 0.4 |
 | Gale Banner | +40% damage with moves that hit every enemy | wide 0.4 |

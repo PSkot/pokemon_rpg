@@ -437,7 +437,7 @@ def _harvest(name: str, kind: str, what: str) -> Talent:
 #                    (see items.MOD_TEXT)
 TALENTS = {t.key: t for t in [
     # --- Any line.
-    _t("Sturdy", "any", "The first hit the user takes in each battle deals half damage.", sturdy=0.5),
+    _t("Sturdy", "any", "The first hit the user takes in each battle deals 35% less damage.", sturdy=0.35),
     _t("Second Wind", "any", "Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP.",
        second_wind=0.25),
     _t("Guardian", "any", "Once a battle, a partner that would faint keeps 1 HP instead.", world_tree=1),
@@ -546,20 +546,20 @@ TALENTS = {t.key: t for t in [
        ("type:rock", {"keen": 0.5})),
     _t("Jagged Hide", "rock", "Whoever hits the user loses 1/16 of its max HP.", thorns=1 / 16),
     # Ground lines: sand in the eyes.
-    _t("Sand Veil", "ground", "At the start of each battle, every enemy's accuracy falls 1 stage.", lower__accuracy=1),
+    _t("Sand Veil", "ground", "At the start of each battle, each enemy's accuracy has a 50% chance to fall 1 stage.", lower__accuracy=1),
     _t("Mud Claws", "ground", "The basic attack becomes a Ground move (with STAB).", ("basic", {"type": "ground"})),
     _pinch("Groundswell", "ground"),
-    _t("Tremor", "ground", "Each Ground move in a row deals 20% more than the last, up to +60%. "
-       "Any other move starts it over.", streak__ground=0.2),
+    _t("Tremor", "ground", "Each Ground move in a row deals 15% more than the last, up to +45%. "
+       "Any other move starts it over.", streak__ground=0.15),
     _harvest("Burrow Feast", "ground", "heals the user"),
-    _t("Sand Force", "ground", "Enemies with lowered accuracy take 30% more damage from the user's party.",
-       spot__accuracy=0.3),
+    _t("Sand Force", "ground", "Enemies with lowered accuracy take 20% more damage from the user's party.",
+       spot__accuracy=0.2),
     # Fighting lines: combos and well-placed blows.
     _t("Fighting Spirit", "fighting", "The basic attack becomes a Fighting move (with STAB).",
        ("basic", {"type": "fighting"})),
     _pinch("Last Stand", "fighting"),
-    _t("Combo", "fighting", "Each Fighting move in a row deals 20% more than the last, up to +60%. "
-       "Any other move starts it over.", streak__fighting=0.2),
+    _t("Combo", "fighting", "Each Fighting move in a row deals 15% more than the last, up to +45%. "
+       "Any other move starts it over.", streak__fighting=0.15),
     _harvest("Victory Rush", "fighting", "heals the user"),
     _t("Pressure Points", "fighting", "The user's Fighting moves are 4× as likely to be critical hits.",
        ("type:fighting", {"crit_ratio": 3.0})),
@@ -880,7 +880,7 @@ TALENTS = {t.key: t for t in [
     # Horsea
     _t("Murky Water", "own", "Bubble has a 20% chance to lower the target's accuracy 1 stage.",
        ("Bubble", {"stages": (("accuracy", -1),)})),
-    _t("Smoke Bomb", "own", "At the start of each battle, every enemy's accuracy falls 1 stage.", lower__accuracy=1),
+    _t("Smoke Bomb", "own", "At the start of each battle, each enemy's accuracy has a 50% chance to fall 1 stage.", lower__accuracy=1),
     _t("Phantom Ink", "any", "Enemies with lowered accuracy take 50% more damage from the user's party.",
        spot__accuracy=0.5),
     _t("Sniper", "own", "The user's critical hits deal double damage (not 1.5×).", sniper=0.5),
@@ -911,7 +911,7 @@ TALENTS = {t.key: t for t in [
     _t("Razor Wind", "own", "Razor Leaf is always a critical hit.", ("Razor Leaf", {"crit_ratio": 20.0})),
     # Abra
     _t("Precognition", "own", "Psychic always goes first.", ("Psychic", {"priority": 1})),
-    _t("Spoon Bender", "own", "At the start of each battle, every enemy's accuracy falls 1 stage.", lower__accuracy=1),
+    _t("Spoon Bender", "own", "At the start of each battle, each enemy's accuracy has a 50% chance to fall 1 stage.", lower__accuracy=1),
     _t("Mind Storm", "own", "Psychic hits every enemy at full damage.", ("Psychic", {"spread": True, "spread_share": 1.0})),
     _t("Kinetic Crush", "own", "Enemies with lowered accuracy take 50% more damage from the user's party.",
        spot__accuracy=0.5),
@@ -920,7 +920,7 @@ TALENTS = {t.key: t for t in [
     _t("Venom Swarm", "own", "Leech Life hits every enemy at full damage.",
        ("Leech Life", {"spread": True, "spread_share": 1.0})),
     # Diglett
-    _t("Pop Up", "own", "The user's moves deal 50% more to a target that hasn't moved yet this round.", ambush=0.5),
+    _t("Pop Up", "own", "The user's moves deal 35% more to a target that hasn't moved yet this round.", ambush=0.35),
     _t("Triple Strike", "own", "The basic attack hits 3 times, at 50% power each.",
        ("basic", {"hits": (3, 3), "scale": -0.5})),
     # Meowth
@@ -935,7 +935,7 @@ TALENTS = {t.key: t for t in [
        ("Pay Day", {"hits": (2, 5), "scale": -0.4})),
     _t("Thousand Cuts", "own", "Fury Swipes and Slash hit every enemy, the others at 60% damage.",
        ("Fury Swipes", {"spread": True, "spread_share": 0.6}), ("Slash", {"spread": True, "spread_share": 0.6})),
-    _t("Stalker", "own", "The user's moves deal 50% more to a target that hasn't moved yet this round.", ambush=0.5),
+    _t("Stalker", "own", "The user's moves deal 35% more to a target that hasn't moved yet this round.", ambush=0.35),
     _t("Pounce", "own", "Bite always goes first, and makes the target flinch 50% of the time.",
        ("Bite", {"priority": 1, "flinch": 40})),
     # Machop
@@ -997,7 +997,7 @@ TALENTS = {t.key: t for t in [
        ("Karate Chop", {"hits": (2, 2), "scale": -0.4})),
     _t("Sweep Kick", "own", "Low Kick hits every enemy, the others at 50% damage.",
        ("Low Kick", {"spread": True, "spread_share": 0.5})),
-    _t("Cool Head", "own", "Thrash no longer confuses the user.", ("Thrash", {"self_confuse": False})),
+    _t("Cool Head", "own", "Thrash confuses the user only half the time.", ("Thrash", {"self_confuse_chance": 50})),
     _t("Rampaging Fists", "own", "Thrash hits every enemy, the others at 50% damage.",
        ("Thrash", {"spread": True, "spread_share": 0.5})),
     _t("Primal Rage", "own", "Thrash deals 50% more and no longer confuses the user.",
@@ -1059,8 +1059,8 @@ TALENTS = {t.key: t for t in [
        pinch__normal=0.5, pinch__flying=0.5),
     _t("Preening", "own", "The user heals 1/16 of its max HP at the end of each round.", regen=6.25),
     _t("Gale Force", "own", "The user's moves that hit every enemy deal 25% more.", wide=0.25),
-    _t("Blind Spot", "any", "Enemies with lowered accuracy take 30% more damage from the user's party.",
-       spot__accuracy=0.3),
+    _t("Blind Spot", "any", "Enemies with lowered accuracy take 20% more damage from the user's party.",
+       spot__accuracy=0.2),
     _t("Hurricane", "own", "Gust becomes a Flying move with 60 power, and hits every enemy at full damage.",
        ("Gust", {"type": "flying", "power": 60, "spread": True, "spread_share": 1.0})),
     _t("Sheltering Wings", "own", "While the user stands, the whole party takes 15% less damage.",
@@ -1107,7 +1107,7 @@ TALENTS = {t.key: t for t in [
     _t("Horn Drill", "own", "Horn Attack has a 30% chance to poison.",
        ("Horn Attack", {"status": "poison", "status_chance": 30})),
     _t("Charge", "move:Tackle", "Tackle hits harder: 50 power.", ("Tackle", {"power": 50})),
-    _t("Rampage", "normal", "Each Normal move in a row deals 25% more than the last, up to +75%.", streak__normal=0.25),
+    _t("Rampage", "normal", "Each Normal move in a row deals 20% more than the last, up to +60%.", streak__normal=0.2),
     _t("Piercing Horn", "move:Horn Attack", "Horn Attack also hits one enemy next to the target, at half damage.",
        ("Horn Attack", {"reach": 0.5})),
     _t("Toxic Horn", "own", "Horn Attack is a Poison move, and poisons 30% of the time.",
@@ -1167,7 +1167,7 @@ TALENTS = {t.key: t for t in [
     _t("Pack Leader", "own", "While the user stands, the whole party takes 15% less damage.", ancient_roots=0.15),
     _t("Storm of Beaks", "own", "Fury Attack hits every enemy, at full damage.",
        ("Fury Attack", {"spread": True, "spread_share": 1.0})),
-    _t("Intimidate", "any", "At the start of each battle, every enemy's Attack falls 1 stage.", lower__attack=1),
+    _t("Intimidate", "any", "At the start of each battle, each enemy's Attack has a 50% chance to fall 1 stage.", lower__attack=1),
     _t("Spiteful", "own", "Enemies with lowered Attack take 30% more damage from the user's party.",
        spot__attack=0.3),
     _t("Reign of Terror", "own", "While the user stands, the whole party takes 15% less damage.",

@@ -53,7 +53,8 @@ class Move:
     focus: bool = False  # Focus Energy: the user's crit chance ×4 for the battle
     recoil: float = 0.0  # the user takes this share of the damage dealt
     recharge: bool = False  # the user must rest the next round (Hyper Beam)
-    self_confuse: bool = False  # the user becomes confused afterwards (Thrash)
+    self_confuse: bool = False  # the user becomes confused afterwards (Thrash) ...
+    self_confuse_chance: int = 100  # ... this % of the time (Cool Head: 50)
     crit_ratio: float = 1.0  # × crit chance (3 = a high crit ratio: 15%; 20 = always)
     sure_hit: bool = False  # ignores the user's lowered accuracy (Swift)
     immune: tuple[str, ...] = ()  # types it doesn't affect (Leech Seed: Grass)
@@ -369,7 +370,8 @@ def describe(m: Move) -> str:
     if m.recharge:
         parts.append("The user must rest the next round.")
     if m.self_confuse:
-        parts.append("The user becomes confused afterwards.")
+        parts.append("The user becomes confused afterwards." if m.self_confuse_chance >= 100 else
+                     f"The user becomes confused afterwards {m.self_confuse_chance}% of the time.")
     if m.immune:
         parts.append(f"Doesn't affect {', '.join(type_name(t) for t in m.immune)} types.")
     if m.toxic:
