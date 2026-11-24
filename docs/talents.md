@@ -502,14 +502,14 @@ Paths: **Eyes** (compound eyes: never missing, and muddling minds); **Powder** (
 
 Moves: Scratch, Growl, Bite 12, Pay Day 17, Screech 24, Fury Swipes 33, Slash 44 (Persian).
 
-Paths: **Coin** (pay Day: lucky hits, and money); **Claw** (scratch, Fury Swipes and Slash: claws and wounds); **Prowl** (striking first: Bite, Screech and ambushes).
+Paths: **Coin** (pay Day: lucky critical hits, and money); **Claw** (scratch, Fury Swipes and Slash: claws and wounds); **Prowl** (striking first: Bite, Screech and ambushes).
 
 | Tier | Lv | Coin | Claw | Prowl |
 | --- | --- | --- | --- | --- |
 | 1 | 6 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Sharp Claws**: Scratch is 4× as likely to be a critical hit. *(Scratch)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
-| 2 | 10 | **Amulet Coin**: Pay Day scatters twice as much money. *(**own**)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
+| 2 | 10 | **Amulet Coin**: Pay Day hits harder (60 power) and scatters twice as much money. *(**own**)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
 | 3 | 14 | **Lucky Coin**: Pay Day has a high critical-hit ratio. *(**own**)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Crunch**: Bite has a 30% chance to lower the target's Defense 1 stage. *(Bite)* |
-| 4 | 18 | **Exploit Weakness**: Enemies with lowered Defense take 30% more damage from the user's party. *(Any)* | **Raking Claws**: Fury Swipes wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Fury Swipes)* | **Piercing Screech**: Screech works on every enemy. *(Screech)* |
+| 4 | 18 | **Sniper**: The user's critical hits deal double damage (not 1.5×). *(**own**)* | **Raking Claws**: Fury Swipes wounds the target: 1/16 of its max HP each round, for 3 rounds. *(Fury Swipes)* | **Piercing Screech**: Screech works on every enemy. *(Screech)* |
 | 5 | 22 | **Coin Toss**: Pay Day hits every enemy, the others at 60% damage. *(**own**)* | **Frenzy Claws**: Fury Swipes always hits 5 times. *(Fury Swipes)* | **Shriek**: After Screech, the user hits the target with its basic attack at 60% power. *(Screech)* |
 | 6 | 27 | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Rend**: Slash wounds the target: 1/12 of its max HP each round, for 3 rounds. *(Slash)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
 | 7 | 32 | **Scavenger**: Knocking an enemy out with a Normal move heals the user 1/4 of its max HP. *(Normal)* | **Sweeping Claw**: Slash hits every enemy, the others at 50% damage. *(Slash)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
