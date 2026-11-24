@@ -710,7 +710,9 @@ you are working on.
   with 1 px breathing). Snorlax asleep (the species `snorlax_asleep`, a look for
   townsfolk only): `snorlax_asleep.png` is one row, a lying base (64×48)
   with 1 px breathing, drawn 1.5×; awake (`snorlax`, quest
-  "snorlax_west") it battles and joins; Golbat, Arbok,
+  "snorlax_west") it battles and joins, with its own sheet (`snorlax.png`:
+  a standing base on a 60 px canvas, the sleeping sheet as its style
+  reference, pixminimax rows; hats fit); Golbat, Arbok,
   Persian and Machoke were made by Claude the same way (48 px canvases,
   the pre-evolution's sprite as style reference; the base padded into the
   64 px cell, then pixminimax rows ending on the base so they loop; tiny

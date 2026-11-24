@@ -179,10 +179,10 @@ SPECIES.update({
     # Snorlax asleep (the townsfolk across the roads to Route 12 and Route
     # 16: a look, never met in battle): its sheet has just the sleeping row,
     # breathing. Awake, woken by the Poké Flute (quest "snorlax_west"), it
-    # battles and joins: "snorlax".
+    # battles and joins: "snorlax" (its own sheet, standing).
     "snorlax_asleep": Species("Snorlax", 160, 110, 65, 30, 65, ("normal",), fight_anim="idle", anims={
         "idle": AnimSpec("snorlax_asleep.png", 0, fps=2, loop=True)}, base_exp=154, size=1.5),
-    "snorlax": _placeholder("143_snorlax", "Snorlax", (160, 110, 65, 30, 65), ("normal",), exp=154),
+    "snorlax": _animated("snorlax", "Snorlax", (160, 110, 65, 30, 65), ("normal",), exp=154, hit=4),
 })
 
 # Placeholders (their icon as a still sprite, until they get a PixelLab
