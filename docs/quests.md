@@ -564,12 +564,12 @@ yet.
      - west: **Snack Pack**, Snorlax 48 (giant) with Persian 42, Primeape 42
        and Raticate 42 (route "snorlax_wakes"), the snack thieves back for
        the leftovers;
-     - east: **Dream Eaters**, Snorlax 48 (giant) with Hypno 42, Drowzee 42
-       and Drowzee 41 (route "snorlax_wakes_east"), furious their dinner
+     - east: **Dream Eaters**, Snorlax 48 (giant) with Hypno 40, Drowzee 40
+       and Jigglypuff 40 (route "snorlax_wakes_east"), furious their dinner
        woke up.
 
-     A party of three at Lv42/41/41 with 3 Hyper Potions wins about 55%
-     (west) and 51% (east) (`tools/balance_sim.py`).
+     A party of three at Lv42/41/41 with 3 Hyper Potions wins about 75%
+     (west) and 72% (east) (`tools/balance_sim.py`).
 - **Rewards:** ₽2,400, 2,300 XP, and **Snorlax (Lv40) joins** (the party,
   or the reserve). Its road opens.
 
@@ -593,8 +593,8 @@ yet.
      has taken it.
   2. Talk to the guard: he points the way up (route "hidden_spring", one
      map of Water Pokémon, Lv41–44). Beat the **Spring Squatters**: Golduck
-     47 (giant), Seaking 43, Psyduck 43, Psyduck 43. A party of three at
-     Lv43/42/42 with 3 Hyper Potions wins about 74%. Gives the **Spring
+     47 (giant), Seaking 43, Golduck 42, Psyduck 43. A party of three at
+     Lv43/42/42 with 3 Hyper Potions wins about 78%. Gives the **Spring
      Water** (key item).
   3. Bring it to the guard: he drinks, and lets you through to the road
      south (the skate road; it still takes a board: *Wheels Needed*).
@@ -627,7 +627,7 @@ yet.
   (Arbok 46, Golbat 45).
 - **Steps:** beat **Tony** at the bottom: a giant Kangaskhan 50 in his
   **Bike Helmet**, with Primeape 45, Machoke 45 and Raticate 45. A party
-  of three at Lv45/44/44 with 3 Hyper Potions wins about 59% (with the
+  of three at Lv45/44/44 with 3 Hyper Potions wins about 66% (with the
   helmet on him). The helmet always drops (`Item.unique`,
   `Route.boss_wears`); once it's won he doesn't wear it any more
   (`Route.boss_key` "tony").
@@ -643,26 +643,31 @@ bands: **Pier Anglers** (Goldeen 43, Tentacool 43, Goldeen 43), **Seaside
 Pals** (Nidorina 43, Weepinbell 43), **Static Band** (Voltorb 44,
 Electrode 44) and **Deep Sea Haul** (Seaking 44, Shellder 43, Horsea 43).
 
-### Planned: Learn to Fly (with Route 16)
+### Learn to Fly (side quest)
 
-Not built yet: Route 16 is in (west of Celadon, past the Snorlax), the
-quest comes next; Red/Blue gives HM02 Fly there. Its battle rules are already in: *Sky battles* in
-`mechanics.md` (`BattleScene(sky=True)`, `mechanics/sky.py`).
-
-- **Giver:** a Bird Keeper at the Route 16 Gate; on offer once a Pidgey or
-  Spearow has evolved (a Pidgeotto, Pidgeot or Fearow in the party or
-  reserve).
-- **Steps:** (1) win 5 wild battles on Route 7/8/16 with only the bird
-  fighting; (2) talk to the keeper; (3) the **Sky Trial** on a new map,
-  **Skyward Cliffs**: the bird alone (`wave_species`: the Pidgey and
-  Spearow lines), a sky battle: two waves of anti-air Pokémon (Rock and
-  Electric: Geodude/Graveler, Magnemite/Voltorb; Ground ones like Diglett
-  and Sandshrew can't touch it), then a giant boss (Dodrio, "the bird that
-  never flew", once it has art; else a giant Onix).
-- **On the map:** the player can glide (hold jump to fall slowly) on
-  Skyward Cliffs only, to cross its gaps.
-- **Reward:** money and XP, and **Fly**: fast travel from the pause menu
-  to any town already visited.
+- **Giver:** the **Old Pidgeot** at the Route 16 Gate, once quest 25 is
+  done, and only with a **Pidgeotto, Pidgeot or Fearow** in the party or
+  reserve (`Quest.needs_species`, `quests.FLY_SPECIES`).
+- **Steps:**
+  1. Win **5 wild battles** with one of those birds **leading** the party
+     (`Step` "lead_wins"), on Route 8 or any route after it.
+  2. Tell the Old Pidgeot.
+  3. The **Sky Trial** (talk to him; route "sky_trial", the Skyward
+     Cliffs): the bird alone (`wave_species`: only a Pidgeotto, Pidgeot or
+     Fearow can be picked), in **sky battles** (`Route.sky`, see *Sky
+     battles* in `mechanics.md`), one foe at a time, back to back: a
+     Primeape 42 (Cliff Climber), a Magneton 42 (Static Spark), then the
+     **Storm Guardian**, a giant Electabuzz 41. A bird at Lv44–45 with 2
+     Hyper Potions that perches when hurt wins about 70% (Pidgeotto 70%,
+     Pidgeot 76%, Fearow 60%); Fly's dodge and the winds are left out of
+     that, so a player reading them does better. (Rock types resist every
+     move the birds have: they'd make it unwinnable.)
+- **Rewards:** ₽2,400, 2,200 XP, 2 Hyper Potions, and **Fly**.
+- **Fly:** on the **Town Map** (M), Enter on a town visited flies there
+  (arriving by its Pokémon Center; it becomes the town a fainted party
+  wakes up in). It needs a Flying Pokémon in the party (`quests.can_fly`)
+  and works from towns and outdoor routes, not from caves, tunnels,
+  buildings, gyms, trials or the Battle Tower (`pause._fly_from`).
 
 ### 24. The Pokémon Tower
 

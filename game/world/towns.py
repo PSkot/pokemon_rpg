@@ -535,6 +535,11 @@ TOWNS = {t.key: t for t in [
              "Kaw... The road past this gate runs downhill all the way south. Steep. Fast. Fun.",
              "Route 16 is a windy one. The bird Pokémon round here ride the gusts off the cliffs.",
          )),
+               # Teaches a grown bird to Fly (quest "learn_to_fly").
+               Folk("route_16_pidgeot", "Old Pidgeot", "pidgeot", 34, (
+                   "Kaaw... The cliffs here have the best winds in Kanto. I learned to fly on them, long ago.",
+                   "A Pidgeotto, a Pidgeot, a Fearow: a grown bird can carry its trainer. Bring me one.",
+               )),
                # The skate road's board maker (quest "skate_board").
                Folk("route_16_primeape", "Skater Primeape", "primeape", 8, (
                    "Grrr-ad! The skate road's the best ride in Kanto. Top to bottom without touching the brakes!",

@@ -1,7 +1,9 @@
 """The Town Map (M, or the Map touch button, on a map; `world/townmap.py`
 has what it shows): Kanto's towns and routes as far as the player has been,
 where they are, quest marks, and what the place under the cursor has.
-Arrows move the cursor from place to place; X (or M) closes it."""
+Arrows move the cursor from place to place; X (or M) closes it. Once Fly
+is learned (quest "learn_to_fly"), Enter on a town visited flies there
+(`fly_to`, which the pause menu acts on)."""
 
 from __future__ import annotations
 
@@ -15,6 +17,7 @@ from ..world.townmap import EDGES, NODES, SAFFRON
 
 EVOLVE_COLOR = (255, 130, 200)  # (as overworld.EVOLVE_COLOR)
 CLOSE_KEYS = (pygame.K_x, pygame.K_BACKSPACE, pygame.K_ESCAPE, pygame.K_m)
+FLY_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 DIRS = {pygame.K_LEFT: (-1, 0), pygame.K_RIGHT: (1, 0), pygame.K_UP: (0, -1), pygame.K_DOWN: (0, 1)}
 
 GRID = 19          # px between grid units
@@ -37,9 +40,14 @@ class TownMap:
     ORIGIN = (MAP.x + 16, MAP.y + 12)      # grid (0, 0)
     INFO_X = 386                           # the info column
 
-    def __init__(self, game, here: str):
+    def __init__(self, game, here: str, fly: str | None = None):
+        """`fly`: None (Fly not learned), "" (it can be used from here), or
+        why it can't be used from here."""
         self.game = game
         self.here = here
+        self.fly = fly
+        self.fly_to = ""  # the town chosen to Fly to
+        self.message = ""
         self.view = townmap.view(game)
         self.marks = townmap.marks(game)
         self.places = [p for p in list(NODES) + list(EDGES) if self.view.shown(p)]
@@ -50,7 +58,21 @@ class TownMap:
     def handle_key(self, key: int) -> bool:
         if key in DIRS:
             self._move(*DIRS[key])
+            self.message = ""
+        elif key in FLY_KEYS and self.fly is not None:
+            if self.fly:
+                self.message = self.fly
+            elif not self._flyable(self.choice):
+                self.message = "Fly to a town you've visited."
+            elif self.choice == self.here:
+                self.message = "You're already here."
+            else:
+                self.fly_to = self.choice
+                return True
         return key in CLOSE_KEYS
+
+    def _flyable(self, place: str) -> bool:
+        return place in NODES and place in self.view.known
 
     def _move(self, dx: int, dy: int) -> None:
         """To the nearest place that way (straight ahead counts more than off to the side)."""
@@ -157,7 +179,10 @@ class TownMap:
         ui.text(window, "?   hand in", (self.MAP.x + 166, y), ui.GREY, size=16)
         sx, sy = self._px(SAFFRON)
         ui.text(window, "Saffron City (shut)", (sx, sy + 8), (170, 170, 180), size=14, align="center")
-        ui.text(window, "Arrows: choose   X: close", (r.right - 12, r.bottom - 15), ui.GREY, size=18, align="right")
+        keys = "Arrows: choose   Enter: fly here   X: close" if self.fly is not None else "Arrows: choose   X: close"
+        ui.text(window, keys, (r.right - 12, r.bottom - 15), ui.GREY, size=18, align="right")
+        if self.message:
+            ui.text(window, self.message, (r.right - 12, r.bottom - 30), ui.YELLOW, size=18, align="right")
 
     def _draw_info(self, window: pygame.Surface) -> None:
         x, y, width = self.INFO_X, self.MAP.y, self.RECT.right - self.INFO_X - 12

@@ -25,6 +25,18 @@ BACK_KEYS = (pygame.K_ESCAPE, pygame.K_x, pygame.K_BACKSPACE)  # resume (B on to
 WIDTH = 216
 
 
+def _fly_from(scene) -> str:
+    """"" if Fly can be used from `scene` (a town, or out on a route), else
+    why not (indoors: caves, tunnels, buildings, gyms and trials)."""
+    instance = getattr(scene, "instance", None)
+    if instance is None:
+        return ""
+    route = instance.route
+    if route.rooms or route.theme.ceiling or route.building or route.folk or route.tower or route.waves:
+        return "You can't Fly from here: get outside first."
+    return ""
+
+
 class PauseMenu:
     """Freezes the game (the main loop stops updating the scene) and offers
     Resume, Save, Load, Fullscreen (in the browser), Dev mode or Quit. Esc
@@ -98,9 +110,12 @@ class PauseMenu:
         self.log, self.only = QuestLog(self.save_point.game), True
 
     def open_map(self) -> None:
-        """Just the Town Map (M on a map): closing it resumes."""
-        from ..world import townmap
-        self.town_map, self.only = TownMap(self.save_point.game, townmap.here(self.save_point)), True
+        """Just the Town Map (M on a map): closing it resumes. Once Fly is
+        learned, it flies to a town too (`TownMap.fly_to`)."""
+        from ..world import quests, townmap
+        game = self.save_point.game
+        fly = None if not quests.is_done(game, "learn_to_fly") else (quests.can_fly(game) or _fly_from(self.save_point))
+        self.town_map, self.only = TownMap(game, townmap.here(self.save_point), fly), True
 
     def _label(self, option: str) -> str:
         if option == "Dev mode":
@@ -154,8 +169,11 @@ class PauseMenu:
             return
         if self.town_map:
             if event.type == pygame.KEYDOWN and self.town_map.handle_key(event.key):
+                if self.town_map.fly_to:  # Fly: into that town (it becomes the respawn town)
+                    self.loaded = TownScene(self.save_point.game, TOWNS[self.town_map.fly_to])
+                    saves.autosave(self.loaded)
                 self.town_map = None
-                self.done = self.only
+                self.done = self.only or bool(self.loaded)
             return
         if self.controls:
             self.controls.handle_event(event)

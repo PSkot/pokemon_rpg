@@ -497,6 +497,13 @@ you are working on.
   (`loot.worn_drops`), until `Route.boss_key` is beaten: Tony's Bike
   Helmet (hat sheet cell 64, a 9th row; flipped, anchored by hand in
   hat_anchors.json).
+- Fly (quest `learn_to_fly`): `Quest.needs_species` gates the offer; a
+  "lead_wins" step counts wild battles won with one of `Step.species`
+  leading the party (`quests.won_battle`); `Route.sky` makes a route's
+  battles sky battles (the Sky Trial). The Town Map gets a `fly` mode
+  (`TownMap.fly`, set by `PauseMenu.open_map` from `quests.can_fly` and
+  `pause._fly_from`); Enter on a known town sets `fly_to`, and the pause
+  menu switches to that `TownScene` (autosaved).
 - Saves (`saves.py`): JSON files in `saves/`: one `autosave.json` (written
   after every won battle, opened chest, party faint and leaving a map) and
   numbered manual saves (pause menu → Save game; not during battles). A

@@ -408,6 +408,10 @@ SKATE_ROAD = Theme(
     skate=True,
 )
 
+# The Skyward Cliffs, above the Route 16 Gate (the Sky Trial, quest
+# "learn_to_fly"): Route 16's windy cliffs (no wild Pokémon).
+SKYWARD_CLIFFS = replace(ROUTE_16, key="skyward_cliffs", name="Skyward Cliffs")
+
 # Rock Tunnel, from the Route 10 Pokémon Center to Lavender Town: pitch
 # dark (Flash lights a circle around the player); Gen 1's Zubat, Geodude,
 # Machop and Onix.

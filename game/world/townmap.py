@@ -161,7 +161,7 @@ def step_places(game, step) -> list[str]:
         return [place_of_route(route, game)] if route else []
     if step.kind == "hunt":
         return hunt_places(step)
-    if step.kind == "collect":
+    if step.kind in ("collect", "lead_wins"):
         return [step.route] if step.route in EDGES else []
     if step.kind == "hand_in":
         return sorted(BOARDS)

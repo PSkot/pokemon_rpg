@@ -31,6 +31,7 @@ from .instance import RECRUITS, Recruit, from_route
 from .progress import MAX_PARTY
 
 SMITH = "smith"  # the smith Machamp's townsfolk key (the same in every town he works in)
+FLY_SPECIES = ("pidgeotto", "pidgeot", "fearow")  # the birds that can learn to Fly (quest "learn_to_fly")
 
 Line = tuple[str, str]  # (speaker, text) of a dialogue page
 
@@ -39,8 +40,10 @@ Line = tuple[str, str]  # (speaker, text) of a dialogue page
 class Step:
     # "visit" (a building in a town), "talk" (to a townsfolk), "defeat" (a
     # route's boss), "reach" (a town), "hunt" (defeat `count` of a species),
-    # "collect" (`count` quest items), "hand_in" (at any quest board) or
-    # "evolve" (a Pokémon, from the party screen, once it has the level)
+    # "collect" (`count` quest items), "hand_in" (at any quest board),
+    # "evolve" (a Pokémon, from the party screen, once it has the level) or
+    # "lead_wins" (win `count` wild battles on `route` or later with one of
+    # `species` leading the party)
     kind: str
     # visit: the building's name; talk: the townsfolk's key (towns.Folk);
     # defeat: the route key; reach: the town key; hunt: the species key;
@@ -103,6 +106,7 @@ class Quest:
     giver: str = ""                  # starts by talking to this townsfolk (towns.Folk key) ...
     offer: tuple[Line, ...] = ()     # ... who says this
     excludes: tuple[str, ...] = ()   # not on offer while one of these is active (picking a side)
+    needs_species: tuple[str, ...] = ()  # only on offer with one of these in the party or reserve
     unlock: tuple[str, int] | None = None  # (line, n): only once n of that line are defeated (recruitment)
     # Items given too: ("medicine", name, count), ("gear", item, rarity, level)
     # or ("pokemon", species, level): it joins the party (or the reserve).
@@ -1232,6 +1236,37 @@ QUESTS = {q.key: q for q in [
         rewards=(("medicine", "Hyper Potion", 2), ("medicine", "Revive", 1)),
         done_dialogue=(("", "The skaters at the bottom of the hill cheer: there's a new King of the Hill."),),
     ),
+    # Learn to Fly (Red/Blue's HM02, given on Route 16): the old Pidgeot at
+    # the Route 16 Gate teaches a grown bird (a Pidgeotto, Pidgeot or
+    # Fearow) to carry its trainer. Leading the way in 5 wild battles, then
+    # the Sky Trial, a sky battle it fights alone; then Fly: fast travel on
+    # the Town Map (`can_fly`).
+    Quest(
+        "learn_to_fly", "Learn to Fly",
+        "The old Pidgeot at the Route 16 Gate says a grown bird can learn to carry its trainer anywhere they've "
+        "been. First it has to lead the way, then pass the Sky Trial on its own.",
+        giver="route_16_pidgeot", requires=("snorlax_west",), needs_species=FLY_SPECIES,
+        offer=(("Old Pidgeot", "Kaaw... That bird of yours. Strong wings. Strong enough to carry you, one day."),
+               ("Old Pidgeot", "A bird that carries its trainer has to lead. Let it go first into 5 wild battles, "
+                               "anywhere from Route 8 on."),
+               ("Old Pidgeot", "Then come back, and I'll take it up to the Skyward Cliffs for the Sky Trial.")),
+        steps=(Step("lead_wins", "", "Win 5 wild battles with your Pidgeotto, Pidgeot or Fearow leading (Route 8 "
+                                     "or later)", count=5, route="route_8", species=FLY_SPECIES),
+               Step("talk", "route_16_pidgeot", "Tell the old Pidgeot your bird is ready (Route 16 Gate)",
+                    dialogue=(("Old Pidgeot", "Kaaw! It leads well. Now: the Skyward Cliffs."),
+                              ("Old Pidgeot", "Up there your bird fights alone, in the air, one foe after another, "
+                                              "and the winds change every moment."),
+                              ("Old Pidgeot", "Perch to rest its wings, fly up out of reach, and read the wind. "
+                                              "Talk to me when you're ready."))),
+               Step("defeat", "sky_trial", "Pass the Sky Trial on the Skyward Cliffs (talk to the old Pidgeot)",
+                    dialogue=(("Old Pidgeot", "KAAAW! It flew like it was born up there. Because it was."),
+                              ("Old Pidgeot", "Your bird can carry you now: anywhere you've been. Open the Town Map "
+                                              "(M), pick a town, and fly."),
+                              ("", "You can now use Fly! (Town Map: Enter on a town you've visited, with a Flying "
+                                   "Pokémon in the party.)")))),
+        money=2400, xp=2200,
+        rewards=(("medicine", "Hyper Potion", 2),),
+    ),
     # The evolution stones: one quest each, from after the Rainbow Badge (the
     # Fire and Water Stones come later, with Cinnabar and the coast). A stone
     # evolves one Pokémon and is used up (bag: Key items).
@@ -1531,7 +1566,9 @@ def ready(game, quest: Quest) -> bool:
     return (step(game, quest.key) is None and all(is_done(game, r) for r in quest.requires)
             and (not quest.unlock or game.defeated[quest.unlock[0]] >= quest.unlock[1])
             and (not quest.evolves or evolution_level(game, quest.evolves))
-            and not any(is_active(game, k) for k in quest.excludes))
+            and not any(is_active(game, k) for k in quest.excludes)
+            and (not quest.needs_species or any(m.species.key in quest.needs_species
+                                                for m in game.party + game.reserve)))
 
 
 def evolution_level(game, species: str) -> bool:
@@ -1658,6 +1695,10 @@ def won_battle(game, route: str, defeated: list[str], event: Event | None = None
         elif s.kind == "collect" and (s.route == route or from_route(s.route, route)):
             got = sum(random.random() * 100 < s.chance for species in defeated if species in s.species)
             label = s.target
+        elif (s.kind == "lead_wins" and recruits and (s.route == route or from_route(s.route, route))
+              and game.party and game.party[0].species.key in s.species):  # (a wild battle, the bird leading)
+            got = 1
+            label = f"Won with {game.party[0].name} leading"
         else:
             continue
         if not got:
@@ -1722,7 +1763,7 @@ def evolve(game, monster: Monster) -> Event:
 def step_text(game, quest: Quest, i: int) -> str:
     """Step `i`'s objective, with the count so far if it's the current counted one."""
     s = quest.steps[i]
-    if s.kind in ("hunt", "collect") and step(game, quest.key) == i:
+    if s.kind in ("hunt", "collect", "lead_wins") and step(game, quest.key) == i:
         return f"{s.text}: {game.quest_counts.get(quest.key, 0)}/{s.count}"
     return s.text
 
@@ -1731,6 +1772,15 @@ def boss_wanted(game, route: str) -> bool:
     """Whether an active quest is at the step of defeating `route`'s boss
     (then it's there as a boss again, even if it was beaten before)."""
     return any((s := current(game, q.key)) and s.kind == "defeat" and route in s.targets for q in active(game))
+
+
+def can_fly(game) -> str:
+    """"" if the party can Fly now (the Town Map), else why not."""
+    if not is_done(game, "learn_to_fly"):
+        return "You don't know how to Fly yet."
+    if not any("flying" in m.species.types for m in game.party):
+        return "Nobody in the party can carry you: you need a Flying Pokémon."
+    return ""
 
 
 def gone(game, after: str) -> bool:

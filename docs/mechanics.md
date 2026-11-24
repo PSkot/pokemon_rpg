@@ -973,6 +973,14 @@ board goes up and over it, launched upwards at 0.9 × its speed (at most
 running 150 for comparison. Everyone on the map stands on a board (drawn
 9 px up, `SKATE_LIFT`).
 
+## Fly
+
+Once *Learn to Fly* is done: the Town Map (M) flies to any town visited
+(Enter on it), with a Flying Pokémon in the party, from a town or an
+outdoor route (not a cave, tunnel, building, gym, trial or the Battle
+Tower). It lands by the town's Pokémon Center, which becomes the respawn
+town.
+
 ## Wild Pokémon
 
 `game/world/themes.py`, `game/world/level.py`
@@ -1495,8 +1503,8 @@ always the same spot), with its team in a row.
 | Route 16, map 1 | Road Hogs (Biker) | Raticate 41, Fearow 41 | ₽820 |
 | Route 16, map 2 | Exhaust Pipes (Biker) | Koffing 41, Grimer 41, Koffing 41 | ₽820 |
 | Celadon West End | Snack Pack (Snorlax, woken) | Snorlax 48, Persian 42, Primeape 42, Raticate 42 | ₽0 |
-| Route 11 Gate | Dream Eaters (Snorlax, woken) | Snorlax 48, Hypno 42, Drowzee 42, Drowzee 41 | ₽0 |
-| Hidden Spring (boss) | Spring Squatters | Golduck 47, Seaking 43, Psyduck 43, Psyduck 43 | ₽0 |
+| Route 11 Gate | Dream Eaters (Snorlax, woken) | Snorlax 48, Hypno 40, Drowzee 40, Jigglypuff 40 | ₽0 |
+| Hidden Spring (boss) | Spring Squatters | Golduck 47, Seaking 43, Golduck 42, Psyduck 43 | ₽0 |
 | Skate Road, map 1 | Kickflip Crew (Biker) | Primeape 44, Mankey 44 | ₽1,760 |
 | Skate Road, map 1 | Grind Gang (Biker) | Machoke 44, Machop 44, Machop 44 | ₽1,760 |
 | Skate Road, map 2 | Half-Pipe Hogs (Biker) | Raticate 45, Fearow 45 | ₽1,800 |
@@ -1669,6 +1677,10 @@ The bag keeps the gems (`Bag.gems`, shown in the Key items pocket), and
 ---
 
 ## Sky battles
+
+The Sky Trial (quest *Learn to Fly*, route "sky_trial") is fought this
+way: Primeape 42, Magneton 42, then a giant Electabuzz 41 (the Storm
+Guardian), one after another with no healing, by one bird.
 
 `game/mechanics/sky.py`; `BattleScene(sky=True)`
 

@@ -29,7 +29,7 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
-                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, HIDDEN_SPRING, SKATE_ROAD, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
                      UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, POKEMON_TOWER, PoolEntry,
                      Theme)
 from .spinners import carve, layout_of
@@ -143,6 +143,7 @@ class Route:
     wave_species: tuple[str, ...] = ()  # only these can be picked for the waves (() = anyone)
     puzzle: str = ""  # a puzzle on the way to the arena: "trash_cans" (the Vermilion Gym, scenes/power_grid.py)
     tower: int = 0    # a Battle Tower floor (world/tower.py): its number
+    sky: bool = False  # its battles are sky battles (mechanics/sky.py: the Sky Trial)
     folk: str = ""                      # walked by talking to this townsfolk (a trial), not a doorway
     folk_line: str = ""                 # ... who says this, sending the player there ("" = a trial's words)
 
@@ -524,7 +525,7 @@ ROUTES = {r.key: r for r in [
     # grumpy, it has to be calmed down in a battle, with the Route 8 snack
     # thieves, back for the leftovers (alone, it's no match for a team of
     # three; this way a party of three at Lv42/41/41 with 3 Hyper Potions
-    # wins about 55%, tools/balance_sim.py). Then it may join.
+    # wins about 75%, tools/balance_sim.py). Then it may join.
     Route("snorlax_wakes", "Snorlax's Rude Awakening", ROUTE_16, maps=1, towns=("celadon_west", "celadon_west"),
           boss=True, boss_group=(("snorlax", 48), ("persian", 42), ("primeape", 42), ("raticate", 42)), boss_scale=2,
           boss_chest="", wild=False, cols=30, trainer="Snack Pack", folk="celadon_snorlax",
@@ -532,9 +533,10 @@ ROUTES = {r.key: r for r in [
                     "for the leftovers. Calm them all down!"),
     # ... and the one at the Route 11 Gate, across the road to Route 12: the
     # same, with the dream eaters that have been feeding on its dreams (the
-    # Route 11 Hypno's Drowzee), furious their dinner woke up.
+    # Route 11 Hypno's Drowzee, and a Jigglypuff that sings them all to
+    # sleep), furious their dinner woke up (about 72%, as above).
     Route("snorlax_wakes_east", "Snorlax's Rude Awakening", ROUTE_11, maps=1, towns=("route_11", "route_11"),
-          boss=True, boss_group=(("snorlax", 48), ("hypno", 42), ("drowzee", 42), ("drowzee", 41)), boss_scale=2,
+          boss=True, boss_group=(("snorlax", 48), ("hypno", 40), ("drowzee", 40), ("jigglypuff", 40)), boss_scale=2,
           boss_chest="", wild=False, cols=30, trainer="Dream Eaters", folk="route_12_snorlax",
           folk_line="SNOOORT! Snorlax heaves itself up, grumpy and hungry, and the Drowzee that were feeding on "
                     "its dreams are furious their dinner woke up. Calm them all down!"),
@@ -557,7 +559,7 @@ ROUTES = {r.key: r for r in [
     # "thirsty_guard": the guard points the way): one map of Water
     # Pokémon, and a giant Golduck's gang squatting at the spring.
     Route("hidden_spring", "Hidden Spring", HIDDEN_SPRING, maps=1, towns=("route_16", "route_16"), boss=True,
-          boss_group=(("golduck", 47), ("seaking", 43), ("psyduck", 43), ("psyduck", 43)), boss_scale=2,
+          boss_group=(("golduck", 47), ("seaking", 43), ("golduck", 42), ("psyduck", 43)), boss_scale=2,
           trainer="Spring Squatters", boss_loot=MID_BOSS, cols=60, folk="route_16_guard",
           folk_line="The spring's just up the cliff path behind the gate. Mind the Golduck: they don't share."),
     # The skate road (Red/Blue's Cycling Road), from the Route 16 Gate down
@@ -578,6 +580,19 @@ ROUTES = {r.key: r for r in [
               Trainer("skate_ollie", "Ollie Outlaws", (("koffing", 45), ("grimer", 45), ("koffing", 45)), 1, 40),
               Trainer("skate_rail", "Rail Riders", (("arbok", 46), ("golbat", 45)), 2, 40),
           )),
+    # The Sky Trial (quest "learn_to_fly"), up the Skyward Cliffs from the
+    # Route 16 Gate: the bird alone (a Pidgeotto, Pidgeot or Fearow), sky
+    # battles (`sky`), one foe at a time, back to back: a Primeape leaping
+    # off the cliffs, a Magneton's sparks, then a giant Electabuzz, the
+    # storm itself (a lone bird at Lv44-45 with 2 Hyper Potions, perching
+    # when hurt, wins about 70%; Rock types resist all its moves: none).
+    Route("sky_trial", "Sky Trial", SKYWARD_CLIFFS, maps=1, towns=("route_16", "route_16"), boss=True,
+          boss_group=(("electabuzz", 41),), boss_scale=2, trainer="Storm Guardian", boss_chest="battle",
+          waves=(Wave("Cliff Climber", (("primeape", 42),), 0),
+                 Wave("Static Spark", (("magneton", 42),), 0)),
+          wave_team=1, wave_species=("pidgeotto", "pidgeot", "fearow"), wild=False, cols=30, sky=True,
+          folk="route_16_pidgeot",
+          folk_line="Up you go. Remember: read the wind, perch to rest, and fly out of reach."),
     # Route 2's north end, from the cave up to Pewter City: a short walk.
     Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}

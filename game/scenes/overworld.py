@@ -1073,7 +1073,7 @@ class OverworldScene(MapScene):
                                  wild.trainer and wild.trainer.boss_loot) else None,
                              on_win=lambda key=route.key, defeated=[s for s, _ in encounter], wild=not (boss or trainer):
                                  quests.won_battle(self.game, key, defeated, self.battle_event, recruits=wild),
-                             evolves=lambda m: quests.can_evolve(self.game, m), **extra)
+                             evolves=lambda m: quests.can_evolve(self.game, m), sky=route.sky, **extra)
         self.fighting = (wild, battle)
         return battle
 

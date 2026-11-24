@@ -36,6 +36,7 @@ from game.mechanics.pokemon import EVOLUTIONS, SPECIES, Monster  # noqa: E402
 from game.mechanics.status import STATUSES  # noqa: E402
 from game.mechanics.talents import TREES  # noqa: E402
 from game.scenes.battle import Action, BattleScene  # noqa: E402
+from game.mechanics.sky import SKY_MOVES  # noqa: E402
 from game.world.instance import RIVAL_STARTER, RIVAL_STARTER_EVOLVED, ROUTES  # noqa: E402
 
 RIVAL_OF = {"bulbasaur": "charmander", "charmander": "squirtle", "squirtle": "bulbasaur"}
@@ -97,9 +98,11 @@ def _choose(b: BattleScene, c) -> Action:
     """The greedy party member: below 35% HP it drinks its best potion (if
     any); else the most expected damage, a knockout first."""
     if c.monster.hp < 0.35 * c.monster.max_hp:
-        potions = [MEDICINE[n] for n in ("Super Potion", "Potion") if b.bag.medicine.get(n)]
+        potions = [MEDICINE[n] for n in ("Hyper Potion", "Super Potion", "Potion") if b.bag.medicine.get(n)]
         if potions:
             return Action(c, potions[0], c)
+    if b.sky and c.flier and not c.perched and c.monster.hp < 0.6 * c.monster.max_hp:
+        return Action(c, SKY_MOVES[1], c)  # (a sky battle: Perch, to rest its wings and heal a little)
     best, best_score = None, -1.0
     moves = [c.monster.basic_attack] + c.monster.moves
     for move in moves:
@@ -139,10 +142,13 @@ def _choose(b: BattleScene, c) -> Action:
 
 
 def fight(party: list[Monster], enemies: list[Monster], trainer: str = "", boss: bool = False,
-          max_rounds: int = 40, bag: Bag | None = None, smart_enemies: bool = False) -> tuple[bool, int]:
+          max_rounds: int = 40, bag: Bag | None = None, smart_enemies: bool = False,
+          sky: bool = False) -> tuple[bool, int]:
     """One battle; returns (won, rounds). `smart_enemies`: the enemies pick
-    as the party does (for fair duels), not at random as in the game."""
-    b = BattleScene(Scene(), party, enemies, bag or Bag(), boss=boss, trainer=trainer)
+    as the party does (for fair duels), not at random as in the game.
+    `sky`: a sky battle (the party never uses Fly or Perch: a little
+    pessimistic)."""
+    b = BattleScene(Scene(), party, enemies, bag or Bag(), boss=boss, trainer=trainer, sky=sky)
     if smart_enemies:
         b._enemy_action = lambda e: _choose(b, e)
     for _ in b.script:
