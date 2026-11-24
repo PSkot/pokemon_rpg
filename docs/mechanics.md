@@ -223,8 +223,8 @@ out in these steps:
    crit ratio (×3 for Slash, Razor Leaf, Karate Chop and Sky Attack, a
    "high critical-hit ratio": 15%; ×20 or more: always), × 4 with Focus
    Energy, plus the user's gear `crit` (and Lucky Strikes) in percentage
-   points (e.g. +3 → 8%). An ordinary move's chance is **capped at 20%**
-   (`CRIT_CAP`); high-ratio moves and Focus Energy go past it. Always a crit with Keen Edge on a target below half HP (Apex
+   points (e.g. +3 → 8%), at most 100%. There's no cap: gear's crit is
+   small (an all-crit set of top Legendary Lv60 rolls reaches 27%; Slash 37%). Always a crit with Keen Edge on a target below half HP (Apex
    Predator: below ⅓). A crit
    multiplies `base` by **×1.5** (Gen 2+ style; *not* Gen 1's level-based
    crits; ×2 with the Sniper talent).
@@ -269,7 +269,7 @@ per use** (`combat.expected_damage`), to compare gear by: against a typical
 foe of the Pokémon's own level (base Defense, Special and HP 70, no gear,
 neutral to every type: `REFERENCE_BASE`). It's the formula above on
 average: the spread's mean (×0.925), crits at their chance (move ratio and
-gear crit, capped as in battle; Sniper's ×2), × the chance to hit, × the
+gear crit; Sniper's ×2), × the chance to hit, × the
 average number of hits (2–5: 3.5), with STAB and the move type's power gear.
 What depends on the battle isn't counted: type matchups, stat stages, Leaf
 Shield, conditional talents (pinch, streak, Ambush, ...). Super Fang: half
@@ -662,7 +662,7 @@ Example: Muscle Band (Attack 14…18) at Legendary Lv20 rolls 14…18 × 1.6
 | Mod | Meaning |
 | --- | --- |
 | `hp`, `attack`, `defense`, `speed` | % on that stat (see *Gear on stats*) |
-| `crit` | + percentage points of crit chance (base 5%, an ordinary move's capped at 20%) |
+| `crit` | + percentage points of crit chance (base 5%) |
 | `power:<type>` | % more damage with moves of that type |
 | `status:<status>` | % chance per hit to inflict that status |
 | `first` | % chance per round to act before everyone else (after items) |

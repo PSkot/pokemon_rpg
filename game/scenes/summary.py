@@ -19,7 +19,7 @@ import pygame
 from .. import settings
 from ..engine import hats, ui
 from ..engine.scene import Scene
-from ..mechanics.combat import CRIT_CAP, CRIT_CHANCE, expected_damage, rating
+from ..mechanics.combat import CRIT_CHANCE, expected_damage, rating
 from ..mechanics.items import EFFECT_COLOR, RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text, money_text
 from ..mechanics.pokemon import SPECIES, STONE_EVOLUTIONS, Monster, animations
 from ..mechanics.status import STATUSES
@@ -359,8 +359,8 @@ class SummaryScene(Scene):
             row("Special", str(m.base_special), ui.GREY, "-", ui.GREY, str(m.base_special), ui.WHITE)
         crit_now, crit = m.gear_bonus("crit"), shown.gear_bonus("crit")
         for name, unit, base, value_now, value in (("Crit chance", "%", CRIT_CHANCE, crit_now, crit),):
-            def fmt(v: float) -> str:  # (an ordinary move's: at most CRIT_CAP)
-                return f"{min(CRIT_CAP, base + v):g}{unit}"
+            def fmt(v: float) -> str:
+                return f"{base + v:g}{unit}"
             gear = f"{value:+d}{unit}" if value else "-"
             if after:
                 change = value - value_now

@@ -92,8 +92,8 @@ you are working on.
   √(level/50), berry healing by absolute HP × (level+5)/55); every kind of
   bonus is priced by its worth. Drops get the defeated Pokémon's level,
   chests the area's level range. Mods (six for numbers, since the gear
-  rework, `GEAR_VERSION` 4): stats in %, `crit` (% points; base 5%, an
-  ordinary move's capped at 20%: `combat.crit_chance`), `power:<type>` (%
+  rework, `GEAR_VERSION` 4): stats in %, `crit` (% points; base 5%:
+  `combat.crit_chance`), `power:<type>` (%
   on that type's moves); and effects: `status:<status>` (% chance a hit
   inflicts it), `first` (Quick Claw), `endure` (Focus Band), `regen`,
   `drain`, `berry_*` (Oran heals absolute HP; cure berries

@@ -21,8 +21,7 @@ SHIELD_FACTOR = 0.5  # damage taken while shielded
 MAX_STAGE = 6        # stat stages go from -6 to +6
 STAGE_STATS = ("attack", "defense", "speed", "accuracy")
 FOCUS_CRIT = 4       # Focus Energy: crit chance × this
-CRIT_CHANCE = 5.0    # % base; gear adds to it ...
-CRIT_CAP = 20.0      # ... up to this, for an ordinary move (high-crit moves and Focus Energy go past it)
+CRIT_CHANCE = 5.0    # % base; gear adds to it (no cap: gear's crit is small and rare)
 CRIT_FACTOR = 1.5
 # Gen 1's special types: their moves use the user's and the target's Special
 # instead of Attack and Defense. (The rest are physical, typeless ones too.)
@@ -57,11 +56,9 @@ class Hit:
 def crit_chance(m: "Monster", move: Move, focused: bool = False) -> float:
     """The % chance a hit of `move` by `m` is critical: the base chance ×
     the move's crit ratio (× `FOCUS_CRIT` when focused), plus gear and
-    talents' crit points. An ordinary move (ratio 1, not focused) is
-    capped at `CRIT_CAP`; the others at 100%."""
+    talents' crit points; at most 100%."""
     focus = FOCUS_CRIT if focused else 1
-    chance = CRIT_CHANCE * move.crit_ratio * focus + m.gear_bonus("crit")
-    return min(CRIT_CAP if move.crit_ratio <= 1 and focus == 1 else 100.0, chance)
+    return min(100.0, CRIT_CHANCE * move.crit_ratio * focus + m.gear_bonus("crit"))
 
 
 def is_special(move: Move) -> bool:
