@@ -255,8 +255,12 @@ def load(info: SaveInfo):
         if event:
             scene.show_event(event)
         return scene
-    except (OSError, ValueError, KeyError, IndexError, TypeError) as e:
-        raise LoadError(f"{info.name} couldn't be loaded.") from e
+    except LoadError:
+        raise
+    except Exception as e:  # (what went wrong, shown and in the console: e.g. a KeyError: 'Mighty')
+        import traceback
+        traceback.print_exc()
+        raise LoadError(f"{info.name} couldn't be loaded ({type(e).__name__}: {e}).") from e
 
 
 class LoadError(Exception):

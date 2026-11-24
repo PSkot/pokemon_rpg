@@ -42,6 +42,21 @@ def assemble() -> None:
     shutil.copytree(ROOT / "game", APP / "game", ignore=ignore)
     shutil.copytree(ROOT / "assets", APP / "assets", ignore=ignore)
     (APP / "main.py").write_text(MAIN)
+    # Which build this is (the title screen shows it: a page that still says
+    # an older one is a cached copy).
+    (APP / "game" / "build_info.py").write_text(f"BUILD = {build_stamp()!r}\n")
+
+
+def build_stamp() -> str:
+    """The commit and time of this build, e.g. "0400223 11-24 08:58 UTC"."""
+    import subprocess
+    from datetime import datetime, timezone
+    try:
+        sha = subprocess.run(["git", "rev-parse", "--short=7", "HEAD"], cwd=ROOT, capture_output=True, text=True,
+                             check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        sha = "local"
+    return f"{sha} {datetime.now(timezone.utc):%m-%d %H:%M} UTC"
 
 
 def main() -> None:

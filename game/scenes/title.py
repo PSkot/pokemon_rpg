@@ -11,6 +11,11 @@ from ..saves import LoadError
 from .save_menu import DELETE_PILL, SaveList
 from .starter import StarterScene
 
+try:  # (written by tools/web_build.py into the web build only)
+    from ..build_info import BUILD
+except ImportError:
+    BUILD = ""
+
 PAD = 9
 ROW_H = 19
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
@@ -95,6 +100,9 @@ class TitleScene(Scene):
                     (center, self.menu.bottom + 10), ui.GREY, size=22, align="center")
         if self.message:
             ui.text(window, self.message, (center, self.menu.bottom + 26), ui.YELLOW, size=22, align="center")
+        if BUILD:  # (the web build's: which one this is)
+            ui.text(window, f"Build {BUILD}", (settings.LOGICAL_SIZE[0] - 6, settings.LOGICAL_SIZE[1] - 12), ui.GREY,
+                    size=16, align="right")
         if self.saves:
             dim = pygame.Surface(window.get_size(), pygame.SRCALPHA)
             dim.fill((0, 0, 0, 120))
