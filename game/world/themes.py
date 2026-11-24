@@ -370,6 +370,22 @@ ROUTE_12 = Theme(
     backdrop=MEADOW_BACKDROP,
 )
 
+# The Hidden Spring, up the cliffs behind the Route 16 Gate (quest
+# "thirsty_guard"): Route 16's cliffs, taken over by Water Pokémon.
+HIDDEN_SPRING = Theme(
+    "hidden_spring", "Hidden Spring",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("psyduck", 25, (41, 43)),
+        PoolEntry("goldeen", 20, (41, 43)),
+        PoolEntry("seaking", 10, (42, 44)),
+        PoolEntry("horsea", 20, (41, 43)),
+        PoolEntry("shellder", 15, (41, 43)),
+        PoolEntry("staryu", 10, (41, 43)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+)
+
 # Rock Tunnel, from the Route 10 Pokémon Center to Lavender Town: pitch
 # dark (Flash lights a circle around the player); Gen 1's Zubat, Geodude,
 # Machop and Onix.

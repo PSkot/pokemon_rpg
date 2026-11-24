@@ -199,12 +199,14 @@ STORY = [
     # (either Snorlax, for "The Sleeping Giant"; the other one after it)
     ("Snorlax west (Snack Pack)", "snorlax_wakes", (42, 41), False, {"Hyper Potion": 3}),
     ("Snorlax east (Dream Eaters)", "snorlax_wakes_east", (42, 41), False, {"Hyper Potion": 3}),
+    ("Hidden Spring (Spring Squatters)", "hidden_spring", (43, 42), False, {"Hyper Potion": 3}),
 ]
 # How many fight in each story battle: 1 (solo), 2, or 3 from the S.S. Anne on.
 TEAM_SIZE = {"Vermilion Gym (2 waves + battalion)": 3, "Diglett's Cave boss": 3, "Rock Tunnel Hiker Crew": 3,
              "Celadon Gym (2 waves + troupe)": 3, "Leaf Stone: Overgrown Wing (2 waves + Exeggutor)": 3,
              "Moon Stone: Moonlit Crater (Clefable)": 3, "Thunder Stone: Power Plant (Electabuzz)": 3,
-             "Rocket Hideout Boss": 3, "Snorlax west (Snack Pack)": 3, "Snorlax east (Dream Eaters)": 3}
+             "Rocket Hideout Boss": 3, "Snorlax west (Snack Pack)": 3, "Snorlax east (Dream Eaters)": 3,
+             "Hidden Spring (Spring Squatters)": 3}
 PARTNERS = ["pidgey", "rattata", "nidoran_m", "spearow", "caterpie", "pikachu"]
 
 

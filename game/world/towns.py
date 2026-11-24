@@ -532,7 +532,7 @@ TOWNS = {t.key: t for t in [
     # Road, down to Fuchsia City) is for later.
     Town("route_16", "Route 16 Gate", 44, (), exits=(("right", "route_16"),), home_col=14,
          folk=(Folk("route_16_guard", "Gate Guard", "fearow", 24, (
-             "Cycling Road starts past this gate. It's closed while they finish the downhill stretch.",
+             "Kaw... The road past this gate runs downhill all the way south. Steep. Fast. Fun.",
              "Route 16 is a windy one. The bird Pokémon round here ride the gusts off the cliffs.",
          )),)),
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a

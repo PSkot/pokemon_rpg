@@ -581,6 +581,26 @@ yet.
 - **Rewards:** ₽2,000, 1,900 XP, 2 Hyper Potions. It doesn't join; its road
   opens too.
 
+### Thirsty Work (side quest)
+
+- **Starts:** from the **Route 16 Gate guard** (a Fearow), once quest 25 is
+  done (he's only reachable past the Celadon Snorlax anyway). He won't let
+  anyone down the road south until he's had a proper drink, and the
+  Department Store's bottled water won't do: he wants spring water.
+- **Steps:**
+  1. Ask Celadon's **Bellsprout** (Celadon City, east end): the best spring
+     in Kanto is on the cliffs behind the Route 16 Gate, but a Golduck gang
+     has taken it.
+  2. Talk to the guard: he points the way up (route "hidden_spring", one
+     map of Water Pokémon, Lv41–44). Beat the **Spring Squatters**: Golduck
+     47 (giant), Seaking 43, Psyduck 43, Psyduck 43. A party of three at
+     Lv43/42/42 with 3 Hyper Potions wins about 74%. Gives the **Spring
+     Water** (key item).
+  3. Bring it to the guard: he drinks, and opens the road south (the skate
+     road, next).
+- **Rewards:** ₽2,200, 2,000 XP, 2 Hyper Potions and a **Rare** gear piece
+  (item level 44).
+
 ### Route 12
 
 From the Route 11 Gate's east doorway (past its Snorlax) up to Lavender

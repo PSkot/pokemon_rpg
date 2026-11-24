@@ -29,7 +29,7 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
-                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, HIDDEN_SPRING, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
                      UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, POKEMON_TOWER, PoolEntry,
                      Theme)
 from .spinners import carve, layout_of
@@ -549,6 +549,13 @@ ROUTES = {r.key: r for r in [
               Trainer("route_12_fisherman_2", "Deep Sea Haul", (("seaking", 44), ("shellder", 43), ("horsea", 43)),
                       1, 35),
           )),
+    # The Hidden Spring, up the cliffs behind the Route 16 Gate (quest
+    # "thirsty_guard": the guard points the way): one map of Water
+    # Pokémon, and a giant Golduck's gang squatting at the spring.
+    Route("hidden_spring", "Hidden Spring", HIDDEN_SPRING, maps=1, towns=("route_16", "route_16"), boss=True,
+          boss_group=(("golduck", 47), ("seaking", 43), ("psyduck", 43), ("psyduck", 43)), boss_scale=2,
+          trainer="Spring Squatters", boss_loot=MID_BOSS, cols=60, folk="route_16_guard",
+          folk_line="The spring's just up the cliff path behind the gate. Mind the Golduck: they don't share."),
     # Route 2's north end, from the cave up to Pewter City: a short walk.
     Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}

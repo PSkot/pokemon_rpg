@@ -1158,6 +1158,42 @@ QUESTS = {q.key: q for q in [
         rewards=(("medicine", "Hyper Potion", 2),),
         done_dialogue=(("", "Both roads are clear now."),),
     ),
+    # The Route 16 Gate's guard, a Fearow, won't let anyone down the road
+    # south until he's had a proper drink: spring water, not the bottled
+    # stuff. Celadon's Bellsprout knows where; a Golduck's gang has taken
+    # the spring over.
+    Quest(
+        "thirsty_guard", "Thirsty Work",
+        "The Fearow guarding the Route 16 Gate is parched, and won't let anyone through until he's had a proper "
+        "drink. Bottled water won't do: he wants it fresh from a spring.",
+        giver="route_16_guard", requires=("snorlax_west",),
+        offer=(("Gate Guard", "Kaw... You want the road south? Not today. Not until I've had a drink."),
+               ("Gate Guard", "And don't bring me that bottled stuff from the Department Store. Tastes like the "
+                              "bottle. I want SPRING water."),
+               ("Gate Guard", "There's a spring around here somewhere. A Bellsprout would know: they drink like "
+                              "nobody's business.")),
+        steps=(Step("talk", "celadon_bellsprout", "Ask Celadon's Bellsprout where to find spring water (Celadon City)",
+                    dialogue=(("Bellsprout", "Sprout! Spring water? The best in Kanto bubbles up on the cliffs "
+                                             "behind the Route 16 Gate."),
+                              ("Bellsprout", "But a gang of Golduck moved in and splash anyone who comes near. "
+                                             "Rude!"),
+                              ("Bellsprout", "The guard knows the path up. Ask him!"))),
+               Step("defeat", "hidden_spring", "Win back the Hidden Spring from the Golduck gang (talk to the Route "
+                                               "16 Gate guard)",
+                    dialogue=(("", "The Golduck gang slinks off, dripping. The spring bubbles up clear and cold."),
+                              ("", "You fill a flask with Spring Water!")),
+                    gives=("Spring Water",)),
+               Step("talk", "route_16_guard", "Bring the Spring Water to the Route 16 Gate guard",
+                    takes=("Spring Water",),
+                    waiting=(("Gate Guard", "Kaw... Water. Spring water. Please."),),
+                    dialogue=(("Gate Guard", "Is that... SPRING water? Give it here!"),
+                              ("", "The Fearow drains the flask in one long gulp."),
+                              ("Gate Guard", "KAAAW! Now THAT is water. I feel ten years younger."),
+                              ("Gate Guard", "Fair's fair: the road south is yours. They turned it into a skate road, "
+                                             "downhill all the way. Hold on tight!")))),
+        money=2200, xp=2000,
+        rewards=(("medicine", "Hyper Potion", 2), ("gear", None, "Rare", 44)),
+    ),
     # The evolution stones: one quest each, from after the Rainbow Badge (the
     # Fire and Water Stones come later, with Cinnabar and the coast). A stone
     # evolves one Pokémon and is used up (bag: Key items).
