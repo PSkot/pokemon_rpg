@@ -135,7 +135,7 @@ class TownScene(MapScene):
     @property
     def folk(self) -> list[Folk]:
         """The town's townsfolk who are here (not gone after their quest: `Folk.gone_after`)."""
-        return [f for f in self.town.folk if not (f.gone_after and quests.is_done(self.game, f.gone_after))]
+        return [f for f in self.town.folk if not (f.gone_after and quests.gone(self.game, f.gone_after))]
 
     def _building_at_player(self) -> Building | None:
         return next((b for b in self.town.buildings
@@ -167,9 +167,10 @@ class TownScene(MapScene):
         the step of beating it), if any."""
         for quest in quests.active(self.game):
             step = quests.current(self.game, quest.key)
-            route = ROUTES.get(step.target) if step.kind == "defeat" else None
-            if route and route.folk == folk.key:
-                return route
+            for target in step.targets if step.kind == "defeat" else ():
+                route = ROUTES.get(target)
+                if route and route.folk == folk.key and quests.chosen(self.game, quest.key, folk.key):
+                    return route
         return None
 
     def _talk(self, folk: Folk) -> None:
@@ -326,7 +327,7 @@ class TownScene(MapScene):
                 marks.append((folk.x, top, quest_mark(quest)))
             trial = self._trial_from(folk)
             for quest in quests.active(self.game) if trial else ():
-                if quests.current(self.game, quest.key).target == trial.key:
+                if trial.key in quests.current(self.game, quest.key).targets:
                     marks.append((folk.x, top, quest_mark(quest)))
         return list(dict.fromkeys(marks))
 

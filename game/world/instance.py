@@ -29,7 +29,7 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
-                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
                      UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, POKEMON_TOWER, PoolEntry,
                      Theme)
 from .spinners import carve, layout_of
@@ -506,25 +506,49 @@ ROUTES = {r.key: r for r in [
     # Saffron City to Route 7, by Celadon City (no trainers, as in Red/Blue).
     Route("underground_west", "Underground Path", UNDERGROUND_WEST, maps=2, towns=("route_8_gate", "celadon")),
     # Route 16, west of Celadon West End (once the Snorlax asleep across it
-    # is awake and gone, quest "snorlax_west"), to the Route 16 Gate:
+    # is awake and calmed down: "boss:snorlax_wakes"), to the Route 16 Gate:
     # Gen 1's Bikers, as bands.
     Route("route_16", "Route 16", ROUTE_16, maps=2, towns=("route_16", "celadon_west"),
-          needs=("snorlax_west", "done"),
+          needs=("boss:snorlax_wakes", "beaten"),
           blocked="A huge Pokémon is fast asleep right across the road west. There's no getting past it.",
           trainers=(
               Trainer("route_16_biker", "Road Hogs", (("raticate", 41), ("fearow", 41)), 0, 40),
               Trainer("route_16_biker_2", "Exhaust Pipes", (("koffing", 41), ("grimer", 41), ("koffing", 41)), 1, 40),
           )),
-    # Snorlax, woken with a feast and the Poké Flute (quest "snorlax_west"):
+    # The Snorlax west of Celadon, woken with a feast and the Poké Flute
+    # (quest "snorlax_west"; or, after it, the flute alone: "snorlax_second"):
     # grumpy, it has to be calmed down in a battle, with the Route 8 snack
     # thieves, back for the leftovers (alone, it's no match for a team of
     # three; this way a party of three at Lv42/41/41 with 3 Hyper Potions
-    # wins about 75%, tools/balance_sim.py-style runs). Then it joins.
+    # wins about 55%, tools/balance_sim.py). Then it may join.
     Route("snorlax_wakes", "Snorlax's Rude Awakening", ROUTE_16, maps=1, towns=("celadon_west", "celadon_west"),
           boss=True, boss_group=(("snorlax", 48), ("persian", 42), ("primeape", 42), ("raticate", 42)), boss_scale=2,
           boss_chest="", wild=False, cols=30, trainer="Snack Pack", folk="celadon_snorlax",
           folk_line="SNOOORT! Snorlax heaves itself up, grumpy and still hungry, and the snack thieves are back "
                     "for the leftovers. Calm them all down!"),
+    # ... and the one at the Route 11 Gate, across the road to Route 12: the
+    # same, with the dream eaters that have been feeding on its dreams (the
+    # Route 11 Hypno's Drowzee), furious their dinner woke up.
+    Route("snorlax_wakes_east", "Snorlax's Rude Awakening", ROUTE_11, maps=1, towns=("route_11", "route_11"),
+          boss=True, boss_group=(("snorlax", 48), ("hypno", 42), ("drowzee", 42), ("drowzee", 41)), boss_scale=2,
+          boss_chest="", wild=False, cols=30, trainer="Dream Eaters", folk="route_12_snorlax",
+          folk_line="SNOOORT! Snorlax heaves itself up, grumpy and hungry, and the Drowzee that were feeding on "
+                    "its dreams are furious their dinner woke up. Calm them all down!"),
+    # Route 12, from the Route 11 Gate (once its Snorlax is awake and calmed
+    # down: "boss:snorlax_wakes_east") up the coast to Lavender Town:
+    # Gen 1's Fishermen, Jr. Trainers and Rockers, as bands, about level
+    # with the party after the Snorlax.
+    Route("route_12", "Route 12", ROUTE_12, maps=2, towns=("route_11", "lavender"),
+          needs=("boss:snorlax_wakes_east", "beaten"),
+          blocked="A huge Pokémon is fast asleep right across the road to Route 12. There's no getting past it.",
+          trainers=(
+              Trainer("route_12_fisherman_1", "Pier Anglers", (("goldeen", 43), ("tentacool", 43), ("goldeen", 43)),
+                      0, 35),
+              Trainer("route_12_jr_trainer", "Seaside Pals", (("nidorina", 43), ("weepinbell", 43)), 0, 20),
+              Trainer("route_12_rocker", "Static Band", (("voltorb", 44), ("electrode", 44)), 1, 25),
+              Trainer("route_12_fisherman_2", "Deep Sea Haul", (("seaking", 44), ("shellder", 43), ("horsea", 43)),
+                      1, 35),
+          )),
     # Route 2's north end, from the cave up to Pewter City: a short walk.
     Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}
@@ -726,7 +750,7 @@ class Recruit:
 # (easier) ones don't count.
 STORY_ORDER = ("route_1", "route_22", "viridian_forest", "route_3", "mt_moon_cave", "route_4_east", "nugget_bridge",
                "route_25", "route_5_south", "underground_path", "route_6_south", "route_11", "digletts_cave",
-               "route_9", "rock_tunnel", "route_8", "underground_west", "route_16")
+               "route_9", "rock_tunnel", "route_8", "underground_west", "route_16", "route_12")
 
 
 def from_route(first: str, route: str) -> bool:

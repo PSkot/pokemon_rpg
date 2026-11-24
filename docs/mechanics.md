@@ -803,7 +803,8 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 8 | Common | (no boss) |
 | Underground Path (west) | Common | (no boss) |
 | Route 16 | Common | (no boss) |
-| Snorlax's Rude Awakening | (no wild Pokémon or chests) | none: the Snack Pack drops nothing, Snorlax joins (quest *The Sleeping Giant*) |
+| Route 12 | Common | (no boss) |
+| Snorlax's Rude Awakening (both) | (no wild Pokémon or chests) | none: the Snack Pack / Dream Eaters drop nothing; Snorlax joins the first time (quest *The Sleeping Giant*) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
 ---
@@ -1470,6 +1471,11 @@ always the same spot), with its team in a row.
 | Route 16, map 1 | Road Hogs (Biker) | Raticate 41, Fearow 41 | ₽820 |
 | Route 16, map 2 | Exhaust Pipes (Biker) | Koffing 41, Grimer 41, Koffing 41 | ₽820 |
 | Celadon West End | Snack Pack (Snorlax, woken) | Snorlax 48, Persian 42, Primeape 42, Raticate 42 | ₽0 |
+| Route 11 Gate | Dream Eaters (Snorlax, woken) | Snorlax 48, Hypno 42, Drowzee 42, Drowzee 41 | ₽0 |
+| Route 12, map 1 | Pier Anglers (Fisherman) | Goldeen 43, Tentacool 43, Goldeen 43 | ₽1,505 |
+| Route 12, map 1 | Seaside Pals (Jr. Trainer) | Nidorina 43, Weepinbell 43 | ₽860 |
+| Route 12, map 2 | Static Band (Rocker) | Voltorb 44, Electrode 44 | ₽1,100 |
+| Route 12, map 2 | Deep Sea Haul (Fisherman) | Seaking 44, Shellder 43, Horsea 43 | ₽1,505 |
 | S.S. Anne 1F | Gentleman's Hounds (Gentleman) | Growlithe 26, Growlithe 26 | ₽910 |
 | S.S. Anne 1F | Seaside Lass (Lass) | Pidgey 25, Nidoran F 25, Jigglypuff 25 | ₽187 |
 | S.S. Anne 1F | Cabin Boys (Youngster) | Rattata 25, Ekans 25, Raticate 24 | ₽180 |

@@ -63,6 +63,14 @@ class Step:
     # talk with `takes`: the step only happens once those key items are in
     # the bag; until then, talking says this instead.
     waiting: tuple[Line, ...] = ()
+    # talk / defeat: other targets that do it too (either Snorlax). A talk
+    # step done with one remembers it (`chosen`): a later defeat step then
+    # only takes the route walked from that townsfolk (`Route.folk`).
+    alt: tuple[str, ...] = ()
+
+    @property
+    def targets(self) -> tuple[str, ...]:
+        return (self.target,) + self.alt
 
 
 def hunt(species: str, count: int, where: str) -> Step:
@@ -1075,33 +1083,37 @@ QUESTS = {q.key: q for q in [
                     gives=("Poké Flute",))),
         money=2200, xp=2100,
         rewards=(("medicine", "Hyper Potion", 3), ("medicine", "Revive", 2), ("gear", None, "Rare", 42)),
-        done_dialogue=(("", "The Poké Flute... Word is a Snorlax has fallen asleep right across the road west of "
-                            "Celadon City, to Route 16."),),
+        done_dialogue=(("", "The Poké Flute... Word is two Snorlax are fast asleep across Kanto's roads: one west "
+                            "of Celadon City, on the way to Route 16, and one at the Route 11 Gate, on the way to "
+                            "Route 12."),),
     ),
-    # The Poké Flute isn't enough on its own: the Snorlax west of Celadon
-    # (blocking Route 16) only wakes up hungry. A feast (snacks won back from
-    # Route 8's Meowth and Mankey, and a crate of Soda Pop from the
-    # Department Store's roof), the flute, and a battle to calm it down;
-    # then it joins.
+    # The Poké Flute isn't enough on its own: a Snorlax only wakes up hungry.
+    # Two sleep across the roads, one west of Celadon (blocking Route 16) and
+    # one at the Route 11 Gate (blocking Route 12, up to Lavender): either
+    # does. A feast (snacks won back from Route 8's Meowth and Mankey, and a
+    # crate of Soda Pop from the Department Store's roof), the flute, and a
+    # battle to calm it down; then it joins, and its road opens. The other
+    # one is for `snorlax_second`.
     Quest(
         "snorlax_west", "The Sleeping Giant",
-        "A Snorlax is fast asleep across the road west of Celadon City, and nobody can get to Route 16. Perhaps "
-        "the Poké Flute will wake it.",
+        "Two Snorlax are fast asleep across Kanto's roads: one west of Celadon City (the way to Route 16), one at "
+        "the Route 11 Gate (the way to Route 12 and Lavender Town). Perhaps the Poké Flute will wake one.",
         requires=("pokemon_tower",),
-        steps=(Step("talk", "celadon_snorlax", "Play the Poké Flute for the sleeping Snorlax (Celadon West End)",
-                    town="celadon_west",
+        steps=(Step("talk", "celadon_snorlax", "Play the Poké Flute for a sleeping Snorlax (Celadon West End or the "
+                                               "Route 11 Gate)",
+                    alt=("route_12_snorlax",),
                     dialogue=(("", "You played the Poké Flute. A soft, bright tune drifts over Snorlax..."),
                               ("", "Snorlax snorts, scratches its belly, rolls over... and goes on snoring."),
-                              ("", "It's too deep asleep for a tune alone. Maybe someone in town knows how to wake "
-                                   "it."))),
-               Step("talk", "celadon_hypno", "Ask around Celadon West End how to wake Snorlax",
-                    town="celadon_west",
-                    dialogue=(("Old Hypno", "The Poké Flute didn't do it? Of course not. That Snorlax is dreaming "
-                                            "of dinner."),
-                              ("Old Hypno", "A Snorlax only ever wakes up hungry. Put a feast under its nose, THEN "
-                                            "play your flute."),
-                              ("Old Hypno", "The Meowth and Mankey on Route 8 have been raiding the market stalls. "
-                                            "Win the snacks back, and buy it something to wash them down."))),
+                              ("", "It's too deep asleep for a tune alone. Maybe a Hypno would know: they know "
+                                   "all about sleep."))),
+               Step("talk", "celadon_hypno", "Ask a Hypno how to wake Snorlax (Celadon West End or the Route 11 Gate)",
+                    alt=("route_11_hypno",),
+                    dialogue=(("Hypno", "The Poké Flute didn't do it? Of course not. That Snorlax is dreaming of "
+                                        "dinner."),
+                              ("Hypno", "A Snorlax only ever wakes up hungry. Put a feast under its nose, THEN play "
+                                        "your flute."),
+                              ("Hypno", "The Meowth and Mankey on Route 8 have been raiding the market stalls. Win "
+                                        "the snacks back, and buy it something to wash them down."))),
                collect("Stolen Snack", 6, "route_8", ("meowth", "mankey"), 50, "Meowth and Mankey on Route 8"),
                Step("visit", "Rooftop", "Buy a crate of Soda Pop at the Department Store's rooftop (Celadon City)",
                     town="celadon",
@@ -1109,23 +1121,42 @@ QUESTS = {q.key: q for q in [
                                    "rattles out!"),
                               ("", "You received a Soda Pop Crate! That should be enough for a Snorlax. Maybe.")),
                     gives=("Soda Pop Crate",)),
-               Step("talk", "celadon_snorlax", "Lay out the feast for Snorlax and play the Poké Flute (Celadon West End)",
-                    town="celadon_west", takes=("Soda Pop Crate",),
+               Step("talk", "celadon_snorlax", "Lay out the feast for a Snorlax and play the Poké Flute (Celadon West "
+                                               "End or the Route 11 Gate)",
+                    alt=("route_12_snorlax",), takes=("Soda Pop Crate",),
                     dialogue=(("", "You set out the snacks and the Soda Pop in front of Snorlax, and play the Poké "
                                    "Flute..."),
                               ("", "Its nose twitches. Its belly rumbles. One eye opens..."),
                               ("", "Snorlax wolfs down the whole feast in three bites... and it's still hungry. And "
                                    "grumpy!"),
-                              ("", "And there's a rustling in the bushes: the Meowth gang's boss, a Primeape and a "
-                                   "Raticate, back for the leftovers!"))),
-               Step("defeat", "snorlax_wakes", "Calm down the grumpy Snorlax and see off the snack thieves (talk to "
-                                               "it, Celadon West End)",
+                              ("", "And there's a rustling nearby: whoever's been loafing around it wants the "
+                                   "leftovers!"))),
+               Step("defeat", "snorlax_wakes", "Calm down the Snorlax you fed (talk to it)",
+                    alt=("snorlax_wakes_east",),
                     dialogue=(("", "Snorlax flops down, puffing... then looks at you, and at your bag. You fed it, "
                                    "after all."),
                               ("", "Snorlax yawns, stretches, and lumbers along after you. It wants to come along!")))),
         money=2400, xp=2300,
         rewards=(("pokemon", "snorlax", 40),),
-        done_dialogue=(("", "The road west of Celadon City is clear: Route 16 is open."),),
+        done_dialogue=(("", "With Snorlax up and about, the road it slept across is clear."),
+                       ("", "The other Snorlax is still snoring. Now that you know the trick, the Poké Flute alone "
+                            "will do to wake it: it'll be just as grumpy, though.")),
+    ),
+    # The other Snorlax (whichever wasn't woken for "The Sleeping Giant"):
+    # the flute alone wakes it, grumpy; calming it down opens its road. It
+    # doesn't join (one Snorlax is plenty).
+    Quest(
+        "snorlax_second", "The Other Sleeping Giant",
+        "One Snorlax is still asleep across a road. Now that you know how, the Poké Flute will wake it, and it "
+        "won't be happy about it.",
+        requires=("snorlax_west",),
+        steps=(Step("defeat", "snorlax_wakes", "Wake the other Snorlax with the Poké Flute (talk to it)",
+                    alt=("snorlax_wakes_east",),
+                    dialogue=(("", "Snorlax flops down, yawns hugely... and rolls off the road into the grass, "
+                                   "fast asleep again."),)),),
+        money=2000, xp=1900,
+        rewards=(("medicine", "Hyper Potion", 2),),
+        done_dialogue=(("", "Both roads are clear now."),),
     ),
     # The evolution stones: one quest each, from after the Rainbow Badge (the
     # Fire and Water Stones come later, with Cinnabar and the coast). A stone
@@ -1456,9 +1487,15 @@ def talk(game, folk: str) -> Event:
     that, or else a quest they give (its offer, and it starts)."""
     for quest in active(game):  # a step that wants an item the player hasn't got yet
         s = current(game, quest.key)
-        if s.kind == "talk" and s.target == folk and s.takes and not all(i in game.bag.key_items for i in s.takes):
+        if s.kind == "talk" and folk in s.targets and s.takes and not all(i in game.bag.key_items for i in s.takes):
             return Event(dialogue=list(s.waiting))
-    event = _advance_where(game, lambda s: s.kind == "talk" and s.target == folk)
+    for quest in active(game):  # (which of a step's alternatives it was: either Snorlax)
+        s = current(game, quest.key)
+        if s.kind == "talk" and s.alt and folk in s.targets:
+            for other in s.targets:
+                game.trainers.discard(_choice_key(quest.key, other))
+            game.trainers.add(_choice_key(quest.key, folk))
+    event = _advance_where(game, lambda s: s.kind == "talk" and folk in s.targets)
     if not event:
         for quest in QUESTS.values():
             if quest.giver == folk and ready(game, quest):
@@ -1473,7 +1510,7 @@ def folk_quests(game, folk: str) -> list[Quest]:
     are ready, and active ones waiting to talk to them."""
     return [q for q in QUESTS.values()
             if (q.giver == folk and ready(game, q))
-            or (is_active(game, q.key) and (s := current(game, q.key)).kind == "talk" and s.target == folk
+            or (is_active(game, q.key) and (s := current(game, q.key)).kind == "talk" and folk in s.targets
                 and all(i in game.bag.key_items for i in s.takes))]  # (not while what it wants is missing)
 
 
@@ -1497,14 +1534,14 @@ def early_text(game, town: str, building: str) -> str:
 def defeat(game, route: str) -> Event:
     """The player beat `route`'s boss, or the map trainer with that key (the
     rival on Nugget Bridge)."""
-    return _advance_where(game, lambda s: s.kind == "defeat" and s.target == route)
+    return _advance_where(game, lambda s: s.kind == "defeat" and route in s.targets)
 
 
 def trainer_beaten(game, key: str) -> bool:
     """Map trainer `key` is beaten for good, or a quest that needed beating
     it is done (saves from when the rival was Nugget Bridge's end boss)."""
     return key in game.trainers or any(
-        is_done(game, q.key) for q in QUESTS.values() if any(s.kind == "defeat" and s.target == key for s in q.steps))
+        is_done(game, q.key) for q in QUESTS.values() if any(s.kind == "defeat" and key in s.targets for s in q.steps))
 
 
 def reach(game, town: str) -> Event:
@@ -1619,7 +1656,24 @@ def step_text(game, quest: Quest, i: int) -> str:
 def boss_wanted(game, route: str) -> bool:
     """Whether an active quest is at the step of defeating `route`'s boss
     (then it's there as a boss again, even if it was beaten before)."""
-    return any((s := current(game, q.key)) and s.kind == "defeat" and s.target == route for q in active(game))
+    return any((s := current(game, q.key)) and s.kind == "defeat" and route in s.targets for q in active(game))
+
+
+def gone(game, after: str) -> bool:
+    """A townsfolk's `Folk.gone_after` holds: that quest is done, or (a
+    "boss:<route>" key) that boss is beaten (a Snorlax woken and calmed down)."""
+    return after in game.trainers if after.startswith("boss:") else is_done(game, after)
+
+
+def _choice_key(quest: str, folk: str) -> str:
+    return f"chose:{quest}={folk}"
+
+
+def chosen(game, quest: str, folk: str) -> bool:
+    """Whether `folk` may send the player to `quest`'s current defeat step:
+    no alternative was picked by an earlier talk step, or `folk` was."""
+    picked = [k for k in game.trainers if k.startswith(f"chose:{quest}=")]
+    return not picked or _choice_key(quest, folk) in picked
 
 
 def blocked_text(game, route) -> str:
@@ -1630,12 +1684,16 @@ def blocked_text(game, route) -> str:
 
 
 def open_for(game, needs: tuple[str, str] | None) -> bool:
-    """Whether a (quest, "started"/"active"/"done"/"not_done") condition
+    """Whether a (quest, "started"/"active"/"done"/"not_done") condition,
+    or a (key, "beaten") one (that key is in `Game.trainers`: a boss beaten,
+    e.g. "boss:snorlax_wakes"),
     holds ("started": started or done; "active": started and not done yet;
     None: always)."""
     if not needs:
         return True
     key, what = needs
+    if what == "beaten":  # a boss beaten for good ("boss:<route>", in Game.trainers)
+        return key in game.trainers
     if what == "not_done":
         return not is_done(game, key)
     if what == "active":

@@ -62,7 +62,7 @@ class Folk:
     # Chat, one line per talk in turn; "{partner}" = the player's starter's name.
     lines: tuple[str, ...] = ()
     asleep: bool = False  # fast asleep (Snorlax): doesn't turn to face the player, Zzz over it
-    gone_after: str = ""  # not there any more once this quest is done
+    gone_after: str = ""  # not there any more once this quest is done (or "boss:<route>": that boss is beaten)
     npc: str = ""  # drawn as this NPC's idle animation (props/<npc>.png, tileset.npc_frames), not a species
 
     @property
@@ -361,9 +361,11 @@ TOWNS = {t.key: t for t in [
            )),
        )),
     # The east end of Route 11: the mouth of Diglett's Cave, and the road on
-    # to Route 12, where a Snorlax sleeps across it (as in Red/Blue: it takes
-    # the Poké Flute to wake it, later).
-    Town("route_11", "Route 11 Gate", 50, (), exits=(("left", "route_11"), (22, "digletts_cave")), home_col=6,
+    # to Route 12 (up to Lavender Town), where a Snorlax sleeps across it (as
+    # in Red/Blue: it takes the Poké Flute, quest "snorlax_west" or
+    # "snorlax_second").
+    Town("route_11", "Route 11 Gate", 50, (), exits=(("left", "route_11"), (22, "digletts_cave"), ("right", "route_12")),
+         home_col=6,
          folk=(
              Folk("route_11_diglett", "Diglett", "diglett", 28, (
                  "Dig! That's Diglett's Cave. We dug it all the way to Route 2, near Pewter City!",
@@ -373,7 +375,7 @@ TOWNS = {t.key: t for t in [
                  "A huge Pokémon is fast asleep, sprawled right across the road to Route 12. It won't budge.",
                  "Snorlax is snoring loudly. Pushing, shouting... nothing wakes it. (Maybe something will, one "
                  "day.)",
-             ), asleep=True),
+             ), asleep=True, gone_after="boss:snorlax_wakes_east"),
              # Evolution quest: Drowzee -> Hypno.
              Folk("route_11_hypno", "Hypno", "hypno", 13, (
                  "Look into the pendulum... no? Pity. You'd have slept so well.",
@@ -418,7 +420,8 @@ TOWNS = {t.key: t for t in [
                  note="Nobody's home. A note on the door: \"Gone to the Tower. Back soon. - Mr. Fuji\"",
                  note_after=("pokemon_tower", "Mr. Fuji smiles and waves from his window. The Pokémon he cares "
                                               "for play in the yard.")),
-    ), exits=(("left", "rock_tunnel"), ("right", "route_8")), home_col=14, board_col=41, theme=LAVENDER,
+    ), exits=(("left", "rock_tunnel"), ("right", "route_8"), (67, "route_12")), home_col=14, board_col=41,
+       theme=LAVENDER,
        mart=("Potion", "Super Potion", "Hyper Potion", "Revive", "Escape Rope", "Antidote", "Burn Heal", "Awakening",
              "Paralyze Heal", "Ice Heal"),
        gear=((30, 34), (("Common", 40), ("Uncommon", 45), ("Rare", 15))),
@@ -508,7 +511,7 @@ TOWNS = {t.key: t for t in [
            Folk("celadon_snorlax", "Snorlax", "snorlax_asleep", 3, (
                "A huge Pokémon is fast asleep, sprawled right across the road west. It won't budge.",
                "Snorlax is snoring like thunder. Its belly rumbles even in its sleep.",
-           ), asleep=True, gone_after="snorlax_west"),
+           ), asleep=True, gone_after="boss:snorlax_wakes"),
            # ... and an old Hypno who knows a thing or two about sleep.
            Folk("celadon_hypno", "Old Hypno", "hypno", 46, (
                "Sleep is a fine thing. A Snorlax sleeps better than anyone. And eats better, too.",

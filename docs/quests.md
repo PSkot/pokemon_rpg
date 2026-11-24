@@ -540,29 +540,55 @@ yet.
 ### 25. The Sleeping Giant
 
 - **Starts:** automatically when quest 24 is done (the Poké Flute).
-- **There:** a **Snorlax** fast asleep across the doorway at Celadon West
-  End's west end, blocking **Route 16** (`Folk` "celadon_snorlax",
-  `snorlax_asleep`, gone once the quest is done: `Folk.gone_after`), and
-  an **Old Hypno** by the Battle Tower.
-- **Steps:**
-  1. Play the Poké Flute for Snorlax (talk to it): it rolls over and snores
-     on. Too deep asleep for a tune alone.
-  2. Ask the Old Hypno: a Snorlax only wakes up hungry. Put a feast under its
+- **There:** two **Snorlax**, fast asleep across doorways: one at Celadon
+  West End's west end, blocking **Route 16** (`Folk` "celadon_snorlax"), and
+  one at the **Route 11 Gate**'s east end, blocking **Route 12** up to
+  Lavender Town ("route_12_snorlax"). Each is gone once its own battle is
+  won (`Folk.gone_after` "boss:<route>"), and its road opens (`Route.needs`
+  ("boss:<route>", "beaten")). A Hypno lives near each: the **Old Hypno** by
+  the Battle Tower, and the Route 11 Gate's.
+- **Steps** (either Snorlax, either Hypno: `Step.alt`; the battle is at the
+  Snorlax that was fed, `quests.chosen`):
+  1. Play the Poké Flute for a Snorlax (talk to it): it rolls over and
+     snores on. Too deep asleep for a tune alone.
+  2. Ask a Hypno: a Snorlax only wakes up hungry. Put a feast under its
      nose, then play the flute. Route 8's Meowth and Mankey have been raiding
      the market stalls.
   3. Collect **6 Stolen Snacks** (Meowth and Mankey on Route 8 or later,
      50% each).
   4. Buy a **Soda Pop Crate** at the Department Store's rooftop vending
      machines (a "visit" step at `dept_store.ROOFTOP`).
-  5. Lay out the feast and play the flute (talk to Snorlax, takes the
-     crate): it wakes, wolfs it down, and is still hungry and grumpy; the
-     snack thieves come back for the leftovers.
-  6. Calm it down (talk to it again): **Snack Pack**, Snorlax 48 (giant)
-     with Persian 42, Primeape 42 and Raticate 42 (route "snorlax_wakes",
-     `Route.folk_line`). A party of three at Lv42/41/41 with 3 Hyper Potions
-     wins about 75%.
+  5. Lay out the feast for a Snorlax and play the flute (talk to it, takes
+     the crate): it wakes, wolfs it down, and is still hungry and grumpy.
+  6. Calm it down (talk to it again; `Route.folk_line`):
+     - west: **Snack Pack**, Snorlax 48 (giant) with Persian 42, Primeape 42
+       and Raticate 42 (route "snorlax_wakes"), the snack thieves back for
+       the leftovers;
+     - east: **Dream Eaters**, Snorlax 48 (giant) with Hypno 42, Drowzee 42
+       and Drowzee 41 (route "snorlax_wakes_east"), furious their dinner
+       woke up.
+
+     A party of three at Lv42/41/41 with 3 Hyper Potions wins about 55%
+     (west) and 51% (east) (`tools/balance_sim.py`).
 - **Rewards:** ₽2,400, 2,300 XP, and **Snorlax (Lv40) joins** (the party,
-  or the reserve). Route 16 opens.
+  or the reserve). Its road opens.
+
+### 25b. The Other Sleeping Giant
+
+- **Starts:** automatically when quest 25 is done.
+- **Steps:** wake the other Snorlax with the Poké Flute alone (talk to it),
+  and win the same battle as above at its place.
+- **Rewards:** ₽2,000, 1,900 XP, 2 Hyper Potions. It doesn't join; its road
+  opens too.
+
+### Route 12
+
+From the Route 11 Gate's east doorway (past its Snorlax) up to Lavender
+Town (a doorway at col 67, by the smith): 2 maps, wild Gloom, Weepinbell,
+Venonat, Pidgeotto, Tentacool, Goldeen and Shellder (Lv40–43), and four
+bands: **Pier Anglers** (Goldeen 43, Tentacool 43, Goldeen 43), **Seaside
+Pals** (Nidorina 43, Weepinbell 43), **Static Band** (Voltorb 44,
+Electrode 44) and **Deep Sea Haul** (Seaking 44, Shellder 43, Horsea 43).
 
 ### Planned: Learn to Fly (with Route 16)
 

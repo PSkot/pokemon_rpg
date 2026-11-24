@@ -237,6 +237,10 @@ def load(info: SaveInfo):
         # (older saves, from before the Teamwork Ribbons: a place per ribbon quest done)
         game.slots = data.get("slots", 1 + sum(1 for k in ACTIVE_STEPS if k in game.quests
                                                and game.quests[k] >= len(QUESTS[k].steps)))
+        if game.quests.get("snorlax_west", 0) >= len(QUESTS["snorlax_west"].steps):
+            # (older saves: "The Sleeping Giant" was only ever done on the Celadon Snorlax)
+            if not {"boss:snorlax_wakes", "boss:snorlax_wakes_east"} & game.trainers:
+                game.trainers.add("boss:snorlax_wakes")
         game.tower_best = data.get("tower_best", 0)
         game.visited = set(data.get("visited", []))  # (older saves: the Town Map works out the rest)
         game.shop_visits = dict(data.get("shop_visits", {}))

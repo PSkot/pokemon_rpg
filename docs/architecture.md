@@ -378,9 +378,9 @@ you are working on.
   (quests "to_route_11", "digletts_cave", "flash"): Vermilion's doorway by
   the dock (col 81) → route "route_11" (2 maps, five bands; wild Drowzee)
   → stop town "route_11" ("Route 11 Gate": the Diglett's Cave doorway, a
-  Diglett giving `evolve_dugtrio`, and Snorlax asleep across the road to
-  Route 12, `Folk.asleep`: not turning, Zzz drawn in `town.py`; the town
-  just ends there) → route "digletts_cave" (theme `DIGLETTS_CAVE`, 3 maps
+  Diglett giving `evolve_dugtrio`, and Snorlax asleep across the doorway
+  to Route 12, `Folk.asleep`: not turning, Zzz drawn in `town.py`; once
+  woken, route "route_12" runs up to Lavender's doorway at col 67) → route "digletts_cave" (theme `DIGLETTS_CAVE`, 3 maps
   of Diglett/Dugtrio, a giant Dugtrio's band, `MID_BOSS` loot) → stop town
   "route_2" (Oak's aide, a Kadabra: HM05 Flash) → route "route_2_north"
   (one map, `wild=False`) → Pewter's doorway at col 67. With Flash (quests
@@ -473,14 +473,20 @@ you are working on.
   own sky gradient and a tint multiplied into the clouds and strips
   (`Theme.sky`/`tint`: Lavender Town's dusk, `themes.LAVENDER`, `Town.theme`). `backgrounds()`
   returns (layer, parallax) pairs. The player collides with a fixed hitbox.
-- Townsfolk can leave: `Folk.gone_after` (a quest key) hides them once
-  it's done (`TownScene.folk`); a route walked by talking to a townsfolk
-  (`Route.folk`) can have its own send-off (`Route.folk_line`). Quest 25
-  (`snorlax_west`): Celadon West End's Snorlax blocks Route 16 (route
-  "route_16", to the Route 16 Gate) until woken with a feast (a collect
-  step, the Department Store rooftop's machines as a "visit" step,
+- Townsfolk can leave: `Folk.gone_after` (a quest key, or "boss:<route>":
+  that boss beaten, `quests.gone`) hides them (`TownScene.folk`); a route
+  walked by talking to a townsfolk (`Route.folk`) can have its own send-off
+  (`Route.folk_line`). A route's `needs` can be ("boss:<route>", "beaten").
+  A talk or defeat step can take alternatives (`Step.alt`): a talk step
+  done with one records it in `Game.trainers` ("chose:<quest>=<folk>"), and
+  a later defeat step only sends the player from that townsfolk
+  (`quests.chosen`). Quest 25 (`snorlax_west`): two Snorlax, Celadon West
+  End's (blocking Route 16) and the Route 11 Gate's (blocking Route 12, up
+  to Lavender); either does: woken with a feast (a collect step, the
+  Department Store rooftop's machines as a "visit" step,
   `dept_store.ROOFTOP`) and the Poké Flute, then a boss battle (route
-  "snorlax_wakes"); it joins as the quest's reward.
+  "snorlax_wakes" or "snorlax_wakes_east"); it joins, and leaves its road
+  open. `snorlax_second`: the flute alone wakes the other one (no join).
 - Saves (`saves.py`): JSON files in `saves/`: one `autosave.json` (written
   after every won battle, opened chest, party faint and leaving a map) and
   numbered manual saves (pause menu → Save game; not during battles). A

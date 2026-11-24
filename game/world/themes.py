@@ -351,6 +351,25 @@ ROUTE_16 = Theme(
     backdrop=MEADOW_BACKDROP,
 )
 
+# Route 12, from the Route 11 Gate up the coast to Lavender Town (past the
+# Snorlax asleep across it): Gen 1's grass Pokémon there (Oddish and
+# Bellsprout's evolved forms, Venonat, Pidgeotto) and what washes up from
+# the sea (Tentacool, Goldeen, Shellder), a few levels under the party.
+ROUTE_12 = Theme(
+    "route_12", "Route 12",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("gloom", 15, (40, 43)),
+        PoolEntry("weepinbell", 15, (40, 43)),
+        PoolEntry("venonat", 15, (40, 42)),
+        PoolEntry("pidgeotto", 20, (41, 43)),
+        PoolEntry("tentacool", 15, (40, 43)),
+        PoolEntry("goldeen", 10, (40, 43)),
+        PoolEntry("shellder", 10, (40, 43)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+)
+
 # Rock Tunnel, from the Route 10 Pokémon Center to Lavender Town: pitch
 # dark (Flash lights a circle around the player); Gen 1's Zubat, Geodude,
 # Machop and Onix.

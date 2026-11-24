@@ -61,6 +61,7 @@ EDGES: dict[str, tuple[tuple, str]] = {
     "route_8": (("lavender", "route_8_gate"), "road"),
     "underground_west": (("route_8_gate", (13.5, 8.8), (9, 8.8), "celadon"), "tunnel"),
     "route_16": (("route_16", "celadon"), "road"),
+    "route_12": (("route_11", (17, 13), "lavender"), "road"),
 }
 
 
