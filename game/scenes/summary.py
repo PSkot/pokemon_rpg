@@ -1,5 +1,8 @@
 """Party screen: each Pokémon's stats and gear, and equipping gear from the bag.
 
+D switches the stats window between its stats and its moves' expected
+damage (`combat.expected_damage`), in either mode.
+
 Two modes:
   slots    pick a Pokémon (Left/Right) and one of its gear slots (Up/Down)
   choose   pick what goes in that slot: gear from the bag, or "Remove";
@@ -16,7 +19,7 @@ import pygame
 from .. import settings
 from ..engine import hats, ui
 from ..engine.scene import Scene
-from ..mechanics.combat import CRIT_CHANCE
+from ..mechanics.combat import CRIT_CHANCE, expected_damage
 from ..mechanics.items import EFFECT_COLOR, RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text, money_text
 from ..mechanics.pokemon import SPECIES, STONE_EVOLUTIONS, Monster, animations
 from ..mechanics.status import STATUSES
@@ -49,8 +52,8 @@ BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE)
 
 HINTS = {
     "slots": ("Left/Right: Pokémon", "Up/Down: gear slot", "Enter: change gear", "S: talents", "T: to the front",
-              "Tab: close"),
-    "choose": ("Up/Down: choose gear", "Enter: equip", "X: back"),
+              "D: stats / damage", "Tab: close"),
+    "choose": ("Up/Down: choose gear", "Enter: equip", "D: stats / damage", "X: back"),
     "evolving": (),
 }
 
@@ -84,10 +87,12 @@ class SummaryScene(Scene):
         self.evolve_time = 0.0  # while evolving
         self.stone = ""  # evolving by this evolution stone (the bag sets it; used up when it's done)
         self.note = ""          # e.g. "Caterpie evolved into Metapod!" (in the info window)
+        self.page = "stats"     # the stats window: "stats", or "damage" (its moves' expected damage)
 
     @property
     def touch_keys(self):
-        return ((pygame.K_s, "Talents"), (pygame.K_t, "Front")) + (((pygame.K_e, "Evolve"),) if self._can_evolve else ())
+        return ((pygame.K_s, "Talents"), (pygame.K_t, "Front"), (pygame.K_d, "Damage")) + (
+            ((pygame.K_e, "Evolve"),) if self._can_evolve else ())
 
 
     @property
@@ -131,6 +136,9 @@ class SummaryScene(Scene):
             return
         key = event.key
         self.note = ""
+        if key == pygame.K_d and self.mode in ("slots", "choose"):
+            self.page = "damage" if self.page == "stats" else "stats"
+            return
         if self.mode == "slots":
             if key == pygame.K_e and self._can_evolve:
                 self.mode, self.evolve_time = "evolving", 0.0
@@ -267,6 +275,9 @@ class SummaryScene(Scene):
     def _draw_stats(self, window: pygame.Surface) -> None:
         """The stats table. While choosing gear it compares now and after:
         Now / Gear (after) / New, with New green or red where it changes."""
+        if self.page == "damage":
+            self._draw_damage(window)
+            return
         m, after = self.monster, self._preview()
         x, y = STATS_X, STATS_WINDOW.y + PAD
         ui.text(window, f"{m.name}   Lv{m.level}", (x, y), ui.YELLOW)
@@ -328,6 +339,54 @@ class SummaryScene(Scene):
             else:
                 row(name, fmt(0) if unit else "-", ui.GREY, gear, _bonus_color(value),
                     fmt(value), _bonus_color(value) if value else ui.WHITE)
+
+    def _draw_damage(self, window: pygame.Surface) -> None:
+        """Its moves' expected damage per use against a typical foe of its
+        level (`combat.expected_damage`). While choosing gear: Now / New /
+        Change, as the stats compare."""
+        m, after = self.monster, self._preview()
+        x, y = STATS_X, STATS_WINDOW.y + PAD
+        ui.text(window, f"{m.name}   Lv{m.level}", (x, y), ui.YELLOW)
+        for t, pos in _type_badges(m):
+            ui.badge_text(window, type_name(t), pos)
+        y += ROW_H + 4
+        ui.text(window, "Expected damage", (x, y), ui.GREY, size=22)
+        labels, columns = (("Now", "New", "Change"), COMPARE_COLUMNS[1:]) if after else (("Power", "Damage"),
+                                                                                         COLUMNS[1:])
+        for label, col in zip(labels, columns):
+            ui.text(window, label, (x + col, y), ui.GREY, size=22, align="right")
+        moves = [("Fight", m.basic_attack)] + [(mv.name, mv) for mv in m.moves]
+        # (with the gear being tried: the same moves, as its effects would change them)
+        new_moves = [after.basic_attack] + after.moves if after else [None] * len(moves)
+        for (name, move), new_move in zip(moves, new_moves):
+            y += ROW_H
+            color = COLORS.get(move.type, ui.WHITE) if move.type else ui.WHITE
+            ui.text(window, name, (x, y), ui.WHITE)
+            if name == "Fight":
+                ui.text(window, f"({move.name})", (x + ui.font(28).size("Fight")[0] / 2 + 6, y + 2), ui.GREY, size=20)
+            now = expected_damage(m, move)
+            if now is None:
+                ui.text(window, "status", (x + columns[-1], y), ui.GREY, size=22, align="right")
+                continue
+            if after:
+                new = expected_damage(after, new_move) or 0.0
+                change = round(new, 1) - round(now, 1)
+                values = (f"{now:.1f}", f"{new:.1f}", f"{change:+.1f}" if abs(change) >= 0.05 else "-")
+                colors = (ui.WHITE, _bonus_color(change) if abs(change) >= 0.05 else ui.WHITE,
+                          _bonus_color(change))
+            else:
+                power = f"{move.power * move.scale:g}" if move.power else ("half" if move.halve else
+                                                                         str(move.fixed_amount or m.level))
+                if move.hits[1] > 1:
+                    power += f" x{move.hits[0]}-{move.hits[1]}"
+                values, colors = (power, f"{now:.1f}"), (color, ui.WHITE)
+            for s, c, col in zip(values, colors, columns):
+                ui.text(window, s, (x + col, y), c, align="right")
+        y += ROW_H + 2
+        for line in ui.wrap("Per use, on average, against a neutral foe of its level (accuracy, crits and "
+                            "multi-hits included).", 18, STATS_WINDOW.right - x - 12):
+            ui.text(window, line, (x, y), ui.GREY, size=18)
+            y += 12
 
     def _draw_slots(self, window: pygame.Surface) -> None:
         for i, slot in enumerate(SLOTS):

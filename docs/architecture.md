@@ -414,7 +414,7 @@ you are working on.
   Marowak later; `Step.takes` + `waiting`: a talk step only once the item
   is in the bag), then `scenes/smith.SmithMenu`: salvage gear into its
   rarity's material (`items.MATERIALS`, `Bag.materials`), enhance to +5
-  (`Gear.plus`, `items.enhanced`: bonuses +10% each), smelt 4 → 1 of the
+  (`Gear.plus`, `items.enhanced`: bonuses +5% each, `PLUS_COST`), smelt 4 → 1 of the
   next. Then quest "rainbow_badge": route "celadon_gym" (`CELADON_GYM`,
   built: a greenhouse, `walls/`/`backdrops/celadon_gym.png`, flowers and
   hanging vines in code; the Blossom Troupe's waves of Grass Pokémon, then
@@ -571,7 +571,9 @@ you are working on.
   (every map scene) only moves extras to the reserve: new places stay
   empty until filled at Mr. Mime. Party screen T moves a
   member to the front (the lead).
-- Tab on the map opens the party screen (`summary.py`): stats and gear;
+- Tab on the map opens the party screen (`summary.py`): stats and gear (D
+  switches the stats window to the moves' expected damage,
+  `combat.expected_damage`, compared Now / New / Change while choosing);
   Enter on a slot lists the bag's gear for it (or Remove), previewing the
   stat changes (Now / Gear / New / Change) and each mod's difference from
   the worn item (mods it would lose struck through), and equips it. S opens the talent screen ("N talents to pick" shows when tiers are open).

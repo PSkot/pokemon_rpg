@@ -508,9 +508,9 @@ class Gear:
 
     def enhance_cost(self, step: int | None = None) -> int:
         """Materials to take it to +`step` (the next one by default):
-        `step` × (1 + item level // 25)."""
+        `PLUS_COST` × `step` × (1 + item level // 25)."""
         step = self.plus + 1 if step is None else step
-        return step * (1 + self.level // 25)
+        return PLUS_COST * step * (1 + self.level // 25)
 
     @property
     def salvage_yield(self) -> int:
@@ -522,8 +522,7 @@ class Gear:
 
 def enhanced(value: int, plus: int) -> int:
     """A mod's value at +`plus`: bonuses × (1 + `PLUS_BOOST` × plus), rounded
-    half up (so a small bonus only grows at the higher +s: Regen 1% is 2% at
-    +5); penalties stay."""
+    half up (so a small bonus only grows at the higher +s); penalties stay."""
     if value <= 0 or not plus:
         return value
     return math.floor(value * (1 + PLUS_BOOST * plus) + 0.5)
@@ -534,7 +533,8 @@ def enhanced(value: int, plus: int) -> int:
 # costs its own rarity's material. Four of one smelt into one of the next.
 MATERIALS = {"Common": "Scrap", "Uncommon": "Alloy", "Rare": "Crystal", "Epic": "Ether", "Legendary": "Star Shard"}
 MAX_PLUS = 5
-PLUS_BOOST = 0.10   # each enhancement: bonuses +10% (of the piece's own)
+PLUS_BOOST = 0.05   # each enhancement: bonuses +5% (of the piece's own)
+PLUS_COST = 2       # materials per step: PLUS_COST × step × (1 + item level // 25)
 PLUS_VALUE = 0.15   # ... and its worth +15%
 SMELT = 4           # materials of one kind that smelt into one of the next
 # What the Celadon Department Store's 4F sells the first three for (the rarer

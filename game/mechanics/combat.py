@@ -15,6 +15,7 @@ from .type_chart import TYPES, effectiveness
 
 if TYPE_CHECKING:
     from ..scenes.battle import Combatant
+    from .pokemon import Monster
 
 SHIELD_FACTOR = 0.5  # damage taken while shielded
 MAX_STAGE = 6        # stat stages go from -6 to +6
@@ -55,6 +56,48 @@ class Hit:
 def is_special(move: Move) -> bool:
     """Whether `move` uses Special (Gen 1: by its type)."""
     return move.type in SPECIAL_TYPES
+
+
+# The expected damage of a move (the party screen's Damage page, for picking
+# gear): against a typical foe at the user's level: base Defense and Special
+# `REFERENCE_BASE`, base HP `REFERENCE_BASE`, no gear, a type that takes
+# neutral damage from everything.
+REFERENCE_BASE = 70
+
+
+def reference_stat(level: int) -> int:
+    return REFERENCE_BASE * 2 * level // 100 + 5
+
+
+def expected_damage(m: "Monster", move: Move) -> float | None:
+    """The damage one use of `move` by `m` is expected to deal to the
+    typical foe (`REFERENCE_BASE`), on average: the mean of the random
+    spread, crits at their chance, the chance to hit, multi-hits at their
+    average count, STAB, its type's power gear and added type damage (both
+    neutral). Conditional bonuses (talents' pinch, streak, ...; stat
+    stages; super-effective gear) aren't counted. None for a status move."""
+    hits = (move.hits[0] + move.hits[1]) / 2
+    accuracy = min(100, move.accuracy) / 100
+    if move.halve:  # Super Fang: half the foe's (full) HP
+        return (REFERENCE_BASE * 2 * m.level // 100 + m.level + 10) // 2 * accuracy
+    if move.fixed:
+        return (move.fixed_amount or m.level) * hits * accuracy
+    if not move.power:
+        return None
+    special = is_special(move)
+    attack = m.special_attack if special else m.attack
+    power = move.power * move.scale + m.gear_bonus("power")
+    base = (2 * m.level / 5 + 2) * power * attack / reference_stat(m.level) / 50 + 2
+    crit = min(1.0, (CRIT_CHANCE * move.crit_ratio + m.gear_bonus("crit")) / 100)
+    crit_factor = CRIT_FACTOR + (m.talent("sniper") if m.has_effects else 0)
+    base *= (1 + crit * (crit_factor - 1)) * 0.925  # (0.925: the spread's average)
+    amount = base
+    if move.type:
+        if move.type in m.species.types:
+            amount *= STAB
+        amount *= 1 + m.gear_bonus(f"power:{move.type}") / 100
+    amount += sum(base * m.gear_bonus(f"added:{t}") / 100 for t in TYPES)
+    return max(1.0, amount) * hits * accuracy
 
 
 def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.0) -> Hit:

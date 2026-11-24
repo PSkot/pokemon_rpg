@@ -263,6 +263,21 @@ has no effect. Each added type shows as its own coloured number.
 **Total damage** = main hit + all added damage, capped at the target's
 remaining HP.
 
+### Expected damage (the party screen)
+
+The party screen's **Damage** page (D) shows each move's **expected damage
+per use** (`combat.expected_damage`), to compare gear by: against a typical
+foe of the Pokémon's own level (base Defense, Special and HP 70, no gear,
+neutral to every type: `REFERENCE_BASE`). It's the formula above on
+average: the spread's mean (×0.925), crits at their chance (move ratio and
+gear crit; Sniper's ×2), × the chance to hit, × the average number of hits
+(2–5: 3.5), with STAB, the move type's power gear and added type damage (at
+×1). What depends on the battle isn't counted: type matchups and
+super-effective gear, stat stages, Leaf Shield, conditional talents (pinch,
+streak, Ambush, ...). Super Fang: half the foe's HP; Seismic Toss and Sonic
+Boom: their fixed damage. While choosing gear it shows Now / New / Change
+per move, like the stats.
+
 ### Worked example
 
 Lv10 Bulbasaur (Attack 14, no gear) uses Tackle (Normal, 35) on Lv10
@@ -869,11 +884,12 @@ then Up at him opens his menu:
   plus half of what its enhancements cost.
 - **Enhance:** a piece in the bag or worn by the party goes up one, to at
   most **+5** (`MAX_PLUS`), for its rarity's material: the step to +n costs
-  **n × (1 + item level // 25)** (a Lv30 piece: 2, 4, 6, 8, 10; 30 in all).
-  Each + raises every **bonus** of the piece by **10% of its own value**
-  (`enhanced`: value × (1 + 0.1 × plus), rounded half up, so small bonuses
-  only grow at the higher +s: Attack 13% is 14, 16, 17, 18, 20%; Regen 1%
-  is 2% at +5); **penalties stay**. The + shows after its name ("Swift
+  **2 × n × (1 + item level // 25)** (`PLUS_COST`; a Lv30 piece: 4, 8, 12,
+  16, 20; 60 in all). Each + raises every **bonus** of the piece by **5% of
+  its own value** (`PLUS_BOOST`; `enhanced`: value × (1 + 0.05 × plus),
+  rounded half up, so +5 is +25% and small bonuses grow only a little or not
+  at all: Attack 13% is 14, 14, 15, 16, 16%; Attack 20% is 21, 22, 23, 24,
+  25%; Regen 1% stays 1%); **penalties stay**. The + shows after its name ("Swift
   Muscle Band of the Arbok +2") and it's worth 15% more per + (`PLUS_VALUE`).
   The menu previews each bonus's change.
 - **Smelt:** **4** of one material (`SMELT`) into 1 of the next rarity's
