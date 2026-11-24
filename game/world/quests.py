@@ -1190,9 +1190,47 @@ QUESTS = {q.key: q for q in [
                               ("", "The Fearow drains the flask in one long gulp."),
                               ("Gate Guard", "KAAAW! Now THAT is water. I feel ten years younger."),
                               ("Gate Guard", "Fair's fair: the road south is yours. They turned it into a skate road, "
-                                             "downhill all the way. Hold on tight!")))),
+                                             "downhill all the way. Got a board? No? Primeape over there "
+                                             "builds them.")))),
         money=2200, xp=2000,
         rewards=(("medicine", "Hyper Potion", 2), ("gear", None, "Rare", 44)),
+    ),
+    # The skate road needs a board: the skater Primeape at the Route 16 Gate
+    # builds one from wheels the Route 16 Pokémon keep running off with.
+    Quest(
+        "skate_board", "Wheels Needed",
+        "The skate road past the Route 16 Gate is for boards only. The skater Primeape there will build you one, "
+        "if you win back the wheels Route 16's Pokémon keep running off with.",
+        giver="route_16_primeape", requires=("thirsty_guard",),
+        offer=(("Skater Primeape", "You wanna go down the skate road? On FOOT? Grrr-ha! Nobody walks it!"),
+               ("Skater Primeape", "I'll build you a board. But the Pokémon on Route 16 keep running off with my "
+                                   "wheels. Rattata chew 'em, Spearow think they're eggs..."),
+               ("Skater Primeape", "Win me back four wheels, and the board's yours.")),
+        steps=(collect("Skate Wheel", 4, "route_16", ("rattata", "raticate", "spearow", "fearow", "pidgeotto", "koffing",
+                                                      "grimer"), 40, "Pokémon on Route 16"),
+               Step("talk", "route_16_primeape", "Bring the Skate Wheels to the skater Primeape (Route 16 Gate)",
+                    dialogue=(("Skater Primeape", "Four wheels! Gimme a sec..."),
+                              ("", "Primeape bolts the wheels onto a deck, spins each one, and shoves the board at "
+                                   "you."),
+                              ("", "You received a Skateboard!"),
+                              ("Skater Primeape", "Lean to steer, push to go, and DON'T stop at the bottom: that's "
+                                                  "Tony's turf. Kangaskhan. Huge. Wears a helmet. Never wipes out.")),
+                    gives=("Skateboard",))),
+        money=1500, xp=1400,
+    ),
+    # Down the skate road (route "skate_road"), to Tony at the bottom.
+    Quest(
+        "king_of_the_hill", "King of the Hill",
+        "Tony, a Kangaskhan who's never wiped out, rules the bottom of the skate road with his crew. Skate down "
+        "and take his crown. Well, his helmet.",
+        requires=("skate_board",),
+        steps=(Step("defeat", "skate_road", "Skate down the skate road (Route 16 Gate) and beat Tony at the bottom",
+                    dialogue=(("Tony", "...Whoa. Nobody's ever beaten me on my own hill."),
+                              ("Tony", "Here. Take the lid. A helmet like that belongs on the head of a champ."),
+                              ("Tony", "Just... keep the chin strap done up, yeah?"))),),
+        money=2600, xp=2400,
+        rewards=(("medicine", "Hyper Potion", 2), ("medicine", "Revive", 1)),
+        done_dialogue=(("", "The skaters at the bottom of the hill cheer: there's a new King of the Hill."),),
     ),
     # The evolution stones: one quest each, from after the Rainbow Badge (the
     # Fire and Water Stones come later, with Cinnabar and the coast). A stone

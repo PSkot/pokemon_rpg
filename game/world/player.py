@@ -29,6 +29,20 @@ LAND_TIME = 0.10        # seconds the landing frame is held
 HITBOX_HALF_W = 11
 HITBOX_H = 30
 
+# Skating (a theme with `skate`: the skate road): the player rides a board,
+# with momentum. Left/Right push (Shift: harder), letting go keeps rolling,
+# slowing to a drift downhill (to the right); pushing against the roll
+# brakes. Drawn SKATE_LIFT px up, on a board (`tileset.SKATEBOARDS`).
+SKATE_SPEED = 190       # px/s, pushing
+SKATE_RUN_SPEED = 250   # ... with Shift
+SKATE_PUSH = 320        # px/s² towards that speed
+SKATE_BRAKE = 520       # px/s² pushing against the roll
+SKATE_DRIFT = 45        # px/s: letting go, the board keeps rolling downhill at least this fast
+SKATE_FRICTION = 70     # px/s² slowing down to the drift
+SKATE_LIFT = 9          # px: the deck's height over the ground
+SKATE_KICK = 0.9        # a 1-tile step up is a ramp: it launches the board up at this × its speed (px/s)
+SKATE_KICK_MAX = 330    # ... at most
+
 # Jump sheet row: crouch, leap (rising), airborne (falling), landing.
 JUMP_CROUCH, JUMP_RISE, JUMP_FALL, JUMP_LAND = range(4)
 
@@ -53,6 +67,9 @@ class Player:
         self.facing = 1               # 1 = right, -1 = left
         self.state = "idle"           # idle, walk, run, squat, air, land
         self.state_time = 0.0
+        self.skating = False          # on a board (the skate road): momentum, `vx`
+        self.vx = 0.0                 # skating: horizontal speed, positive = right
+        self.board = 0                # skating: which board (`tileset.SKATEBOARDS` row)
 
     def become(self, species: Species) -> None:
         """Look like `species` (the lead Pokémon, e.g. after it evolves)."""
@@ -119,6 +136,8 @@ class Player:
                 return
 
         moving = c.left != c.right and not c.carried
+        if self.skating:  # (riding: standing on the board, whatever the speed)
+            moving = False
         self.set_state(("run" if c.run else "walk") if moving else "idle")
 
     def _span(self, x: float | None = None) -> tuple[float, float]:
@@ -126,7 +145,44 @@ class Player:
         x = self.x if x is None else x
         return x - HITBOX_HALF_W, x + HITBOX_HALF_W
 
+    def _skate(self, dt: float, c: Controls) -> float:
+        """The board's speed this frame (see SKATE_SPEED ...)."""
+        push = int(c.right) - int(c.left)
+        if push:
+            top = push * (SKATE_RUN_SPEED if c.run else SKATE_SPEED)
+            rate = SKATE_BRAKE if self.vx * push < 0 else SKATE_PUSH
+            self.vx = min(top, self.vx + rate * dt) if top > self.vx else max(top, self.vx - rate * dt)
+        elif self.on_ground:  # rolling on, slowing to the drift downhill
+            if self.vx > SKATE_DRIFT:
+                self.vx = max(SKATE_DRIFT, self.vx - SKATE_FRICTION * dt)
+            else:
+                self.vx = min(SKATE_DRIFT, self.vx + SKATE_PUSH * dt)
+        if abs(self.vx) > 1:
+            self.facing = 1 if self.vx > 0 else -1
+        return self.vx
+
     def _move_horizontally(self, dt: float, c: Controls, level: Level) -> None:
+        if self.skating:
+            speed = self._skate(dt, c)
+            direction = (speed > 0) - (speed < 0)
+            if not direction:
+                return
+            x = self.x + speed * dt
+            left, right = self._span(x)
+            if level.hits_solid(left, self.feet_y - HITBOX_H, right, self.feet_y):
+                up = self.feet_y - TILE  # a step of one tile: a ramp, up and over it
+                if self.on_ground and not level.hits_solid(left, up - HITBOX_H, right, up - 0.01):
+                    self.x, self.feet_y = x, up
+                    self.vy = -min(SKATE_KICK_MAX, abs(self.vx) * SKATE_KICK)
+                    self.set_state("air")
+                    return
+                self.vx = 0.0  # (into a higher step: stopped dead)
+                x = (right // TILE) * TILE - HITBOX_HALF_W if direction > 0 else (left // TILE + 1) * TILE + HITBOX_HALF_W
+                left, right = self._span(x)
+                if level.hits_solid(left, self.feet_y - HITBOX_H, right, self.feet_y):
+                    return
+            self.x = x
+            return
         direction = int(c.right) - int(c.left)
         if not direction:
             return
@@ -175,7 +231,11 @@ class Player:
     def draw(self, surface: pygame.Surface, debug: bool = False, monster: Monster | None = None) -> None:
         """Draw the player; `monster` is the Pokémon it is (for its hat)."""
         anim, i, flip = self.anim, self.frame_index, self.facing < 0
-        box = anim.place(i, self.x, self.feet_y + FOOT_SINK, flip)
+        lift = SKATE_LIFT if self.skating else 0
+        box = anim.place(i, self.x, self.feet_y + FOOT_SINK - lift, flip)
+        if self.skating:
+            from .tileset import draw_skateboard  # (drawing only)
+            draw_skateboard(surface, self.board, self.x, self.feet_y, flip)
         surface.blit(anim.frame(i, flip), box)
         if monster:
             hats.draw_worn(surface, monster, anim, i, box, flip)

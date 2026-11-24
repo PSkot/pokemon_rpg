@@ -530,10 +530,22 @@ TOWNS = {t.key: t for t in [
        )),
     # The Route 16 Gate, at the west end of Route 16: the road on (Cycling
     # Road, down to Fuchsia City) is for later.
-    Town("route_16", "Route 16 Gate", 44, (), exits=(("right", "route_16"),), home_col=14,
+    Town("route_16", "Route 16 Gate", 44, (), exits=(("right", "route_16"), ("left", "skate_road")), home_col=14,
          folk=(Folk("route_16_guard", "Gate Guard", "fearow", 24, (
              "Kaw... The road past this gate runs downhill all the way south. Steep. Fast. Fun.",
              "Route 16 is a windy one. The bird Pokémon round here ride the gusts off the cliffs.",
+         )),
+               # The skate road's board maker (quest "skate_board").
+               Folk("route_16_primeape", "Skater Primeape", "primeape", 8, (
+                   "Grrr-ad! The skate road's the best ride in Kanto. Top to bottom without touching the brakes!",
+                   "Tony rules the bottom of the hill. Nobody's out-skated him. Nobody's even come close.",
+               )))),
+    # The Route 18 Gate, at the bottom of the skate road (Fuchsia City lies
+    # on past it, later).
+    Town("route_18", "Route 18 Gate", 40, (), exits=(("left", "skate_road"),), home_col=10,
+         folk=(Folk("route_18_raticate", "Raticate", "raticate", 26, (
+             "Squeak! You came down the whole skate road? And you beat TONY? Respect.",
+             "Fuchsia City is on past here, by the sea. The gate's shut while they fix the road. Squeak.",
          )),)),
     # Bill's Sea Cottage at the end of Route 25. Bill got mixed up with a
     # Clefairy in his teleporter (quest "bill").

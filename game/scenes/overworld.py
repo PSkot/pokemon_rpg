@@ -20,16 +20,16 @@ import pygame
 
 from .. import saves, settings
 from ..dev import DEV
-from ..engine import touch, ui
+from ..engine import hats, touch, ui
 from ..engine.scene import Scene, Transition
-from ..mechanics.items import Range
+from ..mechanics.items import ITEMS, Gear, Range
 from ..mechanics.loot import BOSS_GEAR, TRAINER_GEAR, LootTable, ball_loot, boss_loot, chest_loot, dress, wild_loot
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES, Monster, animations
 from ..world import tileset
 from ..world import tower
 from ..world.instance import RIVAL_STARTER, RIVAL_STARTER_EVOLVED, Instance, Stair, Trainer
 from ..world.level import EMPTY, PLATFORM, SOLID, TILE, Level, Spawn, extra_member
-from ..world.player import FOOT_SINK, Controls, Player
+from ..world.player import FOOT_SINK, SKATE_LIFT, Controls, Player
 from ..world import quests
 from ..world.spinners import layout_of
 from ..world.progress import Game
@@ -45,6 +45,7 @@ from .summary import SummaryScene
 
 HELP = ("Left/Right: walk   Shift: run   Space: jump (hold = higher)   Up: open / go through"
         "   Tab: party   I: bag   Q: quests   M: map   Esc: menu")
+SKATE_HELP = HELP.replace("Left/Right: walk   Shift: run", "Left/Right: push / brake   Shift: push harder")
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z, pygame.K_UP)
 BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE)  # also close a panel (B on touch screens)
 
@@ -108,6 +109,7 @@ class WildPokemon:
         self.members = [SPECIES[species] for species, _ in self.encounter]
         self.scales = [scale] + [1] * (len(self.members) - 1)
         self.facing = -1
+        self.hat = -1  # a hat its leader wears on the map (hat sheet cell; -1: none)
         # Only trigger once per touch, so returning from a battle (after
         # running away) while still touching them doesn't start another one.
         self.armed = True
@@ -131,6 +133,7 @@ class WildPokemon:
         slid along (and if need be squeezed onto) the level ground under
         the leader, so the group doesn't straddle a step."""
         anims = [animations(sp, scale)["idle"] for sp, scale in zip(self.members, self.scales)]
+        self._leader_anim = anims[0]  # (to tell the leader apart when drawing)
         widths = [a.frames[0].get_bounding_rect().w for a in anims]
         order = [0]  # members from left to right: the leader in the middle, the others by turns beside it
         for i in range(1, len(anims)):
@@ -220,10 +223,21 @@ class WildPokemon:
     def draw(self, surface: pygame.Surface, level: Level, debug: bool = False) -> None:
         flip = self.facing < 0
         spirit = self.trainer is not None and self.trainer.spirit
-        for _, anim, x, y, back in self._placed():
+        skate = level.theme.skate  # (the skate road: everyone on a board)
+        for i, (sp, anim, x, y, back) in enumerate(self._placed()):
             frame = anim.frame(0, flip)
             frame = _ghostly(frame) if spirit else _shaded(frame) if back else frame
-            surface.blit(frame, anim.place(0, x, y, flip))
+            leader = anim is self._leader_anim
+            scale = self.scales[0] if leader else 1
+            lift = SKATE_LIFT * scale if skate else 0
+            if skate:
+                ground = y - (sp.foot_sink + FOOT_SINK) * scale
+                tileset.draw_skateboard(surface, round(self.x) // TILE + i, x, ground, flip, scale)
+            box = anim.place(0, x, y - lift, flip)
+            surface.blit(frame, box)
+            if self.hat >= 0 and leader:
+                hats.draw(surface, self.hat, sp.name.lower(), anim, 0, box, flip,
+                          size=sp.size * self.scales[0])
         if debug:
             color = (255, 0, 0) if self.boss else (255, 255, 0)
             for rect in self.reach_rects(level):
@@ -434,6 +448,7 @@ class MapScene(Scene):
         self.backgrounds = tileset.backgrounds(level)
         self.layer = pygame.Surface((level.width, settings.LOGICAL_SIZE[1]), pygame.SRCALPHA)
         self.player = Player(level.start_x, level.ground_y(level.start_x), self.party[0].species)
+        self.player.skating = level.theme.skate  # (the skate road: on a board)
         # The panel showing (a ui.ListPanel, or a quest_ui screen with
         # handle_key); the map waits. Then the queued ones, in turn.
         self.panel = None
@@ -589,7 +604,7 @@ class MapScene(Scene):
             text, x = door
             prompt = self.prompt()
             door_label(window, text, x - self.camera, (prompt[1] if prompt else self.level.ground_y(x) - 84) + 4)
-        ui.text(window, HELP, (6, 4), size=20)
+        ui.text(window, SKATE_HELP if self.player.skating else HELP, (6, 4), size=20)
         ui.text(window, self.where(), (6, 15), ui.WHITE, size=20)
         if DEV.enabled:  # what dev mode has on, after the location
             ui.text(window, DEV.summary(), (6 + ui.font(20).size(self.where())[0] / settings.SCALE + 16, 15),
@@ -683,6 +698,9 @@ class OverworldScene(MapScene):
                          if level.boss else None)
         if self.boss:
             self.wild.append(self.boss)
+            # A one-of-a-kind piece its leader wears (Tony's Bike Helmet), shown on the map, until won.
+            if self._boss_wears():
+                self.boss.hat = ITEMS[route.boss_wears[0]].sprite
         # No roadside chests (the map still has spots for them): chests are
         # special, only bosses leave one (`_boss_beaten`).
         self.chests: list[Chest] = []
@@ -960,6 +978,14 @@ class OverworldScene(MapScene):
         saves.autosave(lobby)
         self.next_scene = Transition(self, lobby, flashes=0)
 
+    def _boss_wears(self) -> tuple | None:
+        """(item, rarity, item level) the boss's leader wears and drops for
+        sure (`Route.boss_wears`), if it hasn't been won yet."""
+        route = self.instance.route
+        if route.boss_wears and route.boss_key not in self.game.trainers:
+            return route.boss_wears
+        return None
+
     def _boss_key(self) -> str:
         """What `Game.trainers` keeps once this map's boss is beaten."""
         room = self.instance.room
@@ -1037,6 +1063,9 @@ class OverworldScene(MapScene):
         elif boss or trainer:  # they wear gear (the boss itself 2 pieces), which can drop
             for i, enemy in enumerate(enemies):
                 dress(enemy, route.boss_loot if boss else route.loot, BOSS_GEAR if boss and i == 0 else TRAINER_GEAR)
+            if boss and self._boss_wears():  # (Tony's helmet: on his head, and it always drops)
+                item, rarity, level = self._boss_wears()
+                enemies[0].equip(Gear.roll(item, rarity, level=level))
         battle = BattleScene(self, party, enemies, self.bag, loot=wild_loot(route.boss_loot if boss else route.loot),
                              backdrop=self.level.theme.backdrop, boss=boss, trainer=trainer,
                              prize=prize_money(prize, encounter) if trainer and prize else 0,
@@ -1123,7 +1152,8 @@ class OverworldScene(MapScene):
             name = self.trainer if wild is self.boss else wild.trainer.name if wild.trainer else ""
             if name:
                 box = wild.body_rect
-                ui.text(window, name, (box.centerx - self.camera, box.top - 14), ui.YELLOW, size=24,
+                top = box.top - (round(16 * wild.scales[0]) if wild.hat >= 0 else 0)  # (over its hat)
+                ui.text(window, name, (box.centerx - self.camera, top - 14), ui.YELLOW, size=24,
                         align="center")
 
     def _draw_door_label(self, window: pygame.Surface) -> None:

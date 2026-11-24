@@ -29,7 +29,7 @@ NODES: dict[str, tuple[float, float]] = {
     "mt_moon": (6, 2), "route_4": (9, 2), "cerulean": (12, 2), "route_24": (12, 0),
     "sea_cottage": (16, 0), "route_5": (12, 5), "route_6": (12, 10), "vermilion": (12, 13),
     "route_11": (15.5, 13), "route_10": (17, 2), "lavender": (17, 7.5), "route_8_gate": (14.5, 7.5),
-    "celadon": (7.5, 7.5), "route_16": (3.6, 7.5),
+    "celadon": (7.5, 7.5), "route_16": (3.6, 7.5), "route_18": (4.6, 13.2),
 }
 # The cities' names on the map: (dx, dy) from their spot in logical px, and alignment.
 CITY_LABELS = {"pallet": (8, -6, "left"), "viridian": (8, -6, "left"), "pewter": (8, -6, "left"),
@@ -62,6 +62,7 @@ EDGES: dict[str, tuple[tuple, str]] = {
     "underground_west": (("route_8_gate", (13.5, 8.8), (9, 8.8), "celadon"), "tunnel"),
     "route_16": (("route_16", "celadon"), "road"),
     "route_12": (("route_11", (17, 13), "lavender"), "road"),
+    "skate_road": (("route_16", (3.6, 13.2), "route_18"), "road"),
 }
 
 

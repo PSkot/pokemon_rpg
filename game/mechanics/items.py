@@ -209,7 +209,7 @@ ITEMS = {i.name: i for i in [
       for cell, name, description, mods in HATS),
     # Tony's (the skate road's boss): one of a kind.
     Item("Bike Helmet", "head", "Tony's own helmet, scuffed from a thousand wipeouts. Nothing gets through it.",
-         {"defense": (24, 30), "hp": (14, 18)}, sprite=64, unique=True),
+         {"defense": (30, 36), "hp": (18, 22)}, sprite=64, unique=True),
     # Held: type items and battle tools.
     *(Item(name, "held", f"{description} Powers up {type_chart.name(t)} moves.", {f"power:{t}": (18, 24)})
       for t, (name, description) in TYPE_ITEMS.items()),

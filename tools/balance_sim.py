@@ -200,13 +200,14 @@ STORY = [
     ("Snorlax west (Snack Pack)", "snorlax_wakes", (42, 41), False, {"Hyper Potion": 3}),
     ("Snorlax east (Dream Eaters)", "snorlax_wakes_east", (42, 41), False, {"Hyper Potion": 3}),
     ("Hidden Spring (Spring Squatters)", "hidden_spring", (43, 42), False, {"Hyper Potion": 3}),
+    ("Skate Road: Tony", "skate_road", (45, 44), False, {"Hyper Potion": 3}),
 ]
 # How many fight in each story battle: 1 (solo), 2, or 3 from the S.S. Anne on.
 TEAM_SIZE = {"Vermilion Gym (2 waves + battalion)": 3, "Diglett's Cave boss": 3, "Rock Tunnel Hiker Crew": 3,
              "Celadon Gym (2 waves + troupe)": 3, "Leaf Stone: Overgrown Wing (2 waves + Exeggutor)": 3,
              "Moon Stone: Moonlit Crater (Clefable)": 3, "Thunder Stone: Power Plant (Electabuzz)": 3,
              "Rocket Hideout Boss": 3, "Snorlax west (Snack Pack)": 3, "Snorlax east (Dream Eaters)": 3,
-             "Hidden Spring (Spring Squatters)": 3}
+             "Hidden Spring (Spring Squatters)": 3, "Skate Road: Tony": 3}
 PARTNERS = ["pidgey", "rattata", "nidoran_m", "spearow", "caterpie", "pikachu"]
 
 
@@ -252,6 +253,9 @@ def run_story(runs: int, talents: bool = True) -> None:
                         for i, e in enumerate(enemies):
                             if boss and i == 0 and getattr(route, "boss_scale", 1) > 1:
                                 e.scale = route.boss_scale
+                        if boss and route.boss_wears:  # (Tony's helmet)
+                            item, rarity, level = route.boss_wears
+                            enemies[0].equip(Gear.roll(item, rarity, level=level))
                         won, _ = fight(party, enemies, trainer, boss, bag=bag)
                         if not won:
                             break

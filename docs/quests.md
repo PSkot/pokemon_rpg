@@ -596,10 +596,43 @@ yet.
      47 (giant), Seaking 43, Psyduck 43, Psyduck 43. A party of three at
      Lv43/42/42 with 3 Hyper Potions wins about 74%. Gives the **Spring
      Water** (key item).
-  3. Bring it to the guard: he drinks, and opens the road south (the skate
-     road, next).
+  3. Bring it to the guard: he drinks, and lets you through to the road
+     south (the skate road; it still takes a board: *Wheels Needed*).
 - **Rewards:** ₽2,200, 2,000 XP, 2 Hyper Potions and a **Rare** gear piece
   (item level 44).
+
+### Wheels Needed (side quest)
+
+- **Starts:** from the **Skater Primeape** at the Route 16 Gate, once
+  *Thirsty Work* is done. Nobody walks the skate road; he'll build you a
+  board, but Route 16's Pokémon keep running off with his wheels.
+- **Steps:** collect **4 Skate Wheels** (Rattata, Raticate, Spearow,
+  Fearow, Pidgeotto, Koffing and Grimer on Route 16 or later, 40% each),
+  then bring them to him: the **Skateboard** (key item). The skate road
+  opens (`Route.needs` ("skate_board", "done")).
+- **Rewards:** ₽1,500, 1,400 XP.
+
+### King of the Hill
+
+- **Starts:** automatically when *Wheels Needed* is done.
+- **The skate road** (route "skate_road", Red/Blue's Cycling Road): from
+  the Route 16 Gate's west doorway down to the **Route 18 Gate** (a stop;
+  Fuchsia City lies on past it, later). 3 maps, downhill all the way
+  (`Theme.skate`): the player rides the board (see *Skating* in
+  `mechanics.md`), and every group stands on a board. Wild Raticate,
+  Fearow, Spearow, Primeape, Mankey and Arbok (Lv41–45); skater bands:
+  **Kickflip Crew** (Primeape 44, Mankey 44), **Grind Gang** (Machoke 44,
+  Machop 44, Machop 44), **Half-Pipe Hogs** (Raticate 45, Fearow 45),
+  **Ollie Outlaws** (Koffing 45, Grimer 45, Koffing 45), **Rail Riders**
+  (Arbok 46, Golbat 45).
+- **Steps:** beat **Tony** at the bottom: a giant Kangaskhan 50 in his
+  **Bike Helmet**, with Primeape 45, Machoke 45 and Raticate 45. A party
+  of three at Lv45/44/44 with 3 Hyper Potions wins about 59% (with the
+  helmet on him). The helmet always drops (`Item.unique`,
+  `Route.boss_wears`); once it's won he doesn't wear it any more
+  (`Route.boss_key` "tony").
+- **Rewards:** ₽2,600, 2,400 XP, 2 Hyper Potions, a Revive, and the Bike
+  Helmet (a Rare head item, item level 45: Defense and HP).
 
 ### Route 12
 

@@ -89,6 +89,9 @@ class Theme:
     # (Lavender Town's dusk).
     sky: tuple[Color, Color] | None = None
     tint: Color | None = None
+    # The skate road: the ground steps down all the way to the right
+    # (`level._downhill`), and everyone rides a board (`Player.skating`).
+    skate: bool = False
 
     @property
     def decor_key(self) -> str:
@@ -384,6 +387,25 @@ HIDDEN_SPRING = Theme(
         PoolEntry("staryu", 10, (41, 43)),
     ),
     backdrop=MEADOW_BACKDROP,
+)
+
+# The skate road (Red/Blue's Cycling Road, Routes 17 and 18), from the
+# Route 16 Gate down to the Route 18 Gate: downhill all the way. Gen 1's
+# Cycling Road Pokémon (Rattata, Spearow and their evolutions) and the
+# skaters' own toughs, a few levels under the party.
+SKATE_ROAD = Theme(
+    "skate_road", "Skate Road",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("raticate", 25, (42, 45)),
+        PoolEntry("fearow", 20, (42, 45)),
+        PoolEntry("spearow", 15, (41, 43)),
+        PoolEntry("primeape", 15, (42, 45)),
+        PoolEntry("mankey", 10, (41, 43)),
+        PoolEntry("arbok", 15, (42, 45)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+    skate=True,
 )
 
 # Rock Tunnel, from the Route 10 Pokémon Center to Lavender Town: pitch

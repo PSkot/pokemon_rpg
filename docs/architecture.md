@@ -487,6 +487,16 @@ you are working on.
   `dept_store.ROOFTOP`) and the Poké Flute, then a boss battle (route
   "snorlax_wakes" or "snorlax_wakes_east"); it joins, and leaves its road
   open. `snorlax_second`: the flute alone wakes the other one (no join).
+- The skate road (`Theme.skate`): `level._downhill` steps the ground down
+  to the right; `Player.skating` gives the player momentum (`vx`, 1-tile
+  steps are ramps) and draws a board under it (`tileset.draw_skateboard`,
+  props/skateboards.png, 4 boards); `WildPokemon.draw` puts every group
+  member on a board (a giant on a giant one). `Route.boss_wears`: a unique
+  piece (`Item.unique`, never rolled) the boss's leader wears, on the map
+  too (`WildPokemon.hat`) and in battle, and always drops
+  (`loot.worn_drops`), until `Route.boss_key` is beaten: Tony's Bike
+  Helmet (hat sheet cell 64, a 9th row; flipped, anchored by hand in
+  hat_anchors.json).
 - Saves (`saves.py`): JSON files in `saves/`: one `autosave.json` (written
   after every won battle, opened chest, party faint and leaving a map) and
   numbered manual saves (pause menu → Save game; not during battles). A

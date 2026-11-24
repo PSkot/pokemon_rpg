@@ -29,7 +29,7 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
-                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, HIDDEN_SPRING, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, HIDDEN_SPRING, SKATE_ROAD, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
                      UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, POKEMON_TOWER, PoolEntry,
                      Theme)
 from .spinners import carve, layout_of
@@ -125,6 +125,10 @@ class Route:
     boss_key: str = ""   # saved in Game.trainers once the boss is beaten (a one-time boss trainer)
     boss_extra: tuple[tuple[str, int], ...] = ()  # with two (or more) fighting, these join the boss group
     boss_gift: str = ""  # an item (in MEDICINE) the boss gives the first time it's beaten (the Nugget)
+    # A one-of-a-kind piece (`Item.unique`: item, rarity, item level) the
+    # boss's leader wears, on the map too, and always drops, until it's won
+    # (`boss_key` beaten): Tony's Bike Helmet.
+    boss_wears: tuple[str, str, int] = ()
     boss_dialogue: tuple[tuple[str, str], ...] = ()  # what it says then
     prize: int = 0                      # a boss trainer's base prize (as Trainer.prize)
     trainers: tuple[Trainer, ...] = ()  # trainers on its maps
@@ -556,6 +560,24 @@ ROUTES = {r.key: r for r in [
           boss_group=(("golduck", 47), ("seaking", 43), ("psyduck", 43), ("psyduck", 43)), boss_scale=2,
           trainer="Spring Squatters", boss_loot=MID_BOSS, cols=60, folk="route_16_guard",
           folk_line="The spring's just up the cliff path behind the gate. Mind the Golduck: they don't share."),
+    # The skate road (Red/Blue's Cycling Road), from the Route 16 Gate down
+    # to the Route 18 Gate, once the guard has had his water and the player
+    # has a board (quest "skate_board"): downhill all the way, everyone on a
+    # board (`Theme.skate`). Gen 1's Bikers as skater bands; at the bottom,
+    # Tony, the road's legend: a giant Kangaskhan in his Bike Helmet, which
+    # drops for sure (`boss_wears`; once, `boss_key`).
+    Route("skate_road", "Skate Road", SKATE_ROAD, maps=3, towns=("route_16", "route_18"), boss=True,
+          boss_group=(("kangaskhan", 50), ("primeape", 45), ("machoke", 45), ("raticate", 45)), boss_scale=2,
+          trainer="Tony", boss_key="tony", boss_wears=("Bike Helmet", "Rare", 45), boss_loot=MID_BOSS,
+          needs=("skate_board", "done"),
+          blocked="Skaters come rocketing up out of the gate. Nobody walks the skate road: you'd need a board.",
+          trainers=(
+              Trainer("skate_kickflip", "Kickflip Crew", (("primeape", 44), ("mankey", 44)), 0, 40),
+              Trainer("skate_grind", "Grind Gang", (("machoke", 44), ("machop", 44), ("machop", 44)), 0, 40),
+              Trainer("skate_halfpipe", "Half-Pipe Hogs", (("raticate", 45), ("fearow", 45)), 1, 40),
+              Trainer("skate_ollie", "Ollie Outlaws", (("koffing", 45), ("grimer", 45), ("koffing", 45)), 1, 40),
+              Trainer("skate_rail", "Rail Riders", (("arbok", 46), ("golbat", 45)), 2, 40),
+          )),
     # Route 2's north end, from the cave up to Pewter City: a short walk.
     Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}
@@ -757,7 +779,7 @@ class Recruit:
 # (easier) ones don't count.
 STORY_ORDER = ("route_1", "route_22", "viridian_forest", "route_3", "mt_moon_cave", "route_4_east", "nugget_bridge",
                "route_25", "route_5_south", "underground_path", "route_6_south", "route_11", "digletts_cave",
-               "route_9", "rock_tunnel", "route_8", "underground_west", "route_16", "route_12")
+               "route_9", "rock_tunnel", "route_8", "underground_west", "route_16", "route_12", "skate_road")
 
 
 def from_route(first: str, route: str) -> bool:

@@ -605,6 +605,12 @@ once per battle); the bag starts without gear.
 - **Endure** items (Focus Band, Halo) only drop at **Epic or better**
   (`Item.min_rarity`). Loot, enemies' gear and quest rewards pick the
   rarity first, then an item that drops at it.
+- **Unique** items (`Item.unique`) are never rolled (loot, stock, enemies'
+  gear, quest rewards): a boss wears one (`Route.boss_wears`), and it
+  always drops when that boss is beaten, once. **Bike Helmet** (head, Tony
+  on the skate road): Defense 30…36, HP 18…22, at Rare, item level 45
+  (+15 Defense, +10 HP or so): the strongest defensive hat, with no Speed
+  cost.
 - **Every bonus is priced by what it's worth**, so items of the same
   level and rarity are about equally strong (ranges before scaling):
   Attack/Defense/HP 14–18 is the yardstick; Speed (only turn order)
@@ -805,6 +811,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 16 | Common | (no boss) |
 | Route 12 | Common | (no boss) |
 | Hidden Spring | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Spring Squatters, a chest) |
+| Skate Road | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: Tony's crew, a chest); Tony's Bike Helmet always drops, once |
 | Snorlax's Rude Awakening (both) | (no wild Pokémon or chests) | none: the Snack Pack / Dream Eaters drop nothing; Snorlax joins the first time (quest *The Sleeping Giant*) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
@@ -949,6 +956,22 @@ then Up at him opens his menu:
 | Vermilion City | 22–26 | Common 50%, Uncommon 45%, Rare 5% | Common ₽2,150–2,400, Uncommon ₽5,350–6,000, Rare ₽12,800–14,400 |
 
 ---
+
+## Skating
+
+`game/world/player.py` (`Player.skating`), `level._downhill`
+
+On the skate road (a theme with `skate`) the ground steps down to the right
+all the way (runs of flat ground, mostly 1 tile down at a time, now and
+then a 1-tile kicker up), and the player rides a board with momentum
+(`player.SKATE_*`): Left/Right push towards **190 px/s** (Shift: **250**)
+at 320 px/s², or brake at 520 px/s² against the roll; letting go keeps
+rolling, slowing by 70 px/s² down to a **45 px/s** drift downhill (to the
+right), so standing still isn't possible. A 1-tile step up is a ramp: the
+board goes up and over it, launched upwards at 0.9 × its speed (at most
+330 px/s); a higher step stops it dead (jump). Walking is 70 px/s and
+running 150 for comparison. Everyone on the map stands on a board (drawn
+9 px up, `SKATE_LIFT`).
 
 ## Wild Pokémon
 
@@ -1474,6 +1497,12 @@ always the same spot), with its team in a row.
 | Celadon West End | Snack Pack (Snorlax, woken) | Snorlax 48, Persian 42, Primeape 42, Raticate 42 | ₽0 |
 | Route 11 Gate | Dream Eaters (Snorlax, woken) | Snorlax 48, Hypno 42, Drowzee 42, Drowzee 41 | ₽0 |
 | Hidden Spring (boss) | Spring Squatters | Golduck 47, Seaking 43, Psyduck 43, Psyduck 43 | ₽0 |
+| Skate Road, map 1 | Kickflip Crew (Biker) | Primeape 44, Mankey 44 | ₽1,760 |
+| Skate Road, map 1 | Grind Gang (Biker) | Machoke 44, Machop 44, Machop 44 | ₽1,760 |
+| Skate Road, map 2 | Half-Pipe Hogs (Biker) | Raticate 45, Fearow 45 | ₽1,800 |
+| Skate Road, map 2 | Ollie Outlaws (Biker) | Koffing 45, Grimer 45, Koffing 45 | ₽1,800 |
+| Skate Road, map 3 | Rail Riders (Biker) | Arbok 46, Golbat 45 | ₽1,800 |
+| Skate Road (boss) | Tony | Kangaskhan 50 (in the Bike Helmet), Primeape 45, Machoke 45, Raticate 45 | ₽0 |
 | Route 12, map 1 | Pier Anglers (Fisherman) | Goldeen 43, Tentacool 43, Goldeen 43 | ₽1,505 |
 | Route 12, map 1 | Seaside Pals (Jr. Trainer) | Nidorina 43, Weepinbell 43 | ₽860 |
 | Route 12, map 2 | Static Band (Rocker) | Voltorb 44, Electrode 44 | ₽1,100 |

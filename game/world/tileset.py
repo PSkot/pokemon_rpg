@@ -700,6 +700,29 @@ def quest_board(s: pygame.Surface, x: int, ground: int, notes: int) -> pygame.Re
 
 
 # ------------------------------------------------------------------ props
+# The skate road's boards (props/skateboards.png: rows of 32×16, wheels on
+# the bottom row): the player's and each skating group's.
+SKATEBOARDS = 4
+
+
+@cache
+def _skateboards() -> list[pygame.Surface]:
+    sheet = pygame.image.load(ART / "props" / "skateboards.png").convert_alpha()
+    return [sheet.subsurface((0, 16 * i, 32, 16)).copy() for i in range(SKATEBOARDS)]
+
+
+def draw_skateboard(s: pygame.Surface, board: int, x: float, ground: float, flip: bool = False,
+                    scale: int = 1) -> None:
+    """Board `board` (`scale` times bigger: a giant boss's) with its wheels
+    on `ground`, centred on `x`."""
+    image = _skateboards()[board % SKATEBOARDS]
+    if scale != 1:
+        image = pygame.transform.scale_by(image, scale)
+    if flip:
+        image = pygame.transform.flip(image, True, False)
+    s.blit(image, (round(x) - image.get_width() // 2, round(ground) - image.get_height() + scale))
+
+
 # Pixellab sprites of things on the maps (assets/sprites/pixellab/props/).
 
 PROP_SINK = 1  # px a prop sits into the ground (over the grass edge)

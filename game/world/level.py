@@ -130,6 +130,27 @@ def _walk(rng: random.Random, cols: int, low: int, high: int, start: int, flat_s
     return heights + [heights[-1]] * flat_end
 
 
+SKATE_TOP = 16  # the skate road's ground height at a map's start (it steps down from there)
+
+
+def _downhill(rng: random.Random, cols: int, flat_start: int, flat_end: int) -> list[int]:
+    """A height per column for the skate road: from SKATE_TOP, flat runs
+    that step down 1 (now and then 2) to the right, down to GROUND's lowest,
+    with now and then a step up of 1 (a kicker, to jump)."""
+    low = GROUND[0]
+    drops = max(1, SKATE_TOP - low)
+    run = max(4, (cols - flat_start - flat_end) // drops)  # (spread the drops over the map)
+    heights, h = [SKATE_TOP] * flat_start, SKATE_TOP
+    while len(heights) < cols - flat_end:
+        heights += [h] * rng.randint(max(3, run - 2), run + 2)
+        if h > low + 2 and rng.random() < 0.12:
+            h += 1  # a kicker
+        else:
+            h = max(low, h - rng.choice((1, 1, 1, 2)))
+    heights = heights[:cols - flat_end]
+    return heights + [heights[-1]] * flat_end
+
+
 def _flatten(heights: list[int], col: int) -> None:
     """Make the ground flat for STAIR_FLAT tiles each side of `col`, then
     ease the ground on either side so no step is more than 2."""
@@ -187,6 +208,7 @@ def generate(theme: Theme, seed: int, final: bool = False, cols: int | None = No
     if final:
         cols += ARENA - FLAT_ENDS
     heights = ([4] * cols if theme.built  # (a ship's deck: level all through)
+               else _downhill(rng, cols, FLAT_ENDS, end) if theme.skate
                else _walk(rng, cols, *GROUND, start=4, flat_start=FLAT_ENDS, flat_end=end))
     stair_cols = [stair_col(at, cols) for at in stairs]
     for col in stair_cols:
