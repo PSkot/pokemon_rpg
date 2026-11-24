@@ -372,7 +372,7 @@ GEAR_EFFECTS = {e.key: e for e in [
             "Why hit one when you can hit them all?", ("basic", {"spread": True, "spread_share": 0.5})),
     _effect("Double Tap", "The basic attack hits twice, at 65% power each.", "Two for the price of one.",
             ("basic", {"hits": (2, 2), "scale": -0.35})),
-    _effect("Megaphone", "The wearer's status moves work on every Pokémon on the side they aim at (on enemies, each at half the chance).",
+    _effect("Megaphone", "The wearer's status moves work on every Pokémon on the side they aim at (on two or more enemies, each at half the chance).",
             "CAN YOU HEAR ME IN THE BACK?", ("status_moves", {"spread": True})),
     _effect("Ricochet", "The wearer's damaging moves also hit an enemy next to the target, at half damage.",
             "Nobody stands next to me twice.", ("damaging", {"reach": 0.5})),

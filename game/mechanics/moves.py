@@ -93,7 +93,8 @@ class Move:
 
 # A status move that hits every enemy (Drowsy Dust, Megaphone, ...): each
 # enemy rolls its own chance, at this share of the move's (Sleep Powder 75%:
-# 37.5% each). Lucky, everyone sleeps; unlucky, nobody does.
+# 37.5% each). Lucky, everyone sleeps; unlucky, nobody does. (Against one
+# enemy left standing: the move's own chance.)
 SPREAD_STATUS = 0.5
 
 
@@ -332,7 +333,7 @@ def describe(m: Move) -> str:
         else:
             share = spread_status_share(m)
             pct = m.status_chance * share
-            chance = ("" if pct >= 100 else f" ({pct:g}% chance each)" if share < 1 else f" ({pct:g}% chance)")
+            chance = ("" if pct >= 100 else f" ({pct:g}% chance each; alone {m.status_chance}%)" if share < 1 else f" ({pct:g}% chance)")
             parts.append(f"{verb.capitalize()}s {who}{chance}." if verb != "put to sleep"
                          else f"Puts {who} to sleep{chance}.")
     if m.confuse:

@@ -1,7 +1,7 @@
 """Simulate battles for balance (headless): the story's major battles at the
 party's expected levels, and 1v1 matches between every line.
 
-    python tools/balance_sim.py [--runs N] [--part story|duels|all] [--gear] [--talents-only]
+    python tools/balance_sim.py [--runs N] [--part story|duels|teams|all] [--gear] [--talents-only]
 
 --gear dresses the party as a player would (`player_gear`): for Head, Held
 and Worn, the best of 4 random pieces at the area's boss rarities.
@@ -288,10 +288,36 @@ def run_duels(runs: int, level: int) -> None:
         print(f"  {form(k, level):<11} {mean(score[k]):5.0%} with, {mean(bare):5.0%} without")
 
 
+def run_teams(runs: int, level: int) -> None:
+    """3v3: each line in `runs` random teams of three (two random partners)
+    against random teams of three, all with talents, both sides playing the
+    same; then the same matchups with that line's talents taken away. Team
+    effects show here (spread status, support, Gang Up) as they can't 1v1."""
+    lines = [k for k, t in TREES.items() if t.tiers]
+    print(f"\n## 3v3 teams at Lv{level} ({runs} random matchups per line, both sides playing the same)\n")
+    rows = []
+    for k in lines:
+        wins, bare = [], []
+        for r in range(runs):
+            rng = random.Random(hash((k, r, level)) & 0xFFFFFFFF)
+            others = [x for x in lines if x != k]
+            mates, foes = rng.sample(others, 2), rng.sample(others, 3)
+            for with_talents, out in ((True, wins), (False, bare)):
+                random.seed(hash((k, r, level, "fight")) & 0xFFFFFFFF)  # (the same fight both ways)
+                team = [member(k, level, with_talents)] + [member(x, level) for x in mates]
+                won, _ = fight(team, [member(x, level) for x in foes], smart_enemies=True)
+                out.append(won)
+        rows.append((form(k, level), mean(wins), mean(bare)))
+        print(f"  {rows[-1][0]:<11} {rows[-1][1]:5.0%} with, {rows[-1][2]:5.0%} without", flush=True)
+    print("\nSorted by the talents' worth (with - without):")
+    for name, w, b_ in sorted(rows, key=lambda r: -(r[1] - r[2])):
+        print(f"  {name:<11} {w - b_:+5.0%}   ({w:4.0%} with, {b_:4.0%} without)")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=int, default=30)
-    ap.add_argument("--part", default="all", choices=("story", "duels", "all"))
+    ap.add_argument("--part", default="all", choices=("story", "duels", "teams", "all"))
     ap.add_argument("--level", type=int, default=25)
     ap.add_argument("--gear", action="store_true", help="the party wears gear, as a player would")
     ap.add_argument("--talents-only", action="store_true", help="story battles: only with talents")
@@ -304,6 +330,8 @@ def main() -> None:
             run_story(args.runs, False)
     if args.part in ("duels", "all"):
         run_duels(args.runs, args.level)
+    if args.part in ("teams", "all"):
+        run_teams(args.runs, args.level)
 
 
 if __name__ == "__main__":

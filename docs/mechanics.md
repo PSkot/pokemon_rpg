@@ -358,6 +358,7 @@ rewards). Meowth's Amulet Coin talent doubles it.
   Spore Cloud, Mass Hypnosis, Echo, Chain Lightning, Fungal Bloom, the
   Megaphone gear effect): each enemy rolls its own chance, at **half** the
   move's (`moves.SPREAD_STATUS`): Sleep Powder 37.5% each, Spore 50% each.
+  Against one enemy left standing it keeps the move's own chance.
   A lucky use can put the whole team to sleep, an unlucky one nobody, but
   on average about a third of them (not three in four).
 - **Immune types:** Leech Seed doesn't affect Grass types, Thunder Wave

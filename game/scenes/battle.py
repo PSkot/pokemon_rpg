@@ -1533,7 +1533,8 @@ class BattleScene(Scene):
         for i, target in enumerate(targets):
             # A spread move's share for all but the one aimed at (the first, on enemies).
             share = move.spread_share if len(targets) > 1 and not (i == 0 and move.target == "enemy") else 1.0
-            notes += self._hit(user, move, target, share) if move.damaging else self._effect(user, move, target)
+            notes += (self._hit(user, move, target, share) if move.damaging
+                      else self._effect(user, move, target, crowd=len(targets)))
         if move.self_stages and user.alive:
             notes += [self._change_stage(user, stat, change) for stat, change in move.self_stages]
         if move.heal and user.alive and user.monster.hp < user.monster.max_hp:
@@ -1667,14 +1668,15 @@ class BattleScene(Scene):
         self._popup(target, "WOUND", WOUND_COLOR, offset=(0, -14), delay=0.3)
         return f"{target.label} was wounded!"
 
-    def _effect(self, user: Combatant, move: Move, target: Combatant) -> list[str]:
+    def _effect(self, user: Combatant, move: Move, target: Combatant, crowd: int = 1) -> list[str]:
         """A status move works on `target`. Returns notes for the message.
         A status move that hits every enemy rolls its status and confusion
-        chances for each of them, at `SPREAD_STATUS` of the move's."""
+        chances for each of them, at `SPREAD_STATUS` of the move's when it
+        lands on `crowd` 2 or more (on one alone: the move's own chance)."""
         if set(move.immune) & set(target.monster.species.types):
             return [f"It doesn't affect {target.label}..."]
         notes = []
-        share = spread_status_share(move)
+        share = spread_status_share(move) if crowd > 1 else 1.0
         if move.status:
             if random.random() * 100 < move.status_chance * share:
                 inflicted = self._inflict(target, move.status, move)
