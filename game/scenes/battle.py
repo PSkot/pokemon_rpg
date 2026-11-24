@@ -94,6 +94,20 @@ ACTION_PAUSE = 0.6       # quiet gap (no message) before the next action
 VICTORY_PAUSE = 1.0      # "You won!", before the XP is handed out
 TRAINER_XP = 0.45        # XP × this from a trainer's Pokémon (3× wild's)
 WILD_XP = 0.15           # ... and from wild ones (quests are the main source of XP)
+# Catch-up: a wild battle's XP is worth more to a low-level member: ×CATCH_UP
+# up to CATCH_UP_FULL, fading evenly to ×1 at CATCH_UP_END (the first routes,
+# where a Pidgey is worth 2 XP and the starter needs 91 for a level).
+CATCH_UP = 3.0
+CATCH_UP_FULL, CATCH_UP_END = 10, 20
+
+
+def catch_up(level: int) -> float:
+    """The wild-XP factor for a member at `level` (see CATCH_UP)."""
+    if level <= CATCH_UP_FULL:
+        return CATCH_UP
+    if level >= CATCH_UP_END:
+        return 1.0
+    return CATCH_UP - (CATCH_UP - 1) * (level - CATCH_UP_FULL) / (CATCH_UP_END - CATCH_UP_FULL)
 XP_FILL_TIME = 1.2       # seconds for an XP bar to fill completely
 XP_MESSAGE_TIME = 0.8    # after a party member's XP bar has filled
 LEVEL_UP_TIME = 1.2      # "grew to Lv6!"
@@ -977,15 +991,15 @@ class BattleScene(Scene):
         """The party members still standing share the XP of all the enemies
         (Gen 1: split evenly). Returns the members who leveled up."""
         standing = sum(1 for c in self.party if c.alive and c.monster.level < MAX_LEVEL) or 1
-        xp = round(sum(c.monster.xp_yield for c in self.enemies) * (TRAINER_XP if self.trainer else WILD_XP)
-                   / standing)
-        xp *= DEV.xp_multiplier
+        share = sum(c.monster.xp_yield for c in self.enemies) * (TRAINER_XP if self.trainer else WILD_XP) / standing
         boost = f" (×{DEV.xp_multiplier})" if DEV.xp_multiplier > 1 else ""
         leveled = []
         for c in self.party:
             m = c.monster
             if not c.alive or m.level >= MAX_LEVEL:
                 continue
+            # (wild battles: more for a low-level member, `catch_up`)
+            xp = round(share * (1.0 if self.trainer else catch_up(m.level))) * DEV.xp_multiplier
             self.message = f"{c.label} gained {xp} XP!{boost}"
             m.xp += xp
             while m.can_level_up:

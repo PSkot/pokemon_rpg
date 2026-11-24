@@ -77,6 +77,12 @@ full HP when its max HP goes up or down.
   `quests.md` for the budget). (Until the Pewter → Vermilion check they
   were ×0.5 / ×1.5, unsplit: a party that fought everything reached the
   Vermilion Gym around Lv42 instead of 29.)
+- **Catch-up** (`battle.catch_up`): a wild battle's XP is worth **×3** to
+  a member at Lv10 or below, fading evenly to ×1 at Lv20 (Lv15: ×2),
+  worked out per member after the split. Without it the first routes gave
+  next to nothing (a Lv2 Pidgey: 2 XP, against 91 for the starter's
+  Lv5 → 6); with it a Route 1 trip is worth about a level. Trainer battles
+  don't get it.
 - **Sharing:** after a won battle, the XP of **all** enemies is added up
   and **split evenly between the party members still standing** (as in
   Gen 1), rounded. Fainted members get nothing. So a bigger party doesn't
@@ -87,7 +93,8 @@ full HP when its max HP goes up or down.
   Several level-ups from one battle are possible.
 
 Example: beating wild Lv6 Pidgey (47), Lv7 Rattata (57) and Lv5 Pidgey
-(39) gives 143 × 0.15 = 21 XP to a lone starter (11 each to two).
+(39) gives 143 × 0.15 = 21 XP, × 3 catch-up = 64 XP to a lone Lv8 starter
+(two at Lv8: 32 each).
 
 - **Quest XP:** a finished quest gives its XP (`Quest.xp`) to **every**
   party member, fainted ones too (`quests._give_xp`), with the same level

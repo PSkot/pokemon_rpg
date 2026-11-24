@@ -23,6 +23,11 @@ and does the story quests and the area's board jobs (checked with a
 script that walks every route's maps; the major fights in
 `tools/balance_sim.py` are tuned for these):
 
+(Since then, wild battles give low-level members catch-up XP: ×3 up to
+Lv10, fading to ×1 at Lv20, see `mechanics.md`. That's worth about a level
+per trip on the first routes, so the early rows below are about half a
+level to a level higher now.)
+
 | Arriving at | Lead's level | Battle XP there (each) | Quest XP there |
 | --- | --- | --- | --- |
 | Pewter Gym | 14–15 | 230 | 400 |
