@@ -384,6 +384,15 @@ def xp_for_level(level: int) -> int:
     return 0 if level <= 1 else level ** 3
 
 
+HP_GROWTH = 100  # max HP × (1 + level / HP_GROWTH): it keeps up with damage, which grows with moves and gear
+
+
+def max_hp_at(base_hp: int, level: int) -> int:
+    """Max HP at `level` without gear: the Gen 1 formula, × (1 + level /
+    `HP_GROWTH`) (Lv10 ×1.1, Lv30 ×1.3, Lv50 ×1.5)."""
+    return (base_hp * 2 * level // 100 + level + 10) * (HP_GROWTH + level) // HP_GROWTH
+
+
 def _stat(base: int, level: int) -> int:
     # The Gen 1 formula without IVs/EVs.
     return base * 2 * level // 100 + 5
@@ -616,7 +625,7 @@ class Monster:
     # Stats without gear.
     @property
     def base_max_hp(self) -> int:
-        return self.species.base_hp * 2 * self.level // 100 + self.level + 10
+        return max_hp_at(self.species.base_hp, self.level)
 
     @property
     def base_attack(self) -> int:

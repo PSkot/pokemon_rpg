@@ -19,7 +19,7 @@ import pygame
 from .. import settings
 from ..engine import hats, ui
 from ..engine.scene import Scene
-from ..mechanics.combat import CRIT_CHANCE, expected_damage
+from ..mechanics.combat import CRIT_CAP, CRIT_CHANCE, expected_damage, rating
 from ..mechanics.items import EFFECT_COLOR, RARITIES, SLOT_NAMES, SLOTS, STAT_NAMES, STATS, Bag, Gear, mod_text, money_text
 from ..mechanics.pokemon import SPECIES, STONE_EVOLUTIONS, Monster, animations
 from ..mechanics.status import STATUSES
@@ -210,8 +210,9 @@ class SummaryScene(Scene):
         canvas.blit(sprite, sprite.get_rect(center=SPRITE_BOX.center))
         for t, pos in _type_badges(self.monster):
             ui.badge(canvas, pos, COLORS[t])
-        ui.cursor(canvas, PARTY_WINDOW.x + 16, PARTY_WINDOW.y + PAD + 5 + self.member * PARTY_ROW)
-        for i, m in enumerate(self.party):
+        if self.mode != "choose":  # (choosing: the party window shows the Rating instead)
+            ui.cursor(canvas, PARTY_WINDOW.x + 16, PARTY_WINDOW.y + PAD + 5 + self.member * PARTY_ROW)
+        for i, m in enumerate(self.party if self.mode != "choose" else ()):
             done, needed = m.xp_progress
             bar = pygame.Rect(PARTY_WINDOW.x + 22, PARTY_WINDOW.y + PAD + i * PARTY_ROW + 29, 110, 4)
             ui.bar(canvas, bar, done / needed if needed else 0.0, XP_COLOR)
@@ -249,8 +250,40 @@ class SummaryScene(Scene):
                 ui.text(window, f"Take off the {worn.name}.", (x, y))
                 self._draw_mods(window, None, worn, y + 31)
 
+    def _draw_rating(self, window: pygame.Surface) -> None:
+        """While choosing gear, in the party window: the Rating now and with
+        the highlighted choice (`combat.rating`), the change in green or red."""
+        m, after = self.monster, self._preview()
+        x, y = PARTY_WINDOW.x + 12, PARTY_WINDOW.y + PAD
+        ui.text(window, m.name, (x, y), ui.YELLOW)
+        ui.text(window, f"Lv{m.level}  {m.hp}/{m.max_hp}", (x, y + ROW_H - 3), ui.GREY, size=22)
+        y += 2 * ROW_H + 4
+        ui.text(window, "Rating", (x, y), ui.WHITE)
+        y += ROW_H + 2
+        now, new = rating(m), rating(after)
+        first = type_name(m.species.types[0])
+        for label, a, b, unit in ((f"{first} hit", now.same_type, new.same_type, ""),
+                                  ("Neutral hit", now.neutral, new.neutral, ""),
+                                  ("Toughness", now.toughness, new.toughness, " hits")):
+            ui.text(window, label, (x, y), ui.GREY, size=20)
+            y += 13
+            change = round(b, 1) - round(a, 1)
+            ui.text(window, f"{a:.1f} > {b:.1f}{unit}", (x + 4, y), _bonus_color(change) if abs(change) >= 0.05
+                    else ui.WHITE, size=22)
+            if abs(change) >= 0.05:
+                pct = 100 * change / a if a else 0
+                ui.text(window, f"{pct:+.0f}%", (PARTY_WINDOW.right - 10, y), _bonus_color(change), size=22,
+                        align="right")
+            y += 18
+        for line in ui.wrap("Damage of a 70-power move, and hits of one it survives, against a typical foe of "
+                            "its level.", 16, PARTY_WINDOW.w - 22):
+            ui.text(window, line, (x, y), ui.GREY, size=16)
+            y += 10
+
     def _draw_party(self, window: pygame.Surface) -> None:
-        for i, m in enumerate(self.party):
+        if self.mode == "choose":
+            self._draw_rating(window)
+        for i, m in enumerate(self.party if self.mode != "choose" else ()):
             y = PARTY_WINDOW.y + PAD + i * PARTY_ROW
             color = ui.YELLOW if i == self.member else ui.WHITE if m.alive else ui.GREY
             ui.text(window, m.name, (PARTY_WINDOW.x + 22, y), color)
@@ -325,11 +358,9 @@ class SummaryScene(Scene):
         else:
             row("Special", str(m.base_special), ui.GREY, "-", ui.GREY, str(m.base_special), ui.WHITE)
         crit_now, crit = m.gear_bonus("crit"), shown.gear_bonus("crit")
-        power_now, power = m.gear_bonus("power"), shown.gear_bonus("power")
-        for name, unit, base, value_now, value in (("Crit chance", "%", CRIT_CHANCE, crit_now, crit),
-                                                   ("Move power", "", 0, power_now, power)):
-            def fmt(v: float) -> str:
-                return f"{base + v:g}{unit}" if unit else (f"{v:+d}" if v else "-")
+        for name, unit, base, value_now, value in (("Crit chance", "%", CRIT_CHANCE, crit_now, crit),):
+            def fmt(v: float) -> str:  # (an ordinary move's: at most CRIT_CAP)
+                return f"{min(CRIT_CAP, base + v):g}{unit}"
             gear = f"{value:+d}{unit}" if value else "-"
             if after:
                 change = value - value_now

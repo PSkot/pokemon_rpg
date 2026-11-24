@@ -21,7 +21,8 @@ SHIELD_FACTOR = 0.5  # damage taken while shielded
 MAX_STAGE = 6        # stat stages go from -6 to +6
 STAGE_STATS = ("attack", "defense", "speed", "accuracy")
 FOCUS_CRIT = 4       # Focus Energy: crit chance × this
-CRIT_CHANCE = 6.25   # % (1 in 16, as in Gen 2+); gear adds to it
+CRIT_CHANCE = 5.0    # % base; gear adds to it ...
+CRIT_CAP = 20.0      # ... up to this, for an ordinary move (high-crit moves and Focus Energy go past it)
 CRIT_FACTOR = 1.5
 # Gen 1's special types: their moves use the user's and the target's Special
 # instead of Attack and Defense. (The rest are physical, typeless ones too.)
@@ -53,6 +54,16 @@ class Hit:
         return self.damage + sum(amount for _, amount in self.added)
 
 
+def crit_chance(m: "Monster", move: Move, focused: bool = False) -> float:
+    """The % chance a hit of `move` by `m` is critical: the base chance ×
+    the move's crit ratio (× `FOCUS_CRIT` when focused), plus gear and
+    talents' crit points. An ordinary move (ratio 1, not focused) is
+    capped at `CRIT_CAP`; the others at 100%."""
+    focus = FOCUS_CRIT if focused else 1
+    chance = CRIT_CHANCE * move.crit_ratio * focus + m.gear_bonus("crit")
+    return min(CRIT_CAP if move.crit_ratio <= 1 and focus == 1 else 100.0, chance)
+
+
 def is_special(move: Move) -> bool:
     """Whether `move` uses Special (Gen 1: by its type)."""
     return move.type in SPECIAL_TYPES
@@ -79,7 +90,8 @@ def expected_damage(m: "Monster", move: Move) -> float | None:
     hits = (move.hits[0] + move.hits[1]) / 2
     accuracy = min(100, move.accuracy) / 100
     if move.halve:  # Super Fang: half the foe's (full) HP
-        return (REFERENCE_BASE * 2 * m.level // 100 + m.level + 10) // 2 * accuracy
+        from .pokemon import max_hp_at  # (pokemon.py builds on this module's neighbours)
+        return max_hp_at(REFERENCE_BASE, m.level) // 2 * accuracy
     if move.fixed:
         return (move.fixed_amount or m.level) * hits * accuracy
     if not move.power:
@@ -88,7 +100,7 @@ def expected_damage(m: "Monster", move: Move) -> float | None:
     attack = m.special_attack if special else m.attack
     power = move.power * move.scale + m.gear_bonus("power")
     base = (2 * m.level / 5 + 2) * power * attack / reference_stat(m.level) / 50 + 2
-    crit = min(1.0, (CRIT_CHANCE * move.crit_ratio + m.gear_bonus("crit")) / 100)
+    crit = crit_chance(m, move) / 100
     crit_factor = CRIT_FACTOR + (m.talent("sniper") if m.has_effects else 0)
     base *= (1 + crit * (crit_factor - 1)) * 0.925  # (0.925: the spread's average)
     amount = base
@@ -98,6 +110,32 @@ def expected_damage(m: "Monster", move: Move) -> float | None:
         amount *= 1 + m.gear_bonus(f"power:{move.type}") / 100
     amount += sum(base * m.gear_bonus(f"added:{t}") / 100 for t in TYPES)
     return max(1.0, amount) * hits * accuracy
+
+
+# The party screen's Rating (gear at a glance): one use of a standard
+# move of `RATING_POWER` against the typical foe, and how many such hits
+# from it the Pokémon survives.
+RATING_POWER = 70
+
+
+@dataclass(frozen=True)
+class Rating:
+    same_type: float  # expected damage of a standard move of its (first) type
+    neutral: float    # ... of a typeless one (physical, no STAB)
+    toughness: float  # standard hits (physical and special, on average) it survives from the typical foe
+
+
+def rating(m: "Monster") -> Rating:
+    """`m`'s Rating, with its gear and talents' stat effects (see `expected_damage`)."""
+    same = expected_damage(m, Move("Standard", RATING_POWER, "enemy", type=m.species.types[0]))
+    neutral = expected_damage(m, Move("Standard", RATING_POWER, "enemy"))
+    foe_attack = reference_stat(m.level)
+    crit = 1 + CRIT_CHANCE / 100 * (CRIT_FACTOR - 1)
+
+    def hit(defense: int) -> float:
+        return ((2 * m.level / 5 + 2) * RATING_POWER * foe_attack / defense / 50 + 2) * crit * 0.925
+    taken = (hit(m.defense) + hit(m.special_defense)) / 2
+    return Rating(same or 0.0, neutral or 0.0, m.max_hp / taken)
 
 
 def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.0) -> Hit:
@@ -120,8 +158,7 @@ def damage(user: "Combatant", move: Move, target: "Combatant", share: float = 1.
     power = move.power * move.scale + m.gear_bonus("power")
     level_factor = 2 * m.level / 5 + 2
     base = level_factor * power * attack / defense / 50 + 2
-    focus = FOCUS_CRIT if user.focused else 1
-    crit = random.random() * 100 < CRIT_CHANCE * move.crit_ratio * focus + m.gear_bonus("crit")
+    crit = random.random() * 100 < crit_chance(m, move, user.focused)
     if move.keen and target.monster.hp < target.monster.max_hp * move.keen:  # (Keen Edge)
         crit = True
     if crit:

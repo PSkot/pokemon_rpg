@@ -25,8 +25,13 @@ Its stats at level
 
 | Stat | Formula |
 | --- | --- |
-| Max HP | `base_hp × 2 × L // 100 + L + 10` |
+| Max HP | `(base_hp × 2 × L // 100 + L + 10) × (100 + L) // 100` |
 | Attack, Defense, Speed, Special | `base × 2 × L // 100 + 5` |
+
+Max HP is Gen 1's, × (1 + L/100) (`pokemon.max_hp_at`, `HP_GROWTH`): ×1.1
+at Lv10, ×1.3 at Lv30, ×1.5 at Lv50. Damage grows faster than level (new
+moves of 90–120 power, gear), so HP grows faster too: a good move takes
+about the same share of a same-level foe's HP all game.
 
 Example: Bulbasaur (45 / 49 / 49 / 45, Special 65) at Lv5 has 19 HP,
 9 Attack and 11 Special.
@@ -203,7 +208,7 @@ out in these steps:
    gear's Attack bonus). Halved if the user is **burned** (physical moves
    only, as in Gen 1).
 2. **Power:** the move's power × its `scale` (talents: Double Lash 0.6
-   for its two hits), + the user's gear `power` bonus. Fight uses the
+   for its two hits). Fight uses the
    Pokémon's basic attack (see `talents.md`).
 3. **Base damage** (the Gen 1 formula):
 
@@ -214,10 +219,12 @@ out in these steps:
    `L` is the user's level, `defense` the target's Defense with gear ×
    its **Defense stage** multiplier (a special move: its Special, with
    gear's Defense bonus, × the same stage).
-4. **Critical hit:** a 6.25% chance (1 in 16) × the move's crit ratio
-   (×8 for Razor Leaf, Gen 1's "high critical-hit ratio": 50%), plus the
-   user's gear `crit` (and Lucky Strikes) in percentage points (e.g. +5 →
-   11.25%). Always a crit with Keen Edge on a target below half HP (Apex
+4. **Critical hit** (`combat.crit_chance`): a **5%** chance × the move's
+   crit ratio (×3 for Slash, Razor Leaf, Karate Chop and Sky Attack, a
+   "high critical-hit ratio": 15%; ×20 or more: always), × 4 with Focus
+   Energy, plus the user's gear `crit` (and Lucky Strikes) in percentage
+   points (e.g. +3 → 8%). An ordinary move's chance is **capped at 20%**
+   (`CRIT_CAP`); high-ratio moves and Focus Energy go past it. Always a crit with Keen Edge on a target below half HP (Apex
    Predator: below ⅓). A crit
    multiplies `base` by **×1.5** (Gen 2+ style; *not* Gen 1's level-based
    crits; ×2 with the Sniper talent).
@@ -232,12 +239,10 @@ out in these steps:
    user's types.
 9. **Type power gear:** × `(1 + power:<type> / 100)` for the move's type
    (e.g. Charcoal, "of the Moltres").
-10. **Super-effective gear:** if the hit is super effective, × `(1 + super / 100)`
-    (Expert Belt, Mortarboard).
-11. The result is rounded, with a minimum of **1**, or **0** if the
+10. The result is rounded, with a minimum of **1**, or **0** if the
     target is immune (×0).
 
-12. **Talents** (`BattleScene._talent_factor`, applied with step 6's
+11. **Talents** (`BattleScene._talent_factor`, applied with step 6's
     share): pinch (Overgrow, Cornered, Swarm, Surge: ×1.5 for the user's
     moves of that type below ⅓ HP), streak (Ripening, Momentum, ...: +15–25%
     per move of the type in a row before it, up to 3), Ambush (+30% on a
@@ -250,18 +255,12 @@ out in these steps:
     ×0), Solid Rock (×0.75 for super-effective hits on it), Squeeze (+30%
     on a bound target). See `talents.md`.
 
-Steps 7–10 all multiply together; their order doesn't matter.
+Steps 7–9 all multiply together; their order doesn't matter.
 
-**Added type damage** (gear `added:<type>`, e.g. "Blazing" = Fire): every
-damaging hit also deals `round(base × added% / 100 × effectiveness)` extra
-damage of that type. `base` here is the value after step 6, so crits and
-Leaf Shield count, but STAB and type power don't. Effectiveness is that of
-the *added* type against the target, so it can be super effective even
-when the move itself isn't, and it still deals damage when the move's type
-has no effect. Each added type shows as its own coloured number.
-
-**Total damage** = main hit + all added damage, capped at the target's
-remaining HP.
+**Total damage** is capped at the target's remaining HP. (Gear used to add
+flat move power, extra type damage and a super-effective bonus; the gear
+rework of `GEAR_VERSION` 4 dropped them, and older saves' gear is rolled
+again: see *Item level*.)
 
 ### Expected damage (the party screen)
 
@@ -270,13 +269,23 @@ per use** (`combat.expected_damage`), to compare gear by: against a typical
 foe of the Pokémon's own level (base Defense, Special and HP 70, no gear,
 neutral to every type: `REFERENCE_BASE`). It's the formula above on
 average: the spread's mean (×0.925), crits at their chance (move ratio and
-gear crit; Sniper's ×2), × the chance to hit, × the average number of hits
-(2–5: 3.5), with STAB, the move type's power gear and added type damage (at
-×1). What depends on the battle isn't counted: type matchups and
-super-effective gear, stat stages, Leaf Shield, conditional talents (pinch,
-streak, Ambush, ...). Super Fang: half the foe's HP; Seismic Toss and Sonic
-Boom: their fixed damage. While choosing gear it shows Now / New / Change
-per move, like the stats.
+gear crit, capped as in battle; Sniper's ×2), × the chance to hit, × the
+average number of hits (2–5: 3.5), with STAB and the move type's power gear.
+What depends on the battle isn't counted: type matchups, stat stages, Leaf
+Shield, conditional talents (pinch, streak, Ambush, ...). Super Fang: half
+the foe's HP; Seismic Toss and Sonic Boom: their fixed damage. While
+choosing gear it shows Now / New / Change per move, like the stats.
+
+**Rating** (`combat.rating`): while choosing gear, the party window shows
+three numbers, now and with the highlighted piece (the change in green or
+red, and in %), to tell an upgrade at a glance:
+
+- **<Type> hit:** the expected damage of a standard 70-power move of the
+  Pokémon's (first) type (`RATING_POWER`);
+- **Neutral hit:** the same for a typeless one (physical, no STAB);
+- **Toughness:** how many standard hits from the typical foe it survives:
+  max HP over the average of a physical and a special 70-power hit (with
+  the foe's crit chance and the spread's mean).
 
 ### Worked example
 
@@ -570,9 +579,11 @@ once per battle); the bag starts without gear.
   the boss group's highest level).
 - Every range in `ITEMS`, `HATS` and the affixes is a **Lv50 Common**
   item's (`items.FULL_LEVEL`). The item level scales it (`items.scale`):
-  - **stats, power, damage and crit** (`hp`, `attack`, `defense`,
-    `speed`, `power`, `power:<type>`, `added:<type>`, `super`, `crit`):
-    × level/50 (Lv5 ×0.1, Lv20 ×0.4, Lv50 ×1, Lv100 ×2);
+  - **stats, type damage and crit** (`hp`, `attack`, `defense`, `speed`,
+    `power:<type>`, `crit`): × (0.25 + 0.25 × level/100) (`STAT_SCALE`:
+    Lv5 ×0.26, Lv20 ×0.3, Lv50 ×0.375, Lv100 ×0.5). Gently: new gear is
+    better, but a piece doesn't double from one area to the next, and a
+    whole set adds about ×1.15 damage early and ×1.5 late;
   - **chances and special effects** (`first`, `endure`, `status:*`,
     `regen`, `drain`, berries' chances): × √(level/50) (Lv5 ×0.32, Lv20
     ×0.63, Lv50 ×1, Lv100 ×1.41), so they still show early;
@@ -588,19 +599,22 @@ once per battle); the bag starts without gear.
   (`Item.min_rarity`). Loot, enemies' gear and quest rewards pick the
   rarity first, then an item that drops at it.
 - **Every bonus is priced by what it's worth**, so items of the same
-  level and rarity are about equally strong: Attack/Defense/HP 14–18%
-  is the yardstick; Speed (only turn order) 20–26%; flat move power
-  +6–8; one type's moves or added type damage 18–24%; Super effective
-  (only some hits) 40–50%; crit +16–20 points (a point is about +0.5%
-  damage); trade-off items (Power Bracer) 26–34% for a Speed penalty.
-  Affixes are about half an item's effect.
+  level and rarity are about equally strong (ranges before scaling):
+  Attack/Defense/HP 14–18 is the yardstick; Speed (only turn order)
+  20–26; one type's moves 18–24; crit 8–10 points (rare and capped: a
+  point is about +0.5% damage); trade-off items (Power Bracer) 26–34 for
+  a Speed penalty. Affixes are about a third of an item's effect.
+- **Six mods** make up gear's numbers: HP, Attack, Defense, Speed (%),
+  crit (points) and one type's damage (%); the rest are special effects
+  (act first, endure, regen, drain, status chance) and berries'.
 - **Older saves** (gear saved under older rules, `items.GEAR_VERSION`)
   are rolled again once, on loading (`items.updated_gear`): same item
   (an Endure item below Epic becomes another of its slot), rarity, level
   and affixes, new values.
 - So newer gear of a lower rarity can beat older gear of a higher one.
-  Red Bandana (Attack +14…18%) at its highest roll: Common Lv5 +2%,
-  Common Lv25 +9%, Rare Lv25 +14%, Common Lv50 +18%, Legendary Lv50 +45%.
+  Red Bandana (Attack 14…18) at its highest roll: Common Lv5 +5%,
+  Common Lv25 +6%, Rare Lv25 +8%, Common Lv50 +7%, Legendary Lv50 +11%,
+  Legendary Lv100 +16% (affixes on top).
 
 ### Rolling a piece (`Gear.roll`)
 
@@ -629,24 +643,21 @@ two Attack rolls), and all rolls simply add up.
 | Rarity | Factor | Affixes | Where it drops (for now) |
 | --- | --- | --- | --- |
 | Common (white) | ×1.0 | 0 | everywhere |
-| Uncommon (green) | ×1.25 | 1 | boss groups (from the second area on) |
-| Rare (blue) | ×1.5 | 2–3 | not yet (mid game) |
-| Epic (purple) | ×2.0 | 3–4 | not yet (late game) |
-| Legendary (orange) | ×2.5 | 4–5 | not yet (end game) |
+| Uncommon (green) | ×1.15 | 1 | boss groups (from the second area on) |
+| Rare (blue) | ×1.3 | 1–2 | mid game (bosses from Diglett's Cave on) |
+| Epic (purple) | ×1.45 | 2 | late game, the Battle Tower |
+| Legendary (orange) | ×1.6 | 2–3 | end game |
 
-Example: Muscle Band (Attack +14…18%) at Legendary Lv20 rolls 14…18 × 2.5
-× 0.4 = Attack +14…18%.
+Example: Muscle Band (Attack 14…18) at Legendary Lv20 rolls 14…18 × 1.6
+× 0.3 = Attack +7…9%.
 
 ### What gear can do (mods)
 
 | Mod | Meaning |
 | --- | --- |
 | `hp`, `attack`, `defense`, `speed` | % on that stat (see *Gear on stats*) |
-| `crit` | + percentage points of crit chance (base 6.25%) |
-| `power` | added to the power of damaging moves |
+| `crit` | + percentage points of crit chance (base 5%, an ordinary move's capped at 20%) |
 | `power:<type>` | % more damage with moves of that type |
-| `added:<type>` | every hit deals this % extra as that type (see *Damage*) |
-| `super` | % more damage on super-effective hits |
 | `status:<status>` | % chance per hit to inflict that status |
 | `first` | % chance per round to act before everyone else (after items) |
 | `endure` | % chance to survive a knockout hit with 1 HP |
@@ -660,16 +671,15 @@ Values at Lv50 Common (before the rarity factor and item level).
 
 | Prefix | Mods | | Suffix | Mods |
 | --- | --- | --- | --- | --- |
-| Fierce | Attack +7…9% | | of the Machamp | Attack +7…9% |
-| Sturdy | Defense +7…9% | | of the Onix | Defense +7…9% |
-| Swift | Speed +10…13% | | of the Pidgeot | Speed +10…13% |
-| Hearty | HP +7…9% | | of the Snorlax | HP +7…9% |
-| Keen | Crit +8…10 | | of the Tauros | Attack +4…5%, Speed +5…6% |
-| Mighty | Power +3…4 | | of the Golem | Defense +4…5%, HP +4…5% |
-| Hasty | First 3…6% | | of the Scyther | Crit +4…5, Attack +4…5% |
-| Draining | Drain 3…6% | | of the Hitmonlee | Power +2, Speed +5…6% |
-| Blazing, Drenching, … (14 types, not Normal) | Added type damage 9…12% | | of the Chansey | Regen 2…3% |
-| | | | of the Moltres, of the Gyarados, … (15 types) | Type power +9…12% |
+| Fierce | Attack 5…6 | | of the Machamp | Attack 5…6 |
+| Sturdy | Defense 5…6 | | of the Onix | Defense 5…6 |
+| Swift | Speed 7…9 | | of the Pidgeot | Speed 7…9 |
+| Hearty | HP 5…6 | | of the Snorlax | HP 5…6 |
+| Keen | Crit 3…4 | | of the Tauros | Attack 3, Speed 4 |
+| Hasty | First 3…6% | | of the Golem | Defense 3, HP 3 |
+| Draining | Drain 3…6% | | of the Scyther | Crit 3, Attack 3 |
+| | | | of the Chansey | Regen 2…3% |
+| | | | of the Moltres, of the Gyarados, … (15 types) | Type power 6…8 |
 | | | | of the Magmar / Muk / Pikachu | Burn / poison / paralysis chance 5…10% |
 | | | | of the Hypno / Jynx | Sleep / freeze chance 3…6% |
 

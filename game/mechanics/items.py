@@ -83,10 +83,10 @@ class Rarity:
 
 
 COMMON = Rarity("Common", 1.0, (0, 0), (240, 240, 248))
-UNCOMMON = Rarity("Uncommon", 1.25, (1, 1), (120, 230, 120))
-RARE = Rarity("Rare", 1.5, (2, 3), (110, 210, 255))
-EPIC = Rarity("Epic", 2.0, (3, 4), (220, 150, 255))
-LEGENDARY = Rarity("Legendary", 2.5, (4, 5), (255, 176, 64))
+UNCOMMON = Rarity("Uncommon", 1.15, (1, 1), (120, 230, 120))
+RARE = Rarity("Rare", 1.3, (1, 2), (110, 210, 255))
+EPIC = Rarity("Epic", 1.45, (2, 2), (220, 150, 255))
+LEGENDARY = Rarity("Legendary", 1.6, (2, 3), (255, 176, 64))
 RARITIES = {r.name: r for r in (COMMON, UNCOMMON, RARE, EPIC, LEGENDARY)}
 RARITY_ORDER = list(RARITIES)
 
@@ -113,10 +113,14 @@ def _fixed(mod: str) -> bool:
 
 
 # Item level: the ranges are a Lv50 Common item's (`FULL_LEVEL`). Stats,
-# power, damage and crit grow in step with the level (Lv5: a tenth);
-# chances and other special effects more gently, so they still show early
-# (Lv5: about a third); healing berries by HP, like potions (Lv5: a fifth).
+# type damage and crit grow gently with the level: ×0.25 at Lv1, ×0.375 at
+# Lv50, ×0.5 at Lv100 (`STAT_SCALE`: new gear is better, but a piece
+# doesn't double from one area to the next, and a whole set adds about
+# +15% damage early and +40% late); chances and other special
+# effects as the square root of the level (Lv5: about a third); healing
+# berries by HP, like potions (Lv5: a fifth).
 FULL_LEVEL = 50
+STAT_SCALE = (0.25, 0.25)  # stats, type damage and crit: × (first + second × level / 100)
 
 
 def scale(mod: str, level: int) -> float:
@@ -128,11 +132,11 @@ def scale(mod: str, level: int) -> float:
         return (level + 5) / (FULL_LEVEL + 5)
     if _special(mod) or mod in BERRY_CHANCES:
         return math.sqrt(level / FULL_LEVEL)
-    return level / FULL_LEVEL
+    return STAT_SCALE[0] + STAT_SCALE[1] * level / 100
 
 
 def level_factor(level: int) -> float:
-    """How much item level `level` multiplies stat and damage bonuses (Lv50: ×1)."""
+    """How much item level `level` multiplies stat and damage bonuses (Lv50: ×0.9)."""
     return scale("attack", level)
 
 
@@ -170,29 +174,29 @@ TYPE_ITEMS = {  # type -> (held item that powers up its moves, description)
 
 # Hats: (cell in the hat sheet, name, description, own effect).
 HATS = [
-    (16, "Wizard Hat", "A tall, pointed hat full of arcane power.", {"power": (6, 8)}),
+    (16, "Wizard Hat", "A tall, pointed hat full of arcane power.", {"attack": (8, 10), "hp": (7, 9)}),
     (17, "Witch Hat", "Its buckle glints with a sleepy hex.", {"status:sleep": (4, 7)}),
-    (19, "Starry Hat", "Stitched with stars that point out weak spots.", {"crit": (16, 20)}),
+    (19, "Starry Hat", "Stitched with stars that point out weak spots.", {"crit": (8, 10)}),
     (20, "Nightcap", "A cosy cap. Its wearer rests even in battle.", {"regen": (3, 5)}),
     (24, "Mitre", "A tall ceremonial hat that steadies the spirit.", {"hp": (12, 15), "regen": (1, 1)}),
     (26, "Crown", "A crown fit for a champion.", {"attack": (7, 9), "defense": (7, 9)}),
     (27, "Halo", "A glowing ring. Its wearer may hang on with 1 HP.", {"endure": (6, 8)}),
     (28, "Tiara", "A jewelled tiara, light and graceful.", {"hp": (7, 9), "speed": (10, 13)}),
     (29, "Turban", "Thick folds of cloth that soften blows.", {"defense": (14, 18)}),
-    (31, "Mortarboard", "A scholar's cap. Its wearer knows every weakness.", {"super": (40, 50)}),
-    (32, "Archer's Cap", "A feathered cap for sharp-eyed hunters.", {"crit": (8, 10), "speed": (10, 13)}),
+    (31, "Mortarboard", "A scholar's cap. Its wearer knows every weakness.", {"attack": (8, 10), "crit": (5, 5)}),
+    (32, "Archer's Cap", "A feathered cap for sharp-eyed hunters.", {"crit": (5, 5), "speed": (10, 13)}),
     (36, "Headband", "A plain headband tied tight for focus.", {"attack": (7, 9), "speed": (10, 13)}),
     (37, "Tricorne", "A buccaneer's hat. Takes a share of every hit.", {"drain": (6, 10)}),
     (38, "Blue Bandana", "A light bandana for quick getaways.", {"speed": (20, 26)}),
     (39, "Officer's Cap", "Its wearer is always first to act.", {"first": (8, 12)}),
     (40, "Jester's Cap", "Its jingling bells can leave foes stunned.", {"status:paralysis": (5, 8)}),
-    (41, "Pirate Hat", "A captain's hat. Bold and ruthless.", {"attack": (10, 12), "crit": (5, 6)}),
+    (41, "Pirate Hat", "A captain's hat. Bold and ruthless.", {"attack": (10, 12), "crit": (3, 3)}),
     (42, "Red Bandana", "A fiery bandana that boosts strength.", {"attack": (14, 18)}),
-    (43, "Plumed Hat", "A dashing, feathered hat.", {"speed": (14, 18), "crit": (5, 6)}),
+    (43, "Plumed Hat", "A dashing, feathered hat.", {"speed": (14, 18), "crit": (3, 3)}),
     (45, "Straw Hat", "A wide hat that keeps its wearer going.", {"hp": (14, 18)}),
     (56, "Visor Helmet", "A sturdy helmet. Tough, but heavy.", {"defense": (26, 34), "speed": (-10, -10)}),
     (61, "Alpine Hat", "A warm hat for long climbs.", {"hp": (7, 9), "defense": (7, 9)}),
-    (62, "Fez", "A smart hat with a tassel. It sharpens the aim.", {"power": (3, 4), "crit": (8, 10)}),
+    (62, "Fez", "A smart hat with a tassel. It sharpens the aim.", {"crit": (6, 8), "attack": (4, 5)}),
     (63, "Sultan's Turban", "A grand turban with a healing jewel.", {"hp": (9, 11), "regen": (2, 3)}),
 ]
 
@@ -206,14 +210,14 @@ ITEMS = {i.name: i for i in [
     Item("Quick Claw", "held", "A light, sharp claw. Its holder may move first.", {"first": (12, 18)}),
     Item("Leftovers", "held", "Restores a little HP every round.", {"regen": (4, 6)}),
     Item("Shell Bell", "held", "Restores HP when its holder deals damage.", {"drain": (8, 12)}),
-    Item("Scope Lens", "held", "A lens that spots weak points.", {"crit": (16, 20)}),
+    Item("Scope Lens", "held", "A lens that spots weak points.", {"crit": (8, 10)}),
     # Worn: bands, belts and vests.
     Item("Muscle Band", "worn", "A headband that boosts strength.", {"attack": (14, 18)}),
     Item("Assault Vest", "worn", "A sturdy vest for the front line.", {"defense": (14, 18)}),
     Item("Choice Scarf", "worn", "A scarf that makes its wearer quicker.", {"speed": (20, 26)}),
     Item("Focus Band", "worn", "Its wearer may hang on with 1 HP after a knockout hit.", {"endure": (6, 8)},
          min_rarity="Epic"),
-    Item("Expert Belt", "worn", "Powers up super effective moves.", {"super": (40, 50)}),
+    Item("Expert Belt", "worn", "A well-worn belt for all-round fighters.", {"attack": (8, 10), "defense": (8, 10)}),
     Item("Power Bracer", "worn", "A heavy bracer. Strong, but slow.", {"attack": (26, 34), "speed": (-10, -10)}),
     Item("Power Belt", "worn", "A heavy belt. Tough, but slow.", {"defense": (26, 34), "speed": (-10, -10)}),
     # Berries: eaten (at most) once per battle, when they're needed. Cure
@@ -268,27 +272,23 @@ STATUS_AFFIXES = {
     "freeze": ("of the Jynx", (3, 6)),
 }
 
-AFFIXES = [  # about half an item's own effect
-    Affix("Fierce", True, {"attack": (7, 9)}),
-    Affix("Sturdy", True, {"defense": (7, 9)}),
-    Affix("Swift", True, {"speed": (10, 13)}),
-    Affix("Hearty", True, {"hp": (7, 9)}),
-    Affix("Keen", True, {"crit": (8, 10)}),
-    Affix("Mighty", True, {"power": (3, 4)}),
+AFFIXES = [  # about a third of an item's own effect
+    Affix("Fierce", True, {"attack": (5, 6)}),
+    Affix("Sturdy", True, {"defense": (5, 6)}),
+    Affix("Swift", True, {"speed": (7, 9)}),
+    Affix("Hearty", True, {"hp": (5, 6)}),
+    Affix("Keen", True, {"crit": (3, 4)}),
     Affix("Hasty", True, {"first": (3, 6)}, weight=2),
     Affix("Draining", True, {"drain": (3, 6)}, weight=2),
-    Affix("of the Machamp", False, {"attack": (7, 9)}),
-    Affix("of the Onix", False, {"defense": (7, 9)}),
-    Affix("of the Pidgeot", False, {"speed": (10, 13)}),
-    Affix("of the Snorlax", False, {"hp": (7, 9)}),
-    Affix("of the Tauros", False, {"attack": (4, 5), "speed": (5, 6)}),
-    Affix("of the Golem", False, {"defense": (4, 5), "hp": (4, 5)}),
-    Affix("of the Scyther", False, {"crit": (4, 5), "attack": (4, 5)}),
-    Affix("of the Hitmonlee", False, {"power": (2, 2), "speed": (5, 6)}),
+    Affix("of the Machamp", False, {"attack": (5, 6)}),
+    Affix("of the Onix", False, {"defense": (5, 6)}),
+    Affix("of the Pidgeot", False, {"speed": (7, 9)}),
+    Affix("of the Snorlax", False, {"hp": (5, 6)}),
+    Affix("of the Tauros", False, {"attack": (3, 3), "speed": (4, 4)}),
+    Affix("of the Golem", False, {"defense": (3, 3), "hp": (3, 3)}),
+    Affix("of the Scyther", False, {"crit": (3, 3), "attack": (3, 3)}),
     Affix("of the Chansey", False, {"regen": (2, 3)}, weight=2),
-    *(Affix(prefix, True, {f"added:{t}": (9, 12)}, weight=1)
-      for t, (prefix, _) in TYPE_AFFIXES.items() if prefix),
-    *(Affix(suffix, False, {f"power:{t}": (9, 12)}, weight=1)
+    *(Affix(suffix, False, {f"power:{t}": (6, 8)}, weight=1)
       for t, (_, suffix) in TYPE_AFFIXES.items()),
     *(Affix(suffix, False, {f"status:{s}": chance}, weight=1)
       for s, (suffix, chance) in STATUS_AFFIXES.items()),
@@ -682,7 +682,7 @@ def money_text(amount: int) -> str:
     return f"₽{amount:,}"
 
 
-GEAR_VERSION = 3  # saved gear from before version 3 was rolled under older rules
+GEAR_VERSION = 4  # saved gear from before version 4 was rolled under older rules (4: the gear rework)
 
 
 def updated_gear(gear: Gear, rng: random.Random | None = None) -> Gear:

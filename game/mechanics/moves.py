@@ -54,7 +54,7 @@ class Move:
     recoil: float = 0.0  # the user takes this share of the damage dealt
     recharge: bool = False  # the user must rest the next round (Hyper Beam)
     self_confuse: bool = False  # the user becomes confused afterwards (Thrash)
-    crit_ratio: float = 1.0  # × crit chance (8 = Gen 1's high crit ratio)
+    crit_ratio: float = 1.0  # × crit chance (3 = a high crit ratio: 15%; 20 = always)
     sure_hit: bool = False  # ignores the user's lowered accuracy (Swift)
     immune: tuple[str, ...] = ()  # types it doesn't affect (Leech Seed: Grass)
     toxic: bool = False  # its poison gets worse every round (Toxic)
@@ -104,7 +104,7 @@ MOVES = {m.name: m for m in [
     Move("Headbutt", 70, "enemy", type="normal", flinch=30),
     Move("Bite", 60, "enemy", type="normal", flinch=10),
     Move("Horn Attack", 65, "enemy", type="normal"),
-    Move("Slash", 70, "enemy", type="normal", crit_ratio=8),
+    Move("Slash", 70, "enemy", type="normal", crit_ratio=3),
     Move("Hyper Fang", 80, "enemy", type="normal", flinch=10),
     Move("Super Fang", 0, "enemy", type="normal", halve=True),
     Move("Slam", 80, "enemy", type="normal"),
@@ -156,13 +156,13 @@ MOVES = {m.name: m for m in [
     # Fly and Perch: lent to Flying-type party members in a sky battle (sky.py)
     Move("Fly", 90, "enemy", type="flying", charge="{user} flew up high!", airborne=True),
     Move("Perch", 0, "self", type="flying", heal=0.125, perch=True, priority=1),
-    Move("Sky Attack", 140, "enemy", type="flying", charge="{user} is glowing!", crit_ratio=8),
+    Move("Sky Attack", 140, "enemy", type="flying", charge="{user} is glowing!", crit_ratio=3),
     # Grass
     Move("Absorb", 20, "enemy", type="grass", drain=0.5),
     Move("Mega Drain", 40, "enemy", type="grass", drain=0.5),
     Move("Leech Life", 20, "enemy", type="bug", drain=0.5),
     Move("Vine Whip", 35, "enemy", type="grass"),
-    Move("Razor Leaf", 55, "enemy", type="grass", crit_ratio=8),
+    Move("Razor Leaf", 55, "enemy", type="grass", crit_ratio=3),
     Move("Petal Dance", 70, "enemy", type="grass", spread=True, spread_share=0.35, self_confuse=True),
     Move("Solar Beam", 120, "enemy", "solar_beam", type="grass", charge="{user} took in sunlight!"),
     Move("Leech Seed", 0, "enemy", type="grass", seed=1 / 16, immune=("grass",)),
@@ -187,7 +187,7 @@ MOVES = {m.name: m for m in [
     Move("Double Kick", 30, "enemy", type="fighting", hits=(2, 2)),
     # Karate Chop was a Normal move in Gen 1 (as Gust here); Low Kick was
     # Fighting, with a 30% flinch.
-    Move("Karate Chop", 50, "enemy", type="normal", crit_ratio=8),
+    Move("Karate Chop", 50, "enemy", type="normal", crit_ratio=3),
     Move("Low Kick", 50, "enemy", type="fighting", flinch=30),
     Move("Seismic Toss", 0, "enemy", type="fighting", fixed=True),
     Move("Submission", 80, "enemy", type="fighting", recoil=0.25),
@@ -306,7 +306,9 @@ def describe(m: Move) -> str:
         parts.append("Charges for a round first.")
     if m.perch:
         parts.append("Lands to rest its wings: no wing fatigue, but Ground moves hit it until it acts again.")
-    if m.crit_ratio == 8:
+    if m.crit_ratio >= 20:
+        parts.append("Always a critical hit.")
+    elif m.crit_ratio == 3:
         parts.append("High critical-hit ratio.")
     elif m.crit_ratio > 1:
         parts.append(f"Critical hits ×{m.crit_ratio:g} as likely.")

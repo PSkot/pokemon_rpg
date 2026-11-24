@@ -1,7 +1,10 @@
 """Simulate battles for balance (headless): the story's major battles at the
 party's expected levels, and 1v1 matches between every line.
 
-    python tools/balance_sim.py [--runs N] [--part story|duels|all]
+    python tools/balance_sim.py [--runs N] [--part story|duels|all] [--gear] [--talents-only]
+
+--gear dresses the party as a player would (`player_gear`): for Head, Held
+and Worn, the best of 4 random pieces at the area's boss rarities.
 
 Battles use the real battle code (`BattleScene`). The party picks, each
 turn, the move and target with the most expected damage (finishing a
@@ -25,8 +28,9 @@ pygame.init()
 pygame.display.set_mode((10, 10))
 
 from game.engine.scene import Scene  # noqa: E402
-from game.mechanics.combat import damage  # noqa: E402
-from game.mechanics.items import MEDICINE, Bag, Gear  # noqa: E402
+from game.mechanics.combat import damage, expected_damage  # noqa: E402
+from game.mechanics.items import ITEMS, MEDICINE, Bag, Gear  # noqa: E402
+from game.mechanics.moves import Move  # noqa: E402
 from game.mechanics.loot import BOSS_GEAR, TRAINER_GEAR, dress  # noqa: E402
 from game.mechanics.pokemon import EVOLUTIONS, SPECIES, Monster  # noqa: E402
 from game.mechanics.status import STATUSES  # noqa: E402
@@ -50,6 +54,39 @@ def member(line: str, level: int, talents: bool = True, berry: bool = False) -> 
     if berry:  # (the starter's Common Oran Berry)
         m.equip(Gear.roll("Oran Berry", "Common", level=min(level, 5)))
     return m
+
+
+def _gear_score(m: Monster) -> float:
+    """How good a player would think `m`'s gear is: a standard move's
+    expected damage × how much a standard hit takes of its HP (inversely)."""
+    offense = expected_damage(m, Move("Standard", 70, "enemy", type=m.species.types[0])) or 1.0
+    bulk = m.max_hp * (m.defense + m.base_special * (1 + m.gear_bonus("defense") / 100)) / 2
+    return offense * bulk ** 0.8  # (a little more weight on hitting: players lean that way)
+
+
+def player_gear(m: Monster, rarities, rng: random.Random, tries: int = 4) -> None:
+    """Dress `m` as a player would: Head, Held and Worn each the best (by
+    `_gear_score`) of `tries` random pieces at `rarities` (item level: its own)."""
+    for slot in ("head", "held", "worn"):
+        best, best_score = None, -1.0
+        for _ in range(tries):
+            rarity = rng.choices([r for r, _ in rarities], weights=[w for _, w in rarities])[0]
+            item = rng.choice([n for n, i in ITEMS.items() if i.slot == slot and i.drops_at(rarity)])
+            piece = Gear.roll(item, rarity, rng, level=m.level)
+            old = m.gear.get(slot)
+            m.gear[slot] = piece
+            score = _gear_score(m)
+            if old is not None:
+                m.gear[slot] = old
+            else:
+                m.gear.pop(slot)
+            if score > best_score:
+                best, best_score = piece, score
+        m.equip(best)
+        m.hp = m.max_hp
+
+
+GEAR = False  # --gear
 
 
 def _expected(user, move, target) -> float:
@@ -198,6 +235,9 @@ def run_story(runs: int, talents: bool = True) -> None:
                 for r in range(runs):
                     random.seed(hash((name, starter, partner, r, talents)) & 0xFFFFFFFF)
                     party = [member(starter, lv, talents, berry=True)] + [member(p, plv, talents) for p in partner or ()]
+                    if GEAR:
+                        for m in party:
+                            player_gear(m, rarities, random)
                     bag = Bag()
                     for n, k in potions.items():
                         bag.add_medicine(n, k)
@@ -253,10 +293,15 @@ def main() -> None:
     ap.add_argument("--runs", type=int, default=30)
     ap.add_argument("--part", default="all", choices=("story", "duels", "all"))
     ap.add_argument("--level", type=int, default=25)
+    ap.add_argument("--gear", action="store_true", help="the party wears gear, as a player would")
+    ap.add_argument("--talents-only", action="store_true", help="story battles: only with talents")
     args = ap.parse_args()
+    global GEAR
+    GEAR = args.gear
     if args.part in ("story", "all"):
         run_story(args.runs, True)
-        run_story(args.runs, False)
+        if not args.talents_only:
+            run_story(args.runs, False)
     if args.part in ("duels", "all"):
         run_duels(args.runs, args.level)
 
