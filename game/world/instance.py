@@ -29,7 +29,7 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
-                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_18, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_18, FUCHSIA_GYM, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
                      UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, POKEMON_TOWER, PoolEntry,
                      Theme)
 from .spinners import carve, layout_of
@@ -296,6 +296,23 @@ ROUTES = {r.key: r for r in [
           blocked="The gym's glass doors are locked. A sign: \"Closed for watering. - Erika\"",
           blocked_done="Vileplume: Oh, it's you again... The Rainbow Badge suits you. Do come back to smell the "
                        "flowers."),
+    # The Fuchsia Gym (quest "soul_badge"): Koga's ninja dojo. Invisible
+    # walls and poison vents on the walk to the arena (`puzzle` "ninja",
+    # scenes/ninja.py), then the Ninja Clan's two waves of Poison Pokémon,
+    # and the clan itself, led by a giant Weezing (Gen 1's Koga: Koffing,
+    # Muk, Koffing, Weezing; Muk has no art: Grimer stands in).
+    Route("fuchsia_gym", "Fuchsia Gym", FUCHSIA_GYM, maps=1, towns=("fuchsia", "fuchsia"), boss=True,
+          # (a party of three at Lv47/46/46 with 3 Hyper Potions and 2 Full Heals wins about 71%,
+          # tools/balance_sim.py, not counting the gas on the way in)
+          boss_group=(("weezing", 54), ("koffing", 51), ("grimer", 51), ("golbat", 51)), boss_scale=2,
+          trainer="Ninja Clan", boss_chest="fancy", prize=99, boss_loot=MID_BOSS,
+          waves=(Wave("Ninja Clan Initiates", (("koffing", 49), ("golbat", 49), ("grimer", 49)), 25),
+                 Wave("Ninja Clan Shadows", (("venomoth", 50), ("arbok", 50), ("koffing", 50)), 30)),
+          wave_team=3, wild=False, building="Fuchsia Gym", cols=64, puzzle="ninja",
+          needs=("soul_badge", "active"),
+          blocked="The Fuchsia Gym's doors are shut, and something hisses on the other side. A sign: \"Closed "
+                  "for ninja training. Intruders will be poisoned.\"",
+          blocked_done="Weezing: Hsss... The Soul Badge suits you. Koga's students still talk about your visit."),
     # Team Rocket's Hideout under the Celadon Game Corner (quest
     # "rocket_hideout"), as in Red/Blue: four basement floors of Rockets
     # (bands; no wild Pokémon). A guard at the poster blocks the way in; on

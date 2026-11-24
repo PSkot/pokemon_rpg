@@ -535,6 +535,26 @@ CELADON_GYM = Theme(
     built=True,
 )
 
+# The Fuchsia Gym: Koga's ninja dojo (painted wall and backdrop): shoji
+# screens, lanterns, weapon racks, a purple haze; a flat wooden floor
+# (`puzzle` "ninja": invisible walls and poison vents, scenes/ninja.py).
+FUCHSIA_GYM = Theme(
+    "fuchsia_gym", "Fuchsia Gym",
+    Palette(fill=(74, 54, 46), fill_dark=(50, 36, 32), fill_light=(104, 78, 64),
+            top=(150, 112, 76), top_dark=(112, 82, 56), top_light=(186, 146, 104),
+            platform=(120, 84, 120), platform_dark=(80, 54, 84), platform_light=(160, 120, 164)),
+    pool=(PoolEntry("koffing", 1, (44, 46)),),
+    backdrop=Backdrop(art="fuchsia_gym.png", sky_top=(46, 30, 60), sky_bottom=(96, 70, 110),
+                      hills=((80, 60, 90), (72, 54, 82)), field_far=(150, 112, 76), field_near=(126, 92, 62),
+                      stripe=(138, 102, 68), shadow=(70, 50, 40)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(40, 26, 56), sky_bottom=(90, 60, 110), far_rock=(60, 44, 70), near_rock=(70, 52, 80),
+                  glow=None, wall="fuchsia_gym.png", dim=30, near_rocks=False),
+    doorway="",
+    built=True,
+)
+
 # Team Rocket's Hideout under the Celadon Game Corner: steel corridors
 # (painted wall and backdrop): wall plates, R banners and consoles, a flat
 # built floor. No wild Pokémon: only Rockets.

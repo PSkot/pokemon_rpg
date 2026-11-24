@@ -40,6 +40,7 @@ from .battle import BattleScene
 from .gym import TeamPick
 from .power_grid import AMBUSH, PowerGrid
 from .spinners import SpinnerFloor
+from .ninja import NinjaDojo
 from .spores import SporeGarden
 from .summary import SummaryScene
 
@@ -715,6 +716,8 @@ class OverworldScene(MapScene):
         self.spinners = SpinnerFloor(level, layout) if layout else None
         self.spores = (SporeGarden(level, random.Random(instance.seed), sparks=route.puzzle == "sparks")
                        if route.puzzle in ("spores", "sparks") and level.boss else None)
+        # The Fuchsia Gym's invisible walls and poison vents (carved in now: the tiles are already drawn).
+        self.dojo = NinjaDojo(level, random.Random(instance.seed)) if route.puzzle == "ninja" and level.boss else None
         # The doorways in and out; a dungeon room has its stairs instead.
         art = level.theme.doorway
         self.entry = Doorway(level.entry_x, level.ground_y(level.entry_x), palette, art=art)
@@ -1026,6 +1029,8 @@ class OverworldScene(MapScene):
             return
         if self.spores:
             self.spores.update(dt, self.t, self.player.body_rect, self.party, random)
+        if self.dojo:
+            self.dojo.update(dt, self.t, self.player, self.party, random)
         for wild in self.wild:
             wild.facing = 1 if self.player.x > wild.x else -1
             touching = wild.touches(self.player.body_rect, self.level)
@@ -1124,6 +1129,8 @@ class OverworldScene(MapScene):
             self.spinners.draw(layer, self.t)
         if self.spores:
             self.spores.draw(layer, self.t)
+        if self.dojo:
+            self.dojo.draw(layer, self.t)
         for chest in self.chests:
             chest.draw(layer)
         for ball in self.balls:
@@ -1143,6 +1150,8 @@ class OverworldScene(MapScene):
             return
         if self.spores and self.spores.toast_t:  # what a spore cloud just did
             ui.text(window, self.spores.toast, (320, 300), ui.WHITE, size=24, align="center")
+        if self.dojo and self.dojo.toast_t:  # an invisible wall bumped, or a puff of gas
+            ui.text(window, self.dojo.toast, (320, 300), ui.WHITE, size=24, align="center")
         self._draw_door_label(window)
         near = self._folk_at_player()
         if near:  # their name, over them

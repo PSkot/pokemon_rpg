@@ -651,6 +651,29 @@ yet.
 - **Rewards:** ₽2,800, 2,600 XP, 2 Hyper Potions and a **Rare** gear piece
   (item level 46).
 
+### The Soul Badge
+
+- **Starts:** automatically when *Fuchsia City* is done.
+- **Steps:** Up at the **Fuchsia Gym** (Fuchsia City; shut before the
+  quest): Koga's ninja dojo (route "fuchsia_gym", theme `FUCHSIA_GYM`,
+  painted wall and backdrop). On the walk to the arena (`puzzle` "ninja",
+  `scenes/ninja.py`): **8 invisible walls** (2 or 3 tiles high, some 2
+  wide: solid but unseen; bumping one makes it shimmer into view, and it
+  stays faintly visible) and **4 poison vents** puffing gas every 3.2 s for
+  1.1 s (walking into a puff poisons a party member with no status that
+  isn't a Poison type; it carries into the waves). Then the **Ninja Clan**,
+  fought by three: Initiates (Koffing, Golbat, Grimer 49), Shadows
+  (Venomoth, Arbok, Koffing 50), then the clan: a giant **Weezing 54**
+  with Koffing, Grimer and Golbat 51 (Gen 1's Koga: Koffing, Muk, Koffing,
+  Weezing; Grimer stands in for Muk). Weezing: "Take the Soul Badge" (key
+  item).
+- **Balance:** a party of three at Lv47/46/46 with 3 Hyper Potions and 2
+  Full Heals wins about 71% (`tools/balance_sim.py`; the gas on the way in
+  isn't counted: Full Heals or Antidotes help).
+- **Rewards:** ₽3,000, 2,800 XP, 3 Hyper Potions, 3 Full Heals and a
+  **Rare** gear piece (item level 48), on top of the clan's prize and the
+  gym's fancy chest.
+
 ### Route 12
 
 From the Route 11 Gate's east doorway (past its Snorlax) up to Lavender

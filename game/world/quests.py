@@ -1282,6 +1282,22 @@ QUESTS = {q.key: q for q in [
         done_dialogue=(("", "Fuchsia City: a town by the sea, home of the Safari Zone and of Koga, the ninja gym "
                             "leader."),),
     ),
+    # The Fuchsia Gym, as in Red/Blue: Koga's ninja dojo of Poison Pokémon,
+    # behind walls nobody can see.
+    Quest(
+        "soul_badge", "The Soul Badge",
+        "Koga's Ninja Clan trains in the Fuchsia Gym: Poison Pokémon behind walls nobody can see, and vents that "
+        "puff poison gas. Feel your way through, bring Antidotes and Full Heals, and mind the fumes.",
+        requires=("to_fuchsia",),
+        steps=(Step("defeat", "fuchsia_gym", "Defeat the Ninja Clan in the Fuchsia Gym (Fuchsia City)",
+                    dialogue=(("Weezing", "Hsssss... You found your way through walls you couldn't see. Koga would "
+                                          "be proud."),
+                              ("Weezing", "Take the Soul Badge. You've earned it, ninja."),
+                              ("", "You received the Soul Badge!")),
+                    gives=("Soul Badge",)),),
+        money=3000, xp=2800,
+        rewards=(("medicine", "Hyper Potion", 3), ("medicine", "Full Heal", 3), ("gear", None, "Rare", 48)),
+    ),
     # The evolution stones: one quest each, from after the Rainbow Badge (the
     # Fire and Water Stones come later, with Cinnabar and the coast). A stone
     # evolves one Pokémon and is used up (bag: Key items).

@@ -811,6 +811,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Route 16 | Common | (no boss) |
 | Route 12 | Common | (no boss) |
 | Route 18 | Common | (no boss) |
+| Fuchsia Gym | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Ninja Clan, the fancy chest) |
 | Hidden Spring | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Spring Squatters, a chest) |
 | Skate Road | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: Tony's crew, a chest); Tony's Bike Helmet always drops, once |
 | Snorlax's Rude Awakening (both) | (no wild Pokémon or chests) | none: the Snack Pack / Dream Eaters drop nothing; Snorlax joins the first time (quest *The Sleeping Giant*) |
@@ -1451,6 +1452,7 @@ always the same spot), with its team in a row.
 | Pewter Gym (boss) | Boulder Gang (Brock) | Geodude 14, Onix 16 | ₽792 |
 | Cerulean Gym (boss) | Cascade Crew (Misty) | Starmie 22, Staryu 19 | ₽940 |
 | Vermilion Gym (boss) | Thunder Battalion (Lt. Surge) | Raichu 31, Voltorb 29, Magnemite 29 (after its two waves, fought by three) | ₽1,534 |
+| Fuchsia Gym (boss) | Ninja Clan (Koga) | Weezing 54, Koffing 51, Grimer 51, Golbat 51 (after its two waves: Koffing 49, Golbat 49, Grimer 49; Venomoth 50, Arbok 50, Koffing 50; fought by three) | ₽2,524 |
 | Celadon Gym (boss) | Blossom Troupe (Erika) | Vileplume 39, Victreebel 38, Tangela 37 (after its two waves: Oddish 35, Bellsprout 35, Gloom 36; Weepinbell 36, Exeggcute 36, Gloom 37; fought by three) | ₽1,831 |
 | Route 3, map 1 | Alley Gang (Youngster) | Rattata 15, Ekans 15 | ₽112 |
 | Route 3, map 1 | Crawler Swarm (Bug Catcher) | Caterpie 14, Weedle 14, Caterpie 14 | ₽70 |

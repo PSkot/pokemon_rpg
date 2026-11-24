@@ -487,6 +487,11 @@ you are working on.
   `dept_store.ROOFTOP`) and the Poké Flute, then a boss battle (route
   "snorlax_wakes" or "snorlax_wakes_east"); it joins, and leaves its road
   open. `snorlax_second`: the flute alone wakes the other one (no join).
+- The Fuchsia Gym's hazard (`Route.puzzle` "ninja", `scenes/ninja.py`,
+  `NinjaDojo`): invisible walls are SOLID tiles carved into the level
+  after `MapScene` has rendered its tiles (so they aren't drawn); bumping
+  one sets `HiddenWall.found` (a faint pane from then on); floor vents
+  poison like the spores (`spores.py`).
 - The skate road (`Theme.skate`): `level._downhill` steps the ground down
   to the right; `Player.skating` gives the player momentum (`vx`, 1-tile
   steps are ramps) and draws a board under it (`tileset.draw_skateboard`,
