@@ -492,6 +492,13 @@ you are working on.
   after `MapScene` has rendered its tiles (so they aren't drawn); bumping
   one sets `HiddenWall.found` (a faint pane from then on); floor vents
   poison like the spores (`spores.py`).
+- The Safari Zone (`world/safari.py`: `Visit`, `node`; `scenes/safari.py`:
+  `SafariScene`, `SafariGate`): each map is an `OverworldScene` on a
+  one-room `Route` built on the fly (its stairs: the door back and the
+  doors on, all "out" doorways that `SafariScene._go` handles); the maze is
+  a pure function of the visit's seed and the door path. `MapScene.draw_front`
+  draws over the player (its tall grass). `location()` saves it as Fuchsia.
+  `quests.visit` honours a visit step's `takes` (`waiting` until then).
 - The skate road (`Theme.skate`): `level._downhill` steps the ground down
   to the right; `Player.skating` gives the player momentum (`vx`, 1-tile
   steps are ramps) and draws a board under it (`tileset.draw_skateboard`,

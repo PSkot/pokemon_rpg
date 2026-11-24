@@ -232,6 +232,9 @@ class TownScene(MapScene):
             else:
                 self.show(quest_ui.Dialogue([("", building.note)]))
             return
+        if building and building.inside == "safari":  # the Safari Zone's desk (scenes/safari.py)
+            self._safari_gate()
+            return
         if building and building.inside == "recruit":
             self.next_scene = Transition(self, RecruitScene(self.game, self.town), flashes=0)
             return
@@ -278,6 +281,21 @@ class TownScene(MapScene):
             first_map = OverworldScene(instance, self.game)
             saves.autosave(first_map)
             self.next_scene = Transition(self, first_map, flashes=0)
+
+    def _safari_gate(self) -> None:
+        from .safari import SafariGate, SafariScene
+        from ..world import safari
+        gate = SafariGate(self.game.bag.money)
+
+        def chosen():
+            if gate.picked != "enter":
+                return
+            if self.game.bag.money < safari.FEE:
+                self.show(quest_ui.Dialogue([("", "You can't afford the entrance fee.")]))
+                return
+            self.game.bag.money -= safari.FEE
+            self.next_scene = Transition(self, SafariScene(self.game, safari.Visit()), flashes=0)
+        self.show(gate, after=chosen)
 
     def prompt(self) -> tuple[float, float] | None:
         folk = self._folk_at_player()

@@ -656,6 +656,42 @@ yet.
 - **Rewards:** ₽2,800, 2,600 XP, 2 Hyper Potions and a **Rare** gear piece
   (item level 46).
 
+### The Safari Zone (Part A: the maze)
+
+A building at Fuchsia City's east end (`inside` "safari"; placeholder art).
+Up at it: pay **₽500** for **600 steps** (`safari.FEE`, `STEPS`; one step
+per tile walked, shown on screen). At 0 steps: "Ding-dong! Time's up!",
+back outside. Saving inside saves outside (a visit doesn't outlast a save).
+
+- **A maze, rerolled every visit** (`world/safari.py`): every map has a
+  door back (left: to the map it was reached from; on the first map,
+  out) and up to three doors on. Maps are worked out from the visit's seed
+  and the path of doors taken, so going back leads to the same map.
+- **The true path** is 9 maps long; on each of its maps one door leads on
+  along it, and a **clue** points to it: three-toed **tracks** leading to
+  it, or a **signpost** riddle ("The way on is the middle door.", "Not the
+  first door, nor the last."). No clues anywhere off the true path.
+- **Side branches:** the other doors lead into branches 1–2 maps long that
+  end in **dead ends** (no doors on): back out the way you came.
+- **Depth** is the number of doors passed, right or wrong; every 3 the
+  zone changes (its look, and its Pokémon): **Outer Grassland** (meadow),
+  **Deep Woods** (forest), **Ancient Marsh** (teal dusk). So the scenery
+  never tells a right door from a wrong one.
+- **Tall grass** on every map (drawn over the player): each step in it
+  has an 8% chance of a wild Pokémon: Scyther (any zone), Chansey (the
+  Marsh only). (Their games come in part B: for now it just wanders off.)
+- **Key items:** the Warden's **Gold Teeth** in a dead end of the Marsh;
+  **HM03 Surf** at the heart (the true path's end: the "Secret House").
+
+### The Warden's Teeth
+
+- **Starts:** automatically when *Fuchsia City* is done.
+- **Steps:** bring the **Gold Teeth** (Safari Zone, a Marsh dead end) to
+  the Warden's House (a "visit" step that `takes` them: until then he just
+  mumbles, `Step.waiting`).
+- **Rewards:** ₽2,500, 2,300 XP, 2 Hyper Potions, and **HM04 Strength**
+  (key item; boulders come later).
+
 ### The Soul Badge
 
 - **Starts:** automatically when *Fuchsia City* is done.

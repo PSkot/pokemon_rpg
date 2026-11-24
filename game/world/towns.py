@@ -553,9 +553,9 @@ TOWNS = {t.key: t for t in [
              "Fuchsia City is on past here, along Route 18, by the sea. Watch out for the bird keepers. Squeak.",
          )),)),
     # Fuchsia City, by the sea at Route 18's east end (as in Red/Blue):
-    # Koga's gym (shut, for later), the Warden's house, and the Safari
-    # Zone (later: it isn't built yet).
-    Town("fuchsia", "Fuchsia City", 96, (
+    # Koga's gym, the Warden's house, and the Safari Zone (`inside`
+    # "safari": scenes/safari.py).
+    Town("fuchsia", "Fuchsia City", 108, (
         Building("Pokémon Center", (FUNCTIONAL, 0), 8),
         Building("Poké Mart", (FUNCTIONAL, 2), 20, inside="mart"),
         Building("Recruitment Center", (HOUSES, 3), 32, inside="recruit"),
@@ -565,6 +565,7 @@ TOWNS = {t.key: t for t in [
         Building("Warden's House", (HOUSES, 0), 66,
                  note="The Safari Zone Warden's house. Someone inside is mumbling: \"My teeth... where did I put "
                       "my teeth...\""),
+        Building("Safari Zone", (FUNCTIONAL, 3), 95, inside="safari"),
     ), exits=(("left", "route_18_east"),), home_col=12, board_col=44,
        mart=("Super Potion", "Hyper Potion", "Revive", "Full Heal", "Escape Rope", "Antidote", "Burn Heal",
              "Awakening", "Paralyze Heal", "Ice Heal"),
@@ -575,7 +576,7 @@ TOWNS = {t.key: t for t in [
                "The gym's ninjas are always training. You'll hear them before you see them. If you see them.",
            )),
            Folk("fuchsia_kangaskhan", "Kangaskhan", "kangaskhan", 60, (
-               "The Safari Zone is just north of town. Rare Pokémon live there, like me! Well, my cousins.",
+               "The Safari Zone is at the east end of town. Rare Pokémon live deep inside. Like me! Well, my cousins.",
                "My cousin Tony rides the skate road. He never takes that helmet off. Not even to sleep.",
            )),
            Folk("fuchsia_seaking", "Seaking", "seaking", 78, (

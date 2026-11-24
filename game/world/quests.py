@@ -1298,6 +1298,27 @@ QUESTS = {q.key: q for q in [
         money=3000, xp=2800,
         rewards=(("medicine", "Hyper Potion", 3), ("medicine", "Full Heal", 3), ("gear", None, "Rare", 48)),
     ),
+    # The Safari Zone Warden lost his Gold Teeth in the Safari Zone (as in
+    # Red/Blue): they lie in a dead end of its deepest zone (world/safari.py).
+    # He gives HM04 Strength for them.
+    Quest(
+        "warden_teeth", "The Warden's Teeth",
+        "The Safari Zone Warden lost his Gold Teeth somewhere deep in the Safari Zone, and nobody can understand a "
+        "word he says without them. Find them, deep in, in one of the dead ends.",
+        requires=("to_fuchsia",),
+        steps=(Step("visit", "Warden's House", "Find the Warden's Gold Teeth deep in the Safari Zone, and bring them "
+                                               "to his house (Fuchsia City)", town="fuchsia",
+                    takes=("Gold Teeth",), gives=("HM04 Strength",),
+                    waiting=(("Warden", "Mmf! Mmmf mf, mfmf! (He points at the Safari Zone, then at his empty "
+                                        "mouth.)"),),
+                    dialogue=(("Warden", "Mmf? MMF! My teeth!"),
+                              ("", "The Warden pops the Gold Teeth back in."),
+                              ("Warden", "Ah, that's better! Thank you, young one. Here: a little something for your "
+                                         "trouble."),
+                              ("", "You received HM04 Strength! (It'll move boulders, once you meet some.)"))),),
+        money=2500, xp=2300,
+        rewards=(("medicine", "Hyper Potion", 2),),
+    ),
     # The evolution stones: one quest each, from after the Rainbow Badge (the
     # Fire and Water Stones come later, with Cinnabar and the coast). A stone
     # evolves one Pokémon and is used up (bag: Key items).
@@ -1657,7 +1678,13 @@ def folk_quests(game, folk: str) -> list[Quest]:
 
 
 def visit(game, town: str, building: str) -> Event:
-    """The player pressed Up at `building` in `town`."""
+    """The player pressed Up at `building` in `town` (a step there that wants
+    key items the player hasn't got yet says its `waiting` lines instead)."""
+    for quest in active(game):
+        s = current(game, quest.key)
+        if (s.kind == "visit" and s.town == town and s.target == building and s.takes
+                and not all(i in game.bag.key_items for i in s.takes)):
+            return Event(dialogue=list(s.waiting))
     return _advance_where(game, lambda s: s.kind == "visit" and s.town == town and s.target == building)
 
 

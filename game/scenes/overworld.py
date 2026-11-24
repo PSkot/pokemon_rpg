@@ -576,6 +576,9 @@ class MapScene(Scene):
         self.moved()
         self._follow()
 
+    def draw_front(self, layer: pygame.Surface) -> None:
+        """What's drawn over the player (the Safari Zone's tall grass)."""
+
     def _follow(self) -> None:
         """Keep the player in the middle of the view, within the map."""
         view_w = settings.LOGICAL_SIZE[0]
@@ -590,6 +593,7 @@ class MapScene(Scene):
         self.layer.fill((0, 0, 0, 0))
         self.draw_things(self.layer)
         self.player.draw(self.layer, self.debug, self.party[0])
+        self.draw_front(self.layer)
         prompt = None if self.panel else self.prompt()
         if prompt:
             draw_prompt(self.layer, *prompt, self.t)
