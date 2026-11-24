@@ -84,18 +84,18 @@ you are working on.
   Gear is rolled (`Gear.roll`): the item's own effect plus random affixes
   (prefixes/suffixes, e.g. "Fierce Red Bandana of the Aerodactyl"; suffixes
   are named after Pokémon). Rarity (Common/Uncommon/Rare/Epic/Legendary)
-  sets the affix count (0, 1, 2–3, 3–4, 4–5) and multiplies rolled
-  bonuses, not penalties. Item level (`Gear.level`) = the level needed to
-  equip it (`usable_by`); ranges are a Lv50 Common item's and the level
-  scales them (`items.scale`: stats/power/damage/crit × level/50, chances
-  and specials × √(level/50), berry healing by absolute HP × (level+5)/55),
-  so early gear is mild; every kind of bonus is priced by its worth (Super
-  effective 40–50% vs Attack 14–18%). Drops get the defeated
-  Pokémon's level, chests the area's level range. Mods:
-  stats in %, `crit` (% points, base 6.25%), `power` (added to move power),
-  `power:<type>` (% on that type's moves), `added:<type>` (every hit deals
-  that % extra as that type), `status:<status>` (% chance a hit inflicts
-  it), `first` (Quick Claw), `endure` (Focus Band), `super`, `regen`,
+  sets the affix count (0, 1, 1–2, 2, 2–3) and multiplies rolled
+  bonuses, not penalties (×1.0 to ×1.6). Item level (`Gear.level`) = the
+  level needed to equip it (`usable_by`); ranges are a Lv50 Common item's
+  and the level scales them gently (`items.scale`: stats/type damage/crit
+  × `STAT_SCALE` 0.25 + 0.25 × level/100, chances and specials ×
+  √(level/50), berry healing by absolute HP × (level+5)/55); every kind of
+  bonus is priced by its worth. Drops get the defeated Pokémon's level,
+  chests the area's level range. Mods (six for numbers, since the gear
+  rework, `GEAR_VERSION` 4): stats in %, `crit` (% points; base 5%, an
+  ordinary move's capped at 20%: `combat.crit_chance`), `power:<type>` (%
+  on that type's moves); and effects: `status:<status>` (% chance a hit
+  inflicts it), `first` (Quick Claw), `endure` (Focus Band), `regen`,
   `drain`, `berry_*` (Oran heals absolute HP; cure berries
   (`Item.cures`) have a `berry_cure`% chance each round end their holder
   has the status). Berries roll berry affixes (`BERRY_AFFIXES`: Juicy,
@@ -445,7 +445,7 @@ you are working on.
   for a piece, slot picked; `GEM_POKEMON`: Dratini/Chansey/Lapras, each
   once, "mew:<species>" in `Game.trainers`). 25 floors (`TOWER_ROUTES`,
   "tower_1".."tower_25", `Route.tower` = the floor): each a gym-like hall of
-  waves then a master's band (`trainer`), Lv35 → Lv68
+  waves then a master's band (`trainer`), Lv32 → Lv65
   (`floor_level`, `TIER_LEVELS`), five tiers (`TIER_NAMES`, `POOLS`, `WAVES`, `BAND`,
   `WORN`, `TALENTS`; themes `TOWER_THEMES`, walls and backdrops
   `tower_1..5.png`; giant masters on every fifth, `BOSS_FLOORS`), opening

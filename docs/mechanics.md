@@ -1532,12 +1532,14 @@ tower works, and Leave. Up at the stairs also starts a climb.
 | Celestial Summit | 16–20 | the edge of space | 4 + 1 | 4 (5) | all | 2: Rare 2 / Epic 3 |
 | Eclipse Throne | 21–25 | black and gold under an eclipse | 4 + 1 | 5 (6) | all | 3: Rare 1 / Epic 5 |
 
-- **Levels:** each tier starts about at the party's expected level when it
-  opens (Lv38 after the Celadon Gym, about 48 at 6 badges, 52 at 7, 56 at
-  8 and 63 as Champion) and climbs a level a floor (`tower.TIER_LEVELS`):
-  floors 1–5 Lv35–40, 6–10 Lv47–51, 11–15 Lv52–56, 16–20 Lv57–61 and 21–25
-  Lv63–68 (floors 21–24: 63, 64, 65, 67). Challengers are 1 below that (or 2),
-  and masters 1 above (or 0).
+- **Levels:** each tier starts a few levels below the party's expected
+  level when it opens (Lv38 after the Celadon Gym, about 48 at 6 badges,
+  52 at 7, 56 at 8 and 63 as Champion) and climbs a level a floor
+  (`tower.TIER_LEVELS`): floors 1–5 Lv32–37, 6–10 Lv44–48, 11–15 Lv49–53,
+  16–20 Lv54–58 and 21–25 Lv60–65. Challengers are 1 below that (or 2), and
+  masters 1 above (or 0). (3 lower since the gear rework: a geared team of
+  three at the floor's old level wins about 88% on floor 1, 75% on floor 5,
+  58% on floors 6–8 and 88% on floor 10.)
 - **Pools:** each tier draws from its own pool of strong evolved Pokémon
   (`tower.POOLS`, no legendaries): Pidgeot, Machoke and Kadabra low down;
   Arcanine, Nidoking, Dragonair and Scyther next; then Alakazam, Golem,

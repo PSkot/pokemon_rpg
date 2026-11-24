@@ -12,7 +12,7 @@ and grander the higher it goes.
   Badge, the 4th), 6-10 at 6 badges, 11-15 at 7, 16-20 at 8 (in any
   order), and 21-25 once the player is Champion.
 - Its battles give XP (as trainers'), no drops or prize money.
-- Enemies' level climbs from Lv35 (floor 1) to Lv68 (floor 25), each tier
+- Enemies' level climbs from Lv32 (floor 1) to Lv65 (floor 25), each tier
   starting about at the party's level when it opens (`TIER_LEVELS`); with each
   tier of five floors they come in more waves and bigger bands, wear more
   and better gear and have more talents. Every fifth floor's master is a
@@ -45,10 +45,11 @@ BADGES = ("boulder_badge", "cascade_badge", "thunder_badge", "rainbow_badge", "s
 LEAGUE = "pokemon_league"
 # What opens each tier's floors: badges won (any of them), or "league".
 GATES = (4, 6, 7, 8, "league")
-# Each tier's enemy levels (first floor, last floor): about the party's
-# expected level when it opens (Lv38 at 4 badges, 48 at 6, 52 at 7, 56 at
-# 8, 63 as Champion), climbing to a few above.
-TIER_LEVELS = ((35, 40), (47, 51), (52, 56), (57, 61), (63, 68))
+# Each tier's enemy levels (first floor, last floor): a few below the
+# party's expected level when it opens (Lv38 at 4 badges, 48 at 6, 52 at
+# 7, 56 at 8, 63 as Champion), climbing past it. (3 lower since the gear
+# rework: the party's gear no longer outgrows its enemies'.)
+TIER_LEVELS = ((32, 37), (44, 48), (49, 53), (54, 58), (60, 65))
 
 # What each tier's bands are made of: strong Pokémon, the strongest at the top.
 POOLS = (
@@ -97,7 +98,7 @@ def tier(floor: int) -> int:
 
 def floor_level(floor: int) -> int:
     """Its enemies' level: each tier from its first floor's to its last's
-    (`TIER_LEVELS`): Lv35 on floor 1 up to Lv68 on floor 25."""
+    (`TIER_LEVELS`): Lv32 on floor 1 up to Lv65 on floor 25."""
     low, high = TIER_LEVELS[tier(floor)]
     return low + round(((floor - 1) % TIER) * (high - low) / (TIER - 1))
 
