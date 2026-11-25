@@ -153,11 +153,29 @@ class SafariScene(OverworldScene):
         return self.player.on_ground and any(a <= self.player.x <= b for a, b in self.grass)
 
     def _encounter(self) -> None:
+        """A wild Pokémon leaps out of the grass and challenges the player to
+        its game (scenes/safari_games.py): Play, or Decline and move on."""
+        from .safari_games import Challenge, game_for
         zone = self.node.zone
         species = random.choices([s for s, _ in zone.grass], weights=[w for _, w in zone.grass])[0]
         name = SPECIES[species].name
-        self.show(quest_ui.Dialogue([("", f"A wild {name} leaps out of the tall grass! It wants to play a game..."),
-                                     ("", f"(Safari games come next. The {name} wanders off.)")]))
+        challenge = Challenge(species)
+
+        def chosen():
+            if challenge.picked != "play":
+                self.show(quest_ui.Dialogue([("", f"You decline. The {name} shrugs and slips back into the grass.")]))
+                return
+            game = game_for(species)(self, species, zone.theme.backdrop, lambda score: self._played(species, score))
+            self.next_scene = Transition(self, game, flashes=0)
+        self.show(challenge, after=chosen)
+
+    def _played(self, species: str, score: int) -> None:
+        """Back from a game: how it went (Kudos come with part C)."""
+        name = SPECIES[species].name
+        verdict = ("The {} looks impressed!" if score >= 30 else "The {} nods." if score >= 15
+                   else "The {} doesn't look impressed.").format(name)
+        self.show(quest_ui.Dialogue([("", f"You scored {score}! {verdict}"),
+                                     ("", f"The {name} bounds back into the tall grass.")]))
 
     def _leave(self) -> None:
         from .town import TownScene  # (it builds on the map scenes)

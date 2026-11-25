@@ -679,7 +679,9 @@ back outside. Saving inside saves outside (a visit doesn't outlast a save).
   never tells a right door from a wrong one.
 - **Tall grass** on every map (drawn over the player): each step in it
   has an 8% chance of a wild Pokémon: Scyther (any zone), Chansey (the
-  Marsh only). (Their games come in part B: for now it just wanders off.)
+  Marsh only). It **challenges you to its game** (Play or Decline: declining
+  costs nothing; part B, see `mechanics.md`, *Safari games*). The score is
+  told afterwards; Kudos for it come in part C.
 - **Key items:** the Warden's **Gold Teeth** in a dead end of the Marsh;
   **HM03 Surf** at the heart (the true path's end: the "Secret House").
 

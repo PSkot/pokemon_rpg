@@ -984,6 +984,27 @@ board goes up and over it, launched upwards at 0.9 × its speed (at most
 running 150 for comparison. Everyone on the map stands on a board (drawn
 9 px up, `SKATE_LIFT`).
 
+## Safari games
+
+`game/scenes/safari_games.py`. A wild Pokémon in the Safari Zone's tall
+grass challenges the player (`Challenge`: Play or Decline). Each game lasts
+**30 s** (`GAME_TIME`) after a "3, 2, 1, Go!", gets faster as it goes, and
+ends with the score (Enter or a tap goes back to the map).
+
+- **Egg Catch** (Chansey): Chansey drifts along the top tossing things
+  down, every 0.7 s at first and 0.35 s at the end; the basket moves at
+  300 px/s (Left/Right, the touch arrows, or tap/drag where it should go).
+  An egg (70%) +1, a golden egg (8%) +3, a Voltorb (22%) −3 and the basket
+  is stunned for 0.7 s. A bot that chases the lowest egg scores 25–39;
+  doing nothing, about 6.
+- **Fruit Slice** (Scyther; touch or mouse only): berries are tossed up
+  from below every 0.75 s at first and 0.4 s at the end (a quarter of the
+  time two at once): Oran and Pecha +1, a golden Razz +3, a Voltorb −5.
+  Swipe through them (hold the mouse button, or a finger); each berry
+  after the first in one swipe (within 0.5 s) is worth +1 more (a combo).
+  A perfect bot scores 50–67; doing nothing, 0.
+- Scores never go below 0.
+
 ## Fly
 
 Once *Learn to Fly* is done: the Town Map (M) flies to any town visited
