@@ -821,6 +821,11 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Fuchsia Gym | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Ninja Clan, the fancy chest) |
 | Hidden Spring | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Spring Squatters, a chest) |
 | Skate Road | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: Tony's crew, a chest); Tony's Bike Helmet always drops, once |
+| Routes 13, 14 | Common | (no boss) |
+| Route 15 | Common | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Thornwood Gang, a chest) |
+| Saffron's gates, Route 7 | (no wild Pokémon or chests) | (no boss) |
+| Silph Co. | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Card Key Guard, the rival and the Rocket Boss: with the battle) |
+| Saffron Gym | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Mind Circle, the fancy chest) |
 | Snorlax's Rude Awakening (both) | (no wild Pokémon or chests) | none: the Snack Pack / Dream Eaters drop nothing; Snorlax joins the first time (quest *The Sleeping Giant*) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
@@ -1554,6 +1559,31 @@ always the same spot), with its team in a row.
 | Route 12, map 1 | Seaside Pals (Jr. Trainer) | Nidorina 43, Weepinbell 43 | ₽860 |
 | Route 12, map 2 | Static Band (Rocker) | Voltorb 44, Electrode 44 | ₽1,100 |
 | Route 12, map 2 | Deep Sea Haul (Fisherman) | Seaking 44, Shellder 43, Horsea 43 | ₽1,505 |
+| Route 13, map 1 | Fence Hoppers (Bird Keeper) | Pidgeotto 45, Spearow 44, Spearow 44 | ₽550 |
+| Route 13, map 1 | Picnic Pals (Jr. Trainer) | Gloom 45, Nidorina 45 | ₽450 |
+| Route 13, map 2 | Petal Parade (Beauty) | Vileplume 46, Weepinbell 45 | ₽1,575 |
+| Route 13, map 2 | Fence Riders (Biker) | Koffing 45, Grimer 45, Koffing 45 | ₽450 |
+| Route 14, map 1 | High Flyers (Bird Keeper) | Pidgeot 47, Fearow 46 | ₽575 |
+| Route 14, map 1 | Moth Swarm (Bug Catcher) | Venomoth 46, Venonat 45, Venomoth 46 | ₽345 |
+| Route 14, map 2 | Smoke Riders (Biker) | Koffing 46, Weezing 47 | ₽470 |
+| Route 14, map 2 | Garden Club (Beauty) | Vileplume 47, Victreebel 46 | ₽1,610 |
+| Route 15, map 1 | Shore Wings (Bird Keeper) | Pidgeotto 47, Pidgeotto 47 | ₽587 |
+| Route 15, map 1 | Tide Pool Pals (Jr. Trainer) | Tentacool 46, Seaking 47 | ₽470 |
+| Route 15, map 2 | Exhaust Pipes (Biker) | Weezing 47, Grimer 46 | ₽460 |
+| Route 15, map 2 | Moonlight Duo (Beauty) | Clefable 48, Wigglytuff 47 | ₽1,645 |
+| Route 15, map 3 | Last Gust (Bird Keeper) | Fearow 48, Pidgeot 48 | ₽600 |
+| Route 15 (boss) | Thornwood Gang | Victreebel 52, Vileplume 48, Weepinbell 47, Venomoth 48 | ₽0 |
+| Silph Co. 1F | Lobby Guards (Rocket) | Raticate 48, Golbat 48 | ₽720 |
+| Silph Co. 3F | Rocket Gang (Rocket) | Koffing 48, Grimer 48, Arbok 48 | ₽720 |
+| Silph Co. 3F | Rocket Gang (Rocket) | Machoke 49, Hypno 49 | ₽735 |
+| Silph Co. 5F | Card Key Guard (Rocket) | Weezing 51, Golbat 50, Arbok 50 | ₽750 |
+| Silph Co. 5F | Rocket Gang (Rocket) | Primeape 49, Raticate 49 | ₽735 |
+| Silph Co. 7F | Rival (Rival) | Pidgeot 50, Growlithe 49, Kadabra 49, the rival's starter (last form) 52 | ₽910 |
+| Silph Co. 7F | Rocket Gang (Rocket) | Golbat 50, Weezing 50 | ₽750 |
+| Silph Co. 9F | Rocket Gang (Rocket) | Machoke 50, Primeape 50, Arbok 50 | ₽750 |
+| Silph Co. 9F | Rocket Elite (Rocket) | Persian 51, Hypno 51 | ₽765 |
+| Silph Co. (boss) | Rocket Boss | Persian 54, Nidoking 51, Nidoqueen 51, Kangaskhan 51 | ₽2,524 |
+| Saffron Gym (boss) | Mind Circle (Sabrina) | Alakazam 53, Kadabra 49, Mr. Mime 49, Venomoth 50 (after its two waves: Drowzee 48, Kadabra 47, Hypno 48; Mr. Mime 48, Venomoth 49; fought by three) | ₽2,475 |
 | S.S. Anne 1F | Gentleman's Hounds (Gentleman) | Growlithe 26, Growlithe 26 | ₽910 |
 | S.S. Anne 1F | Seaside Lass (Lass) | Pidgey 25, Nidoran F 25, Jigglypuff 25 | ₽187 |
 | S.S. Anne 1F | Cabin Boys (Youngster) | Rattata 25, Ekans 25, Raticate 24 | ₽180 |

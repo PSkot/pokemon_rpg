@@ -29,7 +29,7 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
-                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_7, SILPH_CO, ROUTE_11, ROUTE_12, ROUTE_13, ROUTE_14, ROUTE_15, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_18, FUCHSIA_GYM, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_7, SILPH_CO, SAFFRON_GYM, ROUTE_11, ROUTE_12, ROUTE_13, ROUTE_14, ROUTE_15, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_18, FUCHSIA_GYM, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
                      UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, POKEMON_TOWER, PoolEntry,
                      Theme)
 from .spinners import carve, layout_of
@@ -729,6 +729,21 @@ ROUTES = {r.key: r for r in [
               Trainer("silph_9f_1", "Rocket Gang", (("machoke", 50), ("primeape", 50), ("arbok", 50)), 4, 30),
               Trainer("silph_9f_2", "Rocket Elite", (("persian", 51), ("hypno", 51)), 4, 30),
           )),
+    # The Saffron Gym (quest "marsh_badge"), as in Red/Blue: Sabrina's hall
+    # of warp pads (`puzzle` "psychic", scenes/psychic_pads.py): barriers cut
+    # the walk into sections, and only the right pads lead on. Then her
+    # psychics in the arena, fought by three: two waves, then a giant
+    # Alakazam with Gen 1 Sabrina's Kadabra, Mr. Mime and Venomoth.
+    Route("saffron_gym", "Saffron Gym", SAFFRON_GYM, maps=1, towns=("saffron", "saffron"), boss=True,
+          boss_group=(("alakazam", 53), ("kadabra", 49), ("mr_mime", 49), ("venomoth", 50)), boss_scale=2,
+          trainer="Mind Circle", boss_chest="fancy", prize=99, boss_loot=MID_BOSS,
+          waves=(Wave("Psychic Trainees", (("drowzee", 48), ("kadabra", 47), ("hypno", 48)), 25),
+                 Wave("Mind Readers", (("mr_mime", 48), ("venomoth", 49)), 30)),
+          wave_team=3, wild=False, building="Saffron Gym", cols=96, puzzle="psychic",
+          needs=("marsh_badge", "active"),
+          blocked="Sabrina's gym. The doors won't budge: a strange force holds them shut. A sign: \"Closed while "
+                  "the city is in danger.\"",
+          blocked_done="Alakazam: ...I foresaw your return. The Marsh Badge shines on you. Sabrina is pleased."),
     # Route 2's north end, from the cave up to Pewter City: a short walk.
     Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}

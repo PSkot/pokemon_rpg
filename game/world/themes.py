@@ -609,6 +609,25 @@ FUCHSIA_GYM = Theme(
     built=True,
 )
 
+# The Saffron Gym: Sabrina's psychic hall (painted wall and backdrop),
+# cut up by psychic barriers and warp pads (scenes/psychic_pads.py).
+SAFFRON_GYM = Theme(
+    "saffron_gym", "Saffron Gym",
+    Palette(fill=(70, 46, 90), fill_dark=(48, 30, 64), fill_light=(98, 68, 124),
+            top=(170, 120, 200), top_dark=(128, 86, 160), top_light=(210, 164, 236),
+            platform=(200, 90, 170), platform_dark=(140, 56, 120), platform_light=(240, 140, 210)),
+    pool=(PoolEntry("kadabra", 1, (50, 52)),),
+    backdrop=Backdrop(art="saffron_gym.png", sky_top=(40, 24, 64), sky_bottom=(96, 60, 130),
+                      hills=((80, 50, 110), (70, 44, 98)), field_far=(150, 110, 180), field_near=(124, 88, 156),
+                      stripe=(136, 98, 168), shadow=(60, 40, 80)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(34, 20, 56), sky_bottom=(90, 56, 124), far_rock=(60, 40, 80), near_rock=(70, 46, 92),
+                  glow=None, wall="saffron_gym.png", dim=20, near_rocks=False),
+    doorway="",
+    built=True,
+)
+
 # Team Rocket's Hideout under the Celadon Game Corner: steel corridors
 # (painted wall and backdrop): wall plates, R banners and consoles, a flat
 # built floor. No wild Pokémon: only Rockets.

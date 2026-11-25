@@ -644,6 +644,8 @@ KEY_ITEMS = {
     "Cascade Badge": "The Cascade Crew's badge, from the Cerulean Gym.",
     "Thunder Badge": "The Thunder Battalion's badge, from the Vermilion Gym.",
     "Rainbow Badge": "The Blossom Troupe's badge, from the Celadon Gym.",
+    "Soul Badge": "The Ninja Clan's badge, from the Fuchsia Gym.",
+    "Marsh Badge": "The Mind Circle's badge, from the Saffron Gym.",
     "Leaf Stone": "A stone with a leaf pattern. It evolves Gloom, Weepinbell and Exeggcute. Used up.",
     "Moon Stone": "A stone as black as the night sky, faintly glittering. It evolves Nidorina, Nidorino, "
                   "Clefairy and Jigglypuff. Used up.",

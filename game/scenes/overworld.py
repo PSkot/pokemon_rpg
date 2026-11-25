@@ -41,6 +41,7 @@ from .gym import TeamPick
 from .power_grid import AMBUSH, PowerGrid
 from .spinners import SpinnerFloor
 from .ninja import NinjaDojo
+from .psychic_pads import PsychicHall
 from .spores import SporeGarden
 from .summary import SummaryScene
 
@@ -721,6 +722,9 @@ class OverworldScene(MapScene):
                        if route.puzzle in ("spores", "sparks") and level.boss else None)
         # The Fuchsia Gym's invisible walls and poison vents (carved in now: the tiles are already drawn).
         self.dojo = NinjaDojo(level, random.Random(instance.seed)) if route.puzzle == "ninja" and level.boss else None
+        # The Saffron Gym's psychic barriers and warp pads (carved in now too).
+        self.hall = (PsychicHall(level, random.Random(instance.seed)) if route.puzzle == "psychic" and level.boss
+                     else None)
         # The doorways in and out; a dungeon room has its stairs instead.
         art = level.theme.doorway
         self.entry = Doorway(level.entry_x, level.ground_y(level.entry_x), palette, art=art)
@@ -1034,6 +1038,10 @@ class OverworldScene(MapScene):
             self.spores.update(dt, self.t, self.player.body_rect, self.party, random)
         if self.dojo:
             self.dojo.update(dt, self.t, self.player, self.party, random)
+        if self.hall:
+            to = self.hall.update(dt, self.player)
+            if to is not None:  # warped
+                self.place_player(to, self.player.facing)
         for wild in self.wild:
             wild.facing = 1 if self.player.x > wild.x else -1
             touching = wild.touches(self.player.body_rect, self.level)
@@ -1134,6 +1142,8 @@ class OverworldScene(MapScene):
             self.spores.draw(layer, self.t)
         if self.dojo:
             self.dojo.draw(layer, self.t)
+        if self.hall:
+            self.hall.draw(layer, self.t, self.level)
         for chest in self.chests:
             chest.draw(layer)
         for ball in self.balls:
@@ -1155,6 +1165,8 @@ class OverworldScene(MapScene):
             ui.text(window, self.spores.toast, (320, 300), ui.WHITE, size=24, align="center")
         if self.dojo and self.dojo.toast_t:  # an invisible wall bumped, or a puff of gas
             ui.text(window, self.dojo.toast, (320, 300), ui.WHITE, size=24, align="center")
+        if self.hall and self.hall.toast_t:  # a warp pad
+            ui.text(window, self.hall.toast, (320, 300), ui.WHITE, size=24, align="center")
         self._draw_door_label(window)
         near = self._folk_at_player()
         if near:  # their name, over them

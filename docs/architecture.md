@@ -439,7 +439,10 @@ you are working on.
   and the Lift Key guard (a "defeat" step on its key gives the Lift Key);
   the office's boss guards its back door out (Silph Co., quest "silph_co",
   works the same way: `SILPH_CO`; a room can have its own painted wall and
-  battle backdrop, `Room.wall`, as its President's office does). Then quest "pokemon_tower":
+  battle backdrop, `Room.wall`, as its President's office does; the
+  Saffron Gym's warp pads are `Route.puzzle` "psychic",
+  `scenes/psychic_pads.PsychicHall`: barriers carved as solid columns, a
+  pad graph rolled from the trip's seed). Then quest "pokemon_tower":
   route "pokemon_tower" from Lavender's Tower (7 rooms, `POKEMON_TOWER`,
   painted `walls/` and `backdrops/pokemon_tower.png`); the rival and
   the 6F Restless Spirits are blocking map trainers (the spirits drawn

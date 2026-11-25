@@ -15,7 +15,8 @@ Sections:
 - items: random gear at every rarity and slot rolls; medicine and key items add;
 - moves: every move is used in a battle scene (its effect too), drawn;
 - battles: a few battles played out round by round to a win or a loss;
-- safari: both Safari minigames play to the end.
+- safari: both Safari minigames play to the end;
+- puzzles: the Saffron Gym's warp pads always lead through to the arena.
 
 Prints one line per section and every failure with its traceback; exits
 non-zero if anything failed.
@@ -300,9 +301,32 @@ def check_safari() -> int:
     return n
 
 
+def check_puzzles() -> int:
+    from game.scenes.overworld import OverworldScene
+    from game.world.instance import ROUTES, Instance
+    n = 0
+    for seed in range(20):
+        try:
+            scene = OverworldScene(Instance(ROUTES["saffron_gym"], "saffron", seed=seed), new_game())
+            hall = scene.hall
+            for section in range(len(hall.barriers)):  # (the way on, section by section, by stepping on pads)
+                pad = next(p for p in hall.pads if p.section == section and p.to.section > section)
+                scene.place_player(pad.x)
+                hall.standing_on = None
+                to = hall.update(DT, scene.player)
+                assert to is not None, f"seed {seed}: the pad in section {section} didn't warp"
+                scene.place_player(to)
+            assert abs(scene.player.x - hall.arena.x) < 1, f"seed {seed}: didn't reach the arena"
+            n += 1
+        except Exception:
+            fail(f"saffron gym pads, seed {seed}")
+    return n
+
+
 SECTIONS = {
     "imports": check_imports, "places": check_places, "quests": check_quests, "saves": check_saves,
     "items": check_items, "moves": check_moves, "battles": check_battles, "safari": check_safari,
+    "puzzles": check_puzzles,
 }
 SLOW = {"moves", "battles"}
 

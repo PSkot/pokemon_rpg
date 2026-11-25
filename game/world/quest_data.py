@@ -1350,6 +1350,22 @@ QUESTS = {q.key: q for q in [
         done_dialogue=(("", "With Team Rocket gone, Saffron City breathes again. Sabrina's gym and the Fighting "
                             "Dojo will open their doors soon."),),
     ),
+    # The Saffron Gym, as in Red/Blue: Sabrina's psychics, behind barriers
+    # and warp pads (once Silph Co. is free, her doors open).
+    Quest(
+        "marsh_badge", "The Marsh Badge",
+        "With Team Rocket gone, Sabrina has opened the Saffron Gym. Her hall is cut up by psychic barriers: only "
+        "the right warp pads lead on, and they're never the same twice. Her psychics wait at the end.",
+        requires=("silph_co",),
+        steps=(Step("defeat", "saffron_gym", "Find your way through the warp pads and defeat Sabrina's Mind Circle "
+                                             "(Saffron Gym, Saffron City)",
+                    dialogue=(("Alakazam", "...I foresaw this. Not the outcome: only that you would come."),
+                              ("Alakazam", "Your mind is strong. Sabrina wishes you to have the Marsh Badge."),
+                              ("", "You received the Marsh Badge!")),
+                    gives=("Marsh Badge",)),),
+        money=3400, xp=3200,
+        rewards=(("medicine", "Hyper Potion", 3), ("medicine", "Max Potion", 2), ("gear", None, "Epic", 54)),
+    ),
     # The Safari Zone Warden lost his Gold Teeth in the Safari Zone (as in
     # Red/Blue): they lie in a dead end of its deepest zone (world/safari.py).
     # He gives HM04 Strength for them.

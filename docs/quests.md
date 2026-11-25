@@ -808,6 +808,29 @@ the Route 8 Gate (east).
   reserve), 3 Hyper Potions, 2 Max Potions and an **Epic** gear piece (item
   level 52). Then: Sabrina's gym and the Fighting Dojo (next parts).
 
+### The Marsh Badge
+
+- **Starts:** automatically when *Silph Co. Siege* is done (Sabrina opens
+  her doors).
+- **Steps:** Up at the **Saffron Gym** (Saffron City): Sabrina's hall
+  (route "saffron_gym", theme `SAFFRON_GYM`, painted wall and backdrop),
+  as in Red/Blue a maze of **warp pads** (`puzzle` "psychic",
+  `scenes/psychic_pads.py`): 4 floor-to-ceiling **psychic barriers** cut the
+  walk into 5 sections; each section has 2–3 pads (the arena's none).
+  Standing on a pad warps the player: one per section leads on to the next
+  section, the others back to an earlier one or across the same one; new
+  every trip. A pad that's been used shows an arrow (green: on, red: back,
+  a yellow ring: the same section). Then Sabrina's **Mind Circle**, fought
+  by three: **Psychic Trainees** (Drowzee 48, Kadabra 47, Hypno 48), **Mind
+  Readers** (Mr. Mime 48, Venomoth 49), then a giant **Alakazam 53** with
+  Kadabra 49, Mr. Mime 49 and Venomoth 50 (Gen 1's Sabrina). Alakazam:
+  "Sabrina wishes you to have the Marsh Badge" (key item).
+- **Balance:** a party of three at Lv53/52/52 with 3 Hyper Potions and 2
+  Max Potions (Silph Co.'s) wins about 72% (`tools/balance_sim.py`).
+- **Rewards:** ₽3,400, 3,200 XP, 3 Hyper Potions, 2 Max Potions and an
+  **Epic** gear piece (item level 54), on top of the circle's prize and
+  the gym's fancy chest.
+
 ### Route 12
 
 From the Route 11 Gate's east doorway (past its Snorlax) up to Lavender
