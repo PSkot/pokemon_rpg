@@ -110,6 +110,9 @@ class Room:
     # the room, as `Stair.at`; who), on flat ground.
     folk: tuple[tuple[float, Folk], ...] = ()
     puzzle: str = ""  # "spinners:<layout>": the Rocket Hideout's spinner floors (world/spinners.py)
+    # A painted wall (walls/<wall>) and battle backdrop (backdrops/<wall>) of
+    # its own, instead of its dungeon's (Silph Co.'s President's office).
+    wall: str = ""
 
 
 @dataclass(frozen=True)
@@ -708,6 +711,7 @@ ROUTES = {r.key: r for r in [
               Room("9f", "9F", 90, (Stair("down", "7f", 0.05), Stair("up", "11f", 0.95))),
               # (the Boss guards the President's office, and the way back down)
               Room("11f", "President's Office", 50, (Stair("down", "9f", 0.1), Stair("out", "saffron", 1)),
+                   wall="silph_office.png",
                    boss_group=(("persian", 54), ("nidoking", 51), ("nidoqueen", 51), ("kangaskhan", 51)),
                    trainer="Rocket Boss", prize=99),
           ),
@@ -1010,6 +1014,11 @@ class Instance:
 
     @property
     def theme(self) -> Theme:
+        room = self.room
+        if room and room.wall:  # (a room with a look of its own)
+            theme = self.route.theme
+            return replace(theme, cave=replace(theme.cave, wall=room.wall),
+                           backdrop=replace(theme.backdrop, art=room.wall))
         return self.route.theme
 
     @property

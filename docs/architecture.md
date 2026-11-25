@@ -437,7 +437,9 @@ you are working on.
   `walls/` and `backdrops/rocket_hideout.png`); its
   blocking map trainers (`Trainer.first`/`blocks`) are the poster guard
   and the Lift Key guard (a "defeat" step on its key gives the Lift Key);
-  the office's boss guards its back door out. Then quest "pokemon_tower":
+  the office's boss guards its back door out (Silph Co., quest "silph_co",
+  works the same way: `SILPH_CO`; a room can have its own painted wall and
+  battle backdrop, `Room.wall`, as its President's office does). Then quest "pokemon_tower":
   route "pokemon_tower" from Lavender's Tower (7 rooms, `POKEMON_TOWER`,
   painted `walls/` and `backdrops/pokemon_tower.png`); the rival and
   the 6F Restless Spirits are blocking map trainers (the spirits drawn
@@ -753,7 +755,8 @@ you are working on.
   reference, pixminimax rows; hats fit); Weezing likewise (Koga's gym: a 48 px base,
   Koffing as its style reference, mirrored to face right); the Safari Zone's
   Chansey, Scyther, Tauros, Pinsir, Dratini and Dragonair likewise (bases
-  picked from candidates, pixminimax rows; Dragonair drawn 1.25×); Golbat, Arbok,
+  picked from candidates, pixminimax rows; Dragonair drawn 1.25×), and
+  Lapras (Silph Co.'s gift, a 64 px base); Golbat, Arbok,
   Persian and Machoke were made by Claude the same way (48 px canvases,
   the pre-evolution's sprite as style reference; the base padded into the
   64 px cell, then pixminimax rows ending on the base so they loop; tiny

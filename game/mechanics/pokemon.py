@@ -229,7 +229,7 @@ SPECIES.update({
     "aerodactyl": _placeholder("142_aerodactyl", "Aerodactyl", (80, 105, 65, 130, 60), ('rock', 'flying'), exp=202),
     "magikarp": _placeholder("129_magikarp", "Magikarp", (20, 10, 55, 80, 20), ('water',), exp=20),
     "gyarados": _placeholder("130_gyarados", "Gyarados", (95, 125, 79, 81, 100), ('water', 'flying'), exp=214),
-    "lapras": _placeholder("131_lapras", "Lapras", (130, 85, 80, 60, 95), ('water', 'ice'), exp=219),
+    "lapras": _animated("lapras", "Lapras", (130, 85, 80, 60, 95), ('water', 'ice'), exp=219, hit=4),
     "gastly": _animated("gastly", "Gastly", (30, 35, 30, 80, 100), ("ghost", "poison"), exp=95, hit=4),
     "haunter": _animated("haunter", "Haunter", (45, 50, 45, 95, 115), ("ghost", "poison"), exp=126, hit=5),
     # (the Pokémon Tower's)
