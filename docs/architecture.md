@@ -763,7 +763,8 @@ you are working on.
   Lapras (Silph Co.'s gift, a 64 px base), Mr. Mime (a 48 px base,
   Kadabra as style reference) and Alakazam (a 56 px base, Machoke as style
   reference: with Kadabra's it kept Kadabra's tail; walk and run rows
-  regenerated with clearer steps); Golbat, Arbok,
+  regenerated with clearer steps), Hitmonchan (48 px) and Machamp (56 px;
+  the Dojo's Karate Master), Machoke as their style reference; Golbat, Arbok,
   Persian and Machoke were made by Claude the same way (48 px canvases,
   the pre-evolution's sprite as style reference; the base padded into the
   64 px cell, then pixminimax rows ending on the base so they loop; tiny
