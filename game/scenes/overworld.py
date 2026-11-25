@@ -117,6 +117,7 @@ class WildPokemon:
         # Only trigger once per touch, so returning from a battle (after
         # running away) while still touching them doesn't start another one.
         self.armed = True
+        self.came_from = -1  # the side the player met it from (-1: its left)
         self.trainer: Trainer | None = None  # a route trainer's team, or None (wild)
         rng = random.Random(round(spawn.x * 31 + spawn.feet_y))
         self.jitter = [0.0] + [rng.uniform(-GROUP_JITTER, GROUP_JITTER) for _ in self.members[1:]]
@@ -962,7 +963,9 @@ class OverworldScene(MapScene):
                 self._boss_beaten()
                 self.show_event(quests.defeat(self.game, route.key))
             saves.autosave(self)
-        elif battle.lost:
+        elif not battle.lost:  # ran away: back off the way they came, and it's waiting there
+            self._back_off(wild)
+        else:
             town = TOWNS[self.game.town]
             if self.instance.route.tower:
                 self.show(ui.ListPanel("Your party fainted...", [("The run is over: no chest this time.", ui.WHITE, ""),
@@ -971,6 +974,19 @@ class OverworldScene(MapScene):
                 return
             self.show(ui.ListPanel("Your party fainted...", [(f"You hurry back to {town.name}.", ui.WHITE, "")],
                                    (320, 140)), after=self._fainted)
+
+    def _back_off(self, wild: WildPokemon) -> None:
+        """After running from `wild`: put the player clear of it, on the side
+        they met it from (so running away never gets anyone past a pack),
+        and have it ready to fight again."""
+        x = self.player.x
+        for _ in range(40):
+            self.place_player(x, -wild.came_from)
+            if not wild.touches(self.player.body_rect, self.level):
+                break
+            x = min(max(x + wild.came_from * TILE / 2, TILE), self.level.width - TILE)
+        self.place_player(min(max(x + wild.came_from * TILE, TILE), self.level.width - TILE), -wild.came_from)
+        wild.armed = True
 
     def _tower_choice(self) -> None:
         """A Battle Tower floor is cleared: on up to the next (no healing),
@@ -1109,6 +1125,7 @@ class OverworldScene(MapScene):
         """Into battle with a group on the map, the active party members
         (`quests.fighters`)."""
         boss = wild is self.boss
+        wild.came_from = -1 if self.player.x < wild.x else 1  # (the player's side: back there after running)
         boss_prize = self.instance.room.prize if self.instance.room else self.instance.route.prize
         trainer, prize = (self.trainer, boss_prize) if boss else (
             (wild.trainer.name, wild.trainer.prize) if wild.trainer else ("", 0))

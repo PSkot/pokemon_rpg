@@ -1063,7 +1063,10 @@ highest enemy level: **50%** at an even match, **±5%** per level, between
 over it's 90%: never sure. Failing ("Can't escape!") costs that member its
 turn, like a failed attack, and the enemies still act. Only one party member
 may try per round (Run is greyed out after a failed try). The hint line
-shows the chance while Run is highlighted.
+shows the chance while Run is highlighted. Getting away **doesn't get you past the
+pack**: back on the map you're put down clear of it, on the side you met
+it from, and it's ready to fight again (`OverworldScene._back_off`). To get
+by, beat it (or jump over it where the ground allows).
 
 Route 1 (Meadow pool; Red/Blue's Route 1: only Pidgey and Rattata):
 

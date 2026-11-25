@@ -17,7 +17,8 @@ Sections:
 - battles: a few battles played out round by round to a win or a loss;
 - safari: both Safari minigames play to the end;
 - puzzles: the Saffron Gym's warp pads always lead through to the arena;
-  Strength's boulders push off their ladders (and don't without it).
+  Strength's boulders push off their ladders (and don't without it);
+- packs: running from a pack puts the player back where they came from.
 
 Prints one line per section and every failure with its traceback; exits
 non-zero if anything failed.
@@ -353,10 +354,36 @@ def check_puzzles() -> int:
     return n
 
 
+def check_packs() -> int:
+    """Running from a pack puts the player back on the side they met it
+    from, clear of it, with it ready to fight again (no running past)."""
+    from game.scenes.overworld import OverworldScene
+    from game.world.instance import ROUTES, Instance
+    n = 0
+    for key in ("route_1", "route_12", "route_15", "rock_tunnel"):
+        for side in (-1, 1):
+            try:
+                route = ROUTES[key]
+                scene = OverworldScene(Instance(route, route.towns[0]), new_game())
+                wild = next(w for w in scene.wild if w is not scene.boss)
+                scene.place_player(wild.x + side * 4)
+                scene._fight(wild)
+                ran = type("Ran", (), {"won": False, "lost": False})()
+                scene._after_battle(wild, ran)
+                body = scene.player.body_rect
+                assert not wild.touches(body, scene.level), f"{key}: still in the pack"
+                assert (scene.player.x - wild.x) * side > 0, f"{key}: put on the far side"
+                assert wild.armed, f"{key}: pack not ready to fight"
+                n += 1
+            except Exception:
+                fail(f"running from a pack on {key} (side {side})")
+    return n
+
+
 SECTIONS = {
     "imports": check_imports, "places": check_places, "quests": check_quests, "saves": check_saves,
     "items": check_items, "moves": check_moves, "battles": check_battles, "safari": check_safari,
-    "puzzles": check_puzzles,
+    "puzzles": check_puzzles, "packs": check_packs,
 }
 SLOW = {"moves", "battles"}
 
