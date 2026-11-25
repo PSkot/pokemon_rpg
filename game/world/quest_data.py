@@ -1346,10 +1346,9 @@ QUESTS = {q.key: q for q in [
                               ("Persian", "Silph Co. is yours. But Team Rocket will rise again. Remember that."),
                               ("", "The Persian bounds out of the window and across the rooftops."),
                               ("President", "You saved us! Silph Co. owes you everything."),
-                              ("President", "The Rockets were trying to steal this Lapras from our labs. It's "
-                                            "taken a liking to you: please, take it with you."))),),
+                              ("President", "Please, take these from our labs, with all our thanks."))),),
         money=3200, xp=3000,
-        rewards=(("pokemon", "lapras", 48), ("medicine", "Hyper Potion", 3), ("medicine", "Max Potion", 2),
+        rewards=(("medicine", "Hyper Potion", 3), ("medicine", "Max Potion", 3), ("medicine", "Revive", 2),
                  ("gear", None, "Epic", 52)),
         done_dialogue=(("", "With Team Rocket gone, Saffron City breathes again. Sabrina's gym and the Fighting "
                             "Dojo will open their doors soon."),),

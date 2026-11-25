@@ -63,7 +63,7 @@ class TownMap:
             if self.fly:
                 self.message = self.fly
             elif not self._flyable(self.choice):
-                self.message = "Fly to a town you've visited."
+                self.message = "Fly only goes to cities and towns you've visited."
             elif self.choice == self.here:
                 self.message = "You're already here."
             else:
@@ -72,7 +72,8 @@ class TownMap:
         return key in CLOSE_KEYS
 
     def _flyable(self, place: str) -> bool:
-        return place in NODES and place in self.view.known
+        """Fly goes to cities and towns visited (not routes' stops)."""
+        return place in townmap.CITIES and place in self.view.known
 
     def _move(self, dx: int, dy: int) -> None:
         """To the nearest place that way (straight ahead counts more than off to the side)."""

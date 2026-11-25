@@ -47,7 +47,7 @@ REFS = {
     "machop": (34, 35), "tentacool": (33, 36), "growlithe": (38, 35),
     "raichu": (39, 35), "voltorb": (32, 46), "magnemite": (31, 46), "drowzee": (32, 35), "dugtrio": (31, 35),
     "kangaskhan": (40, 21), "snorlax": (33, 9), "weezing": (40, 33),
-    "chansey": (30, 27), "scyther": (30, 16), "tauros": (46, 31), "pinsir": (34, 30), "dratini": (41, 30), "dragonair": (36, 30),
+    "chansey": (30, 27), "scyther": (33, 16), "tauros": (46, 31), "pinsir": (34, 30), "dratini": (41, 30), "dragonair": (36, 30),
     "lapras": (43, 18), "mr_mime": (33, 26), "alakazam": (31, 26), "hitmonchan": (31, 24), "machamp": (34, 23), "hitmonlee": (31, 26),
     "arbok": (36, 33), "sandslash": (43, 33), "nidoqueen": (46, 26), "nidoking": (42, 30), "koffing": (37, 36),
     "grimer": (38, 37), "golbat": (38, 43), "persian": (44, 35), "primeape": (36, 38), "machoke": (36, 32),

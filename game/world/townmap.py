@@ -38,6 +38,7 @@ CITY_LABELS = {"pallet": (8, -6, "left"), "viridian": (8, -6, "left"), "pewter":
                "cerulean": (8, 2, "left"), "vermilion": (8, 2, "left"), "lavender": (0, 8, "center"),
                "celadon": (0, -18, "center"), "fuchsia": (0, -18, "center"),
                "saffron": (0, 8, "center")}
+CITIES = frozenset(CITY_LABELS)  # the towns Fly goes to (not the stops along the routes)
 SAFFRON = (12, 7.5)  # shut (drawn, never a place)
 GROUP = {"celadon_square": "celadon", "celadon_west": "celadon"}  # parts of one town on the map
 PARTS = {"celadon": ("celadon", "celadon_square", "celadon_west")}

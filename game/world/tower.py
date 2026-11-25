@@ -88,8 +88,8 @@ GEM_GEAR = (("Quartz", ("Uncommon",), 40), ("Jade", ("Rare",), 47), ("Sapphire",
             ("Ruby", ("Epic",), 60), ("Diamond", ("Epic",), 60))
 RUBY_EFFECT = 60
 # Special Pokémon, each once: (species, level, gem, price).
-GEM_POKEMON = (("dratini", 30, "Jade", 20), ("chansey", 35, "Sapphire", 20), ("lapras", 40, "Ruby", 25),
-               ("aerodactyl", 50, "Diamond", 25))
+GEM_POKEMON = (("dratini", 30, "Jade", 20), ("lapras", 40, "Ruby", 25),
+               ("aerodactyl", 50, "Diamond", 25))  # (Chansey joins at the Safari Zone instead)
 
 
 def tier(floor: int) -> int:

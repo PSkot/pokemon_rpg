@@ -115,6 +115,10 @@ class BagScreen:
         if POCKETS[self.pocket] == "Items" and MEDICINE[item].valuable:
             self.message = "It's only worth money: sell it at a Poké Mart."
             return
+        inst = getattr(self.scene, "instance", None)
+        if POCKETS[self.pocket] == "Items" and inst is not None and inst.route.tower:
+            self.message = "No items in the Battle Tower: only what the floors give back."
+            return
         if POCKETS[self.pocket] == "Items" and MEDICINE[item].escape:
             if not hasattr(self.scene, "instance"):  # (a route or dungeon map)
                 self.message = "Use it on a route or in a cave."

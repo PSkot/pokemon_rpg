@@ -806,9 +806,9 @@ the Route 8 Gate (east).
 - **Balance:** a party of three at Lv50/49/49: the rival with 2 Hyper
   Potions about 65%, the Rocket Boss with 3 Hyper Potions and a Revive about
   71% (`tools/balance_sim.py`).
-- **Rewards:** ₽3,200, 3,000 XP, **Lapras (Lv48) joins** (the party, or the
-  reserve), 3 Hyper Potions, 2 Max Potions and an **Epic** gear piece (item
-  level 52). Then: Sabrina's gym and the Fighting Dojo (next parts).
+- **Rewards:** ₽3,200, 3,000 XP, 3 Hyper Potions, 3 Max Potions, 2 Revives
+  and an **Epic** gear piece (item level 52). (Lapras comes from Mew at the
+  Battle Tower.) Then: Sabrina's gym and the Fighting Dojo (next parts).
 
 ### The Marsh Badge
 

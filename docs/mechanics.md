@@ -1646,7 +1646,8 @@ tower works, and Leave. Up at the stairs also starts a climb.
   16–20 at all 8. Floors 21–25 open once you're the Champion
   (`tower.LEAGUE`). In dev mode every floor is open. On the last open
   floor, the way up is sealed and you can only claim the chest.
-- **No healing** between waves or floors. Losing any battle ends the run
+- **No healing** between waves or floors, and **no items from the bag**
+  on the tower's floors (medicine still works in battle). Losing any battle ends the run
   with **nothing**: back to the last town, no chest.
 - After each floor's master, choose: **climb on** to the next floor, or
   **stop and claim the chest**. After floor 25 (or the last open
@@ -1709,7 +1710,6 @@ that slot at that rarity, with random affixes.
 | Pokémon (each once, `Game.trainers` "mew:<species>") | Level | Price |
 | --- | --- | --- |
 | Dratini | 30 | 20 Jade |
-| Chansey | 35 | 20 Sapphire |
 | Lapras | 40 | 25 Ruby |
 | Aerodactyl | 50 | 25 Diamond |
 
