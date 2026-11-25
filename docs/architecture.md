@@ -729,7 +729,9 @@ you are working on.
   "snorlax_west") it battles and joins, with its own sheet (`snorlax.png`:
   a standing base on a 60 px canvas, the sleeping sheet as its style
   reference, pixminimax rows; hats fit); Weezing likewise (Koga's gym: a 48 px base,
-  Koffing as its style reference, mirrored to face right); Golbat, Arbok,
+  Koffing as its style reference, mirrored to face right); the Safari Zone's
+  Chansey, Scyther, Tauros, Pinsir, Dratini and Dragonair likewise (bases
+  picked from candidates, pixminimax rows; Dragonair drawn 1.25×); Golbat, Arbok,
   Persian and Machoke were made by Claude the same way (48 px canvases,
   the pre-evolution's sprite as style reference; the base padded into the
   64 px cell, then pixminimax rows ending on the base so they loop; tiny
