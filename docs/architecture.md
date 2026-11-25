@@ -759,7 +759,8 @@ you are working on.
   Koffing as its style reference, mirrored to face right); the Safari Zone's
   Chansey, Scyther, Tauros, Pinsir, Dratini and Dragonair likewise (bases
   picked from candidates, pixminimax rows; Dragonair drawn 1.25×), and
-  Lapras (Silph Co.'s gift, a 64 px base); Golbat, Arbok,
+  Lapras (Silph Co.'s gift, a 64 px base) and Mr. Mime (a 48 px base,
+  Kadabra as style reference); Golbat, Arbok,
   Persian and Machoke were made by Claude the same way (48 px canvases,
   the pre-evolution's sprite as style reference; the base padded into the
   64 px cell, then pixminimax rows ending on the base so they loop; tiny
