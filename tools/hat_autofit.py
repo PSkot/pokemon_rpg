@@ -48,7 +48,7 @@ REFS = {
     "raichu": (39, 35), "voltorb": (32, 46), "magnemite": (31, 46), "drowzee": (32, 35), "dugtrio": (31, 35),
     "kangaskhan": (40, 21), "snorlax": (33, 9), "weezing": (40, 33),
     "chansey": (30, 27), "scyther": (30, 16), "tauros": (46, 31), "pinsir": (34, 30), "dratini": (41, 30), "dragonair": (36, 30),
-    "lapras": (43, 18), "mr_mime": (33, 26), "alakazam": (35, 26),
+    "lapras": (43, 18), "mr_mime": (33, 26), "alakazam": (31, 26),
     "arbok": (36, 33), "sandslash": (43, 33), "nidoqueen": (46, 26), "nidoking": (42, 30), "koffing": (37, 36),
     "grimer": (38, 37), "golbat": (38, 43), "persian": (44, 35), "primeape": (36, 38), "machoke": (36, 32),
     "graveler": (33, 40), "magneton": (34, 37), "electrode": (36, 38), "golduck": (43, 28), "seaking": (41, 44),
