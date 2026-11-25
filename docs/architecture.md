@@ -709,7 +709,10 @@ you are working on.
   sizes that keep species roughly to scale: 32–40 px canvases for small
   ones (Rattata, Spearow, the starters, Pidgey), 48–52 px for middle forms
   and big ones (Ivysaur, Charmeleon, Wartortle, Pidgeotto, Fearow,
-  Charizard, Blastoise, Pidgeot), 64 px for Venusaur. Onix keeps its larger
+  Pidgeot), 64 px for Venusaur. Charizard and Blastoise were redrawn
+  bigger: Blastoise a 56 px base (mirrored to face right), Charizard a
+  72 px redraw of a 56 px pick (about 52×56 in the cell; its run row
+  regenerated with the wings held still). Onix keeps its larger
   sheet, drawn 1.5× (`Species.size`, nearest-neighbour; hats follow it).
   Geodude's attack and jump and Venusaur's jump are made from the base pose
   (a lunge, squash and stretch); so are Squirtle's and Pidgey's idles (the
