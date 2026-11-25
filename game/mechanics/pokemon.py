@@ -511,6 +511,12 @@ class Monster:
         sources = [*self.tree.chosen_talents(self.talents), *self.gear_effects]
         return max((v for t in sources for f, v in t.flags if f == flag), default=0)
 
+    def talent_name(self, flag: str) -> str:
+        """The name of the talent (or gear effect) `talent(flag)` reads its value from."""
+        sources = [*self.tree.chosen_talents(self.talents), *self.gear_effects]
+        best = max(((v, t) for t in sources for f, v in t.flags if f == flag), key=lambda vt: vt[0], default=None)
+        return best[1].name if best else ""
+
     @property
     def has_effects(self) -> bool:
         """Whether it has talents or gear special effects (whose battle

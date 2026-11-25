@@ -462,7 +462,11 @@ single-target moves go to the user (`Combatant.taunt`).
 **Talents at the battle's start** (`BattleScene._auras`): Miasma (50% per
 foe: poisoned), Thunder Cloud (30%: paralyzed), Heat Haze, Absolute Zero,
 Bedtime Story and the like (burned, frozen, asleep), Intimidate (each
-foe's Attack −1 at 50%: `battle.LOWER_CHANCE`), Sand Veil (each foe's accuracy −1 at 50%). **When hit** (`_hit`): Static / Poison Point (25%: the
+foe's Attack −1 at 50%: `battle.LOWER_CHANCE`), Sand Veil (each foe's accuracy −1 at 50%).
+The message names the talent ("Hypno's Bedtime Story! ..."). A status
+given this way is plain: none of the user's status-move extras (Deep
+Sleep's longer sleep, Nightmare, Contagion) come with it. Sleep auras are
+15% per foe (Bedtime Story, Spore Burst). **When hit** (`_hit`): Static / Poison Point (25%: the
 attacker is paralyzed / poisoned), Thorny Hide (the attacker loses 1/16 of
 its max HP); Guardian and its copies (once a battle, a partner hit for its
 last HP keeps 1).
@@ -488,7 +492,8 @@ After all actions, in this order:
    chance (`berry_cure`).
 6. **Lasting effects** (`BattleScene._afflictions`): Nightmare (a
    sleeper loses its share of max HP), Contagion (its chance for the
-   status to spread to a free neighbour, with the same extras), Exposing
+   status to spread to a free neighbour, with the same extras; one that
+   caught it this way doesn't spread it on: no chains), Exposing
    and Spiked count down (3 rounds).
 7. **Leaf Shield** counts down: it lasts the round it's used and the next
    Taunts count down. Flinching wears off.

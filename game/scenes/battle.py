@@ -848,18 +848,17 @@ class BattleScene(Scene):
                 chance = m.talent(f"aura:{status}")
                 if not chance:
                     continue
-                move = next((mv for mv in map(m.move, m.known) if mv.status == status), SELF_HIT)
-                hit = [c for c in foes if random.random() * 100 < chance and self._inflict(c, status, move)]
-                for c in hit:
-                    self._mark(holder, move, c)
+                # A plain status: not the user's status move's extras (Deep Sleep, Nightmare, Contagion ...).
+                hit = [c for c in foes if random.random() * 100 < chance and self._inflict(c, status, SELF_HIT)]
                 if hit:
-                    self.message = " ".join([f"{holder.label}'s aura spreads!"]
+                    self.message = " ".join([f"{holder.label}'s {m.talent_name(f'aura:{status}')}!"]
                                             + [STATUSES[status].inflicted.format(c.label) for c in hit])
                     yield STATUS_MESSAGE_TIME
             chance = m.talent("aura:confused")  # (Dazzling Fins)
             hit = [c for c in foes if chance and not c.confused and random.random() * 100 < chance]
             if hit:
-                self.message = " ".join([f"{holder.label}'s aura spreads!"] + [self._confuse(c) for c in hit])
+                self.message = " ".join([f"{holder.label}'s {m.talent_name('aura:confused')}!"]
+                                        + [self._confuse(c) for c in hit])
                 yield STATUS_MESSAGE_TIME
             for stat in STAGE_STATS:  # (Intimidate: Attack; Sand Veil: accuracy): each enemy at LOWER_CHANCE
                 stages = round(m.talent(f"lower:{stat}"))
@@ -1318,6 +1317,7 @@ class BattleScene(Scene):
                     note = self._confuse(other) if kind == "confusion" else self._inflict(other, kind, move)
                     if note:
                         self._mark(who, move, other)
+                        other.contagion = None  # (it spreads once from each: no chain through the whole side)
                         self.message = f"It spreads! {note}"
                         yield STATUS_MESSAGE_TIME
             c.exposed = max(0, c.exposed - 1)
