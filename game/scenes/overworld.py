@@ -742,7 +742,8 @@ class OverworldScene(MapScene):
             if here:
                 self.place_player(here.x, 1 if here.x < level.width / 2 else -1)
         # Who stands in a dungeon room to talk to (`Room.folk`: the S.S. Anne's Captain).
-        self.folk = [(folk, col * TILE + TILE / 2) for (_, folk), col in zip(room.folk, level.folk_cols)] if room else []
+        self.folk = [(folk, col * TILE + TILE / 2) for (_, folk), col in zip(room.folk, level.folk_cols)
+                     if not (folk.gone_after and quests.gone(game, folk.gone_after))] if room else []
         self.chats: dict[str, int] = {}  # their key -> chat lines said
         self.fighting: tuple[WildPokemon, BattleScene] | None = None
         self.battle_event = quests.Event()  # quests started by the last battle's drops

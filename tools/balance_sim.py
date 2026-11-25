@@ -210,6 +210,7 @@ STORY = [
     ("Fuchsia Gym (2 waves + clan)", "fuchsia_gym", (47, 46), False, {"Hyper Potion": 3, "Full Heal": 2}),
     ("Silph Co.: Rocket Boss", "silph_co", (50, 49), False, {"Hyper Potion": 3, "Revive": 1}),
     ("Saffron Gym (2 waves + circle)", "saffron_gym", (53, 52), False, {"Hyper Potion": 3, "Max Potion": 2}),
+    ("Fighting Dojo: Karate Master", "fighting_dojo", (54, 53), False, {"Hyper Potion": 3, "Revive": 1}),
 ]
 # How many fight in each story battle: 1 (solo), 2, or 3 from the S.S. Anne on.
 TEAM_SIZE = {"Vermilion Gym (2 waves + battalion)": 3, "Diglett's Cave boss": 3, "Rock Tunnel Hiker Crew": 3,
@@ -218,7 +219,7 @@ TEAM_SIZE = {"Vermilion Gym (2 waves + battalion)": 3, "Diglett's Cave boss": 3,
              "Rocket Hideout Boss": 3, "Snorlax west (Snack Pack)": 3, "Snorlax east (Dream Eaters)": 3,
              "Hidden Spring (Spring Squatters)": 3, "Skate Road: Tony": 3, "Route 15: Thornwood Gang": 3,
              "Fuchsia Gym (2 waves + clan)": 3, "Silph Co.: Rocket Boss": 3,
-             "Saffron Gym (2 waves + circle)": 3}
+             "Saffron Gym (2 waves + circle)": 3, "Fighting Dojo: Karate Master": 3}
 PARTNERS = ["pidgey", "rattata", "nidoran_m", "spearow", "caterpie", "pikachu"]
 
 

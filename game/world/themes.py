@@ -628,6 +628,25 @@ SAFFRON_GYM = Theme(
     built=True,
 )
 
+# Saffron's Fighting Dojo (quest "fighting_dojo"): a wooden training hall
+# (painted wall and backdrop), its black belts' bands and the Karate Master.
+FIGHTING_DOJO = Theme(
+    "fighting_dojo", "Fighting Dojo",
+    Palette(fill=(110, 76, 48), fill_dark=(80, 54, 34), fill_light=(140, 100, 64),
+            top=(200, 170, 110), top_dark=(160, 132, 84), top_light=(230, 204, 148),
+            platform=(150, 60, 40), platform_dark=(100, 38, 26), platform_light=(196, 96, 66)),
+    pool=(PoolEntry("machop", 1, (50, 52)),),
+    backdrop=Backdrop(art="fighting_dojo.png", sky_top=(70, 46, 30), sky_bottom=(140, 100, 66),
+                      hills=((110, 76, 48), (96, 66, 42)), field_far=(200, 170, 110), field_near=(170, 140, 90),
+                      stripe=(184, 154, 100), shadow=(90, 62, 40)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(60, 40, 26), sky_bottom=(130, 92, 60), far_rock=(90, 62, 40), near_rock=(100, 70, 46),
+                  glow=None, wall="fighting_dojo.png", dim=15, near_rocks=False),
+    doorway="",
+    built=True,
+)
+
 # Team Rocket's Hideout under the Celadon Game Corner: steel corridors
 # (painted wall and backdrop): wall plates, R banners and consoles, a flat
 # built floor. No wild Pokémon: only Rockets.

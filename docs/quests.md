@@ -831,6 +831,25 @@ the Route 8 Gate (east).
   **Epic** gear piece (item level 54), on top of the circle's prize and
   the gym's fancy chest.
 
+### The Fighting Dojo
+
+- **Giver:** the **Machoke** in Saffron City, once *Silph Co. Siege* is
+  done (the master is back).
+- **The Dojo** (route "fighting_dojo", theme `FIGHTING_DOJO`, painted wall;
+  one hall, `Room` "hall"): three black belts' bands (**White Belts**
+  Machop 50, Mankey 50, Machop 50; **Brown Belts** Primeape 51, Machoke 50;
+  **Black Belts** Machoke 52, Primeape 51, Hitmonlee 50), then the **Karate
+  Master** (a giant Machamp 63 stands in, with Primeape 59, Machoke 59 and
+  Hitmonchan 58) guarding the hall's back door. Fighting types are weak to
+  Flying and Psychic, hence the levels: a party of three at Lv54/53/53
+  with 3 Hyper Potions and a Revive wins about 77%.
+- **Steps:** beat the Karate Master; then talk to **Hitmonlee** or
+  **Hitmonchan** by the Dojo's door (`Step.alt`): that one joins at Lv50
+  (`Step.joins`: by the townsfolk talked to), the other goes back to
+  training (both leave the hall, `Folk.gone_after`).
+- **Rewards:** ₽3,000, 2,900 XP, 2 Hyper Potions, a **Rare** gear piece
+  (item level 54), and the Hitmon picked.
+
 ### Route 12
 
 From the Route 11 Gate's east doorway (past its Snorlax) up to Lavender

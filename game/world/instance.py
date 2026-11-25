@@ -29,7 +29,7 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
-                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_7, SILPH_CO, SAFFRON_GYM, ROUTE_11, ROUTE_12, ROUTE_13, ROUTE_14, ROUTE_15, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_18, FUCHSIA_GYM, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_7, SILPH_CO, SAFFRON_GYM, FIGHTING_DOJO, ROUTE_11, ROUTE_12, ROUTE_13, ROUTE_14, ROUTE_15, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_18, FUCHSIA_GYM, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
                      UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, POKEMON_TOWER, PoolEntry,
                      Theme)
 from .spinners import carve, layout_of
@@ -744,6 +744,33 @@ ROUTES = {r.key: r for r in [
           blocked="Sabrina's gym. The doors won't budge: a strange force holds them shut. A sign: \"Closed while "
                   "the city is in danger.\"",
           blocked_done="Alakazam: ...I foresaw your return. The Marsh Badge shines on you. Sabrina is pleased."),
+    # Saffron's Fighting Dojo (quest "fighting_dojo"), as in Red/Blue: one
+    # long hall of black belts' bands, and the Karate Master (a giant Machamp
+    # stands in) at its end. Hitmonlee and Hitmonchan wait by the door: beat
+    # the master, and one of them joins (the player's pick).
+    Route("fighting_dojo", "Fighting Dojo", FIGHTING_DOJO, maps=1, towns=("saffron", "saffron"),
+          boss_chest="battle", boss_loot=MID_BOSS, boss_scale=2, wild=False, building="Fighting Dojo",
+          needs=("fighting_dojo", "started"),
+          blocked="The Fighting Dojo. Nobody's training: the master marched into Silph Co. to throw the Rockets "
+                  "out, and hasn't come back.",
+          rooms=(
+              Room("hall", "Dojo Hall", 84, (Stair("out", "saffron", 0), Stair("out", "saffron", 1)),
+                   boss_group=(("machamp", 63), ("primeape", 59), ("machoke", 59), ("hitmonchan", 58)),
+                   trainer="Karate Master", prize=99,
+                   folk=((0.12, Folk("dojo_hitmonlee", "Hitmonlee", "hitmonlee", 0, (
+                       "Hyah! I am the master's kicking student. Beat him, and you may train with me!",
+                       "My legs stretch further than you think. Hyah!",
+                   ), gone_after="fighting_dojo")),
+                         (0.2, Folk("dojo_hitmonchan", "Hitmonchan", "hitmonchan", 0, (
+                       "Hup hup! I'm the master's boxing student. Beat him, and I'll fight at your side!",
+                       "Fire Punch, Ice Punch, Thunder Punch: I've got a punch for everyone. Hup!",
+                   ), gone_after="fighting_dojo")))),
+          ),
+          trainers=(
+              Trainer("dojo_belt_1", "White Belts", (("machop", 50), ("mankey", 50), ("machop", 50)), 0, 25),
+              Trainer("dojo_belt_2", "Brown Belts", (("primeape", 51), ("machoke", 50)), 0, 25),
+              Trainer("dojo_belt_3", "Black Belts", (("machoke", 52), ("primeape", 51), ("hitmonlee", 50)), 0, 25),
+          )),
     # Route 2's north end, from the cave up to Pewter City: a short walk.
     Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}

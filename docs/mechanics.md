@@ -830,6 +830,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Saffron's gates, Route 7 | (no wild Pokémon or chests) | (no boss) |
 | Silph Co. | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Card Key Guard, the rival and the Rocket Boss: with the battle) |
 | Saffron Gym | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Mind Circle, the fancy chest) |
+| Fighting Dojo | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Karate Master, with the battle) |
 | Snorlax's Rude Awakening (both) | (no wild Pokémon or chests) | none: the Snack Pack / Dream Eaters drop nothing; Snorlax joins the first time (quest *The Sleeping Giant*) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 
@@ -1588,6 +1589,10 @@ always the same spot), with its team in a row.
 | Silph Co. 9F | Rocket Elite (Rocket) | Persian 51, Hypno 51 | ₽765 |
 | Silph Co. (boss) | Rocket Boss | Persian 54, Nidoking 51, Nidoqueen 51, Kangaskhan 51 | ₽2,524 |
 | Saffron Gym (boss) | Mind Circle (Sabrina) | Alakazam 53, Kadabra 49, Mr. Mime 49, Venomoth 50 (after its two waves: Drowzee 48, Kadabra 47, Hypno 48; Mr. Mime 48, Venomoth 49; fought by three) | ₽2,475 |
+| Fighting Dojo | White Belts (Black Belt) | Machop 50, Mankey 50, Machop 50 | ₽625 |
+| Fighting Dojo | Brown Belts (Black Belt) | Primeape 51, Machoke 50 | ₽625 |
+| Fighting Dojo | Black Belts (Black Belt) | Machoke 52, Primeape 51, Hitmonlee 50 | ₽625 |
+| Fighting Dojo (boss) | Karate Master | Machamp 63, Primeape 59, Machoke 59, Hitmonchan 58 (Machamp giant) | ₽2,871 |
 | S.S. Anne 1F | Gentleman's Hounds (Gentleman) | Growlithe 26, Growlithe 26 | ₽910 |
 | S.S. Anne 1F | Seaside Lass (Lass) | Pidgey 25, Nidoran F 25, Jigglypuff 25 | ₽187 |
 | S.S. Anne 1F | Cabin Boys (Youngster) | Rattata 25, Ekans 25, Raticate 24 | ₽180 |

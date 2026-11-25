@@ -51,6 +51,10 @@ class Step:
     # step done with one remembers it (`chosen`): a later defeat step then
     # only takes the route walked from that townsfolk (`Route.folk`).
     alt: tuple[str, ...] = ()
+    # talk with `alt`: who joins, by which townsfolk was talked to (the
+    # Fighting Dojo's Hitmonlee or Hitmonchan): (folk, species, level, what's
+    # said then).
+    joins: tuple[tuple[str, str, int, str], ...] = ()
 
     @property
     def targets(self) -> tuple[str, ...]:
@@ -1365,6 +1369,30 @@ QUESTS = {q.key: q for q in [
                     gives=("Marsh Badge",)),),
         money=3400, xp=3200,
         rewards=(("medicine", "Hyper Potion", 3), ("medicine", "Max Potion", 2), ("gear", None, "Epic", 54)),
+    ),
+    # The Fighting Dojo, as in Red/Blue: its master is back from Silph Co.
+    # and taking challengers. Beat him, and Hitmonlee or Hitmonchan joins.
+    Quest(
+        "fighting_dojo", "The Fighting Dojo",
+        "The Fighting Dojo's master is back from Silph Co., and he's taking challengers. Beat his black belts and "
+        "the master himself, and one of his prize students, Hitmonlee or Hitmonchan, will train with you.",
+        giver="saffron_machoke", requires=("silph_co",),
+        offer=(("Machoke", "OSS! The master came back from Silph Co.! He says the Rockets were no challenge."),
+               ("Machoke", "He wants a real fight. You beat the Rockets... You should face him!"),
+               ("Machoke", "Beat him, and Hitmonlee or Hitmonchan will go with you. The master's rule. OSS!")),
+        steps=(Step("defeat", "fighting_dojo", "Defeat the black belts and the Karate Master in the Fighting Dojo "
+                                               "(Saffron City)",
+                    dialogue=(("Machamp", "HAAA... Splendid! It has been years since I lost a fair fight."),
+                              ("Machamp", "As promised: Hitmonlee and Hitmonchan wait by the door. Choose one. "
+                                          "Only one!"))),
+               Step("talk", "dojo_hitmonlee", "Choose a partner by the Dojo's door: Hitmonlee or Hitmonchan",
+                    alt=("dojo_hitmonchan",),
+                    joins=(("dojo_hitmonlee", "hitmonlee", 50, "Hitmonlee: Hyah! Let's kick our way to the top!"),
+                           ("dojo_hitmonchan", "hitmonchan", 50, "Hitmonchan: Hup hup! I'm ready for the next "
+                                                                 "round!")))),
+        money=3000, xp=2900,
+        rewards=(("medicine", "Hyper Potion", 2), ("gear", None, "Rare", 54)),
+        done_dialogue=(("", "The other one bows, and heads back to training."),),
     ),
     # The Safari Zone Warden lost his Gold Teeth in the Safari Zone (as in
     # Red/Blue): they lie in a dead end of its deepest zone (world/safari.py).

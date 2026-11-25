@@ -554,7 +554,8 @@ you are working on.
   `progress.STARTERS`; `Game.new(starter)`, saved as `Game.starter`).
 - Quests (`world/quests.py`: the rules; `world/quest_data.py`: `Step`, `Quest` and
   every quest; `docs/quests.md`): `QUESTS` (`Quest.requires` entries can be
-  any-of tuples, `quests.required`; `Quest.needs` as a route's) with steps (visit
+  any-of tuples, `quests.required`; `Quest.needs` as a route's; a talk
+  step's `Step.joins` adds the Pokémon of whichever `alt` was talked to) with steps (visit
   a building in a town, defeat a route's boss, reach a town), taken from a
   town's quest board (`Town.board_col`) or started automatically once their
   prerequisites are done (`Quest.starts_in`: only on arriving in that

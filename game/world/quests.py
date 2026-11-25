@@ -499,6 +499,11 @@ def _advance(game, quest: Quest, event: Event) -> None:
         if item in game.bag.key_items:
             game.bag.key_items.remove(item)
     game.bag.key_items += [i for i in s.gives if i not in game.bag.key_items or i in STACKING]
+    if s.joins:  # the one picked joins (by the townsfolk talked to)
+        folk, species, level, line = next((j for j in s.joins if chosen(game, quest.key, j[0])), s.joins[0])
+        where = game.add_member(Monster.create(species, level), active_limit(game))
+        event.dialogue += [("", line)] if line else []
+        event.dialogue.append(("", f"{SPECIES[species].name} joined your {'party' if where == 'party' else 'reserve'}!"))
     game.quests[quest.key] += 1
     game.quest_counts.pop(quest.key, None)
     if is_done(game, quest.key):

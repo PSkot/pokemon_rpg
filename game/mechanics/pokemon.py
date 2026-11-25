@@ -244,6 +244,8 @@ SPECIES.update({
     "rhydon": _placeholder("112_rhydon", "Rhydon", (105, 130, 120, 40, 45), ('ground', 'rock'), exp=204),
     "exeggcute": _animated("exeggcute", "Exeggcute", (60, 40, 80, 40, 60), ("grass", "psychic"), exp=98, hit=3),
     "exeggutor": _animated("exeggutor", "Exeggutor", (95, 95, 85, 55, 125), ("grass", "psychic"), exp=212, hit=4),
+    "hitmonlee": _placeholder("106_hitmonlee", "Hitmonlee", (50, 120, 53, 87, 35), ("fighting",), exp=139),
+    "hitmonchan": _placeholder("107_hitmonchan", "Hitmonchan", (50, 105, 79, 76, 35), ("fighting",), exp=140),
     "mr_mime": _animated("mr_mime", "Mr. Mime", (40, 45, 65, 90, 100), ("psychic",), exp=136, hit=4),
     "jynx": _placeholder("124_jynx", "Jynx", (65, 50, 35, 95, 95), ('ice', 'psychic'), exp=137),
     "electabuzz": _animated("electabuzz", "Electabuzz", (65, 83, 57, 105, 85), ("electric",), exp=156, hit=4),
