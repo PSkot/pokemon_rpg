@@ -82,7 +82,12 @@ class Quest:
     money: int  # Poké Dollars, given when it's done ...
     xp: int     # ... and XP for each party member
     board: str = ""                  # the town whose quest board posts it ("" = starts by itself)
-    requires: tuple[str, ...] = ()   # quests that must be done first
+    # Quests that must be done first; an entry that's a tuple of keys is done
+    # once any one of them is (two ways to the same place).
+    requires: tuple[str | tuple[str, ...], ...] = ()
+    # Only on offer while this holds (as `Route.needs`: e.g. a boss beaten,
+    # ("boss:snorlax_wakes_east", "beaten")).
+    needs: tuple[str, str] | None = None
     starts_in: str = ""              # a quest that starts by itself: only on arriving in this town
     giver: str = ""                  # starts by talking to this townsfolk (towns.Folk key) ...
     offer: tuple[Line, ...] = ()     # ... who says this
@@ -1253,11 +1258,30 @@ QUESTS = {q.key: q for q in [
     ),
     # Down the skate road and along Route 18 to Fuchsia City (as in
     # Red/Blue, by Cycling Road).
+    # Or along the coast (Red/Blue's Routes 13-15), once the Route 11 Gate's
+    # Snorlax is awake: either way opens Fuchsia City's quests.
+    Quest(
+        "coastal_road", "The Coastal Road",
+        "With the Route 11 Gate's Snorlax awake, the coastal road runs south past it: Route 13's fences and flower "
+        "beds to Silence Bridge, Route 14's woods, and Route 15 into Fuchsia City. Something has overgrown the "
+        "road's far end.",
+        requires=("snorlax_west",), needs=("boss:snorlax_wakes_east", "beaten"),
+        steps=(Step("reach", "silence_bridge", "Follow Route 13 from the Route 11 Gate (past its Snorlax) to "
+                                               "Silence Bridge"),
+               Step("reach", "route_15", "Follow Route 14 through the woods to the Route 15 Gate"),
+               Step("defeat", "route_15", "Clear the Thornwood Gang at the end of Route 15",
+                    dialogue=(("", "The giant Victreebel wilts, and its gang scatters into the long grass."),
+                              ("", "The vines pull back from the road. Fuchsia City is just ahead!")))),
+        money=2600, xp=2500,
+        rewards=(("medicine", "Hyper Potion", 2), ("medicine", "Revive", 1), ("gear", None, "Rare", 47)),
+    ),
     Quest(
         "to_fuchsia", "Fuchsia City",
-        "Past the bottom of the skate road, Route 18 runs east along the coast to Fuchsia City.",
-        requires=("king_of_the_hill",),
-        steps=(Step("reach", "fuchsia", "Follow Route 18 east from the Route 18 Gate to Fuchsia City"),),
+        "Fuchsia City lies on the coast: east along Route 18 from the bottom of the skate road, or at the end of "
+        "the coastal road (Route 15).",
+        requires=(("king_of_the_hill", "coastal_road"),),
+        steps=(Step("reach", "fuchsia", "Reach Fuchsia City (Route 18 from the skate road, or Route 15 along "
+                                        "the coast)"),),
         money=2800, xp=2600,
         rewards=(("medicine", "Hyper Potion", 2), ("gear", None, "Rare", 46)),
         done_dialogue=(("", "Fuchsia City: a town by the sea, home of the Safari Zone and of Koga, the ninja gym "

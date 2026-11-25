@@ -73,7 +73,7 @@ wild groups have one more Pokémon (see `mechanics.md`, *Wild Pokémon*).
 | Part | What it is |
 | --- | --- |
 | **Name and summary** | Shown in the quest log. |
-| **Prerequisites** | Quests that must be done first. Until then it's *locked* (not shown). |
+| **Prerequisites** | Quests that must be done first (`Quest.requires`; an entry that's a tuple of keys: any one of them, for two ways to one place), and optionally a condition like a route's (`Quest.needs`, e.g. a boss beaten). Until then it's *locked* (not shown). |
 | **Start** | Taken from a town's **quest board** (`Quest.board`), given by a **townsfolk** you talk to (`Quest.giver`, with `Quest.offer` as their words), dropped as an item (`Quest.drop`), or *automatic* (as soon as its prerequisites are done, with a notice). |
 | **Steps** | Objectives done in order; the quest shows the current one. |
 | **Rewards** | Given when the last step is done. **Every** quest pays Poké Dollars (`Quest.money`) and XP (`Quest.xp`, to each party member, as in battle). **Major** quests (rival and gym battles, story milestones) also give items: medicine, gear (at a rarity and item level). Key items come from steps. |
@@ -639,15 +639,52 @@ yet.
 - **Rewards:** ₽2,600, 2,400 XP, 2 Hyper Potions, a Revive, and the Bike
   Helmet (a Rare head item, item level 45: Defense and HP).
 
+### The Coastal Road
+
+The other way to Fuchsia City (Red/Blue's Routes 13–15), along the coast
+from the Route 11 Gate.
+
+- **Starts:** automatically once *The Sleeping Giant* is done and the
+  Route 11 Gate's Snorlax is awake and calmed (`Quest.needs`
+  "boss:snorlax_wakes_east": fed in *The Sleeping Giant*, or woken in *The
+  Other Sleeping Giant*).
+- **Steps:**
+  1. **Route 13** (route "route_13", 2 maps; a doorway at the Route 11
+     Gate's col 47, past its Snorlax, which blocks it like Route 12): fences
+     and flower beds, wild Gloom, Weepinbell, Venonat, Pidgeotto, Tentacool
+     and Goldeen (Lv42–45); bands **Fence Hoppers** (Pidgeotto 45, Spearow
+     44, Spearow 44), **Picnic Pals** (Gloom 45, Nidorina 45), **Petal
+     Parade** (Vileplume 46, Weepinbell 45), **Fence Riders** (Koffing 45,
+     Grimer 45, Koffing 45). Reach **Silence Bridge** (a stop: Psyduck and
+     Venonat).
+  2. **Route 14** (route "route_14", 2 maps, the forest backdrop): wild
+     Gloom, Weepinbell, Venomoth, Venonat, Pidgeotto (Lv43–46); **High
+     Flyers** (Pidgeot 47, Fearow 46), **Moth Swarm** (Venomoth 46, Venonat
+     45, Venomoth 46), **Smoke Riders** (Koffing 46, Weezing 47), **Garden
+     Club** (Vileplume 47, Victreebel 46). Reach the **Route 15 Gate** (a
+     stop: Tangela).
+  3. **Route 15** (route "route_15", 3 maps, into Fuchsia City's east end):
+     wild Gloom, Weepinbell, Venomoth, Pidgeotto, Fearow, Parasect
+     (Lv44–47); **Shore Wings** (Pidgeotto 47 ×2), **Tide Pool Pals**
+     (Tentacool 46, Seaking 47), **Exhaust Pipes** (Weezing 47, Grimer 46),
+     **Moonlight Duo** (Clefable 48, Wigglytuff 47), **Last Gust** (Fearow
+     48, Pidgeot 48). Beat the **Thornwood Gang** at its end: a giant
+     **Victreebel 52** with Vileplume 48, Weepinbell 47 and Venomoth 48. A
+     party of three at Lv45/44/44 with 3 Hyper Potions wins about 72%
+     (Tony: 67%).
+- **Rewards:** ₽2,600, 2,500 XP, 2 Hyper Potions, a Revive and a **Rare**
+  gear piece (item level 47).
+
 ### Fuchsia City
 
-- **Starts:** automatically when *King of the Hill* is done (past Tony, the
-  skate road's bottom: the Route 18 Gate).
-- **Steps:** follow **Route 18** (route "route_18_east", 2 maps, wild
+- **Starts:** automatically when *King of the Hill* **or** *The Coastal
+  Road* is done (`requires` (("king_of_the_hill", "coastal_road"),)).
+- **Steps:** reach Fuchsia City: by **Route 18** (route "route_18_east", 2 maps, wild
   Fearow, Spearow, Raticate, Rattata and Pidgeotto at Lv42–46, three Bird
   Keeper bands: **Coast Flock** (Pidgeotto 46, Spearow 45, Spearow 45),
   **Beak Brigade** (Fearow 46, Fearow 46), **Sea Breeze** (Pidgeot 47,
-  Pidgeotto 46)) east to **Fuchsia City**.
+  Pidgeotto 46)) east from the Route 18 Gate, or by Route 15 along the
+  coast (its east doorway).
 - **There:** a Pokémon Center, a Poké Mart (with a gear counter, item level
   42–46), a Recruitment Center, a quest board, the smith, the **Fuchsia
   Gym** (shut: Koga's, next) and the **Warden's House** (he's lost his

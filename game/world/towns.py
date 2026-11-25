@@ -364,7 +364,8 @@ TOWNS = {t.key: t for t in [
     # to Route 12 (up to Lavender Town), where a Snorlax sleeps across it (as
     # in Red/Blue: it takes the Poké Flute, quest "snorlax_west" or
     # "snorlax_second").
-    Town("route_11", "Route 11 Gate", 50, (), exits=(("left", "route_11"), (22, "digletts_cave"), ("right", "route_12")),
+    Town("route_11", "Route 11 Gate", 50, (), exits=(("left", "route_11"), (22, "digletts_cave"), (47, "route_13"),
+                                                    ("right", "route_12")),
          home_col=6,
          folk=(
              Folk("route_11_diglett", "Diglett", "diglett", 28, (
@@ -552,6 +553,21 @@ TOWNS = {t.key: t for t in [
              "Squeak! You came down the whole skate road? And you beat TONY? Respect.",
              "Fuchsia City is on past here, along Route 18, by the sea. Watch out for the bird keepers. Squeak.",
          )),)),
+    # The coastal road's stops (Routes 13-15, quest "coastal_road"):
+    # Silence Bridge, between Routes 13 and 14, and the Route 15 Gate.
+    Town("silence_bridge", "Silence Bridge", 40, (), exits=(("left", "route_13"), ("right", "route_14")), home_col=8,
+         folk=(Folk("silence_bridge_psyduck", "Psyduck", "psyduck", 18, (
+             "Psy...? Shhh. This is Silence Bridge. Nobody talks here. Except me. Psy.",
+             "Route 14 runs on through the woods. The bikers there are LOUD. Psyduck doesn't like loud.",
+         )), Folk("silence_bridge_venonat", "Venonat", "venonat", 28, (
+             "Bzz... Mama Venomoth lives on Route 14. She has LOTS of friends.",
+             "The flower beds back on Route 13 are the best in Kanto. Bzz. Don't step on them.",
+         )))),
+    Town("route_15", "Route 15 Gate", 40, (), exits=(("left", "route_14"), ("right", "route_15")), home_col=8,
+         folk=(Folk("route_15_tangela", "Tangela", "tangela", 22, (
+             "Vines... vines everywhere. A Victreebel and its gang have overgrown the end of Route 15.",
+             "Fuchsia City is just past them. Bring something that burns. Or flies.",
+         )),)),
     # Fuchsia City, by the sea at Route 18's east end (as in Red/Blue):
     # Koga's gym, the Warden's house, and the Safari Zone (`inside`
     # "safari": scenes/safari.py).
@@ -566,7 +582,7 @@ TOWNS = {t.key: t for t in [
                  note="The Safari Zone Warden's house. Someone inside is mumbling: \"My teeth... where did I put "
                       "my teeth...\""),
         Building("Safari Zone", (FUNCTIONAL, 3), 95, inside="safari"),
-    ), exits=(("left", "route_18_east"),), home_col=12, board_col=44,
+    ), exits=(("left", "route_18_east"), ("right", "route_15")), home_col=12, board_col=44,
        mart=("Super Potion", "Hyper Potion", "Revive", "Full Heal", "Escape Rope", "Antidote", "Burn Heal",
              "Awakening", "Paralyze Heal", "Ice Heal"),
        gear=((42, 46), (("Common", 20), ("Uncommon", 45), ("Rare", 35))),

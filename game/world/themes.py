@@ -429,6 +429,52 @@ ROUTE_18 = Theme(
     backdrop=MEADOW_BACKDROP,
 )
 
+# Routes 13-15, the coastal road from the Route 11 Gate (past the east
+# Snorlax) down to Fuchsia City, as in Red/Blue: fences and flower beds by
+# the sea (13), a wooded stretch (14), the bird keepers' road into Fuchsia
+# (15). Gen 1's grass Pokémon, Venonat and Venomoth, and Pidgeotto.
+ROUTE_13 = Theme(
+    "route_13", "Route 13",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("gloom", 20, (42, 45)),
+        PoolEntry("weepinbell", 20, (42, 45)),
+        PoolEntry("venonat", 15, (42, 44)),
+        PoolEntry("pidgeotto", 20, (43, 45)),
+        PoolEntry("tentacool", 15, (42, 44)),
+        PoolEntry("goldeen", 10, (42, 44)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+)
+
+ROUTE_14 = Theme(
+    "route_14", "Route 14",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("gloom", 20, (43, 46)),
+        PoolEntry("weepinbell", 20, (43, 46)),
+        PoolEntry("venomoth", 20, (44, 46)),
+        PoolEntry("venonat", 15, (43, 45)),
+        PoolEntry("pidgeotto", 25, (44, 46)),
+    ),
+    backdrop=FOREST.backdrop,
+    far="forest.png",
+)
+
+ROUTE_15 = Theme(
+    "route_15", "Route 15",
+    MEADOW.palette,
+    pool=(
+        PoolEntry("gloom", 15, (44, 47)),
+        PoolEntry("weepinbell", 15, (44, 47)),
+        PoolEntry("venomoth", 20, (45, 47)),
+        PoolEntry("pidgeotto", 25, (45, 47)),
+        PoolEntry("fearow", 15, (45, 47)),
+        PoolEntry("parasect", 10, (44, 46)),
+    ),
+    backdrop=MEADOW_BACKDROP,
+)
+
 # Rock Tunnel, from the Route 10 Pokémon Center to Lavender Town: pitch
 # dark (Flash lights a circle around the player); Gen 1's Zubat, Geodude,
 # Machop and Onix.

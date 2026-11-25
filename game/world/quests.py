@@ -119,12 +119,18 @@ def active(game) -> list[Quest]:
 def ready(game, quest: Quest) -> bool:
     """Not started yet, the quests it needs are done, (recruitment) enough
     of its line defeated, and (evolution) its species at its level."""
-    return (step(game, quest.key) is None and all(is_done(game, r) for r in quest.requires)
+    return (step(game, quest.key) is None and all(required(game, r) for r in quest.requires)
+            and (not quest.needs or open_for(game, quest.needs))
             and (not quest.unlock or game.defeated[quest.unlock[0]] >= quest.unlock[1])
             and (not quest.evolves or evolution_level(game, quest.evolves))
             and not any(is_active(game, k) for k in quest.excludes)
             and (not quest.needs_species or any(m.species.key in quest.needs_species
                                                 for m in game.party + game.reserve)))
+
+
+def required(game, need: str | tuple[str, ...]) -> bool:
+    """One of `Quest.requires`: that quest done (a tuple: any one of them)."""
+    return any(is_done(game, k) for k in need) if isinstance(need, tuple) else is_done(game, need)
 
 
 def evolution_level(game, species: str) -> bool:

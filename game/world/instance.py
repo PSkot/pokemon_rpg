@@ -29,7 +29,7 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
-                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_18, FUCHSIA_GYM, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, ROUTE_13, ROUTE_14, ROUTE_15, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_18, FUCHSIA_GYM, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
                      UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, POKEMON_TOWER, PoolEntry,
                      Theme)
 from .spinners import carve, layout_of
@@ -626,6 +626,40 @@ ROUTES = {r.key: r for r in [
               Trainer("route_18_bird_keeper_2", "Beak Brigade", (("fearow", 46), ("fearow", 46)), 1, 25),
               Trainer("route_18_bird_keeper_3", "Sea Breeze", (("pidgeot", 47), ("pidgeotto", 46)), 1, 25),
           )),
+    # The coastal road (Red/Blue's Routes 13-15), from the Route 11 Gate's
+    # doorway past its Snorlax down to Fuchsia City, the other way there
+    # than the skate road (quest "coastal_road"). Route 13: fences and
+    # flower beds to Silence Bridge; Route 14: woods to the Route 15 Gate;
+    # Route 15: the bird keepers' road into Fuchsia, ending at the
+    # Thornwood Gang, a giant Victreebel's band that's overgrown it.
+    Route("route_13", "Route 13", ROUTE_13, maps=2, towns=("route_11", "silence_bridge"),
+          needs=("boss:snorlax_wakes_east", "beaten"),
+          blocked="A huge Pokémon is fast asleep right across the road. There's no getting past it.",
+          trainers=(
+              Trainer("route_13_bird_keeper", "Fence Hoppers", (("pidgeotto", 45), ("spearow", 44), ("spearow", 44)),
+                      0, 25),
+              Trainer("route_13_jr_trainer", "Picnic Pals", (("gloom", 45), ("nidorina", 45)), 0, 20),
+              Trainer("route_13_beauty", "Petal Parade", (("vileplume", 46), ("weepinbell", 45)), 1, 70),
+              Trainer("route_13_biker", "Fence Riders", (("koffing", 45), ("grimer", 45), ("koffing", 45)), 1, 20),
+          )),
+    Route("route_14", "Route 14", ROUTE_14, maps=2, towns=("silence_bridge", "route_15"),
+          trainers=(
+              Trainer("route_14_bird_keeper", "High Flyers", (("pidgeot", 47), ("fearow", 46)), 0, 25),
+              Trainer("route_14_bug_catcher", "Moth Swarm", (("venomoth", 46), ("venonat", 45), ("venomoth", 46)),
+                      0, 15),
+              Trainer("route_14_biker", "Smoke Riders", (("koffing", 46), ("weezing", 47)), 1, 20),
+              Trainer("route_14_beauty", "Garden Club", (("vileplume", 47), ("victreebel", 46)), 1, 70),
+          )),
+    Route("route_15", "Route 15", ROUTE_15, maps=3, towns=("route_15", "fuchsia"), boss=True,
+          boss_group=(("victreebel", 52), ("vileplume", 48), ("weepinbell", 47), ("venomoth", 48)), boss_scale=2,
+          trainer="Thornwood Gang", boss_loot=MID_BOSS,
+          trainers=(
+              Trainer("route_15_bird_keeper", "Shore Wings", (("pidgeotto", 47), ("pidgeotto", 47)), 0, 25),
+              Trainer("route_15_jr_trainer", "Tide Pool Pals", (("tentacool", 46), ("seaking", 47)), 0, 20),
+              Trainer("route_15_biker", "Exhaust Pipes", (("weezing", 47), ("grimer", 46)), 1, 20),
+              Trainer("route_15_beauty", "Moonlight Duo", (("clefable", 48), ("wigglytuff", 47)), 1, 70),
+              Trainer("route_15_bird_keeper_2", "Last Gust", (("fearow", 48), ("pidgeot", 48)), 2, 25),
+          )),
     # Route 2's north end, from the cave up to Pewter City: a short walk.
     Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}
@@ -827,7 +861,8 @@ class Recruit:
 # (easier) ones don't count.
 STORY_ORDER = ("route_1", "route_22", "viridian_forest", "route_3", "mt_moon_cave", "route_4_east", "nugget_bridge",
                "route_25", "route_5_south", "underground_path", "route_6_south", "route_11", "digletts_cave",
-               "route_9", "rock_tunnel", "route_8", "underground_west", "route_16", "route_12", "skate_road", "route_18_east")
+               "route_9", "rock_tunnel", "route_8", "underground_west", "route_16", "route_12", "skate_road", "route_18_east",
+               "route_13", "route_14", "route_15")
 
 
 def from_route(first: str, route: str) -> bool:
