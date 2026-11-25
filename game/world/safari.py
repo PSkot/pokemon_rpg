@@ -18,6 +18,12 @@ the scenery never tells a right door from a wrong one. The deepest zone's
 dead ends hold the Warden's Gold Teeth (the first one found in).
 
 A visit costs `FEE` and lasts `STEPS` steps (one per tile walked).
+
+**Kudos:** a wild Pokémon in the tall grass challenges the player to its
+game (scenes/safari_games.py); the score earns Kudos with that species
+(`KUDOS_RATE` per point, by game: a good game of either is worth about the
+same). At `KUDOS_NEEDED` it joins (`Game.kudos`, saved: it can take several
+visits), at its zone's level.
 """
 
 from __future__ import annotations
@@ -35,6 +41,8 @@ TRUE_DEPTH = 9           # the true path's maps after the first (3 zones of 3)
 SIDE_LENGTH = (1, 2)     # a side branch's maps
 GRASS_CHANCE = 0.08      # per step in tall grass: an encounter
 GOLD_TEETH, SURF = "Gold Teeth", "HM03 Surf"
+KUDOS_NEEDED = 100
+KUDOS_RATE = {"egg_catch": 1.0, "fruit_slice": 0.6}  # Kudos per point of a game's score
 
 
 @dataclass(frozen=True)
@@ -44,21 +52,30 @@ class Zone:
     # (species, weight) met in its tall grass (only those with a Safari game,
     # for now: Scyther and Chansey).
     grass: tuple[tuple[str, int], ...]
-    level: int
+    level: int  # what joins from here joins at this level
 
 
 ZONES = (
     Zone("Outer Grassland", replace(MEADOW, key="safari_1", name="Safari Zone",
                                     pool=(PoolEntry("scyther", 1, (30, 32)),)),
-         (("scyther", 1),), 30),
+         (("scyther", 1),), 40),
     Zone("Deep Woods", replace(FOREST, key="safari_2", name="Safari Zone",
                                pool=(PoolEntry("scyther", 1, (35, 38)),)),
-         (("scyther", 1),), 36),
+         (("scyther", 1),), 43),
     Zone("Ancient Marsh", replace(MEADOW, key="safari_3", name="Safari Zone",
                                   pool=(PoolEntry("chansey", 1, (40, 44)),),
                                   sky=((40, 70, 64), (170, 190, 150)), tint=(150, 190, 160)),
-         (("scyther", 2), ("chansey", 3)), 42),
+         (("scyther", 2), ("chansey", 3)), 46),
 )
+
+
+def kudos_for(game_kind: str, score: int) -> int:
+    """The Kudos a game's score earns."""
+    return round(score * KUDOS_RATE[game_kind])
+
+
+def joined(game, species: str) -> bool:
+    return game.kudos.get(species, 0) >= KUDOS_NEEDED
 
 
 def zone_of(depth: int) -> Zone:

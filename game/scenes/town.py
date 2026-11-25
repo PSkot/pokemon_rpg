@@ -285,7 +285,7 @@ class TownScene(MapScene):
     def _safari_gate(self) -> None:
         from .safari import SafariGate, SafariScene
         from ..world import safari
-        gate = SafariGate(self.game.bag.money)
+        gate = SafariGate(self.game.bag.money, self.game.kudos)
 
         def chosen():
             if gate.picked != "enter":

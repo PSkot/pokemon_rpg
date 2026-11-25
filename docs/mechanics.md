@@ -1004,6 +1004,9 @@ ends with the score (Enter or a tap goes back to the map).
   after the first in one swipe (within 0.5 s) is worth +1 more (a combo).
   A perfect bot scores 50–67; doing nothing, 0.
 - Scores never go below 0.
+- **Kudos** (`safari.KUDOS_RATE`, `KUDOS_NEEDED`): Egg Catch's score ×1,
+  Fruit Slice's ×0.6, rounded; 100 Kudos with a species and it joins, at
+  its zone's level (`Zone.level`: 40 / 43 / 46).
 
 ## Fly
 

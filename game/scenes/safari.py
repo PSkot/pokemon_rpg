@@ -170,12 +170,34 @@ class SafariScene(OverworldScene):
         self.show(challenge, after=chosen)
 
     def _played(self, species: str, score: int) -> None:
-        """Back from a game: how it went (Kudos come with part C)."""
+        """Back from a game: its score earns Kudos with the species; at
+        `KUDOS_NEEDED` it joins the team (`Game.kudos`)."""
+        from ..mechanics.pokemon import Monster
+        from ..world import quests
+        from .safari_games import GAMES
         name = SPECIES[species].name
         verdict = ("The {} looks impressed!" if score >= 30 else "The {} nods." if score >= 15
                    else "The {} doesn't look impressed.").format(name)
-        self.show(quest_ui.Dialogue([("", f"You scored {score}! {verdict}"),
-                                     ("", f"The {name} bounds back into the tall grass.")]))
+        pages = [("", f"You scored {score}! {verdict}")]
+        if safari.joined(self.game, species):
+            pages.append(("", f"(The {name}s of the Safari Zone already count you as a friend.)"))
+        else:
+            gained = safari.kudos_for(GAMES[species], score)
+            total = min(safari.KUDOS_NEEDED, self.game.kudos.get(species, 0) + gained)
+            self.game.kudos[species] = total
+            pages.append(("", f"+{gained} Kudos with {name}: {total}/{safari.KUDOS_NEEDED}."))
+            if total >= safari.KUDOS_NEEDED:
+                monster = Monster.create(species, self.node.zone.level)
+                where = self.game.add_member(monster, quests.active_limit(self.game))
+                pages.append(("", f"The {name} has taken a real liking to you!"))
+                pages.append(("", f"{name} (Lv{monster.level}) joins you! " + (
+                    "It's in your party." if where == "party" else "It went to the reserve (swap at a Recruitment "
+                                                                   "Center).")))
+                saves.autosave(self)
+                self.show(quest_ui.Dialogue(pages))
+                return
+        pages.append(("", f"The {name} bounds back into the tall grass."))
+        self.show(quest_ui.Dialogue(pages))
 
     def _leave(self) -> None:
         from .town import TownScene  # (it builds on the map scenes)
@@ -254,11 +276,21 @@ class SafariScene(OverworldScene):
             pygame.draw.line(layer, light, (x + 1, g), (x + 1 + sway, g - h + 3), 1)
 
 
+def kudos_text(kudos: dict[str, int]) -> str:
+    """"Kudos: Scyther 54/100, Chansey joined" ("" before any)."""
+    if not kudos:
+        return ""
+    parts = [f"{SPECIES[s].name} " + ("joined" if k >= safari.KUDOS_NEEDED else f"{k}/{safari.KUDOS_NEEDED}")
+             for s, k in kudos.items()]
+    return "Kudos: " + ", ".join(parts)
+
+
 class SafariGate:
     """The Safari Zone's entrance desk: pay `FEE` for `STEPS` steps, or not."""
 
-    def __init__(self, money: int):
+    def __init__(self, money: int, kudos: dict[str, int] | None = None):
         self.money = money
+        self.kudos = kudos_text(kudos or {})
         self.options = (("enter", f"Enter ({money_text(safari.FEE)})"), ("", "Not now"))
         self.choice = 0
         self.picked = ""
@@ -287,7 +319,8 @@ class SafariGate:
         ui.text(window, "The Safari Zone", (r.x + 12, r.y + 9), ui.YELLOW)
         lines = (f"{safari.STEPS} steps through a maze of wild lands, new every visit.",
                  "The deeper you go, the rarer the Pokémon. Mind the dead ends,",
-                 f"and read the signs and tracks.   You have {money_text(self.money)}.")
+                 f"and read the signs and tracks.   You have {money_text(self.money)}.",
+                 self.kudos)
         for i, line in enumerate(lines):
             ui.text(window, line, (r.x + 12, r.y + 29 + i * 13), ui.WHITE, size=22)
         for i, (_, label) in enumerate(self.options):

@@ -41,6 +41,7 @@ class Game:
     slots: int = 1  # places in the party (how many fight): +1 per Teamwork Ribbon used
     tower_best: int = 0  # the Battle Tower's highest floor cleared (world/tower.py)
     visited: set[str] = field(default_factory=set)  # towns and routes been to (the Town Map, world/townmap.py)
+    kudos: dict[str, int] = field(default_factory=dict)  # Safari Zone: species -> Kudos earned (world/safari.py)
 
     def arrive(self, town: str) -> None:
         """The player arrived in `town` from a route: its gear counter restocks."""

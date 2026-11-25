@@ -184,6 +184,10 @@ class QuestLog:
             steps = _steps(self.game, quest)
             for i, (text, color) in enumerate(steps):
                 lines.append((f"- {text}", color, 22, 10, 13 + (5 if i == len(steps) - 1 else 0)))
+        if self.game.kudos:  # the Safari Zone's Kudos (world/safari.py)
+            from .safari import kudos_text
+            lines.append(("Safari Zone", ui.WHITE, 26, 0, 15))
+            lines.append((f"- {kudos_text(self.game.kudos)} (100 and it joins)", ui.YELLOW, 22, 10, 18))
         done = [q.name for q in QUESTS.values() if quests.is_done(self.game, q.key)]
         if done:
             for line in ui.wrap("Done: " + ", ".join(done), 22, self.RECT.w - 28):
