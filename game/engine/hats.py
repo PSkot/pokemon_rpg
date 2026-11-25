@@ -26,7 +26,7 @@ HAT = 32                    # hat cell size
 HAT_SINK = 0.3              # sheets without faces: anchor this fraction of the hat's height up from its bottom
 # Hats drawn on a reference face: the face hole's top edge goes this many px
 # below the head anchor, and its centre this many px in front of it.
-FACE_DROP = 5
+FACE_DROP = 3
 FACE_FORWARD = 1
 # The reference face's skin colours (light tones, shades, and the orange
 # tint under gold helmets). Skin-like tones next to them are cut out too.
@@ -214,5 +214,5 @@ def draw_worn(surface: pygame.Surface, monster, anim, frame: int, frame_rect: py
     """Draw the hat `monster` wears (if any) on frame `frame` of `anim`."""
     gear = monster.gear.get("head")
     if gear:
-        draw(surface, gear.item.sprite, monster.species.name.lower(), anim, frame, frame_rect, flip, alpha,
+        draw(surface, gear.item.sprite, monster.species.key, anim, frame, frame_rect, flip, alpha,
              monster.species.size * monster.scale)  # (bosses are drawn bigger)

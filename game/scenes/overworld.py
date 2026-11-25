@@ -241,7 +241,7 @@ class WildPokemon:
             box = anim.place(0, x, y - lift, flip)
             surface.blit(frame, box)
             if self.hat >= 0 and leader:
-                hats.draw(surface, self.hat, sp.name.lower(), anim, 0, box, flip,
+                hats.draw(surface, self.hat, sp.key, anim, 0, box, flip,
                           size=sp.size * self.scales[0])
         if debug:
             color = (255, 0, 0) if self.boss else (255, 255, 0)
