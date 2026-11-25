@@ -154,7 +154,8 @@ you are working on.
   enemies, split between them (`BattleScene._give_xp`; ×0.15 wild, ×0.45 trainer), filling the
   XP bar and leveling up (keeping the damage taken). Quests are the main
   XP source.
-- Talents (`talents.py`, `docs/talents.md`): moves come by level
+- Talents (`talents.py` puts together `talent_core.py`, `learnsets.py`,
+  `talent_list*.py` and `talent_trees*.py`; `docs/talents.md`): moves come by level
   (`LEARNSETS`: per line (move, level, evolution stage); Red/Blue's
   levels, strong moves and TMs later; `Monster.known`); the first is the
   basic attack (Fight), 4 more equipped (`Monster.equipped`; new moves
