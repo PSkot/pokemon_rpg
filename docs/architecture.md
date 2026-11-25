@@ -389,8 +389,11 @@ you are working on.
   the dock (col 81) → route "route_11" (2 maps, five bands; wild Drowzee)
   → stop town "route_11" ("Route 11 Gate": the Diglett's Cave doorway, a
   Diglett giving `evolve_dugtrio`, and Snorlax asleep across the doorway
-  to Route 12, `Folk.asleep`: not turning, Zzz drawn in `town.py`; once
-  woken, route "route_12" runs up to Lavender's doorway at col 67) → route "digletts_cave" (theme `DIGLETTS_CAVE`, 3 maps
+  to Route 12, `Folk.asleep`: not turning, Zzz drawn in `town.py`;
+  `Folk.blocks`: `TownScene.update` keeps the player on their side of it;
+  route "route_12" runs up to Lavender's doorway at col 67, its `needs`
+  only checked from this end (`Route.needs_from`), so it can be walked
+  down from Lavender to reach the Snorlax from the east) → route "digletts_cave" (theme `DIGLETTS_CAVE`, 3 maps
   of Diglett/Dugtrio, a giant Dugtrio's band, `MID_BOSS` loot) → stop town
   "route_2" (Oak's aide, a Kadabra: HM05 Flash) → route "route_2_north"
   (one map, `wild=False`) → Pewter's doorway at col 67. With Flash (quests

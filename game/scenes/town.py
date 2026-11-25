@@ -110,6 +110,18 @@ class TownScene(MapScene):
     def where(self) -> str:
         return self.town.name
 
+    BLOCK_HALF = 18  # px: how far either side of a road-blocking sleeper's middle the player is held
+
+    def update(self, dt: float) -> None:
+        before = self.player.x
+        super().update(dt)
+        for folk in self.folk:  # a sleeper sprawled across the road (`Folk.blocks`): no walking past it
+            if folk.blocks:
+                side = -1 if before < folk.x else 1
+                edge = folk.x + side * self.BLOCK_HALF
+                if (self.player.x - edge) * side < 0:
+                    self.player.x = edge
+
     def _door_at_player(self) -> tuple[Doorway, str, str | int] | None:
         """(doorway, route key, where) of the doorway the player stands in."""
         return next((d for d in self.doors if self.player.body_rect.colliderect(d[0].rect)), None)
@@ -217,7 +229,8 @@ class TownScene(MapScene):
             self.next_scene = Transition(self, TownScene(self.game, TOWNS[door[1][len(LINK):]],
                                                          arrive=LINK + self.town.key), flashes=0)
             return
-        if door and not quests.open_for(self.game, ROUTES[door[1]].needs):
+        route = ROUTES[door[1]] if door else None
+        if route and route.needs_from in ("", self.town.key) and not quests.open_for(self.game, route.needs):
             self.show(quest_ui.Dialogue([("", quests.blocked_text(self.game, ROUTES[door[1]]))]))
             return
         building = None if door else self._building_at_player()

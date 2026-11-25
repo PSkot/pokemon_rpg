@@ -420,7 +420,9 @@ yet.
   Zzz rising over it; it doesn't turn to face you). Talking to it: "A huge
   Pokémon is fast asleep, sprawled right across the road to Route 12. It
   won't budge." The town ends there: turn back. (As in Red/Blue, it takes
-  the Poké Flute to wake it, later.)
+  the Poké Flute to wake it, later.) Route 12 can also be walked down from
+  Lavender Town, which comes out on Snorlax's other side: it can be woken
+  from there too, but not walked past.
 - **Rewards:** ₽1,000, 900 XP.
 
 ### 16. Diglett's Cave

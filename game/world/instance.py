@@ -147,6 +147,7 @@ class Route:
     # Its doorways need (quest key, "started" or "done"); `blocked` says why not.
     needs: tuple[str, str] | None = None
     blocked: str = ""
+    needs_from: str = ""   # ... only when entered from this town ("": from either end)
     blocked_done: str = ""  # ... once that quest is done, if it says something else then
     # Once this quest is done (or this key is in Game.trainers: a beaten
     # `boss_key`), the boss is this group instead (no trainer).
@@ -613,7 +614,7 @@ ROUTES = {r.key: r for r in [
     # Gen 1's Fishermen, Jr. Trainers and Rockers, as bands, about level
     # with the party after the Snorlax.
     Route("route_12", "Route 12", ROUTE_12, maps=2, towns=("route_11", "lavender"),
-          needs=("boss:snorlax_wakes_east", "beaten"),
+          needs=("boss:snorlax_wakes_east", "beaten"), needs_from="route_11",  # (from Lavender: walk down to it)
           blocked="A huge Pokémon is fast asleep right across the road to Route 12. There's no getting past it.",
           trainers=(
               Trainer("route_12_fisherman_1", "Pier Anglers", (("goldeen", 43), ("tentacool", 43), ("goldeen", 43)),

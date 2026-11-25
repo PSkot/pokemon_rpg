@@ -65,6 +65,7 @@ class Folk:
     asleep: bool = False  # fast asleep (Snorlax): doesn't turn to face the player, Zzz over it
     gone_after: str = ""  # not there any more once this quest is done (or "boss:<route>": that boss is beaten)
     npc: str = ""  # drawn as this NPC's idle animation (props/<npc>.png, tileset.npc_frames), not a species
+    blocks: bool = False  # sprawled across the road: the player can't walk past it (but can talk to it from either side)
 
     @property
     def x(self) -> float:
@@ -378,7 +379,7 @@ TOWNS = {t.key: t for t in [
                  "A huge Pokémon is fast asleep, sprawled right across the road to Route 12. It won't budge.",
                  "Snorlax is snoring loudly. Pushing, shouting... nothing wakes it. (Maybe something will, one "
                  "day.)",
-             ), asleep=True, gone_after="boss:snorlax_wakes_east"),
+             ), asleep=True, gone_after="boss:snorlax_wakes_east", blocks=True),
              # Evolution quest: Drowzee -> Hypno.
              Folk("route_11_hypno", "Hypno", "hypno", 13, (
                  "Look into the pendulum... no? Pity. You'd have slept so well.",
