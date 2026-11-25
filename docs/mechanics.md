@@ -231,8 +231,12 @@ out in these steps:
    "high critical-hit ratio": 15%; ×20 or more: always), × 4 with Focus
    Energy, plus the user's gear `crit` (and Lucky Strikes) in percentage
    points (e.g. +3 → 8%), at most 100%. There's no cap: gear's crit is
-   small (an all-crit set of top Legendary Lv60 rolls reaches 27%; Slash 37%). Always a crit with Keen Edge on a target below half HP; Apex
-   Predator adds **+30** points on a target below ⅓ HP. A crit
+   small (an all-crit set of top Legendary Lv60 rolls reaches 27%; Slash 37%). Apex
+   Predator adds **+30** points on a target below ⅓ HP; Stone Edge (Rock
+   moves), Tidal Force (Water moves), Keen Edge (Razor Leaf) and Thunder God
+   (Thunderbolt, Thunder) add **+30** points on a target below ½ HP (they
+   stack with Apex Predator: +60 below ½ HP). Always a crit only with the
+   gear effect Executioner, on a target below ⅓ HP. A crit
    multiplies `base` by **×1.5** (Gen 2+ style; *not* Gen 1's level-based
    crits; ×2 with the Sniper talent).
 5. **Leaf Shield:** if the target is shielded, `base` × **0.5**.

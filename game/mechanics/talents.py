@@ -542,8 +542,8 @@ TALENTS = {t.key: t for t in [
        ("type:rock", {"crit_ratio": 3.0})),
     _t("Rockfall", "rock", "The user's Rock moves have a 30% chance to make the target flinch.",
        ("type:rock", {"flinch": 30})),
-    _t("Stone Edge", "rock", "The user's Rock moves are always critical hits on a target below half HP.",
-       ("type:rock", {"keen": 0.5})),
+    _t("Stone Edge", "rock", "The user's Rock moves have +30% critical-hit chance on a target below half HP.",
+       ("type:rock", {"hunt": 0.5, "hunt_crit": 30})),
     _t("Jagged Hide", "rock", "Whoever hits the user loses 1/16 of its max HP.", thorns=1 / 16),
     # Ground lines: sand in the eyes.
     _t("Sand Veil", "ground", "At the start of each battle, each enemy's accuracy has a 50% chance to fall 1 stage.", lower__accuracy=1),
@@ -678,8 +678,8 @@ TALENTS = {t.key: t for t in [
     _t("Canopy", "move:Leaf Shield", "Leaf Shield covers the whole party.", ("Leaf Shield", {"spread": True})),
     _t("Thornskin", "move:Leaf Shield", "For 3 rounds, whoever hits a Pokémon behind Leaf Shield loses "
        "1/16 of its max HP.", ("Leaf Shield", {"spikes": 1 / 16})),
-    _t("Keen Edge", "move:Razor Leaf", "Razor Leaf is always a critical hit on a target below half HP.",
-       ("Razor Leaf", {"keen": 0.5})),
+    _t("Keen Edge", "move:Razor Leaf", "Razor Leaf has +30% critical-hit chance on a target below half HP.",
+       ("Razor Leaf", {"hunt": 0.5, "hunt_crit": 30})),
     _t("Full Bloom", "move:Growth", "Growth also makes the user's next damaging move deal 50% more.",
        ("Growth", {"empower": 0.5})),
     _t("Shared Sun", "move:Growth", "Growth works on the whole party.", ("Growth", {"rally": True})),
@@ -1026,8 +1026,8 @@ TALENTS = {t.key: t for t in [
     _t("Fortress", "any", "While the user stands, the whole party takes 25% less damage.", ancient_roots=0.25),
     _t("Tsunami", "move:Hydro Pump", "Hydro Pump hits every enemy at full damage.",
        ("Hydro Pump", {"spread": True, "spread_share": 1.0})),
-    _t("Tidal Force", "water", "The user's Water moves are always critical hits on a target below half HP.",
-       ("type:water", {"keen": 0.5})),
+    _t("Tidal Force", "water", "The user's Water moves have +30% critical-hit chance on a target below half HP.",
+       ("type:water", {"hunt": 0.5, "hunt_crit": 30})),
     _t("Absolute Zero", "freeze", "At the start of each battle, each enemy has a 20% chance to be frozen.",
        aura__freeze=20),
     # Bulbasaur
@@ -1189,8 +1189,9 @@ TALENTS = {t.key: t for t in [
        aura__paralysis=30),
     _t("Lightning Speed", "move:Quick Attack", "Quick Attack hits 3 times, at 70% power each.",
        ("Quick Attack", {"hits": (3, 3), "scale": -0.3})),
-    _t("Thunder God", "own", "Thunderbolt and Thunder never miss, and are always critical hits on a target "
-       "below half HP.", ("Thunderbolt", {"sure_hit": True, "keen": 0.5}), ("Thunder", {"sure_hit": True, "keen": 0.5})),
+    _t("Thunder God", "own", "Thunderbolt and Thunder never miss, and have +30% critical-hit chance on a target "
+       "below half HP.", ("Thunderbolt", {"sure_hit": True, "hunt": 0.5, "hunt_crit": 30}),
+       ("Thunder", {"sure_hit": True, "hunt": 0.5, "hunt_crit": 30})),
 ]}
 
 
