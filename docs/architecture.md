@@ -76,6 +76,15 @@ you are working on.
   under their feet (`_enemy_bar`; those names go under it) and their HP
   left as numbers in the enemy window, between name and level/status. Battle sequences are generator "scripts"
   that yield seconds to wait (`BattleScene._round` / `_perform`).
+- Move effects (`scenes/battle_fx.py`, all drawn in code): a recipe per
+  move (`RECIPES`, a fallback by type) with a `launch` on the attack's
+  strike frame (returns its travel time: the hit lands when it arrives),
+  a `land` at the targets (returns how long it lingers) and, for charging
+  moves, a `charge`. Built from particles (light kinds: a see-through body
+  plus an additive halo, so they read on any backdrop; matter: rocks,
+  leaves, drops...), beams and bolts, rings, and field-wide shake, flash
+  and tint (`BattleScene.fx`; drawn behind/over the Pokémon). Effects grow
+  with the move's power (`power_of`).
 - Each `Animation` aligns its own baseline (lowest opaque row) to the feet
   position, because rows in a sheet sit at different heights. Rows whose
   effects reach below the feet pass an explicit `baseline=` instead (one

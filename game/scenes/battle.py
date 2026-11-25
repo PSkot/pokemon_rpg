@@ -14,6 +14,7 @@ from functools import cache
 import pygame
 
 from .. import settings
+from . import battle_fx
 from ..dev import DEV
 from ..engine import hats, ui
 from ..engine.animation import Animation
@@ -574,6 +575,7 @@ class BattleScene(Scene):
         self.actor_index = 0
         self.message = ""
         self.popups: list[Popup] = []
+        self.fx = battle_fx.Fx()  # moves' effects
         self.won = False
         self.stop_evolving = False  # X pressed while a party member evolves
         self.lost = False  # the whole party fainted (running away is neither)
@@ -1399,17 +1401,28 @@ class BattleScene(Scene):
         user.play(anim)
         impact = max(0, len(anim.frames) - 2) / anim.fps  # the second-to-last frame
         yield impact
+        travel = linger = 0.0
         if charging:
             user.charging = Action(user, move, targets[0])
+            linger = self.fx.launch(move, self._fx_ctx(user, move, [user]), charging=True)
         else:
             user.charging = None
             reachable = [t for t in targets if not t.up_high] if move.target == "enemy" else targets
             if not reachable:  # (Fly's first round)
                 self.message = f"{targets[0].label} is up high, out of reach!"
-            elif self._misses(user, move):
-                self.message = f"{user.label}'s attack missed!"
             else:
-                self._apply(user, move, reachable)
+                missed = self._misses(user, move)
+                # The effect sets off on the strike frame; the hit lands when it arrives.
+                ctx = self._fx_ctx(user, move, reachable)
+                travel = self.fx.launch(move, ctx)
+                if travel:
+                    yield travel
+                if missed:
+                    self.message = f"{user.label}'s attack missed!"
+                else:
+                    self._apply(user, move, reachable)
+                ctx.landed = not missed
+                linger = self.fx.land(move, ctx)
             if move.self_ko and not (DEV.god_mode and not user.enemy):  # (Self-Destruct: hit or miss)
                 user.monster.hp = 0
                 user.hit_time = HIT_TIME
@@ -1418,7 +1431,7 @@ class BattleScene(Scene):
                 user.streak += 1
             else:
                 user.streak, user.streak_type = 1, move.type
-        yield anim.duration - impact + IMPACT_HOLD  # finish, and hold the last frame
+        yield max(anim.duration - impact - travel, 0.0) + max(IMPACT_HOLD, linger)  # finish, and hold the last frame
         if charging:
             user.play(anim.sub(len(anim.frames) - 1, len(anim.frames), loop=True))  # stay charged
         else:
@@ -1429,6 +1442,16 @@ class BattleScene(Scene):
             yield from self._berry(c)
             if not c.alive:
                 yield from self._faint(c)
+
+    @staticmethod
+    def _fx_ctx(user: Combatant, move: Move, targets: list[Combatant]) -> battle_fx.Ctx:
+        """Where `move`'s effect happens (battle_fx): the user faces the
+        other side (enemies stand on the left, facing right)."""
+        body = user.body_rect.move(round(user.draw_x - user.x), 0)  # (stepped forward to act)
+        face = 1 if user.enemy else -1
+        mouth = (body.right - body.w * 0.15 if face > 0 else body.left + body.w * 0.15, body.top + body.h * 0.35)
+        return battle_fx.Ctx(body, mouth, face, [t.body_rect for t in targets], battle_fx.power_of(move),
+                             hits=3 if move.hits[1] > 1 else 1)
 
     @staticmethod
     def _misses(user: Combatant, move: Move) -> bool:
@@ -1880,6 +1903,7 @@ class BattleScene(Scene):
             c.update(dt)
         for p in self.popups:
             p.t += dt
+        self.fx.update(dt)
         self.popups = [p for p in self.popups if p.t < POPUP_TIME]
 
         if not self.script:
@@ -2016,8 +2040,14 @@ class BattleScene(Scene):
     def draw(self, canvas: pygame.Surface) -> None:
         canvas.fill(ui.SHADOW)
         canvas.blit(_background(self.backdrop), (0, 0))
+        self.fx.draw_back(canvas)
         for c in sorted(self.everyone, key=lambda c: c.feet_y):
             c.draw(canvas, self.backdrop.shadow)
+        self.fx.draw_front(canvas)
+        dx, dy = self.fx.offset
+        if dx or dy:  # a shake: the field jolts
+            field = canvas.subsurface((0, 0, canvas.get_width(), PANEL_Y))
+            field.scroll(dx, dy)
         for c in self.enemies:  # HP bars under the enemies (gone with the fade once fainted)
             if c.opacity >= 1 or c.shown_hp > 0:
                 ui.hp_bar(canvas, self._enemy_bar(c), c.shown_hp / c.monster.max_hp)
