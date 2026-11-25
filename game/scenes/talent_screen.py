@@ -18,7 +18,7 @@ import pygame
 from .. import settings
 from ..engine import ui
 from ..engine.scene import Scene
-from ..mechanics.moves import MOVES
+from ..mechanics.moves import MOVES, describe
 from ..mechanics.pokemon import Monster
 from ..mechanics.talents import DEEP, MAX_EQUIPPED, TIER_LEVELS, Talent
 from .moves_panel import MovesPanel
@@ -64,6 +64,7 @@ class MovesList:
     (with every slot full it asks which one it replaces), X closes."""
 
     RECT = pygame.Rect(40, 70, 330, 230)
+    ABOUT = INFO  # the highlighted move's description: in place of the talent's
     ROW_H = 19
 
     def __init__(self, monster: Monster):
@@ -119,6 +120,7 @@ class MovesList:
             self.replace.draw(canvas)
             return
         ui.window_box(canvas, self.RECT)
+        ui.window_box(canvas, self.ABOUT)
         ui.cursor(canvas, self.RECT.x + 16, self._row(self.choice).centery)
 
     def draw_overlay(self, window: pygame.Surface) -> None:
@@ -136,6 +138,10 @@ class MovesList:
             else:
                 slot, color = "-", ui.GREY
             ui.text(window, f"{slot}  {m.move(key).name}", (row.x + 14, row.y + 2), color, size=20)
+        a, move = self.ABOUT, m.move(self.keys[self.choice])
+        ui.text(window, move.name, (a.x + 12, a.y + PAD), ui.YELLOW, size=22)
+        for i, line in enumerate(ui.wrap(describe(move), 18, a.w - 24)):
+            ui.text(window, line, (a.x + 12, a.y + PAD + 22 + i * 13), size=18)
         ui.text(window, self.message or "E / Enter: equip or unequip   X: close", (r.x + 12, r.bottom - PAD - 12),
                 GREEN if self.message else ui.GREY, size=17)
 
@@ -337,7 +343,8 @@ class TalentScene(Scene):
         else:
             ui.text(window, "No talents for this line yet.", (GRID.x + 14, GRID.y + 14), ui.GREY, size=22)
             ui.text(window, "Its moves still come with its level.", (GRID.x + 14, GRID.y + 32), ui.GREY, size=20)
-        self._draw_info(window)
+        if not isinstance(self.panel, MovesList):  # (it describes its moves there instead)
+            self._draw_info(window)
         keys = "Arrows: move   Enter: pick   M: moves   O: reorder   " \
                f"R: reset{'' if self.can_reset else ' (towns)'}   Q/W: Pokémon   S: back"
         ui.text(window, keys, (GRID.x + 10, GRID.bottom - PAD - 8), ui.GREY, size=15)

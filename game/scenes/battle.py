@@ -1937,6 +1937,8 @@ class BattleScene(Scene):
     def _skill_info(self) -> list[str]:
         """The highlighted skill's description (its talents' changes
         included), wrapped for the info window; [] when no skill list is open."""
+        if self.menu == "command" and self.commands[self.command] == "Fight" and not self.actor.enemy:
+            return ui.wrap("Fight: " + describe(self.actor.monster.basic_attack), INFO_SIZE, INFO_WINDOW.w - 24)
         if self.menu not in ("skills", "sky") or self.ordering:
             return []
         moves = self._listed_moves

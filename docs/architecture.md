@@ -71,7 +71,9 @@ you are working on.
   menus open on what it chose last (`Combatant.last_command`/`last_skill`).
   In the Skills list, O (touch: Reorder moves) carries the highlighted move up or
   down: the equipped moves' order, kept after the battle (`_move_skill`);
-  which moves are equipped only changes outside battles. Up to 6 a side
+  which moves are equipped only changes outside battles. The info window
+  describes the highlighted skill (`moves.describe`, talents included;
+  `_skill_info`), and with Fight highlighted, the basic attack. Up to 6 a side
   (`PARTY_SLOTS`; the party and enemy windows' rows squeeze, `row_height`). Enemies show an HP bar
   under their feet (`_enemy_bar`; those names go under it) and their HP
   left as numbers in the enemy window, between name and level/status. Battle sequences are generator "scripts"
@@ -188,7 +190,8 @@ you are working on.
   screen (`scenes/talent_screen.py`, party screen → S): a grid (tiers ×
   paths, scrolls), info on the right with the known moves; Enter picks
   (first picks anywhere; changing picks and R reset only in towns,
-  `Scene.in_town`), M the moves list (equip, `MovesList`; with 4 equipped
+  `Scene.in_town`), M the moves list (equip, `MovesList`; the highlighted move's description
+  in the info pane; with 4 equipped
   it asks which to replace), O orders them (`scenes/moves_panel.MovesPanel`),
   Q/W switch Pokémon; taps choose / pick. Tables in `docs/talents.md` are
   generated: `python tools/talent_docs.py`. Saves from the skill trees
