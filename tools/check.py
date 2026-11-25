@@ -114,6 +114,9 @@ def check_places() -> int:
         for value, *_ in dests:
             try:
                 scene = dev_menu.teleport(new_game(), value)
+                level = getattr(scene, "level", None)
+                assert level is None or level.width >= settings.LOGICAL_SIZE[0], \
+                    f"{value}: the map ({level.width}px) is narrower than the screen"
                 for i in range(90):  # 3 seconds
                     held.t = i
                     scene.update(DT)

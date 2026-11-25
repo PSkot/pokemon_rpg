@@ -711,11 +711,11 @@ ROUTES = {r.key: r for r in [
     # is won and a guard has heard what's going on in Silph Co.): short walks
     # through the gatehouses from Route 5 (north), Route 6 (south), the
     # Route 8 Gate (east) and, by Route 7, Celadon City (west).
-    Route("saffron_north", "Saffron Gate", ROUTE_7, maps=1, towns=("route_5", "saffron"), wild=False, cols=34,
+    Route("saffron_north", "Saffron Gate", ROUTE_7, maps=1, towns=("route_5", "saffron"), wild=False, cols=40,
           needs=("saffron_gates", "done"), blocked=SAFFRON_SHUT),
-    Route("saffron_south", "Saffron Gate", ROUTE_7, maps=1, towns=("saffron", "route_6"), wild=False, cols=34,
+    Route("saffron_south", "Saffron Gate", ROUTE_7, maps=1, towns=("saffron", "route_6"), wild=False, cols=40,
           needs=("saffron_gates", "done"), blocked=SAFFRON_SHUT),
-    Route("saffron_east", "Saffron Gate", ROUTE_7, maps=1, towns=("saffron", "route_8_gate"), wild=False, cols=34,
+    Route("saffron_east", "Saffron Gate", ROUTE_7, maps=1, towns=("saffron", "route_8_gate"), wild=False, cols=40,
           needs=("saffron_gates", "done"), blocked=SAFFRON_SHUT),
     Route("route_7", "Route 7", ROUTE_7, maps=1, towns=("celadon", "saffron"), wild=False, cols=44,
           needs=("saffron_gates", "done"), blocked=SAFFRON_SHUT),
