@@ -39,6 +39,7 @@ class Game:
     shop_visits: dict[str, int] = field(default_factory=dict)
     shop_bought: dict[str, list[int]] = field(default_factory=dict)
     slots: int = 1  # places in the party (how many fight): +1 per Teamwork Ribbon used
+    repel: int = 0  # steps of Repel left (overworld.py)
     tower_best: int = 0  # the Battle Tower's highest floor cleared (world/tower.py)
     visited: set[str] = field(default_factory=set)  # towns and routes been to (the Town Map, world/townmap.py)
     kudos: dict[str, int] = field(default_factory=dict)  # Safari Zone: species -> Kudos earned (world/safari.py)

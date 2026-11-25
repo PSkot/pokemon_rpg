@@ -18,7 +18,8 @@ Sections:
 - safari: both Safari minigames play to the end;
 - puzzles: the Saffron Gym's warp pads always lead through to the arena;
   Strength's boulders push off their ladders (and don't without it);
-- packs: running from a pack puts the player back where they came from.
+- packs: running from a pack puts the player back where they came from;
+  a Repel lets the player through weaker wild packs.
 
 Prints one line per section and every failure with its traceback; exits
 non-zero if anything failed.
@@ -380,6 +381,22 @@ def check_packs() -> int:
                 n += 1
             except Exception:
                 fail(f"running from a pack on {key} (side {side})")
+    for repel in (False, True):  # a Repel: weaker wild packs let the player through (and it wears off)
+        try:
+            route = ROUTES["route_1"]
+            g = new_game()
+            g.repel = 30 if repel else 0
+            scene = OverworldScene(Instance(route, route.towns[0]), g)
+            wild = next(w for w in scene.wild if w is not scene.boss)
+            scene.place_player(wild.x, 1)
+            scene.update(DT)
+            assert bool(scene.next_scene) != repel, f"repel {repel}: battle started {bool(scene.next_scene)}"
+            if repel:
+                scene._repel_steps(40 * 16)
+                assert g.repel == 0, "the Repel didn't wear off"
+            n += 1
+        except Exception:
+            fail(f"repel {repel}")
     return n
 
 

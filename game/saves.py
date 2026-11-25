@@ -117,6 +117,7 @@ def snapshot(scene) -> dict:
         "seed": game.seed,
         "slots": game.slots,
         "tower_best": game.tower_best,
+        "repel": game.repel,
         "visited": sorted(game.visited),
         "kudos": game.kudos,
         "shop_visits": game.shop_visits,
@@ -243,6 +244,7 @@ def load(info: SaveInfo):
             if not {"boss:snorlax_wakes", "boss:snorlax_wakes_east"} & game.trainers:
                 game.trainers.add("boss:snorlax_wakes")
         game.tower_best = data.get("tower_best", 0)
+        game.repel = data.get("repel", 0)
         game.visited = set(data.get("visited", []))  # (older saves: the Town Map works out the rest)
         game.kudos = {k: int(v) for k, v in data.get("kudos", {}).items()}
         game.shop_visits = dict(data.get("shop_visits", {}))

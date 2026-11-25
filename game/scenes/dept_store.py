@@ -43,7 +43,7 @@ VENDING = (248, 320, 392)     # the rooftop's machines
 ROOFTOP = "Rooftop"           # quest "visit" steps at its machines (Step.target, town "celadon")
 REACH = 24
 MARKET = ("Potion", "Super Potion", "Hyper Potion", "Max Potion", "Revive", "Full Heal", "Escape Rope",
-          "Antidote", "Burn Heal", "Awakening", "Paralyze Heal", "Ice Heal")
+          "Repel", "Super Repel", "Max Repel", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal", "Ice Heal")
 DRINKS = ("Fresh Water", "Soda Pop", "Lemonade")
 
 

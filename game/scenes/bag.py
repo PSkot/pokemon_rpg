@@ -3,7 +3,8 @@
 Opened with I / the Bag touch button on a map. Three pockets (Left/Right):
   Items      medicine: Enter, then a party member, to heal or cure it; the
              Escape Rope leads back to the last town or Pokémon Center
-             (on a route or in a dungeon)
+             (on a route or in a dungeon); a Repel keeps weaker wild packs
+             away for its steps (`Game.repel`, overworld.py)
   Gear       Enter, then a party member, to equip it (what it wore in that
              slot comes back to the bag)
   Key items  story items; an evolution item (Metapod Shell) is used on a
@@ -126,6 +127,14 @@ class BagScreen:
             from .town import TownScene  # (town.py imports the map scenes, which import this)
             self.bag.use_medicine(item)
             self.loaded = TownScene(self.game, TOWNS[self.game.town])  # as after fainting
+            return
+        if POCKETS[self.pocket] == "Items" and MEDICINE[item].repel:  # (as in Gen 1: replaces what's left)
+            steps = MEDICINE[item].repel
+            self.bag.use_medicine(item)
+            self.game.repel = steps
+            self.message = f"Used the {item}! Weaker wild packs let you pass for {steps} steps."
+            entries = self._entries()  # (maybe the last one)
+            self.choice = min(self.choice, max(0, len(entries) - 1))
             return
         if POCKETS[self.pocket] == "Key items" and item == RIBBON:
             if quests.active_limit(self.game) >= MAX_PARTY:

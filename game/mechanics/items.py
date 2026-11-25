@@ -573,6 +573,7 @@ class Medicine:
     cures: tuple[str, ...] = ()  # statuses it cures
     escape: bool = False    # Escape Rope: back to the last town or Pokémon Center (not in battle)
     valuable: bool = False  # only worth money (the Nugget): sold at a Poké Mart, never used
+    repel: int = 0          # Repel: steps it keeps weaker wild packs away for (used from the bag, not in battle)
 
     @property
     def sell_price(self) -> int:
@@ -626,6 +627,11 @@ MEDICINE = {m.name: m for m in [
     Medicine("Full Heal", "Cures any status.", 300, cures=tuple(STATUSES)),
     Medicine("Escape Rope", "Leads back to the last town or Pokémon Center (pause menu, on a route).", 275,
              escape=True),
+    # Repels, as in Gen 1: by steps (a tile walked on a route or in a dungeon); a new one replaces what's left.
+    Medicine("Repel", "Wild packs weaker than your lead (its level above all of theirs) let you pass: 100 steps.",
+             175, repel=100),
+    Medicine("Super Repel", "Wild packs weaker than your lead let you pass: 200 steps.", 250, repel=200),
+    Medicine("Max Repel", "Wild packs weaker than your lead let you pass: 250 steps.", 350, repel=250),
     Medicine("Nugget", "A nugget of pure gold. Sells for ₽5,000 at a Poké Mart.", 10000, valuable=True),
 ]}
 ESCAPE_ROPE = "Escape Rope"

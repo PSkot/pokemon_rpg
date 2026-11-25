@@ -251,7 +251,7 @@ TOWNS = {t.key: t for t in [
     ), exits=(("left", "route_4_east"), ("right", "nugget_bridge"), (82, "route_5_south"), (89, "route_9")),
        home_col=22, board_col=41,
        mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal",
-             "Ice Heal"),
+             "Ice Heal", "Repel"),
        gear=((17, 22), (("Common", 60), ("Uncommon", 40))),
        folk=(
            Folk("cerulean_sandshrew", "Sandshrew", "sandshrew", 15, (
@@ -342,7 +342,7 @@ TOWNS = {t.key: t for t in [
         Building("", (HOUSES, 2), 72),
     ), exits=(("left", "route_6_south"), ("right", "ss_anne"), (81, "route_11")), home_col=14, board_col=57,
        mart=("Potion", "Super Potion", "Escape Rope", "Antidote", "Burn Heal", "Awakening", "Paralyze Heal",
-             "Ice Heal"),
+             "Ice Heal", "Repel"),
        gear=((22, 26), (("Common", 50), ("Uncommon", 45), ("Rare", 5))),
        folk=(
            Folk("vermilion_jigglypuff", "Jigglypuff", "jigglypuff", 31, (
@@ -427,7 +427,7 @@ TOWNS = {t.key: t for t in [
     ), exits=(("left", "rock_tunnel"), ("right", "route_8"), (67, "route_12")), home_col=14, board_col=41,
        theme=LAVENDER,
        mart=("Potion", "Super Potion", "Hyper Potion", "Revive", "Escape Rope", "Antidote", "Burn Heal", "Awakening",
-             "Paralyze Heal", "Ice Heal"),
+             "Paralyze Heal", "Ice Heal", "Repel", "Super Repel"),
        gear=((30, 34), (("Common", 40), ("Uncommon", 45), ("Rare", 15))),
        folk=(
            Folk("lavender_drowzee", "Drowzee", "drowzee", 26, (
@@ -471,7 +471,7 @@ TOWNS = {t.key: t for t in [
         Building("Department Store", (DEPT_STORE, 0), 19, inside="dept"),
     ), exits=(("right", "underground_west"), (58, "route_7"), ("left", "town:celadon_square")), home_col=12, board_col=34,
        mart=("Potion", "Super Potion", "Hyper Potion", "Revive", "Escape Rope", "Antidote", "Burn Heal", "Awakening",
-             "Paralyze Heal", "Ice Heal"),
+             "Paralyze Heal", "Ice Heal", "Repel", "Super Repel", "Max Repel"),
        gear=((34, 38), (("Common", 30), ("Uncommon", 45), ("Rare", 25))),
        folk=(
            Folk("celadon_bellsprout", "Bellsprout", "bellsprout", 40, (
@@ -576,7 +576,7 @@ TOWNS = {t.key: t for t in [
     ), exits=(("left", "route_7"), (24, "saffron_north"), (47, "saffron_south"), ("right", "saffron_east")),
        home_col=8, theme=SAFFRON_LOOK,
        mart=("Super Potion", "Hyper Potion", "Max Potion", "Revive", "Full Heal", "Escape Rope", "Antidote",
-             "Burn Heal", "Awakening", "Paralyze Heal", "Ice Heal"),
+             "Burn Heal", "Awakening", "Paralyze Heal", "Ice Heal", "Super Repel", "Max Repel"),
        gear=((48, 52), (("Uncommon", 40), ("Rare", 50), ("Epic", 10))),
        folk=(
            Folk("saffron_kadabra", "Kadabra", "kadabra", 44, (
@@ -623,7 +623,7 @@ TOWNS = {t.key: t for t in [
         Building("Safari Zone", (FUNCTIONAL, 3), 95, inside="safari"),
     ), exits=(("left", "route_18_east"), ("right", "route_15")), home_col=12, board_col=44,
        mart=("Super Potion", "Hyper Potion", "Revive", "Full Heal", "Escape Rope", "Antidote", "Burn Heal",
-             "Awakening", "Paralyze Heal", "Ice Heal"),
+             "Awakening", "Paralyze Heal", "Ice Heal", "Super Repel", "Max Repel"),
        gear=((42, 46), (("Common", 20), ("Uncommon", 45), ("Rare", 35))),
        folk=(
            Folk("fuchsia_venomoth", "Venomoth", "venomoth", 30, (

@@ -975,6 +975,21 @@ class OverworldScene(MapScene):
             self.show(ui.ListPanel("Your party fainted...", [(f"You hurry back to {town.name}.", ui.WHITE, "")],
                                    (320, 140)), after=self._fainted)
 
+    def _repelled(self, wild: WildPokemon) -> bool:
+        """A Repel is on and `wild` is a wild pack (no trainer) all below the lead's level."""
+        return (self.game.repel > 0 and not wild.trainer and not self.instance.route.tower
+                and max(level for _, level in wild.encounter) < self.party[0].level)
+
+    def _repel_steps(self, walked: float) -> None:
+        """A Repel wears off by steps: a tile walked is a step."""
+        if self.game.repel <= 0 or not walked:
+            return
+        self._repel_walked = getattr(self, "_repel_walked", 0.0) + walked
+        steps, self._repel_walked = divmod(self._repel_walked, TILE)
+        self.game.repel = max(0, self.game.repel - int(steps))
+        if self.game.repel == 0:
+            self.show(quest_ui.Dialogue([("", "The Repel's effect wore off.")]))
+
     def _back_off(self, wild: WildPokemon) -> None:
         """After running from `wild`: put the player clear of it, on the side
         they met it from (so running away never gets anyone past a pack),
@@ -1053,7 +1068,9 @@ class OverworldScene(MapScene):
         if self.fighting and not self.next_scene:
             self._after_battle(*self.fighting)
             self.fighting = None
+        before = self.player.x
         super().update(dt)
+        self._repel_steps(abs(self.player.x - before))
         if self.grid:  # the electric fence holds the player back
             self.player.x = self.grid.blocks(self.player.x)
         if self.panel:
@@ -1073,8 +1090,8 @@ class OverworldScene(MapScene):
         for wild in self.wild:
             wild.facing = 1 if self.player.x > wild.x else -1
             touching = wild.touches(self.player.body_rect, self.level)
-            if DEV.skip_packs and wild is not self.boss:  # (dev mode: walk straight through ...
-                wild.armed = not touching                   # ... and not caught in it once switched off)
+            if (DEV.skip_packs or self._repelled(wild)) and wild is not self.boss:  # (dev mode, or a Repel:
+                wild.armed = not touching   # walk straight through, and not caught in it once it's off)
                 continue
             if touching and wild.armed:
                 if wild is self.boss and self.instance.route.waves:  # a gym's arena: pick the team first

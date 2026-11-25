@@ -167,7 +167,7 @@ def chest_loot(rarity: Rarities = COMMON_ONLY) -> LootTable:
 @cache
 def ball_loot() -> LootTable:
     """A Poké Ball lying on the map: one item, never empty; now and then an
-    Escape Rope."""
+    Escape Rope or a Repel."""
     return LootTable((
         (40, MedicineDrop("Potion")),
         (14, MedicineDrop("Super Potion")),
@@ -180,6 +180,8 @@ def ball_loot() -> LootTable:
         (3, MedicineDrop("Full Heal")),
         (2, MedicineDrop("Hyper Potion")),
         (4, MedicineDrop("Escape Rope")),
+        (5, MedicineDrop("Repel")),
+        (2, MedicineDrop("Super Repel")),
     ))
 
 

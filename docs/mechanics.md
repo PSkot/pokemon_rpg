@@ -548,6 +548,7 @@ party members still get the menu, but only items work: Fight and Skills
 | Revive | A fainted Pokémon comes back with half its max HP (rounded up) |
 | Antidote / Burn Heal / Paralyze Heal / Awakening / Ice Heal | Cures that one status |
 | Full Heal | Cures any status |
+| Repel / Super Repel / Max Repel | From the bag, not in battle: for 100 / 200 / 250 steps (a tile walked on a route or in a dungeon), wild packs whose every member is below the lead's level let you walk through them (`Game.repel`, `OverworldScene._repelled`). Trainers, bosses and the Battle Tower aren't affected. A new one replaces what's left; "The Repel's effect wore off." when it runs out. |
 | Escape Rope | Not in battle: from the bag on a route or in a dungeon, back to the last town or Pokémon Center (where a fainted party would wake up) |
 | Nugget | Only worth money (`Medicine.valuable`): sold at a Poké Mart for ₽5,000; not in the battle's Item menu. From the Nugget Bridge Rocket |
 
@@ -792,7 +793,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Table | Rolls | Nothing | Medicine | Gear |
 | --- | --- | --- | --- | --- |
 | Wild (per enemy) | 1 | 60% | 36% (Potion 20%, Super Potion 4%, status cures 12%) | 4% (rare: gear mostly comes from chests) |
-| Poké Ball | 1 | – | 100%: Potion 40%, Super Potion 14%, Antidote 8%, Revive 6%, Paralyze Heal 6%, Burn Heal 5%, Awakening 5%, **Escape Rope 4%**, Ice Heal 3%, Full Heal 3%, Hyper Potion 2% | – |
+| Poké Ball | 1 | – | 100%: Potion 40%, Super Potion 14%, Antidote 8%, Revive 6%, Paralyze Heal 6%, Burn Heal 5%, Awakening 5%, **Repel 5%**, **Escape Rope 4%**, Ice Heal 3%, Full Heal 3%, Hyper Potion 2%, **Super Repel 2%** (weights: out of 103) | – |
 | Chest | 2–3 | – | 67% (Potions 1–3, Revive, cures, ...) | 33% |
 | Boss | 3–4 | – | 45% (Super/Hyper Potion, Revive, Full Heal/Restore) | 55% |
 
@@ -902,6 +903,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Ice Heal | ₽125 | ₽62 |
 | Full Heal | ₽300 | ₽150 |
 | Escape Rope | ₽275 | ₽137 |
+| Repel / Super Repel / Max Repel | ₽175 / ₽250 / ₽350 | ₽87 / ₽125 / ₽175 |
 | Nugget | – (not sold) | ₽5,000 (as in Gen 1) |
 
 The drinks are only sold by the Celadon Department Store's rooftop vending
@@ -910,14 +912,18 @@ machines. Its 4F also sells the smith's materials: Scrap ₽300, Alloy
 come from salvage and smelting).
 
 What each Poké Mart sells (`Town.mart`; Gen 1's stock, minus the items
-the game doesn't have yet: Poké Balls, Repel):
+the game doesn't have yet: Poké Balls; the Department Store's 2F sells
+all three Repels too):
 
 | Town | Stock |
 | --- | --- |
 | Viridian City | Potion, Antidote, Paralyze Heal, Burn Heal |
 | Pewter City | Potion, Super Potion, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal (Super Potion added: Gen 1 has it from Cerulean) |
-| Cerulean City, Vermilion City | Potion, Super Potion, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal, Ice Heal |
-| Fuchsia City | Super Potion, Hyper Potion, Revive, Full Heal, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal, Ice Heal |
+| Cerulean City, Vermilion City | Potion, Super Potion, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal, Ice Heal, Repel |
+| Lavender Town | Potion, Super Potion, Hyper Potion, Revive, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal, Ice Heal, Repel, Super Repel |
+| Celadon City | Potion, Super Potion, Hyper Potion, Revive, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal, Ice Heal, Repel, Super Repel, Max Repel |
+| Saffron City | Super Potion, Hyper Potion, Max Potion, Revive, Full Heal, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal, Ice Heal, Super Repel, Max Repel |
+| Fuchsia City | Super Potion, Hyper Potion, Revive, Full Heal, Escape Rope, Antidote, Burn Heal, Awakening, Paralyze Heal, Ice Heal, Super Repel, Max Repel |
 
 ### The smith: salvage and enhancement
 
