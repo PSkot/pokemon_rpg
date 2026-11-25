@@ -850,6 +850,29 @@ the Route 8 Gate (east).
 - **Rewards:** ₽3,000, 2,900 XP, 2 Hyper Potions, a **Rare** gear piece
   (item level 54), and the Hitmon picked.
 
+### Strength (HM04)
+
+From *The Warden's Teeth* (Fuchsia City). No quest of its own: with HM04
+Strength in the bag, **boulders** can be pushed (`scenes/boulders.py`).
+
+- **A boulder** is 4×4 tiles of solid rock (a jump reaches just under 4),
+  sitting over a ladder to a bonus room (`Room.boulders`; the ground is
+  flat 7 tiles each side of that ladder, `level.BOULDER_FLAT`). Walk into
+  it and keep pushing: every 0.35 s it slides a tile along flat ground (it
+  won't climb a step or squeeze under a ledge). Without Strength it won't
+  budge ("Strength could move it"). Where it was pushed is kept for the
+  trip (the room's state), so coming back up the ladder never lands
+  inside it.
+- **Mt. Moon 1F** → the **Moonlit Grotto** (room "b1_grotto"): wild
+  Clefairy, Golbat, Graveler, Parasect (Lv44–48); a giant **Clefable 52**
+  with two Clefairy 47 guards a **fancy chest** (`MID_BOSS`).
+- **Rock Tunnel B1F** → **Onix's Den** (room "b2_den", dark: Flash): wild
+  Onix, Graveler, Machoke, Golbat (Lv45–48); a giant **Onix 53** with
+  Graveler 49, Machoke 49 and Golbat 48 guards a fancy chest.
+- A bonus room has its own Pokémon (`Room.pool`), its boss drawn bigger
+  (`Room.boss_scale`) and its own chest (`Room.boss_chest`, `boss_loot`);
+  two ladders up, the boss guarding the second.
+
 ### Route 12
 
 From the Route 11 Gate's east doorway (past its Snorlax) up to Lavender

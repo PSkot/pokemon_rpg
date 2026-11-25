@@ -439,7 +439,11 @@ you are working on.
   and the Lift Key guard (a "defeat" step on its key gives the Lift Key);
   the office's boss guards its back door out (Silph Co., quest "silph_co",
   works the same way: `SILPH_CO`; a room can have its own painted wall and
-  battle backdrop, `Room.wall`, as its President's office does; the
+  battle backdrop, `Room.wall`, as its President's office does; Strength's
+  boulders, `Room.boulders`, `scenes/boulders.BoulderField`: solid tiles
+  carved in and moved a column at a time, over a ladder to a bonus room
+  with its own `pool`, `boss_scale`, `boss_chest` and `boss_loot`; the
+
   Saffron Gym's warp pads are `Route.puzzle` "psychic",
   `scenes/psychic_pads.PsychicHall`: barriers carved as solid columns, a
   pad graph rolled from the trip's seed). Then quest "pokemon_tower":

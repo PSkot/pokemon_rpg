@@ -831,6 +831,7 @@ Pokémon and chests, `Route.boss_loot` for a boss group's drops and chest):
 | Silph Co. | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Card Key Guard, the rival and the Rocket Boss: with the battle) |
 | Saffron Gym | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Mind Circle, the fancy chest) |
 | Fighting Dojo | (no wild Pokémon or chests) | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: the Karate Master, with the battle) |
+| Mt. Moon's Moonlit Grotto, Rock Tunnel's Onix's Den (Strength) | as their cave | Common 33%, Uncommon 50%, Rare 17% (`MID_BOSS`: a giant Clefable's / Onix's group, a fancy chest) |
 | Snorlax's Rude Awakening (both) | (no wild Pokémon or chests) | none: the Snack Pack / Dream Eaters drop nothing; Snorlax joins the first time (quest *The Sleeping Giant*) |
 | Default for new areas (`COMMON_ONLY` / `EARLY_BOSS`) | Common | Common 60%, Uncommon 40% |
 

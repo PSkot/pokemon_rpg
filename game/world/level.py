@@ -25,7 +25,8 @@ ARENA = 20                 # flat tiles at the end of an instance's last map (th
 BOSS_SIZE = (4, 5)         # Pokémon in the boss group
 PLATFORM_RISE = 3          # tiles above the highest ground under it (a full jump reaches ~3)
 CLEARANCE = 10             # rows kept free between a cave's ceiling and the ground
-STAIR_FLAT = 2             # tiles of flat ground each side of a stair
+STAIR_FLAT = 2             # tiles of flat ground each side of a stair ...
+BOULDER_FLAT = 7           # ... and of one under a Strength boulder (room to push it off)
 STAIR_ROOM = 4             # tiles kept clear of Pokémon, chests and platforms each side of a stair
 CHEST_CHANCE = 0.4         # each chest spot gets a chest this often (chests are rare)
 BALLS = (0, 2)             # Poké Balls lying around a map (one item each)
@@ -151,10 +152,10 @@ def _downhill(rng: random.Random, cols: int, flat_start: int, flat_end: int) -> 
     return heights + [heights[-1]] * flat_end
 
 
-def _flatten(heights: list[int], col: int) -> None:
-    """Make the ground flat for STAIR_FLAT tiles each side of `col`, then
+def _flatten(heights: list[int], col: int, flat: int = STAIR_FLAT) -> None:
+    """Make the ground flat for `flat` tiles each side of `col`, then
     ease the ground on either side so no step is more than 2."""
-    lo, hi = max(0, col - STAIR_FLAT), min(len(heights) - 1, col + STAIR_FLAT)
+    lo, hi = max(0, col - flat), min(len(heights) - 1, col + flat)
     for c in range(lo, hi + 1):
         heights[c] = heights[col]
     for c in range(hi + 1, len(heights)):
@@ -198,10 +199,11 @@ def boss_encounter(theme: Theme, rng: random.Random) -> list[tuple[str, int]]:
 
 
 def generate(theme: Theme, seed: int, final: bool = False, cols: int | None = None,
-             stairs: tuple[float, ...] = ()) -> Level:
+             stairs: tuple[float, ...] = (), wide: tuple[float, ...] = ()) -> Level:
     """A map. The `final` one of an instance ends in an arena with a boss
     group. A dungeon room has a set width (`cols`) and stairs at the given
-    spots (see `stair_col`): flat ground, with nothing in the way."""
+    spots (see `stair_col`): flat ground, with nothing in the way (wider
+    around the `wide` ones: under a boulder)."""
     rng = random.Random(seed)
     cols = cols or rng.randint(*WIDTH)
     end = ARENA if final else FLAT_ENDS
@@ -211,8 +213,8 @@ def generate(theme: Theme, seed: int, final: bool = False, cols: int | None = No
                else _downhill(rng, cols, FLAT_ENDS, end) if theme.skate
                else _walk(rng, cols, *GROUND, start=4, flat_start=FLAT_ENDS, flat_end=end))
     stair_cols = [stair_col(at, cols) for at in stairs]
-    for col in stair_cols:
-        _flatten(heights, col)
+    for at, col in zip(stairs, stair_cols):
+        _flatten(heights, col, BOULDER_FLAT if at in wide else STAIR_FLAT)
 
     def clear(col: int) -> bool:  # far enough from every stair
         return all(abs(col - c) > STAIR_ROOM for c in stair_cols)

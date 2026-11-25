@@ -15,6 +15,7 @@ rooms and doorways out instead: Up (or Down, at a ladder down) uses them.
 import math
 from functools import cache
 import random
+import zlib
 
 import pygame
 
@@ -42,6 +43,7 @@ from .power_grid import AMBUSH, PowerGrid
 from .spinners import SpinnerFloor
 from .ninja import NinjaDojo
 from .psychic_pads import PsychicHall
+from .boulders import STRENGTH, BoulderField
 from .spores import SporeGarden
 from .summary import SummaryScene
 
@@ -699,8 +701,8 @@ class OverworldScene(MapScene):
             self.wild[-1].trainer = None
             self.boss = None
         else:
-            self.boss = (WildPokemon(level.boss, boss=True, scale=instance.route.boss_scale, level=level)
-                         if level.boss else None)
+            scale = (room.boss_scale if room and room.boss_scale else instance.route.boss_scale)
+            self.boss = WildPokemon(level.boss, boss=True, scale=scale, level=level) if level.boss else None
         if self.boss:
             self.wild.append(self.boss)
             # A one-of-a-kind piece its leader wears (Tony's Bike Helmet), shown on the map, until won.
@@ -741,6 +743,9 @@ class OverworldScene(MapScene):
             here = next((thing for stair, thing in self.stairs if stair.to == (arrive or instance.came_from)), None)
             if here:
                 self.place_player(here.x, 1 if here.x < level.width / 2 else -1)
+        # Strength's boulders, over the stairs they block (`Room.boulders`; carved in now too).
+        covered = [thing.x for stair, thing in self.stairs if room and stair.to in room.boulders]
+        self.boulders = BoulderField(level, covered, zlib.crc32(route.key.encode())) if covered else None
         # Who stands in a dungeon room to talk to (`Room.folk`: the S.S. Anne's Captain).
         self.folk = [(folk, col * TILE + TILE / 2) for (_, folk), col in zip(room.folk, level.folk_cols)
                      if not (folk.gone_after and quests.gone(game, folk.gone_after))] if room else []
@@ -1008,13 +1013,15 @@ class OverworldScene(MapScene):
         one (the boss loot); none if its loot comes with the battle, or there
         is none."""
         self.exit.sealed = False
-        route = self.instance.route
-        if route.boss_chest not in ("plain", "fancy"):
+        route, room = self.instance.route, self.instance.room
+        kind = (room.boss_chest if room and room.boss_chest else route.boss_chest)  # (a bonus room's own)
+        rarities = room.boss_loot if room and room.boss_loot else route.boss_loot
+        if kind not in ("plain", "fancy"):
             return
-        fancy = route.boss_chest == "fancy"
+        fancy = kind == "fancy"
         x = self.level.boss_chest_x
         top = max(lv for _, lv in self.level.boss.encounter)  # the boss group's highest level
-        loot = boss_loot(route.boss_loot) if fancy else chest_loot(route.boss_loot)
+        loot = boss_loot(rarities) if fancy else chest_loot(rarities)
         self.chests.append(Chest(x, self.level.ground_y(x), loot, (top, top), fancy=fancy))
 
     def _fainted(self) -> None:
@@ -1039,6 +1046,10 @@ class OverworldScene(MapScene):
             self.spores.update(dt, self.t, self.player.body_rect, self.party, random)
         if self.dojo:
             self.dojo.update(dt, self.t, self.player, self.party, random)
+        if self.boulders:
+            keys = touch.pressed()
+            pressing = (1 if keys[pygame.K_RIGHT] else 0) - (1 if keys[pygame.K_LEFT] else 0)
+            self.boulders.update(dt, self.player, pressing, STRENGTH in self.bag.key_items, self.party[0].name)
         if self.hall:
             to = self.hall.update(dt, self.player)
             if to is not None:  # warped
@@ -1145,6 +1156,8 @@ class OverworldScene(MapScene):
             self.dojo.draw(layer, self.t)
         if self.hall:
             self.hall.draw(layer, self.t, self.level)
+        if self.boulders:
+            self.boulders.draw(layer)
         for chest in self.chests:
             chest.draw(layer)
         for ball in self.balls:
@@ -1166,6 +1179,8 @@ class OverworldScene(MapScene):
             ui.text(window, self.spores.toast, (320, 300), ui.WHITE, size=24, align="center")
         if self.dojo and self.dojo.toast_t:  # an invisible wall bumped, or a puff of gas
             ui.text(window, self.dojo.toast, (320, 300), ui.WHITE, size=24, align="center")
+        if self.boulders and self.boulders.toast_t:  # Strength
+            ui.text(window, self.boulders.toast, (320, 300), ui.WHITE, size=24, align="center")
         if self.hall and self.hall.toast_t:  # a warp pad
             ui.text(window, self.hall.toast, (320, 300), ui.WHITE, size=24, align="center")
         self._draw_door_label(window)
@@ -1217,6 +1232,7 @@ class OverworldScene(MapScene):
             "boss_beaten": bool(self.boss) and self.boss not in self.wild,
             "opened": [i for i, c in enumerate(self.chests) if c.opened],
             "balls": [i for i, b in enumerate(self.balls) if b.taken],
+            "boulders": self.boulders.cols if self.boulders else [],
         }
 
     def location(self) -> dict:
@@ -1246,6 +1262,8 @@ class OverworldScene(MapScene):
         for i in state.get("balls", []):
             if i < len(self.balls):
                 self.balls[i].taken = True
+        if self.boulders and state.get("boulders"):  # (where they were pushed to)
+            self.boulders.place(state["boulders"])
 
     def restore(self, state: dict) -> None:
         """Back to a saved `location` on this map."""

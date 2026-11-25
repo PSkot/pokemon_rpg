@@ -16,7 +16,8 @@ Sections:
 - moves: every move is used in a battle scene (its effect too), drawn;
 - battles: a few battles played out round by round to a win or a loss;
 - safari: both Safari minigames play to the end;
-- puzzles: the Saffron Gym's warp pads always lead through to the arena.
+- puzzles: the Saffron Gym's warp pads always lead through to the arena;
+  Strength's boulders push off their ladders (and don't without it).
 
 Prints one line per section and every failure with its traceback; exits
 non-zero if anything failed.
@@ -320,6 +321,35 @@ def check_puzzles() -> int:
             n += 1
         except Exception:
             fail(f"saffron gym pads, seed {seed}")
+    import pygame as pg
+    from game.engine import touch
+    from game.scenes.boulders import STRENGTH
+    real = touch.pressed
+    touch.pressed = lambda: type("Held", (), {"__getitem__": lambda self, k: k == pg.K_RIGHT})()
+    try:
+        for key, route in ROUTES.items():
+            for i, room in enumerate(route.rooms):
+                for target in room.boulders:
+                    for strength in (True, False):
+                        try:
+                            g = new_game()
+                            if strength:
+                                g.bag.key_items.append(STRENGTH)
+                            scene = OverworldScene(Instance(route, route.towns[1], index=i), g)
+                            boulder = scene.boulders.boulders[0]
+                            ladder = next(t for s, t in scene.stairs if s.to == target)
+                            scene.place_player(boulder.rect.left - 24)
+                            for f in range(300):
+                                if f % 25 == 0:
+                                    scene.jump = True
+                                scene.update(DT)
+                            free = boulder.rect.left > ladder.x + 12 or boulder.rect.right < ladder.x - 12
+                            assert free == strength, f"{key}/{room.key}: ladder free {free} with strength {strength}"
+                            n += 1
+                        except Exception:
+                            fail(f"boulder {key}/{room.key} (strength {strength})")
+    finally:
+        touch.pressed = real
     return n
 
 

@@ -113,6 +113,16 @@ class Room:
     # A painted wall (walls/<wall>) and battle backdrop (backdrops/<wall>) of
     # its own, instead of its dungeon's (Silph Co.'s President's office).
     wall: str = ""
+    # Strength's boulders (scenes/boulders.py): the stairs (by their `to`)
+    # a boulder sits over, until it's pushed off.
+    boulders: tuple[str, ...] = ()
+    # A bonus room's own wild Pokémon (instead of its dungeon's), its boss
+    # drawn this many times bigger, and the chest that boss leaves
+    # ("plain" / "fancy", at `boss_loot`); "" / None: the dungeon's.
+    pool: tuple[PoolEntry, ...] = ()
+    boss_scale: int = 0
+    boss_chest: str = ""
+    boss_loot: Rarities | None = None
 
 
 @dataclass(frozen=True)
@@ -221,7 +231,16 @@ ROUTES = {r.key: r for r in [
     Route("mt_moon_cave", "Mt. Moon", MT_MOON, maps=7, towns=("mt_moon", "route_4"), boss_chest="battle",
           rooms=(
               Room("1f", "1F", 110, (Stair("out", "mt_moon", 0), Stair("down", "b1_west", 0.3),
-                                     Stair("down", "b1_east", 0.55), Stair("down", "b1_nook", 0.85))),
+                                     Stair("down", "b1_east", 0.55), Stair("down", "b1_grotto", 0.7),
+                                     Stair("down", "b1_nook", 0.85)),
+                   boulders=("b1_grotto",)),
+              # Strength's bonus room (behind 1F's boulder): the Clefairy's moonlit grotto, Pokémon at the
+              # levels of a party that comes back with Strength, and a giant Clefable guarding a fancy chest.
+              Room("b1_grotto", "Moonlit Grotto", 70, (Stair("up", "1f", 0.1), Stair("up", "1f", 1)),
+                   boss_group=(("clefable", 52), ("clefairy", 47), ("clefairy", 47)), boss_scale=2,
+                   boss_chest="fancy", boss_loot=MID_BOSS,
+                   pool=(PoolEntry("clefairy", 35, (44, 47)), PoolEntry("golbat", 25, (45, 48)),
+                         PoolEntry("graveler", 20, (45, 48)), PoolEntry("parasect", 20, (44, 47)))),
               Room("b1_west", "B1F", 60, (Stair("up", "1f", 0.2), Stair("down", "b2_west", 0.8))),
               Room("b1_nook", "B1F", 44, (Stair("up", "1f", 0.5),)),
               Room("b1_east", "B1F", 70, (Stair("up", "1f", 0.15), Stair("down", "b2", 0.85))),
@@ -526,9 +545,17 @@ ROUTES = {r.key: r for r in [
           blocked="It's pitch dark inside. Without a way to light it, you'd be lost in no time.",
           rooms=(
               Room("1f", "1F", 100, (Stair("out", "route_10", 0), Stair("down", "b1", 0.9))),
-              Room("b1", "B1F", 110, (Stair("up", "1f", 0.1), Stair("up", "1f_south", 1)),
+              Room("b1", "B1F", 110, (Stair("up", "1f", 0.1), Stair("down", "b2_den", 0.5),
+                                      Stair("up", "1f_south", 1)),
                    boss_group=(("onix", 36), ("machop", 34), ("machop", 34), ("geodude", 34)), trainer="Hiker Crew",
-                   prize=35),
+                   prize=35, boulders=("b2_den",)),
+              # Strength's bonus room (behind B1F's boulder): an Onix's den deep in the rock, and a giant
+              # Onix with its diggers guarding a fancy chest.
+              Room("b2_den", "Onix's Den", 70, (Stair("up", "b1", 0.1), Stair("up", "b1", 1)),
+                   boss_group=(("onix", 53), ("graveler", 49), ("machoke", 49), ("golbat", 48)), boss_scale=2,
+                   boss_chest="fancy", boss_loot=MID_BOSS,
+                   pool=(PoolEntry("onix", 25, (45, 48)), PoolEntry("graveler", 30, (45, 48)),
+                         PoolEntry("machoke", 25, (45, 48)), PoolEntry("golbat", 20, (45, 47)))),
               Room("1f_south", "1F", 70, (Stair("down", "b1", 0.15), Stair("out", "lavender", 1))),
           ),
           trainers=(  # (`map`: the room's place in `rooms`)
@@ -1056,12 +1083,13 @@ class Instance:
 
     @property
     def theme(self) -> Theme:
-        room = self.room
+        room, theme = self.room, self.route.theme
         if room and room.wall:  # (a room with a look of its own)
-            theme = self.route.theme
-            return replace(theme, cave=replace(theme.cave, wall=room.wall),
-                           backdrop=replace(theme.backdrop, art=room.wall))
-        return self.route.theme
+            theme = replace(theme, cave=replace(theme.cave, wall=room.wall),
+                            backdrop=replace(theme.backdrop, art=room.wall))
+        if room and room.pool:  # (... or Pokémon of its own)
+            theme = replace(theme, pool=room.pool)
+        return theme
 
     @property
     def maps(self) -> int:
@@ -1077,7 +1105,8 @@ class Instance:
         if room:  # laid out the same every time; Pokémon new every trip
             level = generate(self.theme, zlib.crc32(f"{self.route.key}/{room.key}".encode()),
                              final=bool(room.boss_group), cols=room.width,
-                             stairs=tuple(s.at for s in room.stairs) + tuple(at for at, _ in room.folk))
+                             stairs=tuple(s.at for s in room.stairs) + tuple(at for at, _ in room.folk),
+                             wide=tuple(s.at for s in room.stairs if s.to in room.boulders))
             level.stairs = level.stairs[:len(room.stairs)]  # (the rest is flat ground for its folk)
             level.folk_cols = [stair_col(at, level.cols) for at, _ in room.folk]
             rng = random.Random(self.seed * 101 + self.index)

@@ -1411,7 +1411,8 @@ QUESTS = {q.key: q for q in [
                               ("", "The Warden pops the Gold Teeth back in."),
                               ("Warden", "Ah, that's better! Thank you, young one. Here: a little something for your "
                                          "trouble."),
-                              ("", "You received HM04 Strength! (It'll move boulders, once you meet some.)"))),),
+                              ("", "You received HM04 Strength! Big boulders block a few cave ladders: in Mt. Moon and "
+                                   "Rock Tunnel. With Strength, you can push them aside."))),),
         money=2500, xp=2300,
         rewards=(("medicine", "Hyper Potion", 2),),
     ),
