@@ -22,6 +22,7 @@ from pathlib import Path
 from . import settings
 from .mechanics.items import AFFIX_BY_NAME, GEAR_EFFECTS, GEAR_VERSION, ITEMS, RARITIES, Bag, Gear, Roll, updated_gear
 from .mechanics.pokemon import SPECIES, Monster
+from .mechanics.talents import MAX_EQUIPPED
 from .world.progress import ACTIVE_STEPS, Game
 
 SAVE_DIR = settings.ROOT / "saves"
@@ -90,9 +91,12 @@ def _load_monster(d: dict) -> Monster:
     gear = {slot: _load_gear(g) for slot, g in d["gear"].items()}
     # Talents and moves its line no longer has are dropped (`Monster.__post_init__`).
     talents = d.get("talents", []) if d.get("sv", 1) >= TALENTS_VERSION else []
-    return Monster(SPECIES[d["species"]], d["level"], hp=d["hp"], gear=gear, status=d["status"],
-                   sleep_rounds=d["sleep_rounds"], xp=d["xp"], talents=list(talents),
-                   equipped=list(d.get("equipped", [])))
+    m = Monster(SPECIES[d["species"]], d["level"], hp=d["hp"], gear=gear, status=d["status"],
+                sleep_rounds=d["sleep_rounds"], xp=d["xp"], talents=list(talents),
+                equipped=list(d.get("equipped", [])))
+    if not m.equipped:  # (nothing equipped: e.g. a line that only had Tackle until its moves came in)
+        m.equipped = m.known[1:][-MAX_EQUIPPED:]
+    return m
 
 
 def snapshot(scene) -> dict:

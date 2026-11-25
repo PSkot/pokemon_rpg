@@ -788,4 +788,5 @@ TALENTS = {t.key: t for t in [
 
 from .talent_list_2 import MORE_TALENTS  # noqa: E402
 
+assert not {t.key for t in MORE_TALENTS} & TALENTS.keys(), "a talent written twice"
 TALENTS.update((t.key, t) for t in MORE_TALENTS)

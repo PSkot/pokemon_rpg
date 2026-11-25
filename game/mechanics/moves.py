@@ -206,6 +206,10 @@ MOVES = {m.name: m for m in [
     Move("Low Kick", 50, "enemy", type="fighting", flinch=30),
     Move("Seismic Toss", 0, "enemy", type="fighting", fixed=True),
     Move("Submission", 80, "enemy", type="fighting", recoil=0.25),
+    # Hitmonlee's kicks (Gen 1's; no crash damage on a miss here).
+    Move("Rolling Kick", 60, "enemy", type="fighting", flinch=30),
+    Move("Jump Kick", 70, "enemy", type="fighting"),
+    Move("Hi Jump Kick", 85, "enemy", type="fighting"),
     Move("Earthquake", 100, "enemy", type="ground"),
     Move("Dig", 100, "enemy", type="ground", charge="{user} dug a hole!"),
     Move("Bone Club", 65, "enemy", type="ground", flinch=10),
@@ -273,7 +277,7 @@ GEN1_ACCURACY = {
     "Fury Attack": 85, "Fury Swipes": 80, "Double Slap": 85, "Wrap": 85, "Bind": 75, "Sky Attack": 90, "Fly": 95, "Bone Club": 85, "Bonemerang": 90,
     "Razor Leaf": 95, "Pin Missile": 85, "Fire Spin": 70, "Fire Blast": 85, "Rock Throw": 65, "Rock Slide": 90,
     "Thunder": 70, "Clamp": 75, "Hydro Pump": 80, "Blizzard": 90,
-    "Mega Punch": 85, "Mega Kick": 75, "Comet Punch": 85, "Egg Bomb": 75, "Smog": 70, "Screech": 85, "Low Kick": 90, "Submission": 80, "Sonic Boom": 90, "String Shot": 95, "Kinesis": 80, "Leech Seed": 90, "Whirlwind": 85,
+    "Mega Punch": 85, "Mega Kick": 75, "Comet Punch": 85, "Egg Bomb": 75, "Smog": 70, "Screech": 85, "Low Kick": 90, "Submission": 80, "Rolling Kick": 85, "Jump Kick": 95, "Hi Jump Kick": 90, "Sonic Boom": 90, "String Shot": 95, "Kinesis": 80, "Leech Seed": 90, "Whirlwind": 85,
 }
 MOVES = {name: replace(m, accuracy=GEN1_ACCURACY.get(name, 100)) for name, m in MOVES.items()}
 

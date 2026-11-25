@@ -163,6 +163,19 @@ LEARNSETS = {
         ('Bonemerang', 43),
     ),
     # (Gen 1's; Defense Curl for Amnesia.)
+    # The Fighting Dojo's prizes and Mr. Mime (Red/Blue's levels; Psychic and Reflect as TMs).
+    ('hitmonlee',): (
+        ('Double Kick', 0), ('Meditate', 0), ('Rolling Kick', 33), ('Jump Kick', 38), ('Focus Energy', 43),
+        ('Hi Jump Kick', 48), ('Mega Kick', 53),
+    ),
+    ('hitmonchan',): (
+        ('Comet Punch', 0), ('Agility', 0), ('Fire Punch', 38), ('Ice Punch', 43), ('Thunder Punch', 48),
+        ('Mega Punch', 53), ('Submission', 58),
+    ),
+    ('mr_mime',): (
+        ('Confusion', 0), ('Barrier', 0), ('Light Screen', 23), ('Double Slap', 31), ('Reflect', 35),
+        ('Meditate', 39), ('Psychic', 47),
+    ),
     ('snorlax',): (
         ('Headbutt', 0), ('Defense Curl', 0), ('Rest', 0), ('Body Slam', 35), ('Harden', 41), ('Double-Edge', 48),
         ('Hyper Beam', 56),

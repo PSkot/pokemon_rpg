@@ -795,6 +795,195 @@ Paths: **Quake** (rock Slide and Earthquake: Rock and Ground damage); **Coil** (
 | 11 | 60 | **Rock Storm** *(needs 4)*: Rock Slide hits every enemy, the others at 60% damage. *(**own**)* | **Coil Crush** *(needs 4)*: Wrap and Bind catch every enemy. *(Bind)* | **Bulwark Stance** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(Any)* |
 | 12 | 75 | **Magnitude 10** *(needs 6)*: Earthquake hits every enemy at full damage. *(**own**)* | **Constrictor** *(needs 6)*: Wrap's and Bind's grip hurts far more: a further 1/8 of max HP each round. *(**own**)* | **Living Mountain** *(needs 6)*: The first hit the user takes in each battle deals no damage, and while it stands the whole party takes 25% less damage. *(**own**)* |
 
+### Dratini → Dragonair → Dragonite
+
+Moves: Wrap, Leer, Thunder Wave 10, Dragon Rage 18, Agility 24, Slam 30, Body Slam 36 (Dragonair), Wing Attack 40 (Dragonite), Hyper Beam 50 (Dragonair).
+
+Paths: **Serpent** (wrap, Leer and Thunder Wave: binding and stopping enemies); **Dragon** (dragon Rage and raw power); **Sky** (agility and wings: speed, and Dragonite's might).
+
+| Tier | Lv | Serpent | Dragon | Sky |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Squeeze**: Enemies caught in a bind take 30% more damage from the user. *(Any)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 2 | 10 | **Chain Lightning**: Thunder Wave works on every enemy, each at half the chance (one alone: the full chance). *(Thunder Wave)* | **Dragon Pulse**: Dragon Rage deals 60 damage (not 40). *(**own**)* | **Tailwind**: Agility works on the whole party. *(Agility)* |
+| 3 | 14 | **Menacing Leer**: Leer works on every enemy. *(Leer)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* |
+| 4 | 18 | **Constrictor**: Wrap's and Bind's grip hurts far more: a further 1/8 of max HP each round. *(**own**)* | **Body Blow**: Slam never misses. *(Slam)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* |
+| 5 | 22 | **Conductor**: Enemies the user paralyzes take 30% more damage from everyone. *(Paralysis)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Gale Wings**: Wing Attack always goes first. *(Wing Attack)* |
+| 6 | 27 | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* | **Outrage**: Dragon Rage hits every enemy. *(**own**)* | **Riding the Wind**: The user's Flying moves raise its Speed 1 stage. *(Flying)* |
+| 7 | 32 | **Strangler Fig**: Enemies caught in a bind take 50% more damage from the user. *(**own**)* | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* | **Multiscale**: The first hit the user takes in each battle deals half damage. *(**own**)* |
+| 8 | 38 | **Crushing Coils**: Wrap and Bind have a 30% chance to paralyze. *(Bind)* | **Rampage**: Each Normal move in a row deals 20% more than the last, up to +60%. *(Normal)* | **Aerial Ace**: The user's Flying moves never miss and are twice as likely to be critical hits. *(Flying)* |
+| 9 | 44 | **Exploit Weakness**: Enemies with lowered Defense take 30% more damage from the user's party. *(Any)* | **Overdrive**: Hyper Beam needs no rest after knocking an enemy out. *(Hyper Beam)* | **Dragon Dance**: Agility also raises the user's Attack 1 stage. *(**own**)* |
+| 10 | 50 | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
+| 11 | 60 | **Dragon Coil** *(needs 4)*: Wrap hits every enemy. *(**own**)* | **Draco Meteor** *(needs 4)*: Hyper Beam becomes a Dragon move. *(**own**)* | **Dragon Wings** *(needs 4)*: Wing Attack hits harder: 70 power, and hits every enemy, the others at 50% damage. *(**own**)* |
+| 12 | 75 | **Thunder Cloud** *(needs 6)*: At the start of each battle, each enemy has a 30% chance to be paralyzed. *(**own**)* | **Dragon Rush** *(needs 6)*: Each Normal or Dragon move in a row deals 30% more than the last, up to +90%. *(**own**)* | **Sky Sovereign** *(needs 6)*: Wing Attack and Hyper Beam deal 30% more. *(**own**)* |
+
+### Aerodactyl
+
+Moves: Wing Attack, Agility, Supersonic 33, Bite 38, Take Down 45, Rock Slide 48, Hyper Beam 54.
+
+Paths: **Fossil** (rock Slide and ancient rock); **Raptor** (bite and Take Down: a predator's strikes); **Skies** (wings and speed).
+
+| Tier | Lv | Fossil | Raptor | Skies |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Stone Fist**: The basic attack becomes a Rock move (with STAB). *(Rock)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 2 | 10 | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* | **Crunch**: Bite has a 30% chance to lower the target's Defense 1 stage. *(Bite)* | **Tailwind**: Agility works on the whole party. *(Agility)* |
+| 3 | 14 | **Rolling Stones**: Each Rock move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Rock)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Echo**: Supersonic works on every enemy, each at half the chance (one alone: the full chance). *(Supersonic)* |
+| 4 | 18 | **Sharp Rocks**: The user's Rock moves are 4× as likely to be critical hits. *(Rock)* | **Pounce**: Bite always goes first, and makes the target flinch 50% of the time. *(**own**)* | **Gale Wings**: Wing Attack always goes first. *(Wing Attack)* |
+| 5 | 22 | **Jagged Hide**: Whoever hits the user loses 1/16 of its max HP. *(Rock)* | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* |
+| 6 | 27 | **Rockfall**: The user's Rock moves have a 30% chance to make the target flinch. *(Rock)* | **Extreme Speed**: Take Down always goes first. *(**own**)* | **Riding the Wind**: The user's Flying moves raise its Speed 1 stage. *(Flying)* |
+| 7 | 32 | **Landslide**: Below 1/3 HP, the user's Rock moves deal 1.5× damage. *(Rock)* | **Stalker**: The user's moves deal 35% more to a target that hasn't moved yet this round. *(**own**)* | **Aerial Ace**: The user's Flying moves never miss and are twice as likely to be critical hits. *(Flying)* |
+| 8 | 38 | **Solid Rock**: Super-effective hits on the user deal 25% less damage. *(Any)* | **Night Feeder**: The user heals 15% of the damage it deals. *(**own**)* | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
+| 9 | 44 | **Stone Edge**: The user's Rock moves have +30% critical-hit chance on a target below half HP. *(Rock)* | **Overdrive**: Hyper Beam needs no rest after knocking an enemy out. *(Hyper Beam)* | **Bird of Prey**: Knocking an enemy out with a Flying move heals the user 1/4 of its max HP. *(Flying)* |
+| 10 | 50 | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 11 | 60 | **Ancient Power** *(needs 4)*: Rock Slide hits every enemy at full damage. *(**own**)* | **Primeval Jaws** *(needs 4)*: Bite hits much harder: 100 power, making the target flinch 30% of the time. *(**own**)* | **Sky Terror** *(needs 4)*: Wing Attack hits every enemy at full damage. *(**own**)* |
+| 12 | 75 | **Unstoppable** *(needs 6)*: Each Normal or Rock move in a row deals 30% more than the last, up to +90%. *(**own**)* | **Sniper** *(needs 6)*: The user's critical hits deal double damage (not 1.5×). *(**own**)* | **Prehistoric Roar** *(needs 6)*: At the start of each battle, each enemy's Attack and Speed have a 50% chance to fall 1 stage. *(**own**)* |
+
+### Magikarp → Gyarados
+
+Moves: Tackle, Splash, Bite 20 (Gyarados), Dragon Rage 25 (Gyarados), Leer 32 (Gyarados), Hydro Pump 41 (Gyarados), Hyper Beam 52 (Gyarados).
+
+Paths: **Flop** (splash and Tackle: Magikarp never gives up); **Rage** (bite, Dragon Rage and Gyarados's fury); **Torrent** (hydro Pump: Water damage).
+
+| Tier | Lv | Flop | Rage | Torrent |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Torrent**: Below 1/3 HP, the user's Water moves deal 1.5× damage. *(Water)* |
+| 2 | 10 | **Charge**: Tackle hits harder: 50 power. *(Tackle)* | **Crunch**: Bite has a 30% chance to lower the target's Defense 1 stage. *(Bite)* | **Splash Strike**: The basic attack becomes a Water move (with STAB). *(Water)* |
+| 3 | 14 | **Bounce**: Splash raises the user's Attack and Speed 1 stage. *(**own**)* | **Intimidate**: At the start of each battle, each enemy's Attack has a 50% chance to fall 1 stage. *(Any)* | **Rain Dish**: Knocking an enemy out with a Water move heals the user 1/4 of its max HP. *(Water)* |
+| 4 | 18 | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Dragon Pulse**: Dragon Rage deals 60 damage (not 40). *(**own**)* | **Hydration**: At the end of each round, the user has a 30% chance to wash off its status. *(Water)* |
+| 5 | 22 | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* | **Undertow**: The user's Water moves have a 20% chance to lower the target's Speed 1 stage. *(Water)* |
+| 6 | 27 | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* | **Pounce**: Bite always goes first, and makes the target flinch 50% of the time. *(**own**)* | **Geyser**: Hydro Pump hits every enemy, the others at 50% damage. *(Hydro Pump)* |
+| 7 | 32 | **Flail**: Below 1/3 HP, the user's Normal moves deal 2× damage. *(**own**)* | **Outrage**: Dragon Rage hits every enemy. *(**own**)* | **Rising Tide**: Each Water move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Water)* |
+| 8 | 38 | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Rampage**: Each Normal move in a row deals 20% more than the last, up to +60%. *(Normal)* | **Hydro Cannon**: Hydro Pump never misses. *(Hydro Pump)* |
+| 9 | 44 | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Overdrive**: Hyper Beam needs no rest after knocking an enemy out. *(Hyper Beam)* | **Splash Zone**: The user's Water moves also hit one enemy next to the target, at half damage. *(Water)* |
+| 10 | 50 | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Tidal Force**: The user's Water moves have +30% critical-hit chance on a target below half HP. *(Water)* |
+| 11 | 60 | **Never Give Up** *(needs 4)*: Once a battle, ending a round below 1/3 HP heals the user half its max HP, and Splash heals it 1/4 of its max HP. *(**own**)* | **Raging Storm** *(needs 4)*: Each Normal or Water move in a row deals 25% more than the last, up to +75%. *(**own**)* | **Aqua Rage** *(needs 4)*: Hydro Pump never misses, and hits 20% harder. *(**own**)* |
+| 12 | 75 | **Shining Scales** *(needs 6)*: The first hit the user takes in each battle deals no damage, and while it stands the whole party takes 15% less damage. *(**own**)* | **Giga Impact** *(needs 6)*: Hyper Beam hits harder (180 power), and needs no rest after knocking an enemy out. *(**own**)* | **Tsunami** *(needs 6)*: Hydro Pump hits every enemy at full damage. *(Hydro Pump)* |
+
+### Lapras
+
+Moves: Water Gun, Growl, Sing 16, Body Slam 25, Confuse Ray 31, Ice Beam 38, Hydro Pump 46, Blizzard 52.
+
+Paths: **Ferry** (sing and a gentle heart: carrying the whole party); **Glacier** (ice Beam and Blizzard: freezing); **Tide** (water Gun and Hydro Pump: Water damage).
+
+| Tier | Lv | Ferry | Glacier | Tide |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* | **Frostbite**: The user's Ice moves are 10% more likely to freeze. *(Ice)* | **Torrent**: Below 1/3 HP, the user's Water moves deal 1.5× damage. *(Water)* |
+| 2 | 10 | **Sweet Voice**: Sing is 25% more likely to work. *(Sing)* | **Chill**: The user's Ice moves have a 30% chance to lower the target's Speed 1 stage. *(Ice)* | **Pressure Jet**: Water Gun hits harder: 60 power. *(Water Gun)* |
+| 3 | 14 | **Echoing Growl**: Growl works on every enemy. *(Growl)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Rain Dish**: Knocking an enemy out with a Water move heals the user 1/4 of its max HP. *(Water)* |
+| 4 | 18 | **Nurturing**: While the user stands, the whole party heals 1/16 of its max HP at the end of each round. *(Any)* | **Frost Ray**: Ice Beam hits every enemy, the others at 50% damage. *(Ice Beam)* | **Hydration**: At the end of each round, the user has a 30% chance to wash off its status. *(Water)* |
+| 5 | 22 | **Chorus**: Sing works on every enemy, each at half the chance (one alone: the full chance). *(Sing)* | **Shatter**: Frozen enemies take 50% more damage from the user. *(Freeze)* | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* |
+| 6 | 27 | **Shell Armor**: Super-effective hits on the user deal 30% less damage. *(**own**)* | **Freeze-Dry**: Ice Beam freezes 30% of the time. *(**own**)* | **Geyser**: Hydro Pump hits every enemy, the others at 50% damage. *(Hydro Pump)* |
+| 7 | 32 | **Siren Song**: Sing never misses. *(Sing)* | **Whiteout**: Blizzard never misses and hits every enemy, the others at 60% damage. *(Blizzard)* | **Rising Tide**: Each Water move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Water)* |
+| 8 | 38 | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Absolute Zero**: At the start of each battle, each enemy has a 20% chance to be frozen. *(Freeze)* | **Hydro Cannon**: Hydro Pump never misses. *(Hydro Pump)* |
+| 9 | 44 | **Wish**: Once a battle, a partner that would faint keeps 1 HP, and the user heals it half its max HP. *(Any)* | **Wide Ray**: Confuse Ray works on every enemy. *(Confuse Ray)* | **Undertow**: The user's Water moves have a 20% chance to lower the target's Speed 1 stage. *(Water)* |
+| 10 | 50 | **Soothing Song**: Sing also cures the party's status conditions. *(Sing)* | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Tidal Force**: The user's Water moves have +30% critical-hit chance on a target below half HP. *(Water)* |
+| 11 | 60 | **Gentle Ferry** *(needs 4)*: While the user stands, the whole party takes 20% less damage. *(**own**)* | **Sheer Cold** *(needs 4)*: Blizzard hits every enemy at full damage, and freezes 20% of the time. *(**own**)* | **Tsunami** *(needs 4)*: Hydro Pump hits every enemy at full damage. *(Hydro Pump)* |
+| 12 | 75 | **Song of the Sea** *(needs 6)*: While the user stands, the whole party heals 1/12 of its max HP at the end of each round. *(**own**)* | **Ice Age** *(needs 6)*: Frozen enemies take 80% more damage from the user. *(**own**)* | **Surf** *(needs 6)*: Water Gun hits much harder: 95 power, and hits every enemy at full damage. *(**own**)* |
+
+### Gastly → Haunter → Gengar
+
+Moves: Lick, Confuse Ray, Night Shade, Hypnosis 27, Psychic 35 (Gengar), Thunderbolt 40 (Gengar).
+
+Paths: **Haunt** (confuse Ray and Lick: tormenting minds); **Dream** (hypnosis and sleep: nightmares); **Curse** (psychic and Thunderbolt: Gengar's raw power).
+
+| Tier | Lv | Haunt | Dream | Curse |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* | **Mesmerize**: Hypnosis is 25% more likely to work. *(**own**)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* |
+| 2 | 10 | **Wide Ray**: Confuse Ray works on every enemy. *(Confuse Ray)* | **Deep Sleep**: Enemies the user puts to sleep sleep 1 round longer. *(Sleep)* | **Telepathy**: The user's Psychic moves never miss. *(Psychic)* |
+| 3 | 14 | **Shadow Lick**: Lick hits harder: 50 power, and paralyzes 40% of the time. *(**own**)* | **Nightmare**: Enemies the user puts to sleep lose 1/8 of their max HP each round. *(Sleep)* | **Focus Mind**: Each Psychic move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Psychic)* |
+| 4 | 18 | **Hysteria**: Confusion the user causes has a 30% chance each round to spread to an enemy next to it. *(Confusion)* | **Lull**: Sleeping enemies take 30% more damage from the user. *(Sleep)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
+| 5 | 22 | **Conductor**: Enemies the user paralyzes take 30% more damage from everyone. *(Paralysis)* | **Mass Hypnosis**: Hypnosis works on every enemy, each at half the chance (one alone: the full chance). *(**own**)* | **Mind Over Matter**: Below 1/3 HP, the user's Psychic moves deal 1.5× damage. *(Psychic)* |
+| 6 | 27 | **Bedlam**: Enemies the user confuses always hurt themselves. *(Confusion)* | **Yawn**: Sleep the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Sleep)* | **Live Wire**: The user's Electric moves are 20% more likely to paralyze. *(Electric)* |
+| 7 | 32 | **Mind Crush**: Confused enemies take 30% more damage from the user. *(Confusion)* | **Pendulum**: Hypnosis never misses. *(**own**)* | **High Voltage**: Thunderbolt is 4× as likely to be a critical hit. *(Thunderbolt)* |
+| 8 | 38 | **Cursed Body**: Whoever hits the user loses 1/12 of its max HP. *(**own**)* | **Dream Eater**: The user heals 1/8 of its max HP each round for each sleeping enemy. *(Sleep)* | **Mind Blast**: Psychic hits every enemy, the others at 50% damage. *(Psychic)* |
+| 9 | 44 | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Endless Dream**: Enemies the user puts to sleep sleep 1 more round (on top of Deep Sleep's). *(Sleep)* | **Mind Feast**: Knocking an enemy out with a Psychic move heals the user 1/4 of its max HP. *(Psychic)* |
+| 10 | 50 | **Magic Guard**: The user takes no damage from poison, burns, seeds, binds, wounds or nightmares. *(Psychic)* | **Bedtime Story**: At the start of each battle, each enemy has a 15% chance to fall asleep. *(Sleep)* | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* |
+| 11 | 60 | **Shadow Reach** *(needs 4)*: Night Shade hits every enemy. *(**own**)* | **Drowsy Jab** *(needs 4)*: After Hypnosis, the user also hits the target with its basic attack, at full power. *(**own**)* | **Psychic Storm** *(needs 4)*: Psychic hits every enemy, the others at 80% damage. *(**own**)* |
+| 12 | 75 | **Shadow Ball** *(needs 6)*: Lick hits much harder: 90 power, and confuses 30% of the time. *(**own**)* | **Dreamland** *(needs 6)*: Hypnosis also exposes its target: it takes 30% more damage from everyone, for 3 rounds. *(**own**)* | **Mind Storm** *(needs 6)*: Psychic hits every enemy at full damage. *(**own**)* |
+
+### Cubone → Marowak
+
+Moves: Bone Club, Growl, Leer 25, Focus Energy 31, Thrash 38, Bonemerang 43.
+
+Paths: **Bone** (bone Club and Bonemerang: Ground damage); **Grief** (thrash and a lonely rage); **Guard** (growl and Leer: a little one standing its ground).
+
+| Tier | Lv | Bone | Grief | Guard |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Mud Claws**: The basic attack becomes a Ground move (with STAB). *(Ground)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* |
+| 2 | 10 | **Tremor**: Each Ground move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Ground)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Echoing Growl**: Growl works on every enemy. *(Growl)* |
+| 3 | 14 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Battle Focus**: Focus Energy also makes the user's next damaging move deal 50% more. *(**own**)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* |
+| 4 | 18 | **Thick Club**: Bone Club and Bonemerang deal 30% more. *(**own**)* | **Cool Head**: Thrash confuses the user only half the time. *(**own**)* | **Skull Helm**: Super-effective hits on the user deal 40% less damage. *(**own**)* |
+| 5 | 22 | **Groundswell**: Below 1/3 HP, the user's Ground moves deal 1.5× damage. *(Ground)* | **Mother's Memory**: Below 1/3 HP, the user's Ground and Normal moves deal 1.5× damage. *(**own**)* | **Taunting Growl**: Growl also makes every enemy attack the user, this round and the next. *(Growl)* |
+| 6 | 27 | **Burrow Feast**: Knocking an enemy out with a Ground move heals the user 1/4 of its max HP. *(Ground)* | **Rampage**: Each Normal move in a row deals 20% more than the last, up to +60%. *(Normal)* | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* |
+| 7 | 32 | **Keen Focus**: Focus Energy also raises the user's Attack 1 stage. *(Focus Energy)* | **Bulk Up**: Focus Energy also raises the user's Attack and Defense 1 stage. *(**own**)* | **Intimidate**: At the start of each battle, each enemy's Attack has a 50% chance to fall 1 stage. *(Any)* |
+| 8 | 38 | **Sand Force**: Enemies with lowered accuracy take 20% more damage from the user's party. *(Ground)* | **Rampaging Fists**: Thrash hits every enemy, the others at 50% damage. *(**own**)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 9 | 44 | **Sniper**: The user's critical hits deal double damage (not 1.5×). *(**own**)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Pick a Fight**: Leer works on every enemy, and makes them all attack the user, this round and the next. *(**own**)* |
+| 10 | 50 | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Fortress**: While the user stands, the whole party takes 25% less damage. *(Any)* |
+| 11 | 60 | **Bone Zone** *(needs 4)*: Bonemerang hits every enemy. *(**own**)* | **Primal Rage** *(needs 4)*: Thrash deals 50% more and no longer confuses the user. *(**own**)* | **Bone Shield** *(needs 4)*: While the user stands, the whole party takes 20% less damage. *(**own**)* |
+| 12 | 75 | **Bone Rush** *(needs 6)*: Bone Club hits every enemy at full damage, and makes them flinch 30% of the time. *(**own**)* | **Guardian Spirit** *(needs 6)*: The first hit the user takes in each battle deals no damage, and a hit that would knock it out has a 30% chance to leave it 1 HP. *(**own**)* | **Immovable** *(needs 6)*: The first hit the user takes in each battle deals no damage, and super-effective hits deal half. *(**own**)* |
+
+### Hitmonlee
+
+Moves: Double Kick, Meditate, Rolling Kick 33, Jump Kick 38, Focus Energy 43, Hi Jump Kick 48, Mega Kick 53.
+
+Paths: **Kicks** (kicks of every kind: Fighting damage); **Focus** (meditate and Focus Energy: one perfect strike); **Limber** (reach and speed: legs that stretch).
+
+| Tier | Lv | Kicks | Focus | Limber |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Combo**: Each Fighting move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Fighting)* | **Keen Focus**: Focus Energy also raises the user's Attack 1 stage. *(Focus Energy)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 2 | 10 | **Rapid Kicks**: Each of Double Kick's hits has a 30% chance to make the target flinch. *(Double Kick)* | **Mind Over Body**: Meditate raises the user's Attack 1 stage more (2 in all). *(**own**)* | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* |
+| 3 | 14 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Battle Focus**: Focus Energy also makes the user's next damaging move deal 50% more. *(**own**)* | **Limber**: At the end of each round, the user has a 40% chance to shake off its status. *(**own**)* |
+| 4 | 18 | **Stagger**: The user's Fighting moves have a 30% chance to lower the target's Defense 1 stage. *(Fighting)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Long Reach**: The user's Fighting moves also hit an enemy next to the target, at 50% damage. *(**own**)* |
+| 5 | 22 | **Pressure Points**: The user's Fighting moves are 4× as likely to be critical hits. *(Fighting)* | **Bulk Up**: Focus Energy also raises the user's Attack and Defense 1 stage. *(**own**)* | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
+| 6 | 27 | **Rolling Sweep**: Rolling Kick hits every enemy, the others at 60% damage. *(**own**)* | **Sniper**: The user's critical hits deal double damage (not 1.5×). *(**own**)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 7 | 32 | **Last Stand**: Below 1/3 HP, the user's Fighting moves deal 1.5× damage. *(Fighting)* | **Stalker**: The user's moves deal 35% more to a target that hasn't moved yet this round. *(**own**)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 8 | 38 | **Victory Rush**: Knocking an enemy out with a Fighting move heals the user 1/4 of its max HP. *(Fighting)* | **Shared Focus**: Focus Energy works on the whole party. *(Focus Energy)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* |
+| 9 | 44 | **Reckless**: Jump Kick and Hi Jump Kick never miss. *(**own**)* | **Exploit Weakness**: Enemies with lowered Defense take 30% more damage from the user's party. *(Any)* | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* |
+| 10 | 50 | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 11 | 60 | **Hi Jump Mastery** *(needs 4)*: Hi Jump Kick hits much harder: 120 power. *(**own**)* | **Inner Focus** *(needs 4)*: +20% chance of critical hits. *(**own**)* | **Triple Kick** *(needs 4)*: Double Kick hits 3 times. *(**own**)* |
+| 12 | 75 | **Kickmaster** *(needs 6)*: Mega Kick becomes a Fighting move (with STAB) and never misses. *(**own**)* | **One-Inch Kick** *(needs 6)*: The user's critical hits deal 2.5× damage (not 1.5×). *(**own**)* | **Whirlwind Kick** *(needs 6)*: Double Kick hits every enemy. *(**own**)* |
+
+### Hitmonchan
+
+Moves: Comet Punch, Agility, Fire Punch 38, Ice Punch 43, Thunder Punch 48, Mega Punch 53, Submission 58.
+
+Paths: **Elements** (fire, Ice and Thunder Punch: an answer for everyone); **Boxer** (comet Punch, Mega Punch and Submission); **Footwork** (agility: dodging and countering).
+
+| Tier | Lv | Elements | Boxer | Footwork |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Searing**: The user's Fire moves are 20% more likely to burn. *(Fire)* | **Fighting Spirit**: The basic attack becomes a Fighting move (with STAB). *(Fighting)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 2 | 10 | **Live Wire**: The user's Electric moves are 20% more likely to paralyze. *(Electric)* | **Combo**: Each Fighting move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Fighting)* | **Tailwind**: Agility works on the whole party. *(Agility)* |
+| 3 | 14 | **Frostbite**: The user's Ice moves are 10% more likely to freeze. *(Ice)* | **Iron Fist**: Comet Punch, Mega Punch and Dizzy Punch deal 20% more. *(**own**)* | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* |
+| 4 | 18 | **Elemental Fists**: Fire, Ice and Thunder Punch are 20% more likely to burn, freeze and paralyze. *(**own**)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* |
+| 5 | 22 | **Scorch**: Burned enemies take 25% more damage from the user. *(Fire)* | **Pressure Points**: The user's Fighting moves are 4× as likely to be critical hits. *(Fighting)* | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
+| 6 | 27 | **Shatter**: Frozen enemies take 50% more damage from the user. *(Freeze)* | **Sucker Punch**: Mega Punch always goes first. *(**own**)* | **Counter Stance**: Whoever hits the user loses 1/8 of its max HP. *(**own**)* |
+| 7 | 32 | **Conductor**: Enemies the user paralyzes take 30% more damage from everyone. *(Paralysis)* | **Stagger**: The user's Fighting moves have a 30% chance to lower the target's Defense 1 stage. *(Fighting)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 8 | 38 | **Chill**: The user's Ice moves have a 30% chance to lower the target's Speed 1 stage. *(Ice)* | **Close Combat**: Submission hits much harder: 120 power. *(**own**)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
+| 9 | 44 | **Elemental Barrage**: Fire, Ice and Thunder Punch hit harder: 90 power. *(**own**)* | **Submission Hold**: Submission no longer hurts the user. *(**own**)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 10 | 50 | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Last Stand**: Below 1/3 HP, the user's Fighting moves deal 1.5× damage. *(Fighting)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 11 | 60 | **Elemental Storm** *(needs 4)*: Fire, Ice and Thunder Punch hit every enemy, the others at 50% damage. *(**own**)* | **Comet Barrage** *(needs 4)*: Comet Punch hits 3-5 times. *(**own**)* | **Stalker** *(needs 4)*: The user's moves deal 35% more to a target that hasn't moved yet this round. *(**own**)* |
+| 12 | 75 | **Plasma Fists** *(needs 6)*: Fire, Ice and Thunder Punch never miss and are twice as likely to be critical hits. *(**own**)* | **Knockout Blow** *(needs 6)*: Mega Punch hits much harder: 120 power, and never misses. *(**own**)* | **Dodge and Weave** *(needs 6)*: The first hit the user takes in each battle deals no damage, and it has a 50% chance each round to act before the others. *(**own**)* |
+
+### Mr. Mime
+
+Moves: Confusion, Barrier, Light Screen 23, Double Slap 31, Reflect 35, Meditate 39, Psychic 47.
+
+Paths: **Mime** (barrier, Light Screen and Reflect: walls nobody can see); **Psychic** (confusion and Psychic); **Prankster** (double Slap and tricks).
+
+| Tier | Lv | Mime | Psychic | Prankster |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* | **Telepathy**: The user's Psychic moves never miss. *(Psychic)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 2 | 10 | **Invisible Wall**: Barrier raises the user's Defense 1 stage more (3 in all). *(**own**)* | **Dizzying Mind**: Confusion is 20% more likely to confuse. *(Confusion)* | **Flurry Slap**: Double Slap always hits at least 3 times. *(Double Slap)* |
+| 3 | 14 | **Barrier**: Reflect covers the whole party. *(Reflect)* | **Focus Mind**: Each Psychic move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Psychic)* | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* |
+| 4 | 18 | **Screen Wall**: Light Screen covers the whole party. *(**own**)* | **Psychic Wings**: Confusion and Psybeam are 20% more likely to confuse. *(Confusion)* | **Pummel**: Double Slap always hits 5 times. *(Double Slap)* |
+| 5 | 22 | **Filter**: Super-effective hits on the user deal 40% less damage. *(**own**)* | **Mind Over Matter**: Below 1/3 HP, the user's Psychic moves deal 1.5× damage. *(Psychic)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* |
+| 6 | 27 | **Barrier Reef**: Barrier works on the whole party. *(**own**)* | **Psychic Surge**: Confusion hits every enemy at full damage, and confuses half the time. *(**own**)* | **Hysteria**: Confusion the user causes has a 30% chance each round to spread to an enemy next to it. *(Confusion)* |
+| 7 | 32 | **Mirror Shards**: For 3 rounds, whoever hits a Pokémon behind Reflect loses 1/16 of its max HP. *(Reflect)* | **Mind Blast**: Psychic hits every enemy, the others at 50% damage. *(Psychic)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* |
+| 8 | 38 | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Mind Feast**: Knocking an enemy out with a Psychic move heals the user 1/4 of its max HP. *(Psychic)* | **Bedlam**: Enemies the user confuses always hurt themselves. *(Confusion)* |
+| 9 | 44 | **Quick Screen**: Light Screen and Reflect always go first. *(**own**)* | **Precognition**: Psychic always goes first. *(**own**)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
+| 10 | 50 | **Fortress**: While the user stands, the whole party takes 25% less damage. *(Any)* | **Magic Guard**: The user takes no damage from poison, burns, seeds, binds, wounds or nightmares. *(Psychic)* | **Mind Crush**: Confused enemies take 30% more damage from the user. *(Confusion)* |
+| 11 | 60 | **Wall Mime** *(needs 4)*: Light Screen lasts 2 rounds longer. *(**own**)* | **Psychic Storm** *(needs 4)*: Psychic hits every enemy, the others at 80% damage. *(**own**)* | **Prank** *(needs 4)*: The user's status moves always go first. *(**own**)* |
+| 12 | 75 | **Grand Illusion** *(needs 6)*: While the user stands, the whole party takes 30% less damage. *(**own**)* | **Mind Storm** *(needs 6)*: Psychic hits every enemy at full damage. *(**own**)* | **Mime's Encore** *(needs 6)*: Meditate raises the Attack of the user's whole party. *(**own**)* |
+
 ### Snorlax
 
 Moves: Headbutt, Defense Curl, Rest, Body Slam 35, Harden 41, Double-Edge 48, Hyper Beam 56.
@@ -815,6 +1004,237 @@ Paths: **Slumber** (resting, healing, and shrugging things off); **Heavyweight**
 | 10 | 50 | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
 | 11 | 60 | **Bottomless Stomach** *(needs 4)*: Rest also cures the status conditions of the user's whole party. *(**own**)* | **Body Press** *(needs 4)*: Body Slam hits every enemy, at 75% damage each. *(**own**)* | **Immovable** *(needs 4)*: The first hit the user takes in each battle deals no damage, and super-effective hits deal half. *(**own**)* |
 | 12 | 75 | **Sleeping Giant** *(needs 6)*: The first hit the user takes in each battle deals no damage, and it heals 1/8 of its max HP at the end of each round. *(**own**)* | **Giga Impact** *(needs 6)*: Hyper Beam hits harder (180 power), and needs no rest after knocking an enemy out. *(**own**)* | **Living Wall** *(needs 6)*: The first hit the user takes in each battle deals no damage, and while it stands the whole party takes 30% less damage. *(**own**)* |
+
+### Chansey
+
+Moves: Pound, Double Slap, Sing 24, Growl 30, Softboiled 34, Defense Curl 38, Light Screen 44, Seismic Toss 46, Egg Bomb 48, Double-Edge 54.
+
+Paths: **Nurse** (softboiled and healing: keeping everyone standing); **Lucky** (egg Bomb and Double Slap: lucky hits); **Lullaby** (sing and Light Screen: soothing and shielding).
+
+| Tier | Lv | Nurse | Lucky | Lullaby |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Sweet Voice**: Sing is 25% more likely to work. *(Sing)* |
+| 2 | 10 | **Nurturing**: While the user stands, the whole party heals 1/16 of its max HP at the end of each round. *(Any)* | **Heavy Hand**: Pound hits harder: 60 power. *(Pound)* | **Echoing Growl**: Growl works on every enemy. *(Growl)* |
+| 3 | 14 | **Curl Up**: Defense Curl also halves the damage the user takes for 2 rounds. *(Defense Curl)* | **Flurry Slap**: Double Slap always hits at least 3 times. *(Double Slap)* | **Soothing Song**: Sing also cures the party's status conditions. *(Sing)* |
+| 4 | 18 | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* | **Pummel**: Double Slap always hits 5 times. *(Double Slap)* | **Screen Wall**: Light Screen covers the whole party. *(**own**)* |
+| 5 | 22 | **Natural Remedy**: Softboiled also cures the status conditions of the user's whole party. *(**own**)* | **Lucky Egg**: Egg Bomb never misses. *(**own**)* | **Chorus**: Sing works on every enemy, each at half the chance (one alone: the full chance). *(Sing)* |
+| 6 | 27 | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Deep Sleep**: Enemies the user puts to sleep sleep 1 round longer. *(Sleep)* |
+| 7 | 32 | **Soft Body**: Once a battle, ending a round below 1/3 HP heals the user half its max HP. *(**own**)* | **Vital Throw**: Seismic Toss always goes first. *(**own**)* | **Siren Song**: Sing never misses. *(Sing)* |
+| 8 | 38 | **Healing Egg**: Softboiled heals the user's whole party. *(**own**)* | **Seismic Slam**: Seismic Toss hits every enemy, at full damage. *(**own**)* | **Lull**: Sleeping enemies take 30% more damage from the user. *(Sleep)* |
+| 9 | 44 | **Wish**: Once a battle, a partner that would faint keeps 1 HP, and the user heals it half its max HP. *(Any)* | **Egg Barrage**: Egg Bomb hits every enemy, the others at 60% damage. *(**own**)* | **Taunting Growl**: Growl also makes every enemy attack the user, this round and the next. *(Growl)* |
+| 10 | 50 | **Queen's Guard**: Once a battle, a partner that would faint keeps 1 HP, and the user heals it 1/4 of its max HP. *(**own**)* | **Sniper**: The user's critical hits deal double damage (not 1.5×). *(**own**)* | **Bedtime Story**: At the start of each battle, each enemy has a 15% chance to fall asleep. *(Sleep)* |
+| 11 | 60 | **Full Moon** *(needs 4)*: While the user stands, the whole party takes 25% less damage. *(**own**)* | **Lucky Punch** *(needs 4)*: +30% chance of critical hits. *(**own**)* | **Yawn** *(needs 4)*: Sleep the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Sleep)* |
+| 12 | 75 | **Blissful** *(needs 6)*: While the user stands, the whole party heals 1/8 of its max HP at the end of each round. *(**own**)* | **Golden Egg** *(needs 6)*: Egg Bomb hits every enemy at full damage, and never misses. *(**own**)* | **Dream Eater** *(needs 6)*: The user heals 1/8 of its max HP each round for each sleeping enemy. *(Sleep)* |
+
+### Scyther
+
+Moves: Quick Attack, Leer 17, Focus Energy 20, Slash 24, Swords Dance 29, Agility 36, Wing Attack 42.
+
+Paths: **Blades** (slash and Swords Dance: critical cuts); **Swift** (quick Attack and Agility: striking first); **Hunter** (wings, and a hunter's instinct).
+
+| Tier | Lv | Blades | Swift | Hunter |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Swarm**: Below 1/3 HP, the user's Bug moves deal 1.5× damage. *(Bug)* |
+| 2 | 10 | **Rend**: Slash wounds the target: 1/12 of its max HP each round, for 3 rounds. *(Slash)* | **Lightning Reflexes**: Quick Attack has a 30% chance to make the target flinch. *(Quick Attack)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* |
+| 3 | 14 | **Keen Focus**: Focus Energy also raises the user's Attack 1 stage. *(Focus Energy)* | **Tailwind**: Agility works on the whole party. *(Agility)* | **Gale Wings**: Wing Attack always goes first. *(Wing Attack)* |
+| 4 | 18 | **Blade Dance**: Swords Dance also makes the user's next damaging move deal 50% more. *(Swords Dance)* | **Hit and Run**: Quick Attack also raises the user's Speed 1 stage. *(Quick Attack)* | **Hive Mind**: Each Bug move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Bug)* |
+| 5 | 22 | **Sweeping Claw**: Slash hits every enemy, the others at 50% damage. *(Slash)* | **Afterimage**: Agility also makes the user's next damaging move deal 50% more. *(Agility)* | **Riding the Wind**: The user's Flying moves raise its Speed 1 stage. *(Flying)* |
+| 6 | 27 | **Battle Focus**: Focus Energy also makes the user's next damaging move deal 50% more. *(**own**)* | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* | **Aerial Ace**: The user's Flying moves never miss and are twice as likely to be critical hits. *(Flying)* |
+| 7 | 32 | **Crush Claw**: Slash has a 30% chance to lower the target's Defense 1 stage. *(Slash)* | **Lightning Speed**: Quick Attack hits 3 times, at 70% power each. *(Quick Attack)* | **Feeding Frenzy**: Knocking an enemy out with a Bug move heals the user 1/4 of its max HP. *(Bug)* |
+| 8 | 38 | **Sniper**: The user's critical hits deal double damage (not 1.5×). *(**own**)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Exploit Weakness**: Enemies with lowered Defense take 30% more damage from the user's party. *(Any)* |
+| 9 | 44 | **Rending Claws**: Slash and Fury Swipes wound the target: 1/12 of its max HP each round, for 3 rounds. *(Slash)* | **Stalker**: The user's moves deal 35% more to a target that hasn't moved yet this round. *(**own**)* | **Bird of Prey**: Knocking an enemy out with a Flying move heals the user 1/4 of its max HP. *(Flying)* |
+| 10 | 50 | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* |
+| 11 | 60 | **Thousand Cuts** *(needs 4)*: Fury Swipes and Slash hit every enemy, the others at 60% damage. *(**own**)* | **Fury Cutter** *(needs 4)*: Quick Attack hits 2 times. *(**own**)* | **Pick a Fight** *(needs 4)*: Leer works on every enemy, and makes them all attack the user, this round and the next. *(**own**)* |
+| 12 | 75 | **X-Scissor** *(needs 6)*: Slash hits much harder: 100 power, and is twice as likely to be a critical hit. *(**own**)* | **Mantis Speed** *(needs 6)*: The user has a 60% chance each round to act before the others, and +10% chance of critical hits. *(**own**)* | **Air Slash** *(needs 6)*: Wing Attack hits harder: 75 power, and hits every enemy, the others at 60% damage. *(**own**)* |
+
+### Kangaskhan
+
+Moves: Comet Punch, Bite 26, Tail Whip 31, Mega Punch 36, Leer 41, Dizzy Punch 46.
+
+Paths: **Parent** (a parent's guard over the whole party); **Brawler** (comet Punch and Mega Punch: a flurry of fists); **Pouch** (bite, Tail Whip and Dizzy Punch: the little one's tricks).
+
+| Tier | Lv | Parent | Brawler | Pouch |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 2 | 10 | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Fighting Spirit**: The basic attack becomes a Fighting move (with STAB). *(Fighting)* | **Crunch**: Bite has a 30% chance to lower the target's Defense 1 stage. *(Bite)* |
+| 3 | 14 | **Den Mother**: While the user stands, the whole party takes 15% less damage. *(**own**)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* |
+| 4 | 18 | **Wagging Tail**: Tail Whip works on every enemy. *(Tail Whip)* | **Iron Fist**: Comet Punch, Mega Punch and Dizzy Punch deal 20% more. *(**own**)* | **Tail Slap**: After Tail Whip, the user hits the target with its basic attack at 60% power. *(Tail Whip)* |
+| 5 | 22 | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Dizzy Spin**: Dizzy Punch confuses 50% of the time. *(**own**)* |
+| 6 | 27 | **Nurturing**: While the user stands, the whole party heals 1/16 of its max HP at the end of each round. *(Any)* | **Rampage**: Each Normal move in a row deals 20% more than the last, up to +60%. *(Normal)* | **Pounce**: Bite always goes first, and makes the target flinch 50% of the time. *(**own**)* |
+| 7 | 32 | **Bulwark Stance**: While the user stands, the whole party takes 15% less damage. *(Any)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* |
+| 8 | 38 | **Queen's Guard**: Once a battle, a partner that would faint keeps 1 HP, and the user heals it 1/4 of its max HP. *(**own**)* | **Mother's Wrath**: Below 1/3 HP, the user's Normal moves deal 2× damage. *(**own**)* | **Hysteria**: Confusion the user causes has a 30% chance each round to spread to an enemy next to it. *(Confusion)* |
+| 9 | 44 | **Fortress**: While the user stands, the whole party takes 25% less damage. *(Any)* | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Piercing Gaze**: Leer also makes the target take 25% more damage from everyone, for 3 rounds. *(Leer)* |
+| 10 | 50 | **Wish**: Once a battle, a partner that would faint keeps 1 HP, and the user heals it half its max HP. *(Any)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Bedlam**: Enemies the user confuses always hurt themselves. *(Confusion)* |
+| 11 | 60 | **Full Moon** *(needs 4)*: While the user stands, the whole party takes 25% less damage. *(**own**)* | **Comet Barrage** *(needs 4)*: Comet Punch hits 3-5 times. *(**own**)* | **Pick a Fight** *(needs 4)*: Leer works on every enemy, and makes them all attack the user, this round and the next. *(**own**)* |
+| 12 | 75 | **Living Wall** *(needs 6)*: The first hit the user takes in each battle deals no damage, and while it stands the whole party takes 30% less damage. *(**own**)* | **Parental Bond** *(needs 6)*: Mega Punch hits twice. *(**own**)* | **Mind Crush** *(needs 6)*: Confused enemies take 30% more damage from the user. *(Confusion)* |
+
+### Tauros
+
+Moves: Tackle, Stomp 21, Tail Whip 28, Body Slam 35, Take Down 44, Hyper Beam 51.
+
+Paths: **Stampede** (take Down and Stomp: charging through); **Bull** (fury and momentum: Normal damage); **Hide** (a tough hide).
+
+| Tier | Lv | Stampede | Bull | Hide |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Charge**: Tackle hits harder: 50 power. *(Tackle)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* |
+| 2 | 10 | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* |
+| 3 | 14 | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* | **Wagging Tail**: Tail Whip works on every enemy. *(Tail Whip)* | **Tail Slap**: After Tail Whip, the user hits the target with its basic attack at 60% power. *(Tail Whip)* |
+| 4 | 18 | **Extreme Speed**: Take Down always goes first. *(**own**)* | **Crushing Weight**: Body Slam hits harder: 100 power. *(**own**)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 5 | 22 | **Stampede**: Stomp hits every enemy at full damage. *(**own**)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Solid Rock**: Super-effective hits on the user deal 25% less damage. *(Any)* |
+| 6 | 27 | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Rampage**: Each Normal move in a row deals 20% more than the last, up to +60%. *(Normal)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 7 | 32 | **Horn Charge**: Take Down hits harder: 120 power. *(**own**)* | **Intimidate**: At the start of each battle, each enemy's Attack has a 50% chance to fall 1 stage. *(Any)* | **Bulwark Stance**: While the user stands, the whole party takes 15% less damage. *(Any)* |
+| 8 | 38 | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Anger Point**: Below 1/3 HP, the user's Normal moves deal 2× damage, and it acts first 50% of the time. *(**own**)* | **Shell Armor**: Super-effective hits on the user deal 30% less damage. *(**own**)* |
+| 9 | 44 | **Stalker**: The user's moves deal 35% more to a target that hasn't moved yet this round. *(**own**)* | **Overdrive**: Hyper Beam needs no rest after knocking an enemy out. *(Hyper Beam)* | **Fortress**: While the user stands, the whole party takes 25% less damage. *(Any)* |
+| 10 | 50 | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Unstoppable**: Each Normal or Rock move in a row deals 30% more than the last, up to +90%. *(**own**)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 11 | 60 | **Juggernaut** *(needs 4)*: The first hit the user takes in each battle deals no damage, and its Normal moves never miss. *(**own**)* | **Body Press** *(needs 4)*: Body Slam hits every enemy, at 75% damage each. *(**own**)* | **Guardian** *(needs 4)*: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 12 | 75 | **Raging Bull** *(needs 6)*: Take Down hits every enemy at full damage. *(**own**)* | **Giga Impact** *(needs 6)*: Hyper Beam hits harder (180 power), and needs no rest after knocking an enemy out. *(**own**)* | **Immovable** *(needs 6)*: The first hit the user takes in each battle deals no damage, and super-effective hits deal half. *(**own**)* |
+
+### Rhyhorn → Rhydon
+
+Moves: Horn Attack, Stomp 30, Tail Whip 35, Fury Attack 40, Rock Slide 44, Take Down 48 (Rhydon), Earthquake 50 (Rhydon).
+
+Paths: **Drill** (horn Attack and Fury Attack: a drilling horn); **Quake** (earthquake and Rock Slide); **Armor** (rock-hard armor).
+
+| Tier | Lv | Drill | Quake | Armor |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Gore**: Horn Attack has a high critical-hit ratio. *(Horn Attack)* | **Mud Claws**: The basic attack becomes a Ground move (with STAB). *(Ground)* | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* |
+| 2 | 10 | **Piercing Horn**: Horn Attack also hits one enemy next to the target, at half damage. *(Horn Attack)* | **Tremor**: Each Ground move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Ground)* | **Jagged Hide**: Whoever hits the user loses 1/16 of its max HP. *(Rock)* |
+| 3 | 14 | **Frenzy**: Fury Attack always hits at least 3 times. *(Fury Attack)* | **Rolling Stones**: Each Rock move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Rock)* | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* |
+| 4 | 18 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Groundswell**: Below 1/3 HP, the user's Ground moves deal 1.5× damage. *(Ground)* | **Solid Rock**: Super-effective hits on the user deal 25% less damage. *(Any)* |
+| 5 | 22 | **Drill Horn**: Horn Attack always goes first and never misses. *(**own**)* | **Sand Force**: Enemies with lowered accuracy take 20% more damage from the user's party. *(Ground)* | **Tail Slap**: After Tail Whip, the user hits the target with its basic attack at 60% power. *(Tail Whip)* |
+| 6 | 27 | **Megahorn**: Horn Attack hits much harder: 100 power. *(Horn Attack)* | **Rockfall**: The user's Rock moves have a 30% chance to make the target flinch. *(Rock)* | **Shell Armor**: Super-effective hits on the user deal 30% less damage. *(**own**)* |
+| 7 | 32 | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Burrow Feast**: Knocking an enemy out with a Ground move heals the user 1/4 of its max HP. *(Ground)* | **Intimidate**: At the start of each battle, each enemy's Attack has a 50% chance to fall 1 stage. *(Any)* |
+| 8 | 38 | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* | **Stampede**: Stomp hits every enemy at full damage. *(**own**)* | **Bulwark Stance**: While the user stands, the whole party takes 15% less damage. *(Any)* |
+| 9 | 44 | **Extreme Speed**: Take Down always goes first. *(**own**)* | **Ancient Power**: Rock Slide hits every enemy at full damage. *(**own**)* | **Fortress**: While the user stands, the whole party takes 25% less damage. *(Any)* |
+| 10 | 50 | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Fault Line**: Earthquake hits every enemy, the others at 60% damage. *(Earthquake)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 11 | 60 | **Rock Drill** *(needs 4)*: Horn Attack becomes a Rock move (with STAB) and hits harder: 90 power. *(**own**)* | **Magnitude 10** *(needs 4)*: Earthquake hits every enemy at full damage. *(**own**)* | **Juggernaut** *(needs 4)*: The first hit the user takes in each battle deals no damage, and its Normal moves never miss. *(**own**)* |
+| 12 | 75 | **Unstoppable** *(needs 6)*: Each Normal or Rock move in a row deals 30% more than the last, up to +90%. *(**own**)* | **Tectonic Rage** *(needs 6)*: Earthquake hits harder: 130 power. *(**own**)* | **Rock Armor** *(needs 6)*: The first hit the user takes in each battle deals no damage, and whoever hits the user loses 1/8 of its max HP. *(**own**)* |
+
+### Exeggcute → Exeggutor
+
+Moves: Confusion, Hypnosis, Reflect 25, Leech Seed 28, Stomp 28 (Exeggutor), Stun Spore 32, Egg Bomb 35 (Exeggutor), Psychic 40 (Exeggutor), Solar Beam 45, Sleep Powder 48.
+
+Paths: **Mind** (confusion and Psychic); **Grove** (leech Seed, Egg Bomb and Solar Beam); **Slumber** (hypnosis and powders: sleep and paralysis).
+
+| Tier | Lv | Mind | Grove | Slumber |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Telepathy**: The user's Psychic moves never miss. *(Psychic)* | **Overgrow**: Below 1/3 HP, the user's Grass moves deal 1.5× damage. *(Grass)* | **Mesmerize**: Hypnosis is 25% more likely to work. *(**own**)* |
+| 2 | 10 | **Dizzying Mind**: Confusion is 20% more likely to confuse. *(Confusion)* | **Creeping Seed**: When a seeded enemy faints, its seed jumps to an enemy next to it. *(Leech Seed)* | **Numbing Cloud**: Stun Spore works on every enemy, each at half the chance (one alone: the full chance). *(Stun Spore)* |
+| 3 | 14 | **Focus Mind**: Each Psychic move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Psychic)* | **Photosynthesis**: The user heals 1/16 of its max HP at the end of each round. *(Grass)* | **Deep Sleep**: Enemies the user puts to sleep sleep 1 round longer. *(Sleep)* |
+| 4 | 18 | **Psychic Wings**: Confusion and Psybeam are 20% more likely to confuse. *(Confusion)* | **Harvest**: Knocking an enemy out with a Grass move heals the user 1/4 of its max HP. *(Grass)* | **Mass Hypnosis**: Hypnosis works on every enemy, each at half the chance (one alone: the full chance). *(**own**)* |
+| 5 | 22 | **Barrier**: Reflect covers the whole party. *(Reflect)* | **Seed Bomb**: Leech Seed also deals damage (Grass, 30 power) when it lands. *(Leech Seed)* | **Scale Dust**: Stun Spore, Poison Powder and Sleep Powder never miss and work 25% more often. *(Stun Spore)* |
+| 6 | 27 | **Mind Over Matter**: Below 1/3 HP, the user's Psychic moves deal 1.5× damage. *(Psychic)* | **Lucky Egg**: Egg Bomb never misses. *(**own**)* | **Drowsy Dust**: Sleep Powder works on every enemy, each at half the chance (one alone: the full chance). *(Sleep Powder)* |
+| 7 | 32 | **Psychic Surge**: Confusion hits every enemy at full damage, and confuses half the time. *(**own**)* | **Egg Barrage**: Egg Bomb hits every enemy, the others at 60% damage. *(**own**)* | **Pendulum**: Hypnosis never misses. *(**own**)* |
+| 8 | 38 | **Mind Blast**: Psychic hits every enemy, the others at 50% damage. *(Psychic)* | **Stampede**: Stomp hits every enemy at full damage. *(**own**)* | **Nightmare**: Enemies the user puts to sleep lose 1/8 of their max HP each round. *(Sleep)* |
+| 9 | 44 | **Mind Feast**: Knocking an enemy out with a Psychic move heals the user 1/4 of its max HP. *(Psychic)* | **Solar Flare**: Solar Beam hits every enemy, at full power. *(Solar Beam)* | **Endless Dream**: Enemies the user puts to sleep sleep 1 more round (on top of Deep Sleep's). *(Sleep)* |
+| 10 | 50 | **Mirror Shards**: For 3 rounds, whoever hits a Pokémon behind Reflect loses 1/16 of its max HP. *(Reflect)* | **Ancient Roots**: While the user stands, the whole party takes 15% less damage. *(**own**)* | **Dream Eater**: The user heals 1/8 of its max HP each round for each sleeping enemy. *(Sleep)* |
+| 11 | 60 | **Psychic Storm** *(needs 4)*: Psychic hits every enemy, the others at 80% damage. *(**own**)* | **Harvest Sun** *(needs 4)*: Solar Beam needs no charging. *(**own**)* | **Yawn** *(needs 4)*: Sleep the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Sleep)* |
+| 12 | 75 | **Mind Storm** *(needs 6)*: Psychic hits every enemy at full damage. *(**own**)* | **Tropical Canopy** *(needs 6)*: While the user stands, the whole party takes 20% less damage and heals 1/16 of its max HP at the end of each round. *(**own**)* | **Dreamland** *(needs 6)*: Hypnosis also exposes its target: it takes 30% more damage from everyone, for 3 rounds. *(**own**)* |
+
+### Jynx
+
+Moves: Pound, Lovely Kiss, Ice Punch 31, Double Slap 39, Psychic 44, Body Slam 47, Blizzard 55.
+
+Paths: **Kiss** (lovely Kiss: sleep, and what comes with it); **Frost** (ice Punch and Blizzard); **Dance** (psychic and Double Slap: a strange dance).
+
+| Tier | Lv | Kiss | Frost | Dance |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Deep Sleep**: Enemies the user puts to sleep sleep 1 round longer. *(Sleep)* | **Frostbite**: The user's Ice moves are 10% more likely to freeze. *(Ice)* | **Telepathy**: The user's Psychic moves never miss. *(Psychic)* |
+| 2 | 10 | **Perfect Kiss**: Lovely Kiss never misses, and works 20% more often. *(**own**)* | **Chill**: The user's Ice moves have a 30% chance to lower the target's Speed 1 stage. *(Ice)* | **Flurry Slap**: Double Slap always hits at least 3 times. *(Double Slap)* |
+| 3 | 14 | **Nightmare**: Enemies the user puts to sleep lose 1/8 of their max HP each round. *(Sleep)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Focus Mind**: Each Psychic move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Psychic)* |
+| 4 | 18 | **Lull**: Sleeping enemies take 30% more damage from the user. *(Sleep)* | **Ice Body**: The user heals 1/16 of its max HP at the end of each round. *(**own**)* | **Mind Blast**: Psychic hits every enemy, the others at 50% damage. *(Psychic)* |
+| 5 | 22 | **Sweet Kiss**: Lovely Kiss works on every enemy, each at half the chance (one alone: the full chance). *(**own**)* | **Shatter**: Frozen enemies take 50% more damage from the user. *(Freeze)* | **Mind Over Matter**: Below 1/3 HP, the user's Psychic moves deal 1.5× damage. *(Psychic)* |
+| 6 | 27 | **Yawn**: Sleep the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Sleep)* | **Whiteout**: Blizzard never misses and hits every enemy, the others at 60% damage. *(Blizzard)* | **Pummel**: Double Slap always hits 5 times. *(Double Slap)* |
+| 7 | 32 | **Dream Eater**: The user heals 1/8 of its max HP each round for each sleeping enemy. *(Sleep)* | **Absolute Zero**: At the start of each battle, each enemy has a 20% chance to be frozen. *(Freeze)* | **Precognition**: Psychic always goes first. *(**own**)* |
+| 8 | 38 | **Endless Dream**: Enemies the user puts to sleep sleep 1 more round (on top of Deep Sleep's). *(Sleep)* | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Mind Feast**: Knocking an enemy out with a Psychic move heals the user 1/4 of its max HP. *(Psychic)* |
+| 9 | 44 | **Bedtime Story**: At the start of each battle, each enemy has a 15% chance to fall asleep. *(Sleep)* | **Ice Age**: Frozen enemies take 80% more damage from the user. *(**own**)* | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* |
+| 10 | 50 | **Magic Guard**: The user takes no damage from poison, burns, seeds, binds, wounds or nightmares. *(Psychic)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 11 | 60 | **Kiss of Death** *(needs 4)*: Sleeping enemies take 60% more damage from the user. *(**own**)* | **Sheer Cold** *(needs 4)*: Blizzard hits every enemy at full damage, and freezes 20% of the time. *(**own**)* | **Psychic Storm** *(needs 4)*: Psychic hits every enemy, the others at 80% damage. *(**own**)* |
+| 12 | 75 | **Eternal Slumber** *(needs 6)*: Enemies the user puts to sleep sleep 2 rounds longer. *(**own**)* | **Frost Queen** *(needs 6)*: Ice Punch hits every enemy at full damage, and freezes 20% of the time. *(**own**)* | **Mind Storm** *(needs 6)*: Psychic hits every enemy at full damage. *(**own**)* |
+
+### Electabuzz
+
+Moves: Quick Attack, Thunder Shock, Leer 34, Screech 37, Thunder Punch 42, Light Screen 49, Thunder 54.
+
+Paths: **Spark** (paralysis: slowing and stopping enemies); **Storm** (thunder: raw Electric damage); **Brawl** (thunder Punch and Quick Attack).
+
+| Tier | Lv | Spark | Storm | Brawl |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Static**: Whoever hits the user has a 25% chance to be paralyzed. *(Electric)* | **Surge**: Below 1/3 HP, the user's Electric moves deal 1.5× damage. *(Electric)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 2 | 10 | **Live Wire**: The user's Electric moves are 20% more likely to paralyze. *(Electric)* | **Charge Up**: Each Electric move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Electric)* | **Lightning Reflexes**: Quick Attack has a 30% chance to make the target flinch. *(Quick Attack)* |
+| 3 | 14 | **Conductor**: Enemies the user paralyzes take 30% more damage from everyone. *(Paralysis)* | **Overcharge**: Thunder Shock hits much harder: 80 power. *(**own**)* | **Fighting Spirit**: The basic attack becomes a Fighting move (with STAB). *(Fighting)* |
+| 4 | 18 | **Screen Wall**: Light Screen covers the whole party. *(**own**)* | **Discharge**: Knocking an enemy out with a Electric move heals the user 1/4 of its max HP. *(Electric)* | **Hit and Run**: Quick Attack also raises the user's Speed 1 stage. *(Quick Attack)* |
+| 5 | 22 | **Piercing Screech**: Screech works on every enemy. *(Screech)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Elemental Fists**: Fire, Ice and Thunder Punch are 20% more likely to burn, freeze and paralyze. *(**own**)* |
+| 6 | 27 | **Thunder Cloud**: At the start of each battle, each enemy has a 30% chance to be paralyzed. *(**own**)* | **Thunderclap**: Thunder always goes first. *(**own**)* | **Lightning Speed**: Quick Attack hits 3 times, at 70% power each. *(Quick Attack)* |
+| 7 | 32 | **Menacing Leer**: Leer works on every enemy. *(Leer)* | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* |
+| 8 | 38 | **Exploit Weakness**: Enemies with lowered Defense take 30% more damage from the user's party. *(Any)* | **Sniper**: The user's critical hits deal double damage (not 1.5×). *(**own**)* | **Combo**: Each Fighting move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Fighting)* |
+| 9 | 44 | **Shriek**: After Screech, the user hits the target with its basic attack at 60% power. *(Screech)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
+| 10 | 50 | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 11 | 60 | **Static Field** *(needs 4)*: Whoever hits the user has a 50% chance to be paralyzed. *(**own**)* | **Gigavolt** *(needs 4)*: Thunder hits every enemy, at full damage. *(**own**)* | **Thunder Fist** *(needs 4)*: Thunder Punch hits harder: 100 power, and paralyzes 30% of the time. *(**own**)* |
+| 12 | 75 | **Plasma Storm** *(needs 6)*: At the start of each battle, each enemy has a 50% chance to be paralyzed. *(**own**)* | **Thunder God** *(needs 6)*: Thunderbolt and Thunder never miss, and have +30% critical-hit chance on a target below half HP. *(**own**)* | **Electric Rush** *(needs 6)*: Thunder Punch hits every enemy at full damage. *(**own**)* |
+
+### Magmar
+
+Moves: Ember, Leer 36, Confuse Ray 39, Fire Punch 43, Smog 48, Flamethrower 55.
+
+Paths: **Flame** (ember, Fire Punch and Flamethrower: Fire damage); **Smoke** (smog and Confuse Ray: smoke and fumes); **Inferno** (burns, and their torment).
+
+| Tier | Lv | Flame | Smoke | Inferno |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Blaze**: Below 1/3 HP, the user's Fire moves deal 1.5× damage. *(Fire)* | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Searing**: The user's Fire moves are 20% more likely to burn. *(Fire)* |
+| 2 | 10 | **Ember Shower**: Ember hits every enemy, the others at 50% damage. *(Ember)* | **Wide Ray**: Confuse Ray works on every enemy. *(Confuse Ray)* | **Smoulder**: The user's Fire moves wound the target: 1/16 of its max HP each round, for 3 rounds. *(Fire)* |
+| 3 | 14 | **Stoke the Flames**: Each Fire move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Fire)* | **Mind Games**: Enemies the user confuses hurt themselves 75% of the time (not 50%). *(Confusion)* | **Scorch**: Burned enemies take 25% more damage from the user. *(Fire)* |
+| 4 | 18 | **Fireball**: Ember hits harder: 60 power. *(Ember)* | **Smog Cloud**: Smog hits every enemy. *(**own**)* | **Heat Haze**: At the start of each battle, each enemy has a 30% chance to be burned. *(Fire)* |
+| 5 | 22 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Ash Cloud**: The user's Fire moves have a 20% chance to lower the target's accuracy 1 stage. *(Fire)* | **Menacing Leer**: Leer works on every enemy. *(Leer)* |
+| 6 | 27 | **Scorching Breath**: Flamethrower is 20% more likely to burn. *(Flamethrower)* | **Hysteria**: Confusion the user causes has a 30% chance each round to spread to an enemy next to it. *(Confusion)* | **Wildfire**: Burns the user inflicts have a 30% chance each round to spread to an enemy next to it. *(Fire)* |
+| 7 | 32 | **Feed the Flames**: Knocking an enemy out with a Fire move heals the user 1/4 of its max HP. *(Fire)* | **Toxic Smog**: Smog badly poisons: it gets worse every round. *(**own**)* | **Pyre**: Enemies the user's side burned lose a further 1/8 of their max HP each round. *(**own**)* |
+| 8 | 38 | **Blowtorch**: Flamethrower also hits one enemy next to the target, at half damage. *(Flamethrower)* | **Bedlam**: Enemies the user confuses always hurt themselves. *(Confusion)* | **Flame Body**: Whoever hits the user has a 30% chance to be burned. *(**own**)* |
+| 9 | 44 | **Elemental Fists**: Fire, Ice and Thunder Punch are 20% more likely to burn, freeze and paralyze. *(**own**)* | **Phantom Ink**: Enemies with lowered accuracy take 50% more damage from the user's party. *(Any)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 10 | 50 | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Mind Crush**: Confused enemies take 30% more damage from the user. *(Confusion)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 11 | 60 | **Heat Wave** *(needs 4)*: Flamethrower hits every enemy, the others at 60% damage. *(**own**)* | **Smoke Bomb** *(needs 4)*: At the start of each battle, each enemy's accuracy has a 50% chance to fall 1 stage. *(**own**)* | **Magma Armor** *(needs 4)*: The first hit the user takes in each battle deals no damage, and whoever hits the user has a 50% chance to be burned. *(**own**)* |
+| 12 | 75 | **Inferno Fist** *(needs 6)*: Fire Punch hits every enemy at full damage, and burns 30% of the time. *(**own**)* | **Thick Fog** *(needs 6)*: At the start of each battle, each enemy's accuracy has a 50% chance to fall 2 stages. *(**own**)* | **Eruption** *(needs 6)*: Burned enemies take 60% more damage from the user. *(**own**)* |
+
+### Tangela
+
+Moves: Constrict, Bind, Absorb 29, Poison Powder 32, Stun Spore 36, Sleep Powder 39, Slam 45, Growth 49.
+
+Paths: **Vines** (bind and Constrict: tangling enemies); **Powder** (powders on every enemy); **Growth** (absorb and Growth: feeding and growing).
+
+| Tier | Lv | Vines | Powder | Growth |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Squeeze**: Enemies caught in a bind take 30% more damage from the user. *(Any)* | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Overgrow**: Below 1/3 HP, the user's Grass moves deal 1.5× damage. *(Grass)* |
+| 2 | 10 | **Toxic Tentacles**: Constrict has a 30% chance to poison. *(**own**)* | **Pollen Cloud**: Poison Powder hits every enemy, each at half the chance (one alone: the full chance). *(Poison Powder)* | **Root Drink**: Absorb hits harder: 40 power. *(Absorb)* |
+| 3 | 14 | **Crushing Coils**: Wrap and Bind have a 30% chance to paralyze. *(Bind)* | **Numbing Cloud**: Stun Spore works on every enemy, each at half the chance (one alone: the full chance). *(Stun Spore)* | **Photosynthesis**: The user heals 1/16 of its max HP at the end of each round. *(Grass)* |
+| 4 | 18 | **Constrictor**: Wrap's and Bind's grip hurts far more: a further 1/8 of max HP each round. *(**own**)* | **Drowsy Dust**: Sleep Powder works on every enemy, each at half the chance (one alone: the full chance). *(Sleep Powder)* | **Sap**: Absorb heals the user all the damage it deals (not half). *(Absorb)* |
+| 5 | 22 | **Strangler Fig**: Enemies caught in a bind take 50% more damage from the user. *(**own**)* | **Toxic Spores**: Poison Powder badly poisons: it gets worse every round. *(Poison Powder)* | **Full Bloom**: Growth also makes the user's next damaging move deal 50% more. *(Growth)* |
+| 6 | 27 | **Constrict**: Wrap and Bind squeeze twice as hard: 1/8 of max HP each round. *(Bind)* | **Scale Dust**: Stun Spore, Poison Powder and Sleep Powder never miss and work 25% more often. *(Stun Spore)* | **Harvest**: Knocking an enemy out with a Grass move heals the user 1/4 of its max HP. *(Grass)* |
+| 7 | 32 | **Body Blow**: Slam never misses. *(Slam)* | **Soothing Spores**: Sleep Powder also cures the party's status conditions. *(Sleep Powder)* | **Shared Sun**: Growth works on the whole party. *(Growth)* |
+| 8 | 38 | **Riptide**: Enemies with lowered Speed take 30% more damage from the user's party. *(**own**)* | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 9 | 44 | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* | **Deep Sleep**: Enemies the user puts to sleep sleep 1 round longer. *(Sleep)* | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* |
+| 10 | 50 | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Nightmare**: Enemies the user puts to sleep lose 1/8 of their max HP each round. *(Sleep)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 11 | 60 | **Vine Snare** *(needs 4)*: Bind hits every enemy. *(**own**)* | **Spore Burst** *(needs 4)*: At the start of each battle, each enemy has a 15% chance to fall asleep. *(**own**)* | **Giga Drain** *(needs 4)*: Absorb hits much harder: 75 power. *(**own**)* |
+| 12 | 75 | **Power Whip** *(needs 6)*: Slam hits much harder: 120 power, and never misses. *(**own**)* | **Toxic Bloom** *(needs 6)*: At the start of each battle, each enemy has a 30% chance to be poisoned, and 30% to be paralyzed. *(**own**)* | **Overgrowth** *(needs 6)*: The user heals 1/8 of its max HP at the end of each round. *(**own**)* |
+
+### Pinsir
+
+Moves: Vice Grip, Seismic Toss 25, Harden 30, Slash 36, Swords Dance 49, Submission 52.
+
+Paths: **Pincers** (vice Grip and Slash: crushing horns); **Throw** (seismic Toss and Submission); **Shell** (harden: a hard shell).
+
+| Tier | Lv | Pincers | Throw | Shell |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Fighting Spirit**: The basic attack becomes a Fighting move (with STAB). *(Fighting)* | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* |
+| 2 | 10 | **Hyper Cutter**: Vice Grip is twice as likely to be a critical hit. *(**own**)* | **Vital Throw**: Seismic Toss always goes first. *(**own**)* | **Iron Shell**: Harden also halves the damage the user takes for 2 rounds. *(Harden)* |
+| 3 | 14 | **Rend**: Slash wounds the target: 1/12 of its max HP each round, for 3 rounds. *(Slash)* | **Combo**: Each Fighting move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Fighting)* | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* |
+| 4 | 18 | **Blade Dance**: Swords Dance also makes the user's next damaging move deal 50% more. *(Swords Dance)* | **Submission Hold**: Submission no longer hurts the user. *(**own**)* | **Shell Wall**: Harden works on the whole party. *(Harden)* |
+| 5 | 22 | **Swarm**: Below 1/3 HP, the user's Bug moves deal 1.5× damage. *(Bug)* | **Last Stand**: Below 1/3 HP, the user's Fighting moves deal 1.5× damage. *(Fighting)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* |
+| 6 | 27 | **Sweeping Claw**: Slash hits every enemy, the others at 50% damage. *(Slash)* | **Atomic Drop**: Seismic Toss always goes first and never misses. *(**own**)* | **Jagged Hide**: Whoever hits the user loses 1/16 of its max HP. *(Rock)* |
+| 7 | 32 | **Hive Mind**: Each Bug move in a row deals 20% more than the last, up to +60%. Any other move starts it over. *(Bug)* | **Victory Rush**: Knocking an enemy out with a Fighting move heals the user 1/4 of its max HP. *(Fighting)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 8 | 38 | **Crush Claw**: Slash has a 30% chance to lower the target's Defense 1 stage. *(Slash)* | **Close Combat**: Submission hits much harder: 120 power. *(**own**)* | **Bulwark Stance**: While the user stands, the whole party takes 15% less damage. *(Any)* |
+| 9 | 44 | **Sniper**: The user's critical hits deal double damage (not 1.5×). *(**own**)* | **Stagger**: The user's Fighting moves have a 30% chance to lower the target's Defense 1 stage. *(Fighting)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 10 | 50 | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Fortress**: While the user stands, the whole party takes 25% less damage. *(Any)* |
+| 11 | 60 | **X-Scissor** *(needs 4)*: Slash hits much harder: 100 power, and is twice as likely to be a critical hit. *(**own**)* | **Seismic Slam** *(needs 4)*: Seismic Toss hits every enemy, at full damage. *(**own**)* | **Juggernaut** *(needs 4)*: The first hit the user takes in each battle deals no damage, and its Normal moves never miss. *(**own**)* |
+| 12 | 75 | **Guillotine** *(needs 6)*: Vice Grip hits much harder: 110 power, and is three times as likely to be a critical hit. *(**own**)* | **Storm Throw** *(needs 6)*: Submission hits every enemy, the others at 50% damage. *(**own**)* | **Immovable** *(needs 6)*: The first hit the user takes in each battle deals no damage, and super-effective hits deal half. *(**own**)* |
 
 ### Drowzee → Hypno
 
@@ -920,6 +1340,48 @@ Paths: **Lullaby** (sing: putting enemies to sleep, and keeping them there); **P
 | 10 | 50 | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* | **Soothing Song**: Sing also cures the party's status conditions. *(Sing)* | **Blur**: The user's damaging moves go before others' (as Quick Attack does). *(Any)* |
 | 11 | 60 | **Bedtime Story** *(needs 4)*: At the start of each battle, each enemy has a 15% chance to fall asleep. *(Sleep)* | **Plush** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(**own**)* | **Rampage** *(needs 4)*: Each Normal move in a row deals 20% more than the last, up to +60%. *(Normal)* |
 | 12 | 75 | **Endless Dream** *(needs 6)*: Enemies the user puts to sleep sleep 1 more round (on top of Deep Sleep's). *(Sleep)* | **Wish** *(needs 6)*: Once a battle, a partner that would faint keeps 1 HP, and the user heals it half its max HP. *(Any)* | **Pummel** *(needs 6)*: Double Slap always hits 5 times. *(Double Slap)* |
+
+### Koffing → Weezing
+
+Moves: Tackle, Smog, Sludge 32, Smokescreen 37, Self-Destruct 40, Explosion 48 (Weezing).
+
+Paths: **Fumes** (smog and Sludge: poison on every enemy); **Haze** (smokescreen and fog: blinding enemies, shielding the party); **Volatile** (self-Destruct and Explosion: going out with a bang).
+
+| Tier | Lv | Fumes | Haze | Volatile |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Smoke Cloud**: Smokescreen works on every enemy. *(Smokescreen)* | **Head Start**: The user has a 30% chance each round to act before the others. *(Any)* |
+| 2 | 10 | **Smog Cloud**: Smog hits every enemy. *(**own**)* | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* | **Live Bomb**: Self-Destruct deals 50% more. *(**own**)* |
+| 3 | 14 | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* | **Ink Blind**: Smokescreen lowers accuracy 2 stages. *(Smokescreen)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* |
+| 4 | 18 | **Toxic Smog**: Smog badly poisons: it gets worse every round. *(**own**)* | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* |
+| 5 | 22 | **Siphon**: The user heals half the poison damage of the enemies it poisoned. *(Poison)* | **Smoke Bomb**: At the start of each battle, each enemy's accuracy has a 50% chance to fall 1 stage. *(**own**)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
+| 6 | 27 | **Virulent**: The user's poison is bad poison: it gets worse every round. *(Poison)* | **Blind Spot**: Enemies with lowered accuracy take 20% more damage from the user's party. *(Any)* | **Chain Reaction**: Self-Destruct and Explosion hit every enemy, the others at 50% damage. *(**own**)* |
+| 7 | 32 | **Sludge Bomb**: Sludge hits harder: 90 power, and poisons 40% of the time. *(**own**)* | **Bulwark Stance**: While the user stands, the whole party takes 15% less damage. *(Any)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* |
+| 8 | 38 | **Miasma**: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Phantom Ink**: Enemies with lowered accuracy take 50% more damage from the user's party. *(Any)* | **Exploit Weakness**: Enemies with lowered Defense take 30% more damage from the user's party. *(Any)* |
+| 9 | 44 | **Sapping**: Poisoned enemies deal 20% less damage. *(Poison)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* |
+| 10 | 50 | **Poison Point**: Whoever hits the user has a 25% chance to be poisoned. *(Poison)* | **Fortress**: While the user stands, the whole party takes 25% less damage. *(Any)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* |
+| 11 | 60 | **Toxic Storm** *(needs 4)*: Sludge hits every enemy at full damage. *(**own**)* | **Thick Fog** *(needs 4)*: At the start of each battle, each enemy's accuracy has a 50% chance to fall 2 stages. *(**own**)* | **Big Bang** *(needs 4)*: Explosion hits every enemy at full damage. *(**own**)* |
+| 12 | 75 | **Plague Cloud** *(needs 6)*: At the start of each battle, each enemy has a 60% chance to be poisoned. *(**own**)* | **Smog Shroud** *(needs 6)*: While the user stands, the whole party takes 20% less damage. *(**own**)* | **Final Flash** *(needs 6)*: Self-Destruct and Explosion hit harder: 200 and 250 power. *(**own**)* |
+
+### Grimer → Muk
+
+Moves: Pound, Poison Gas 30, Sludge 37, Harden 42, Screech 48.
+
+Paths: **Sludge** (sludge and poison: wearing every enemy down); **Ooze** (a body of muck: shrugging off blows, poisoning attackers); **Grime** (pound and Screech: breaking defenses down).
+
+| Tier | Lv | Sludge | Ooze | Grime |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Toxic Touch**: The basic attack has a 20% chance to poison. *(Poison)* | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* | **Heavy Hand**: Pound hits harder: 60 power. *(Pound)* |
+| 2 | 10 | **Noxious Cloud**: Poison Gas works on every enemy. *(**own**)* | **Iron Shell**: Harden also halves the damage the user takes for 2 rounds. *(Harden)* | **Piercing Screech**: Screech works on every enemy. *(Screech)* |
+| 3 | 14 | **Contagion**: Poison the user inflicts has a 30% chance each round to spread to an enemy next to it. *(Poison)* | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* |
+| 4 | 18 | **Sticky Sludge**: Sludge has a 50% chance to lower the target's Speed 1 stage. *(**own**)* | **Toxic Body**: Whoever hits the user has a 30% chance to be poisoned. *(**own**)* | **Exploit Weakness**: Enemies with lowered Defense take 30% more damage from the user's party. *(Any)* |
+| 5 | 22 | **Siphon**: The user heals half the poison damage of the enemies it poisoned. *(Poison)* | **Shell Wall**: Harden works on the whole party. *(Harden)* | **Gang Up**: The user's moves deal 30% more to a target a partner already hit this round. *(Any)* |
+| 6 | 27 | **Virulent**: The user's poison is bad poison: it gets worse every round. *(Poison)* | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Shriek**: After Screech, the user hits the target with its basic attack at 60% power. *(Screech)* |
+| 7 | 32 | **Sludge Bomb**: Sludge hits harder: 90 power, and poisons 40% of the time. *(**own**)* | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* |
+| 8 | 38 | **Sapping**: Poisoned enemies deal 20% less damage. *(Poison)* | **Solid Rock**: Super-effective hits on the user deal 25% less damage. *(Any)* | **Ambush**: The user's moves deal 30% more to a target that hasn't moved yet this round. *(Any)* |
+| 9 | 44 | **Miasma**: At the start of each battle, each enemy has a 50% chance to be poisoned. *(Poison)* | **Bulwark Stance**: While the user stands, the whole party takes 15% less damage. *(Any)* | **Rampage**: Each Normal move in a row deals 20% more than the last, up to +60%. *(Normal)* |
+| 10 | 50 | **Gunk Feast**: Knocking an enemy out with a Poison move heals the user half its max HP. *(**own**)* | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* |
+| 11 | 60 | **Sludge Wave** *(needs 4)*: Sludge hits every enemy, the others at 60% damage. *(**own**)* | **Acid Armor** *(needs 4)*: Harden raises the user's Defense 2 stages more (3 in all). *(**own**)* | **Sludge Fist** *(needs 4)*: The basic attack becomes a Poison move (with STAB), with a 30% chance to poison. *(**own**)* |
+| 12 | 75 | **Plague Cloud** *(needs 6)*: At the start of each battle, each enemy has a 60% chance to be poisoned. *(**own**)* | **Muck Mountain** *(needs 6)*: The first hit the user takes in each battle deals no damage, and whoever hits the user has a 30% chance to be poisoned. *(**own**)* | **Putrid Rot** *(needs 6)*: Poisoned enemies take 40% more damage from the user. *(**own**)* |
 
 ### Zubat → Golbat
 

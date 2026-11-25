@@ -661,4 +661,4 @@ TALENT_TREES = {
 
 from .talent_trees_2 import MORE_TREES  # noqa: E402
 
-TALENT_TREES.update(MORE_TREES)
+TALENT_TREES.update((key, (paths, _tiers(*rows))) for key, (paths, rows) in MORE_TREES.items())
