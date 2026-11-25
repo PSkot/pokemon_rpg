@@ -2,8 +2,12 @@
 
 While it's on: XP from battles can be multiplied, god mode makes the party
 take no damage and knocks out every enemy it hits, pack skipping lets the
-player walk through wild packs and map trainers' bands (not bosses), and
-items can be made to order (pause menu → Add item). Once the password has
+player walk through wild packs and map trainers' bands (not bosses), open
+all lets the player into every route, gym and building whatever the
+quests say (`quests.open_for`; Cut's trees part too), items can be made to
+order or rolled at random (pause menu → Add item), Teleport goes to any
+town, route, gym or trial, and Quests resets, restarts or steps any quest
+(scenes/dev_menu.py). Once the password has
 been given, it and these settings are remembered in the player's settings
 (saves.save_prefs: settings.json, and in the browser its localStorage), so
 they come back on the next start; they're never part of a save.
@@ -21,6 +25,7 @@ class DevMode:
     xp_boost: int = 1   # one of XP_BOOSTS
     god: bool = False
     skip: bool = False  # walk through packs (wild groups and map trainers; bosses still fight)
+    open_all: bool = False  # every doorway, gym and building lets the player in
     unlocked: bool = False  # the password was given (asked once; remembered in the player's settings)
 
     @property
@@ -35,12 +40,16 @@ class DevMode:
     def skip_packs(self) -> bool:
         return self.enabled and self.skip
 
+    @property
+    def open_doors(self) -> bool:
+        return self.enabled and self.open_all
+
     def prefs(self) -> dict:
         """What's remembered in the player's settings ({} until unlocked)."""
         if not self.unlocked:
             return {}
         return {"unlocked": True, "enabled": self.enabled, "xp_boost": self.xp_boost, "god": self.god,
-                "skip": self.skip}
+                "skip": self.skip, "open_all": self.open_all}
 
     def configure(self, prefs: dict) -> None:
         """Back as remembered (`prefs`), at the start."""
@@ -50,6 +59,7 @@ class DevMode:
         self.enabled = bool(prefs.get("enabled"))
         self.xp_boost = prefs.get("xp_boost") if prefs.get("xp_boost") in XP_BOOSTS else 1
         self.god, self.skip = bool(prefs.get("god")), bool(prefs.get("skip"))
+        self.open_all = bool(prefs.get("open_all"))
 
     def summary(self) -> str:
         """What's on, e.g. "DEV  XP×5  GOD" ("" while dev mode is off)."""
@@ -62,6 +72,8 @@ class DevMode:
             parts.append("GOD")
         if self.skip:
             parts.append("SKIP")
+        if self.open_all:
+            parts.append("OPEN")
         return "  ".join(parts)
 
 

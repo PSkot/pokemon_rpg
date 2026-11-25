@@ -27,7 +27,7 @@ from ..dev import DEV
 from ..mechanics.items import BONE, ITEMS, RIBBON, STACKING, Gear, money_text
 from ..mechanics.loot import Reward
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, line_base
-from .instance import RECRUITS, Recruit, from_route
+from .instance import RECRUITS, ROUTES, Recruit, from_route
 from .progress import MAX_PARTY
 
 SMITH = "smith"  # the smith Machamp's townsfolk key (the same in every town he works in)
@@ -1871,7 +1871,7 @@ def open_for(game, needs: tuple[str, str] | None) -> bool:
     e.g. "boss:snorlax_wakes"),
     holds ("started": started or done; "active": started and not done yet;
     None: always)."""
-    if not needs:
+    if not needs or DEV.open_doors:
         return True
     key, what = needs
     if what == "beaten":  # a boss beaten for good ("boss:<route>", in Game.trainers)
@@ -1881,6 +1881,67 @@ def open_for(game, needs: tuple[str, str] | None) -> bool:
     if what == "active":
         return is_active(game, key)
     return is_done(game, key) if what == "done" else step(game, key) is not None
+
+
+# --- dev mode: replaying quests (scenes/dev_menu.QuestTool) -----------------
+
+def _undo_step(game, s: Step) -> None:
+    """Take back what a step did: the key items it gave (and gives back
+    those it took), and the bosses and trainers it beat."""
+    for item in s.gives:
+        if item in game.bag.key_items:
+            game.bag.key_items.remove(item)
+    game.bag.key_items += [i for i in s.takes if i not in game.bag.key_items or i in STACKING]
+    if s.kind == "defeat":
+        for target in s.targets:
+            game.trainers.discard(target)
+            route = ROUTES.get(target)
+            if route:
+                game.trainers.discard(route.boss_key)
+                game.trainers.discard(f"boss:{target}")
+
+
+def reset(game, key: str) -> None:
+    """`key` back to not started, as if it had never been: what its steps
+    did is undone (`_undo_step`), its choices forgotten. It's offered again
+    as it was the first time (its board, giver, or by itself). Rewards
+    already given stay."""
+    quest = QUESTS[key]
+    at = step(game, key) or 0
+    for s in reversed(quest.steps[:at]):
+        _undo_step(game, s)
+    game.quests.pop(key, None)
+    game.quest_counts.pop(key, None)
+    game.trainers -= {t for t in game.trainers if t.startswith(_choice_key(key, ""))}
+    if quest.drop and quest.drop[0] in game.bag.key_items:
+        game.bag.key_items.remove(quest.drop[0])
+
+
+def restart(game, key: str) -> Event:
+    """`key` reset, then started again at its first step."""
+    reset(game, key)
+    return accept(game, key)
+
+
+def step_back(game, key: str) -> None:
+    """`key` back one step (a done quest: back to its last step), undoing it."""
+    at = step(game, key)
+    if not at:
+        return
+    _undo_step(game, QUESTS[key].steps[at - 1])
+    game.quests[key] = at - 1
+    game.quest_counts.pop(key, None)
+
+
+def step_forward(game, key: str) -> Event:
+    """`key`'s current step done (started first, if it wasn't): what it
+    gives, and the rewards if that finishes it."""
+    event = Event()
+    if step(game, key) is None:
+        _start(game, key, event)
+    elif is_active(game, key):
+        _advance(game, QUESTS[key], event)
+    return event
 
 
 # --- inside ------------------------------------------------------------------

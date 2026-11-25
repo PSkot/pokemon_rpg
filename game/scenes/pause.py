@@ -9,7 +9,7 @@ from ..mechanics.items import money_text
 from ..saves import LoadError
 from .controls_menu import ControlsMenu
 from .bag import BagScreen
-from .dev_menu import ItemMaker, PasswordPrompt
+from .dev_menu import ItemMaker, PasswordPrompt, Picker, QuestTool, destinations, teleport
 from ..world.towns import TOWNS
 from .quest_ui import QuestLog
 from .town_map import TownMap
@@ -19,7 +19,7 @@ from .save_menu import DELETE_PILL, NEW_SAVE, SaveList
 PAD = 9
 ROW_H = 19
 OPTIONS = ["Resume", "Save game", "Load game", "Dev mode", "Quit game"]
-DEV_OPTIONS = ["XP boost", "God mode", "Skip packs", "Add item", "Teleport"]  # shown under "Dev mode" while it's on
+DEV_OPTIONS = ["XP boost", "God mode", "Skip packs", "Open all", "Add item", "Teleport", "Quests"]  # shown under "Dev mode" while it's on
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 BACK_KEYS = (pygame.K_ESCAPE, pygame.K_x, pygame.K_BACKSPACE)  # resume (B on touch screens)
 WIDTH = 216
@@ -65,7 +65,8 @@ class PauseMenu:
         self.controls: ControlsMenu | None = None  # the touch controls' layout, when open
         self.bag_screen: BagScreen | None = None   # the bag, when open
         self.only = False  # opened straight from the map for one screen (bag, quest log): closing it resumes
-        self.teleport_to = list(TOWNS)[0]    # dev mode: the town Teleport goes to
+        self.teleport: Picker | None = None  # dev mode: Teleport's list, when open
+        self.quest_tool: QuestTool | None = None  # dev mode: the quest tool, when open
         self.message = ""
 
     @property
@@ -99,7 +100,8 @@ class PauseMenu:
 
     def _available(self, option: str) -> bool:
         return {"Save game": self.save_point is not None,
-                "Teleport": self.save_point is not None, "Add item": self.bag is not None}.get(option, True)
+                "Teleport": self.save_point is not None, "Quests": self.save_point is not None,
+                "Add item": self.bag is not None}.get(option, True)
 
     def open_bag(self) -> None:
         """Just the bag (I on a map): closing it resumes."""
@@ -128,10 +130,10 @@ class PauseMenu:
             return f"God mode: {'On' if DEV.god else 'Off'}"
         if option == "Skip packs":
             return f"Skip packs: {'On' if DEV.skip else 'Off'}"
-        if option in ("Add item", "Controls"):
+        if option == "Open all":
+            return f"Open all: {'On' if DEV.open_all else 'Off'}"
+        if option in ("Add item", "Controls", "Teleport", "Quests"):
             return f"{option}..."
-        if option == "Teleport":
-            return f"Teleport: < {TOWNS[self.teleport_to].name} >"
         return option
 
     def handle_event(self, event: pygame.event.Event) -> None:
@@ -153,6 +155,20 @@ class PauseMenu:
             self.items.handle_event(event)
             if self.items.closed:
                 self.items = None
+            return
+        if self.teleport:
+            if event.type == pygame.KEYDOWN:
+                self.teleport.handle_key(event.key)
+            if self.teleport.done:
+                if not self.teleport.cancelled:  # there, as a fresh arrival
+                    self.loaded = teleport(self.save_point.game, self.teleport.picked)
+                    self.done = True
+                self.teleport = None
+            return
+        if self.quest_tool:
+            self.quest_tool.handle_event(event)
+            if self.quest_tool.closed:
+                self.quest_tool = None
             return
         if self.password:
             self.password.handle_event(event)
@@ -205,13 +221,14 @@ class PauseMenu:
                     self.items = ItemMaker(self.bag)
                 else:
                     self.message = "No bag to add to here."
-            elif option == "Teleport":
-                if self.save_point:  # into that town, as after fainting (it becomes the respawn town)
-                    self.loaded = TownScene(self.save_point.game, TOWNS[self.teleport_to])
-                    self.done = True
-                else:
+            elif option in ("Teleport", "Quests"):
+                if not self.save_point:
                     self.message = "Not during a battle."
-            elif option in ("Fullscreen", "Dev mode", "XP boost", "God mode", "Skip packs"):
+                elif option == "Teleport":
+                    self.teleport = Picker("Teleport to", destinations(), None)
+                else:
+                    self.quest_tool = QuestTool(self.save_point.game)
+            elif option in ("Fullscreen", "Dev mode", "XP boost", "God mode", "Skip packs", "Open all"):
                 self._toggle(option, 1)
             else:
                 self.quit = option == "Quit game"
@@ -232,9 +249,9 @@ class PauseMenu:
             DEV.god = not DEV.god
         elif option == "Skip packs":
             DEV.skip = not DEV.skip
-        elif option == "Teleport":
-            keys = list(TOWNS)
-            self.teleport_to = keys[(keys.index(self.teleport_to) + step) % len(keys)]
+        elif option == "Open all":
+            DEV.open_all = not DEV.open_all
+        else:
             return
         prefs = saves.load_prefs()  # remembered for the next start (in the browser: its localStorage)
         prefs["dev"] = DEV.prefs()
@@ -275,6 +292,16 @@ class PauseMenu:
             return
         if self.items:
             self.items.draw_overlay(window)
+            return
+        if self.teleport:
+            box = pygame.Surface(Picker.RECT.size, pygame.SRCALPHA)
+            ui.window_box(box, box.get_rect())
+            self.teleport.draw(box)
+            ui.blit_scaled(window, box, Picker.RECT.topleft)
+            self.teleport.draw_overlay(window)
+            return
+        if self.quest_tool:
+            self.quest_tool.draw_overlay(window)
             return
         if self.password:
             self.password.draw_overlay(window)

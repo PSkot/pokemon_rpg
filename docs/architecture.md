@@ -637,14 +637,21 @@ you are working on.
   the worn item (mods it would lose struck through), and equips it. S opens the talent screen ("N talents to pick" shows when tiers are open).
 - Dev mode (`dev.py`, `DEV`): switched on in the pause menu, after a
   password (`dev.PASSWORD`, asked once a session: `scenes/dev_menu.PasswordPrompt`,
-  typed, or letters picked with Up/Down + Space for touch); not saved.
-  XP boost (×1/3/5/10/20, `DEV.xp_multiplier` in `_give_xp`), god mode
-  (`DEV.god_mode`: the party takes no damage, every hit knocks an enemy
-  out) and an item maker (`scenes/dev_menu.ItemMaker`: any gear with
-  chosen rarity/affixes and random/min/max values, or medicine, into
-  `Scene.bag`) and Teleport (Left/Right picks a town; Enter goes there,
-  as a fresh arrival: healed, it becomes the respawn town; from map scenes
-  only). Active settings show in the window title and on the map.
+  typed, or letters picked with Up/Down + Space for touch); remembered in
+  the player's settings, never in a save. XP boost (×1/3/5/10/20,
+  `DEV.xp_multiplier` in `_give_xp`), god mode (`DEV.god_mode`: the party
+  takes no damage, every hit knocks an enemy out), skip packs, open all
+  (`DEV.open_doors`: `quests.open_for` lets every doorway and gym in, Cut's
+  trees part), an item maker (`scenes/dev_menu.ItemMaker`: any gear with
+  chosen rarity/level/affixes and random/min/max values, or "Random gear":
+  any droppable piece, or one slot's, rolled at a chosen rarity and level;
+  medicine; key items), Teleport (`dev_menu.destinations` / `teleport`:
+  every town, route, gym, dungeon, trial and recruitment ground, and a
+  fresh Safari visit; from map scenes only) and Quests (`dev_menu.QuestTool`:
+  `quests.reset` / `restart` / `step_back` / `step_forward`; resetting
+  undoes what its steps did: key items given back or taken, bosses it beat
+  unbeaten, its choices; rewards stay). Active settings show in the window
+  title and on the map.
 - Town Map (`world/townmap.py` data, `scenes/town_map.TownMap` screen; M or
   the Map touch pill on a map, hosted by the pause menu like the bag and
   quest log): a schematic Kanto (`NODES` grid spots for towns, Celadon's

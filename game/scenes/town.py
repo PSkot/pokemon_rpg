@@ -16,6 +16,7 @@ from functools import cache
 import pygame
 
 from .. import saves, settings
+from ..dev import DEV
 from ..engine import ui
 from ..engine.animation import Animation
 from ..engine.scene import Transition
@@ -239,7 +240,7 @@ class TownScene(MapScene):
             self.next_scene = Transition(self, RecruitScene(self.game, self.town), flashes=0)
             return
         if building and self._tree_at(building):
-            if quests.step(self.game, building.tree) is None:  # (no Cut yet)
+            if quests.step(self.game, building.tree) is None and not DEV.open_doors:  # (no Cut yet)
                 gym = self._route_in(building)
                 self.show(quest_ui.Dialogue([("", gym.blocked if gym else building.note)]))
             else:  # cut it down, once and for all

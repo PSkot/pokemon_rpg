@@ -1,11 +1,19 @@
-"""Dev mode's item maker (pause menu → Add item): any gear or medicine, made
-to order and put in the bag, for testing how items behave.
+"""Dev mode's tools, opened from the pause menu and drawn on top of
+everything like it:
 
-Gear: pick the item, its rarity, its item level, up to `MAX_AFFIXES` affixes of your
-choice, and whether every value rolls at random, lowest or highest.
-Medicine: pick it and how many. It's drawn on top of everything, like the
-pause menu.
+- the item maker (Add item): any gear or medicine, made to order and put in
+  the bag, for testing how items behave. Gear: pick the item, its rarity,
+  its item level, up to `MAX_AFFIXES` affixes of your choice, and whether
+  every value rolls at random, lowest or highest; or "Random gear": a piece
+  rolled as if it dropped (any item, or one slot's, at the rarity and level
+  chosen). Medicine: pick it and how many.
+- Teleport's list (`destinations`, `teleport`): every town, route, gym,
+  dungeon, trial and recruitment ground, and the Safari Zone.
+- the quest tool (Quests, `QuestTool`): any quest reset, restarted, or
+  stepped back or forward (quests.reset / restart / step_back / step_forward).
 """
+
+import random
 
 import pygame
 
@@ -24,6 +32,7 @@ LEVELS = (1, 100)  # gear's item level
 VALUES = {"random": "Random", "min": "Lowest", "max": "Highest"}
 CONFIRM_KEYS = (pygame.K_RETURN, pygame.K_SPACE, pygame.K_z)
 BACK_KEYS = (pygame.K_x, pygame.K_BACKSPACE, pygame.K_ESCAPE)
+RANDOM = "Random gear"  # the item maker's "item" for a piece rolled as if it dropped
 RECT = pygame.Rect(0, 0, 480, PAD * 2 + ROW_H * (VISIBLE + 4) + 8)  # (room for every row and the name)
 RECT.center = (settings.LOGICAL_SIZE[0] // 2, settings.LOGICAL_SIZE[1] // 2)
 
@@ -42,6 +51,8 @@ def _mods_text(mods: dict) -> str:
 
 class Picker:
     """A scrolling list to pick one entry from (Up/Down, PgUp/PgDn)."""
+
+    RECT = RECT  # (where it's drawn)
 
     def __init__(self, title: str, entries: list[Entry], current: str | None):
         self.title, self.entries = title, entries
@@ -97,6 +108,7 @@ class ItemMaker:
         self.values = "random"
         self.effect: str | None = None  # its special effect: None rolls for one, "" none
         self.level = 5
+        self.slot = ""  # Random gear: from this slot only ("" any)
         self.count = 1
         self.row = 0
         self.picker: Picker | None = None
@@ -106,11 +118,13 @@ class ItemMaker:
 
     @property
     def is_gear(self) -> bool:
-        return self.item in ITEMS
+        return self.item in ITEMS or self.item == RANDOM
 
     def rows(self) -> list[str]:
         rows = ["item"]
-        if self.is_gear:
+        if self.item == RANDOM:
+            rows += ["slot", "rarity", "level", "values", "effect"]
+        elif self.is_gear:
             rows += ["rarity", "level"]
             if affixes_for(ITEMS[self.item].slot):
                 rows += [f"affix{i}" for i in range(min(len(self.affixes) + 1, MAX_AFFIXES))]
@@ -170,12 +184,15 @@ class ItemMaker:
             self.count = max(COUNTS[0], min(COUNTS[1], self.count + step))
         elif row == "level":
             self.level = max(LEVELS[0], min(LEVELS[1], self.level + step))
+        elif row == "slot":
+            keys = ["", *SLOTS]
+            self.slot = keys[(keys.index(self.slot) + step) % len(keys)]
 
     def _picked(self, value: str | None, row: str | None = None) -> None:
         row = row or self.picking
         if row == "item":
             self.item = value
-            allowed = {a.name for a in affixes_for(ITEMS[self.item].slot)} if self.is_gear else set()
+            allowed = {a.name for a in affixes_for(ITEMS[self.item].slot)} if self.item in ITEMS else set()
             self.affixes = [a for a in self.affixes if a in allowed]
         else:
             i = int(row[5:])
@@ -190,7 +207,7 @@ class ItemMaker:
 
     def _item_entries(self) -> list[Entry]:
         gear = sorted(ITEMS.values(), key=lambda i: (SLOTS.index(i.slot), i.name))
-        return ([(i.name, i.name, ui.WHITE, f"{SLOT_NAMES[i.slot]}   {_mods_text(i.mods)}") for i in gear]
+        return ([(RANDOM, RANDOM, ui.YELLOW, "Any piece, rolled as if it dropped")] + [(i.name, i.name, ui.WHITE, f"{SLOT_NAMES[i.slot]}   {_mods_text(i.mods)}") for i in gear]
                 + [(m.name, m.name, ui.WHITE, f"Medicine   {m.description}") for m in MEDICINE.values()]
                 + [(k, k, ui.YELLOW, "Key item") for k in KEY_ITEMS])
 
@@ -212,8 +229,19 @@ class ItemMaker:
             self.bag.add_medicine(self.item, self.count)
             self.message = [(f"Added {self.count} × {self.item} to the bag.", ui.WHITE)]
             return
-        gear = Gear.roll(self.item, self.rarity, affixes=self.affixes, values=self.values, level=self.level,
-                         effect=self.effect)
+        if self.item == RANDOM:
+            pool = [name for name, i in ITEMS.items() if i.drops_at(self.rarity) and (not self.slot or i.slot == self.slot)]
+            if not pool:
+                self.message = [(f"No {SLOT_NAMES[self.slot]} drops at {self.rarity}.", ui.GREY)]
+                return
+            gear = Gear.roll(random.choice(pool), self.rarity, values=self.values, level=self.level,
+                             effect=self.effect)
+        else:
+            gear = Gear.roll(self.item, self.rarity, affixes=self.affixes, values=self.values, level=self.level,
+                             effect=self.effect)
+        self._add(gear)
+
+    def _add(self, gear: Gear) -> None:
         self.bag.add(gear)
         mods = ", ".join(mod_text(mod, value) for mod, value in gear.mods.items()) or "No stat changes"
         if gear.special:
@@ -245,7 +273,8 @@ class ItemMaker:
             if row == "item":
                 ui.text(window, "Item", (left, y), color)
                 ui.text(window, self.item, (value_x, y), rarity.color if self.is_gear else ui.WHITE)
-                side = (f"{SLOT_NAMES[ITEMS[self.item].slot]}   {_mods_text(ITEMS[self.item].mods)}" if self.is_gear
+                side = ("Add to bag rolls a new one each time" if self.item == RANDOM
+                        else f"{SLOT_NAMES[ITEMS[self.item].slot]}   {_mods_text(ITEMS[self.item].mods)}" if self.is_gear
                         else "Key item" if self.item in KEY_ITEMS else "Medicine")
                 ui.text(window, side, (right, y + 2), ui.GREY, size=22, align="right")
             elif row == "rarity":
@@ -277,13 +306,16 @@ class ItemMaker:
                 if self.effect is None:
                     ui.text(window, f"{EFFECT_CHANCE.get(self.rarity, 0)}% chance at {self.rarity}", (right, y + 2),
                             ui.GREY, size=22, align="right")
+            elif row == "slot":
+                ui.text(window, "Slot", (left, y), color)
+                ui.text(window, f"< {SLOT_NAMES[self.slot] if self.slot else 'Any'} >", (value_x, y))
             elif row == "count":
                 ui.text(window, "Count", (left, y), color)
                 ui.text(window, f"< {self.count} >", (value_x, y))
             else:
                 ui.text(window, "Add to bag", (left, y), color)
         y = RECT.bottom - PAD - ROW_H * 2 - 4
-        if self.is_gear:  # the name it will get
+        if self.item in ITEMS:  # the name it will get
             rolls = [Roll(AFFIX_BY_NAME[a], {}) for a in self.affixes]  # enough for its name
             ui.text(window, Gear(ITEMS[self.item], rarity, rolls).name, (left, y), rarity.color, size=24)
             if effect := GEAR_EFFECTS.get(self.effect or ""):  # (and what its effect does)
@@ -350,3 +382,150 @@ class PasswordPrompt:
                 align="right")
         ui.text(window, self.message or "Type it, then Enter.   Left: delete   Esc: cancel", (x, y + 48),
                 (240, 110, 100) if self.message else ui.GREY, size=18)
+
+
+# ------------------------------------------------------------------ Teleport
+
+def destinations() -> list[Entry]:
+    """Everywhere Teleport goes: towns ("town:<key>"), then every route,
+    gym, dungeon, trial and recruitment ground ("route:<key>"; not the
+    Battle Tower's floors, entered from its lobby), and the Safari Zone."""
+    from ..world.instance import ROUTES
+    from ..world.towns import TOWNS
+
+    def ends(route) -> str:
+        return " – ".join(TOWNS[t].name for t in route.towns if t in TOWNS)
+
+    entries: list[Entry] = [(f"town:{key}", town.name, ui.WHITE, "Town") for key, town in TOWNS.items()]
+    for key, route in ROUTES.items():
+        if route.tower:
+            continue
+        if route.folk:
+            kind = f"Trial   from {ends(route)}"
+        elif not route.towns:
+            kind = "Recruitment ground"
+        elif route.building:
+            kind = f"{'Gym' if route.waves else 'Inside'}   {route.building}, {TOWNS[route.towns[0]].name}"
+        else:
+            kind = f"Route   {ends(route)}"
+        entries.append((f"route:{key}", route.name, ui.YELLOW if route.waves else ui.WHITE, kind))
+    entries.append(("safari", "Safari Zone", ui.WHITE, "Maze   a fresh visit (no fee)"))
+    return entries
+
+
+def teleport(game, where: str):
+    """The scene `where` (a `destinations` value) starts with: a town as a
+    fresh arrival (it becomes the respawn town), a route's first map (a
+    gym or trial as from its building or townsfolk; a route from its first
+    end), or a new Safari visit."""
+    from ..world.instance import ROUTES, Instance
+    from ..world.towns import TOWNS
+    from .overworld import OverworldScene
+    from .town import TownScene
+    kind, _, key = where.partition(":")
+    if kind == "town":
+        return TownScene(game, TOWNS[key])
+    if kind == "safari":
+        from ..world.safari import Visit
+        from .safari import SafariScene
+        return SafariScene(game, Visit())
+    route = ROUTES[key]
+    if not route.towns:  # (a recruitment ground: back to the last town)
+        return OverworldScene(Instance(route, game.town), game)
+    if route.building or route.folk:
+        return OverworldScene(Instance(route, route.towns[0]), game)
+    return OverworldScene(Instance(route, route.towns[1], came_from=route.towns[0]), game)
+
+
+# ---------------------------------------------------------------- quest tool
+
+class QuestTool:
+    """Every quest, with where it's at. Enter restarts the one picked (from
+    its first step), Del or R resets it (not started: offered again as the
+    first time), Left/Right steps it back or forward (forward does the
+    step: what it gives, and its rewards if that finishes it)."""
+
+    def __init__(self, game):
+        from ..world.quests import QUESTS
+        self.game = game
+        self.keys = list(QUESTS)
+        self.choice = 0
+        self.top = 0
+        self.closed = False
+        self.message: list[tuple[str, tuple[int, int, int]]] = []
+
+    def _status(self, key: str) -> tuple[str, tuple[int, int, int]]:
+        from ..world import quests
+        at, n = quests.step(self.game, key), len(quests.QUESTS[key].steps)
+        if at is None:
+            return ("Ready" if quests.ready(self.game, quests.QUESTS[key]) else "Not started", ui.GREY)
+        if at >= n:
+            return ("Done", (120, 220, 120))
+        return (f"Step {at + 1}/{n}", ui.WHITE)
+
+    def handle_event(self, event: pygame.event.Event) -> None:
+        if event.type != pygame.KEYDOWN:
+            return
+        from ..world import quests
+        key = event.key
+        step = {pygame.K_UP: -1, pygame.K_DOWN: 1, pygame.K_PAGEUP: -VISIBLE, pygame.K_PAGEDOWN: VISIBLE}.get(key)
+        if step:
+            if abs(step) == 1:
+                self.choice = (self.choice + step) % len(self.keys)
+            else:
+                self.choice = max(0, min(len(self.keys) - 1, self.choice + step))
+            self.top = min(self.choice, max(self.top, self.choice - VISIBLE + 1))
+            self.message = []
+            return
+        if key in BACK_KEYS:
+            self.closed = True
+            return
+        q = self.keys[self.choice]
+        name = quests.QUESTS[q].name
+        if key in CONFIRM_KEYS:
+            self._report(quests.restart(self.game, q), f"Restarted {name}.")
+        elif key in (pygame.K_DELETE, pygame.K_r):
+            quests.reset(self.game, q)
+            self.message = [(f"Reset {name}: not started.", ui.WHITE)]
+        elif key == pygame.K_LEFT:
+            quests.step_back(self.game, q)
+            self.message = [(f"{name}: back a step.", ui.WHITE)]
+        elif key == pygame.K_RIGHT:
+            self._report(quests.step_forward(self.game, q), f"{name}: forward a step.")
+
+    def _report(self, event, line: str) -> None:
+        self.message = [(line, ui.WHITE)]
+        from ..world.quests import QUESTS
+        for done in event.finished:
+            self.message.append((f"Finished {QUESTS[done.key].name}: rewards given.", (120, 220, 120)))
+        if event.started:
+            self.message.append(("Started: " + ", ".join(QUESTS[k].name for k in event.started), ui.GREY))
+
+    def draw_overlay(self, window: pygame.Surface) -> None:
+        from ..world import quests
+        box = pygame.Surface(RECT.size, pygame.SRCALPHA)
+        ui.window_box(box, box.get_rect())
+        ui.cursor(box, 16, PAD + ROW_H + 4 + (self.choice - self.top) * ROW_H + 5)
+        x = RECT.w - 10
+        if self.top > 0:
+            pygame.draw.polygon(box, ui.WHITE, [(x - 3, 9), (x + 3, 9), (x, 5)])
+        if self.top + VISIBLE < len(self.keys):
+            y = PAD + ROW_H * (VISIBLE + 1) + 6
+            pygame.draw.polygon(box, ui.WHITE, [(x - 3, y), (x + 3, y), (x, y + 4)])
+        ui.blit_scaled(window, box, RECT.topleft)
+        left, right = RECT.x + 22, RECT.right - 14
+        ui.text(window, "Quests (dev mode)", (RECT.x + 12, RECT.y + PAD), ui.YELLOW)
+        ui.text(window, "Enter: restart   Del/R: reset   Left/Right: step   X: back", (right, RECT.y + PAD + 2),
+                ui.GREY, size=18, align="right")
+        for row, key in enumerate(self.keys[self.top:self.top + VISIBLE]):
+            y = RECT.y + PAD + ROW_H + 4 + row * ROW_H
+            status, color = self._status(key)
+            selected = self.top + row == self.choice
+            ui.text(window, quests.QUESTS[key].name, (left, y), ui.YELLOW if selected else color)
+            ui.text(window, status, (right, y + 2), color, size=22, align="right")
+        q = self.keys[self.choice]
+        s = quests.current(self.game, q)
+        y = RECT.y + PAD + ROW_H * (VISIBLE + 1) + 10
+        ui.text(window, s.text if s else quests.QUESTS[q].summary, (left, y), ui.GREY, size=20)
+        for i, (line, color) in enumerate(self.message):
+            ui.text(window, line, (left, y + 15 + i * 13), color, size=20)
