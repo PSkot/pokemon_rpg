@@ -37,7 +37,7 @@ PICK = ui.YELLOW
 class TownMap:
     RECT = pygame.Rect(10, 8, 620, 344)
     MAP = pygame.Rect(22, 32, 352, 300)    # the map's area
-    ORIGIN = (MAP.x + 16, MAP.y + 12)      # grid (0, 0)
+    ORIGIN = (MAP.x + 16, MAP.y + 6)       # grid (0, 0)
     INFO_X = 386                           # the info column
 
     def __init__(self, game, here: str, fly: str | None = None):
