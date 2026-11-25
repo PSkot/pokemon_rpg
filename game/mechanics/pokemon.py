@@ -205,7 +205,7 @@ SPECIES.update({
     "machamp": _placeholder("068_machamp", "Machamp", (90, 130, 80, 55, 65), ('fighting',), exp=193),
     "graveler": _animated("graveler", "Graveler", (55, 95, 115, 35, 45), ("rock", "ground"), exp=134, hit=5),
     "golem": _placeholder("076_golem", "Golem", (80, 110, 130, 45, 55), ('rock', 'ground'), exp=177),
-    "alakazam": _placeholder("065_alakazam", "Alakazam", (55, 50, 45, 120, 135), ('psychic',), exp=186),
+    "alakazam": _animated("alakazam", "Alakazam", (55, 50, 45, 120, 135), ("psychic",), exp=186, hit=6),
     "magneton": _animated("magneton", "Magneton", (50, 60, 95, 70, 120), ("electric",), exp=161, hit=6),
     "electrode": _animated("electrode", "Electrode", (60, 50, 70, 140, 80), ("electric",), exp=150, hit=3),
     "golduck": _animated("golduck", "Golduck", (80, 82, 78, 85, 80), ("water",), exp=174, hit=4),
