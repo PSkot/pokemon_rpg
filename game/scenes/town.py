@@ -23,6 +23,7 @@ from ..engine.scene import Transition
 from ..world import tileset
 from ..world import quests
 from ..world.quests import QUESTS
+from ..world.quest_data import RECRUIT_BOARD, SMITH
 from ..world.instance import ROUTES, Instance
 from ..world.level import TILE
 from ..world.player import FOOT_SINK
@@ -185,7 +186,7 @@ class TownScene(MapScene):
             line = trial.folk_line or f"The {trial.name} awaits. Go, and show me what you've learned!"
             self.show(quest_ui.Dialogue([(name if not trial.folk_line else "", line)]), after=go)
             return
-        if folk.key == quests.SMITH and quests.smith_open(self.game):  # the smithy: salvage, enhance, smelt
+        if folk.key == SMITH and quests.smith_open(self.game):  # the smithy: salvage, enhance, smelt
             self.show(SmithMenu(self.game), after=lambda: saves.autosave(self))
             return
         event = quests.talk(self.game, folk.key)
@@ -334,7 +335,7 @@ class TownScene(MapScene):
                     if b.name == (route.building if route else step.target):
                         marks.append((building_mid(b), ground - tileset.building(b.sprite)[1] - 20,
                                       quest_mark(quest)))
-        if any(quests.ready(self.game, q) for q in QUESTS.values() if q.board == quests.RECRUIT_BOARD):
+        if any(quests.ready(self.game, q) for q in QUESTS.values() if q.board == RECRUIT_BOARD):
             for b in self.town.buildings:  # a recruitment has opened
                 if b.inside == "recruit":
                     marks.append((building_mid(b), ground - tileset.building(b.sprite)[1] - 20, QUEST_MARK))
@@ -361,7 +362,7 @@ class TownScene(MapScene):
         for door, _, _ in self.doors:
             door.draw(layer)
         for folk in self.folk:  # the smith's furnace behind him and anvil beside him
-            if folk.key == quests.SMITH:
+            if folk.key == SMITH:
                 tileset.draw_prop(layer, "furnace", round(folk.x - 46), ground)
                 self._forge_glow(layer, round(folk.x - 46) + 5, ground - 17)  # (its fire, in the painting)
                 tileset.draw_prop(layer, "anvil", round(folk.x + 32), ground)

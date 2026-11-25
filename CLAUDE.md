@@ -42,12 +42,17 @@ Read only what the task needs:
 - Test headlessly with `SDL_VIDEODRIVER=dummy`: drive
   `Player.update(dt, Controls(...), level)` and save frames with
   `pygame.image.save()`.
-- `tools/`: standalone helpers (`balance_sim.py` battle balance,
+- `tools/`: standalone helpers (`check.py` headless smoke test of
+  places, quests, saves, items, moves, battles; `balance_sim.py` battle balance,
   `talent_docs.py` regenerates `docs/talents.md`, `hat_autofit.py` /
   `hat_viewer.py`, `anim_viewer.py`).
 
 ## Rules
 
+- Run `.venv/bin/python tools/check.py` (`--quick` skips moves and
+  battles) before committing; extend it when adding a system.
+- Keep files under ~1,000 lines: split data from logic when touching a
+  big one (as `quest_data.py` / `quests.py`).
 - When changing a rule or number, update `docs/mechanics.md` in the same
   change. After changing talents, run `python tools/talent_docs.py`.
 - Keep `docs/architecture.md` current when a system's design changes, but

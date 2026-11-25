@@ -546,7 +546,8 @@ you are working on.
   back to the title screen (a page can't close itself). New game opens the starter
   choice (`scenes/starter.py`: Bulbasaur, Charmander or Squirtle,
   `progress.STARTERS`; `Game.new(starter)`, saved as `Game.starter`).
-- Quests (`world/quests.py`, `docs/quests.md`): `QUESTS` with steps (visit
+- Quests (`world/quests.py`: the rules; `world/quest_data.py`: `Step`, `Quest` and
+  every quest; `docs/quests.md`): `QUESTS` with steps (visit
   a building in a town, defeat a route's boss, reach a town), taken from a
   town's quest board (`Town.board_col`) or started automatically once their
   prerequisites are done (`Quest.starts_in`: only on arriving in that

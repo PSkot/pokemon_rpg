@@ -135,7 +135,7 @@ def gear_stock(town: Town, seed: int, visit: int) -> list[Gear]:
 
 def smith(col: int) -> Folk:
     """The smith: a Machamp at his anvil and furnace (from Lavender Town on,
-    in the major towns). His quest (quests.SMITH, "A Hammer Fit for a
+    in the major towns). His quest (quest_data.SMITH, "A Hammer Fit for a
     Smith") opens his menu (scenes/smith.py)."""
     return Folk("smith", "Machamp", "machop", col, (
         "HAH! You call that a grip? Four arms, kid. Four.",
