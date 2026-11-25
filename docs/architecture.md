@@ -818,8 +818,10 @@ you are working on.
 - Battle backdrops (`assets/sprites/pixellab/backdrops/`, `Backdrop.art`):
   320×132 Pixellab paintings drawn 2× over the battle area (meadow, forest,
   route_3, pewter_gym, mt_moon, cerulean_gym, underground, ss_anne,
-  vermilion_gym, digletts_cave, rock_tunnel, celadon_gym, tower_1..5; underground and ss_anne shifted up 14 px, their floor extended), their ground starting high enough for the
-  back row; a theme without one would be drawn in code from the
+  vermilion_gym, digletts_cave, rock_tunnel, celadon_gym, fuchsia_gym,
+  silph_co, silph_office, saffron_gym, fighting_dojo, tower_1..5; underground and ss_anne shifted up 14 px, their floor extended), their ground starting high enough for the
+  back row (about 40% down: a map's side-view wall art won't do, the
+  Pokémon would float in front of it); a theme without one would be drawn in code from the
   `Backdrop` colours.
 - Map props (`assets/sprites/pixellab/props/`, `tileset.draw_prop`: centred,
   standing on the ground): chests (closed/open, plain and the gyms' fancy
