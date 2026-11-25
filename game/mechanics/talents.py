@@ -1192,6 +1192,30 @@ TALENTS = {t.key: t for t in [
     _t("Thunder God", "own", "Thunderbolt and Thunder never miss, and have +30% critical-hit chance on a target "
        "below half HP.", ("Thunderbolt", {"sure_hit": True, "hunt": 0.5, "hunt_crit": 30}),
        ("Thunder", {"sure_hit": True, "hunt": 0.5, "hunt_crit": 30})),
+    # Snorlax's own: sleeping it off, throwing its weight around, and being a wall.
+    _t("Snooze", "own", "The user heals 1/16 of its max HP at the end of each round.", regen=6.25),
+    _t("Midnight Snack", "own", "Rest also raises the user's Attack and Defense 1 stage.",
+       ("Rest", {"self_stages": (("attack", 1), ("defense", 1))})),
+    _t("Big Belly", "own", "Once a battle, ending a round below 1/3 HP heals the user half its max HP.",
+       second_wind=0.5),
+    _t("Deep Hibernation", "own", "The user heals 1/8 of its max HP at the end of each round.", regen=12.5),
+    _t("Bottomless Stomach", "own", "Rest also cures the status conditions of the user's whole party.",
+       ("Rest", {"soothe": True})),
+    _t("Sleeping Giant", "own", "The first hit the user takes in each battle deals no damage, and it heals 1/8 "
+       "of its max HP at the end of each round.", sturdy=1.0, regen=12.5),
+    _t("Belly Bump", "own", "Headbutt hits harder: 85 power, with a 40% chance to make the target flinch.",
+       ("Headbutt", {"power": 85, "flinch": 10})),
+    _t("Crushing Weight", "own", "Body Slam hits harder: 100 power.", ("Body Slam", {"power": 100})),
+    _t("Body Press", "own", "Body Slam hits every enemy, at 75% damage each.",
+       ("Body Slam", {"spread": True, "spread_share": 0.75})),
+    _t("Giga Impact", "own", "Hyper Beam hits harder (180 power), and needs no rest after knocking an enemy out.",
+       ("Hyper Beam", {"power": 180, "ko_no_recharge": True})),
+    _t("Lazy Lure", "own", "Defense Curl also makes every enemy attack the user, this round and the next.",
+       ("Defense Curl", {"taunt": 2})),
+    _t("Immovable", "own", "The first hit the user takes in each battle deals no damage, and super-effective "
+       "hits deal half.", sturdy=1.0, filter=0.5),
+    _t("Living Wall", "own", "The first hit the user takes in each battle deals no damage, and while it stands "
+       "the whole party takes 30% less damage.", sturdy=1.0, ancient_roots=0.3),
 ]}
 
 
@@ -1279,6 +1303,23 @@ def _tiers(*rows: tuple[str, str, str]) -> tuple[tuple[Talent, ...], ...]:
 
 
 TALENT_TREES = {
+    "snorlax": (
+        (Path("Slumber", "Resting, healing, and shrugging things off.", PURPLE),
+         Path("Heavyweight", "Throwing its weight around: Normal damage.", GOLD),
+         Path("Bulwark", "A wall the whole party hides behind.", STONE)),
+        _tiers(("Second Wind", "Momentum", "Sturdy"),
+               ("Resilience", "Belly Bump", "Curl Up"),
+               ("Light Sleep", "Heavy Body", "Iron Shell"),
+               ("Snooze", "Lucky Strikes", "Lazy Lure"),
+               ("Midnight Snack", "Cornered", "Bulwark Stance"),
+               ("Tenacity", "Crushing Weight", "Solid Rock"),
+               ("Big Belly", "Scavenger", "Intimidate"),
+               ("Nurturing", "Rampage", "Shell Wall"),
+               ("Deep Hibernation", "Overdrive", "Fortress"),
+               ("Unbreakable", "Apex Predator", "Guardian"),
+               ("Bottomless Stomach", "Body Press", "Immovable"),
+               ("Sleeping Giant", "Giga Impact", "Living Wall")),
+    ),
     "bulbasaur": (
         (Path("Toxin", "Poison, seeds and sleep: wearing enemies down.", PURPLE),
          Path("Bloom", "Grass damage.", GREEN),

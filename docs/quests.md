@@ -566,15 +566,17 @@ yet.
   5. Lay out the feast for a Snorlax and play the flute (talk to it, takes
      the crate): it wakes, wolfs it down, and is still hungry and grumpy.
   6. Calm it down (talk to it again; `Route.folk_line`):
-     - west: **Snack Pack**, Snorlax 48 (giant) with Persian 42, Primeape 42
+     - west: **Snack Pack**, Snorlax 42 (giant) with Persian 42, Primeape 42
        and Raticate 42 (route "snorlax_wakes"), the snack thieves back for
        the leftovers;
-     - east: **Dream Eaters**, Snorlax 48 (giant) with Hypno 40, Drowzee 40
+     - east: **Dream Eaters**, Snorlax 42 (giant) with Hypno 40, Drowzee 40
        and Jigglypuff 40 (route "snorlax_wakes_east"), furious their dinner
        woke up.
 
-     A party of three at Lv42/41/41 with 3 Hyper Potions wins about 75%
-     (west) and 72% (east) (`tools/balance_sim.py`).
+     A party of three at Lv42/41/41 with 3 Hyper Potions wins about 70%
+     (west) and 75% (east) (`tools/balance_sim.py`; Snorlax was Lv48 until
+     it got its talent tree, whose healing and first-hit shield a boss
+     Snorlax uses too).
 - **Rewards:** ₽2,400, 2,300 XP, and **Snorlax (Lv40) joins** (the party,
   or the reserve). Its road opens.
 

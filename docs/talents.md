@@ -795,6 +795,27 @@ Paths: **Quake** (rock Slide and Earthquake: Rock and Ground damage); **Coil** (
 | 11 | 60 | **Rock Storm** *(needs 4)*: Rock Slide hits every enemy, the others at 60% damage. *(**own**)* | **Coil Crush** *(needs 4)*: Wrap and Bind catch every enemy. *(Bind)* | **Bulwark Stance** *(needs 4)*: While the user stands, the whole party takes 15% less damage. *(Any)* |
 | 12 | 75 | **Magnitude 10** *(needs 6)*: Earthquake hits every enemy at full damage. *(**own**)* | **Constrictor** *(needs 6)*: Wrap's and Bind's grip hurts far more: a further 1/8 of max HP each round. *(**own**)* | **Living Mountain** *(needs 6)*: The first hit the user takes in each battle deals no damage, and while it stands the whole party takes 25% less damage. *(**own**)* |
 
+### Snorlax
+
+Moves: Headbutt, Defense Curl, Rest, Body Slam 35, Harden 41, Double-Edge 48, Hyper Beam 56.
+
+Paths: **Slumber** (resting, healing, and shrugging things off); **Heavyweight** (throwing its weight around: Normal damage); **Bulwark** (a wall the whole party hides behind).
+
+| Tier | Lv | Slumber | Heavyweight | Bulwark |
+| --- | --- | --- | --- | --- |
+| 1 | 6 | **Second Wind**: Once a battle, ending a round below 1/3 HP heals the user 1/4 of its max HP. *(Any)* | **Momentum**: Each Normal move in a row deals 15% more than the last, up to +45%. Any other move starts it over. *(Normal)* | **Sturdy**: The first hit the user takes in each battle deals 35% less damage. *(Any)* |
+| 2 | 10 | **Resilience**: At the end of each round, the user has a 30% chance to shake off its status. *(Any)* | **Belly Bump**: Headbutt hits harder: 85 power, with a 40% chance to make the target flinch. *(**own**)* | **Curl Up**: Defense Curl also halves the damage the user takes for 2 rounds. *(Defense Curl)* |
+| 3 | 14 | **Light Sleep**: Rest makes the user sleep 1 round instead of 2. *(Rest)* | **Heavy Body**: Take Down and Double-Edge have no recoil; Body Slam paralyzes 50% of the time. *(Body Slam)* | **Iron Shell**: Harden also halves the damage the user takes for 2 rounds. *(Harden)* |
+| 4 | 18 | **Snooze**: The user heals 1/16 of its max HP at the end of each round. *(**own**)* | **Lucky Strikes**: +10% chance of critical hits. *(Any)* | **Lazy Lure**: Defense Curl also makes every enemy attack the user, this round and the next. *(**own**)* |
+| 5 | 22 | **Midnight Snack**: Rest also raises the user's Attack and Defense 1 stage. *(**own**)* | **Cornered**: Below 1/3 HP, the user's Normal moves deal 1.5× damage. *(Normal)* | **Bulwark Stance**: While the user stands, the whole party takes 15% less damage. *(Any)* |
+| 6 | 27 | **Tenacity**: A hit that would knock the user out has a 25% chance to leave it 1 HP. *(Any)* | **Crushing Weight**: Body Slam hits harder: 100 power. *(**own**)* | **Solid Rock**: Super-effective hits on the user deal 25% less damage. *(Any)* |
+| 7 | 32 | **Big Belly**: Once a battle, ending a round below 1/3 HP heals the user half its max HP. *(**own**)* | **Scavenger**: Knocking an enemy out with a Normal move heals the user 1/4 of its max HP. *(Normal)* | **Intimidate**: At the start of each battle, each enemy's Attack has a 50% chance to fall 1 stage. *(Any)* |
+| 8 | 38 | **Nurturing**: While the user stands, the whole party heals 1/16 of its max HP at the end of each round. *(Any)* | **Rampage**: Each Normal move in a row deals 20% more than the last, up to +60%. *(Normal)* | **Shell Wall**: Harden works on the whole party. *(Harden)* |
+| 9 | 44 | **Deep Hibernation**: The user heals 1/8 of its max HP at the end of each round. *(**own**)* | **Overdrive**: Hyper Beam needs no rest after knocking an enemy out. *(Hyper Beam)* | **Fortress**: While the user stands, the whole party takes 25% less damage. *(Any)* |
+| 10 | 50 | **Unbreakable**: A hit that would knock the user out has a 50% chance to leave it 1 HP. *(Any)* | **Apex Predator**: The user's moves have +30% critical-hit chance on a target below 1/3 HP. *(Any)* | **Guardian**: Once a battle, a partner that would faint keeps 1 HP instead. *(Any)* |
+| 11 | 60 | **Bottomless Stomach** *(needs 4)*: Rest also cures the status conditions of the user's whole party. *(**own**)* | **Body Press** *(needs 4)*: Body Slam hits every enemy, at 75% damage each. *(**own**)* | **Immovable** *(needs 4)*: The first hit the user takes in each battle deals no damage, and super-effective hits deal half. *(**own**)* |
+| 12 | 75 | **Sleeping Giant** *(needs 6)*: The first hit the user takes in each battle deals no damage, and it heals 1/8 of its max HP at the end of each round. *(**own**)* | **Giga Impact** *(needs 6)*: Hyper Beam hits harder (180 power), and needs no rest after knocking an enemy out. *(**own**)* | **Living Wall** *(needs 6)*: The first hit the user takes in each battle deals no damage, and while it stands the whole party takes 30% less damage. *(**own**)* |
+
 ### Drowzee → Hypno
 
 Moves: Pound, Hypnosis, Confusion 17, Headbutt 24, Poison Gas 29, Psychic 32, Meditate 37, Psybeam 40 (Hypno).

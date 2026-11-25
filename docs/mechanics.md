@@ -1549,8 +1549,8 @@ always the same spot), with its team in a row.
 | Route 8, map 2 | Twin Tails (Twins) | Nidoran F 35, Nidoran M 35 | ₽350 |
 | Route 16, map 1 | Road Hogs (Biker) | Raticate 41, Fearow 41 | ₽820 |
 | Route 16, map 2 | Exhaust Pipes (Biker) | Koffing 41, Grimer 41, Koffing 41 | ₽820 |
-| Celadon West End | Snack Pack (Snorlax, woken) | Snorlax 48, Persian 42, Primeape 42, Raticate 42 | ₽0 |
-| Route 11 Gate | Dream Eaters (Snorlax, woken) | Snorlax 48, Hypno 40, Drowzee 40, Jigglypuff 40 | ₽0 |
+| Celadon West End | Snack Pack (Snorlax, woken) | Snorlax 42, Persian 42, Primeape 42, Raticate 42 | ₽0 |
+| Route 11 Gate | Dream Eaters (Snorlax, woken) | Snorlax 42, Hypno 40, Drowzee 40, Jigglypuff 40 | ₽0 |
 | Hidden Spring (boss) | Spring Squatters | Golduck 47, Seaking 43, Golduck 42, Psyduck 43 | ₽0 |
 | Skate Road, map 1 | Kickflip Crew (Biker) | Primeape 44, Mankey 44 | ₽1,760 |
 | Skate Road, map 1 | Grind Gang (Biker) | Machoke 44, Machop 44, Machop 44 | ₽1,760 |

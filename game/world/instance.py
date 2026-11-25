@@ -595,7 +595,7 @@ ROUTES = {r.key: r for r in [
     # three; this way a party of three at Lv42/41/41 with 3 Hyper Potions
     # wins about 75%, tools/balance_sim.py). Then it may join.
     Route("snorlax_wakes", "Snorlax's Rude Awakening", ROUTE_16, maps=1, towns=("celadon_west", "celadon_west"),
-          boss=True, boss_group=(("snorlax", 48), ("persian", 42), ("primeape", 42), ("raticate", 42)), boss_scale=2,
+          boss=True, boss_group=(("snorlax", 42), ("persian", 42), ("primeape", 42), ("raticate", 42)), boss_scale=2,
           boss_chest="", wild=False, cols=30, trainer="Snack Pack", folk="celadon_snorlax",
           folk_line="SNOOORT! Snorlax heaves itself up, grumpy and still hungry, and the snack thieves are back "
                     "for the leftovers. Calm them all down!"),
@@ -604,7 +604,7 @@ ROUTES = {r.key: r for r in [
     # Route 11 Hypno's Drowzee, and a Jigglypuff that sings them all to
     # sleep), furious their dinner woke up (about 72%, as above).
     Route("snorlax_wakes_east", "Snorlax's Rude Awakening", ROUTE_11, maps=1, towns=("route_11", "route_11"),
-          boss=True, boss_group=(("snorlax", 48), ("hypno", 40), ("drowzee", 40), ("jigglypuff", 40)), boss_scale=2,
+          boss=True, boss_group=(("snorlax", 42), ("hypno", 40), ("drowzee", 40), ("jigglypuff", 40)), boss_scale=2,
           boss_chest="", wild=False, cols=30, trainer="Dream Eaters", folk="route_12_snorlax",
           folk_line="SNOOORT! Snorlax heaves itself up, grumpy and hungry, and the Drowzee that were feeding on "
                     "its dreams are furious their dinner woke up. Calm them all down!"),
