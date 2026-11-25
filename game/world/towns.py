@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from ..mechanics.items import ITEMS, Gear, Range
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import EMPTY, ROWS, SOLID, TILE, Level
-from .themes import LAVENDER, MEADOW, Theme
+from .themes import LAVENDER, MEADOW, SAFFRON as SAFFRON_LOOK, Theme
 
 GROUND = 4  # tiles of ground
 
@@ -25,6 +25,7 @@ DEPT_STORE, MANSION = "dept_store.png", "celadon_mansion.png"  # Celadon's big b
 GAME_CORNER = "game_corner.png"   # 128×128
 BATTLE_TOWER = "battle_tower.png"  # 160×256
 TOWER = "pokemon_tower.png"  # Lavender's Pokémon Tower: one 160×256 cell (tileset.BUILDING_CELLS)
+SILPH = "silph_co.png"  # Saffron's Silph Co. tower: 160×256
 
 
 @dataclass(frozen=True)
@@ -297,12 +298,12 @@ TOWNS = {t.key: t for t in [
     # Underground Path to Route 6 (being dug out: the next part).
     Town("route_5", "Route 5", 48, (
         Building("Day Care", (HOUSES, 1), 8),
-    ), exits=(("left", "route_5_south"), ("right", "underground_path")), home_col=5,
+    ), exits=(("left", "route_5_south"), (26, "saffron_north"), ("right", "underground_path")), home_col=5,
        folk=(
            Folk("route_5_guard", "Gate Guard", "nidorino", 22, (
                "The gate to Saffron City is shut. Orders from up high. Nobody gets through.",
                "Phew, I'm parched. Standing guard all day is thirsty work...",
-           )),
+           ), gone_after="saffron_gates"),
            Folk("route_5_diglett", "Diglett", "diglett", 34, (
                "Dig dig! We dug the Underground Path out again. It runs under Saffron City to Route 6.",
                "Dig...? Some of us stayed down in the tunnel. They don't like being stepped on. Dig dig!",
@@ -315,7 +316,8 @@ TOWNS = {t.key: t for t in [
        )),
     # The top of Route 6, at the Underground Path's south end: Saffron
     # City's south gate (shut too), and the road on down to Vermilion.
-    Town("route_6", "Route 6", 40, (), exits=(("left", "underground_path"), ("right", "route_6_south")), home_col=8,
+    Town("route_6", "Route 6", 40, (), exits=(("left", "underground_path"), (27, "saffron_south"),
+                                             ("right", "route_6_south")), home_col=8,
          folk=(Folk("route_6_psyduck", "Psyduck", "psyduck", 22, (
              "Psy...? The gate to Saffron City is shut on this side too. Everyone has to go under it.",
              "Vermilion City is down the road. It smells of the sea... Psyduck likes that.",
@@ -444,12 +446,13 @@ TOWNS = {t.key: t for t in [
        )),
     # The west end of Route 8: Saffron City's east gate (shut, its guard
     # thirsty, as in Red/Blue) and the Underground Path's doorway west.
-    Town("route_8_gate", "Route 8 Gate", 44, (), exits=(("left", "route_8"), ("right", "underground_west")),
+    Town("route_8_gate", "Route 8 Gate", 44, (), exits=(("left", "route_8"), (29, "saffron_east"),
+                                                     ("right", "underground_west")),
          home_col=8,
          folk=(Folk("route_8_guard", "Gate Guard", "nidorino", 24, (
              "Saffron City is shut. Nobody in, nobody out. I'm so thirsty I could drink a Psyduck...",
              "Want to go west? Take the Underground Path. It comes out on Route 7, right by Celadon City.",
-         )),
+         ), gone_after="saffron_gates"),
                # Evolution quest: Mankey -> Primeape.
                Folk("route_8_primeape", "Primeape", "primeape", 34, (
                    "WHAT ARE YOU LOOKING AT?! ...Sorry. I'm working on it. Deep breaths.",
@@ -465,7 +468,7 @@ TOWNS = {t.key: t for t in [
     Town("celadon", "Celadon City", 64, (
         Building("Pokémon Center", (FUNCTIONAL, 0), 6),
         Building("Department Store", (DEPT_STORE, 0), 19, inside="dept"),
-    ), exits=(("right", "underground_west"), ("left", "town:celadon_square")), home_col=12, board_col=34,
+    ), exits=(("right", "underground_west"), (58, "route_7"), ("left", "town:celadon_square")), home_col=12, board_col=34,
        mart=("Potion", "Super Potion", "Hyper Potion", "Revive", "Escape Rope", "Antidote", "Burn Heal", "Awakening",
              "Paralyze Heal", "Ice Heal"),
        gear=((34, 38), (("Common", 30), ("Uncommon", 45), ("Rare", 25))),
@@ -553,6 +556,41 @@ TOWNS = {t.key: t for t in [
              "Squeak! You came down the whole skate road? And you beat TONY? Respect.",
              "Fuchsia City is on past here, along Route 18, by the sea. Watch out for the bird keepers. Squeak.",
          )),)),
+    # Saffron City, at the heart of Kanto (as in Red/Blue): its gates open
+    # once the Soul Badge is won (quest "saffron_gates"); Team Rocket holds
+    # Silph Co. (quest "silph_co"). Sabrina's gym and the Fighting Dojo stay
+    # shut while it does.
+    Town("saffron", "Saffron City", 104, (
+        Building("Pokémon Center", (FUNCTIONAL, 0), 5),
+        Building("Poké Mart", (FUNCTIONAL, 2), 15, inside="mart"),
+        Building("Silph Co.", (SILPH, 0), 31),
+        Building("Saffron Gym", (FUNCTIONAL, 1), 56,
+                 note="Sabrina's gym. The doors won't budge: a strange force holds them shut. A sign: \"Closed "
+                      "while the city is in danger.\""),
+        Building("Fighting Dojo", (HOUSES, 2), 72,
+                 note="The Fighting Dojo. Nobody's training: the master marched into Silph Co. to throw the "
+                      "Rockets out, and hasn't come back."),
+        Building("Mr. Psychic's House", (HOUSES, 0), 88,
+                 note="A voice from inside: \"I knew you'd knock. ...I also know I'm not opening the door today.\""),
+    ), exits=(("left", "route_7"), (24, "saffron_north"), (47, "saffron_south"), ("right", "saffron_east")),
+       home_col=8, theme=SAFFRON_LOOK,
+       mart=("Super Potion", "Hyper Potion", "Max Potion", "Revive", "Full Heal", "Escape Rope", "Antidote",
+             "Burn Heal", "Awakening", "Paralyze Heal", "Ice Heal"),
+       gear=((48, 52), (("Uncommon", 40), ("Rare", 50), ("Epic", 10))),
+       folk=(
+           Folk("saffron_kadabra", "Kadabra", "kadabra", 44, (
+               "Team Rocket marched into Silph Co. and locked the doors. The whole city's holding its breath.",
+               "Sabrina has sealed her gym until the city's safe. Even I can't bend those doors.",
+           )),
+           Folk("saffron_machoke", "Machoke", "machoke", 66, (
+               "OSS! The master went up into Silph Co. alone. He said: \"Train until I'm back.\" So I train.",
+               "Hup! Hup! ...It's been three days. Hup.",
+           )),
+           Folk("saffron_pidgeotto", "Pidgeotto", "pidgeotto", 96, (
+               "Coo! From up on the roofs you can see Rockets in every window of Silph Co.",
+               "Silph makes the Poké Balls everyone uses. The Rockets want their newest one. Coo.",
+           )),
+       )),
     # The coastal road's stops (Routes 13-15, quest "coastal_road"):
     # Silence Bridge, between Routes 13 and 14, and the Route 15 Gate.
     Town("silence_bridge", "Silence Bridge", 40, (), exits=(("left", "route_13"), ("right", "route_14")), home_col=8,

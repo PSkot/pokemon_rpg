@@ -101,10 +101,10 @@ class TownMap:
         pygame.draw.rect(s, LAND, area, border_radius=4)
         pygame.draw.rect(s, LAND_EDGE, area, 2, border_radius=4)
         px = lambda pt: (self._px(pt)[0] - ox, self._px(pt)[1] - oy)  # noqa: E731
-        # Saffron City: shut.
-        sx, sy = px(SAFFRON)
-        pygame.draw.rect(s, (110, 110, 120), (sx - 6, sy - 6, 12, 12))
-        pygame.draw.rect(s, (70, 70, 80), (sx - 6, sy - 6, 12, 12), 1)
+        if "saffron" not in self.view.known:  # Saffron City: shut (until it's been visited)
+            sx, sy = px(SAFFRON)
+            pygame.draw.rect(s, (110, 110, 120), (sx - 6, sy - 6, 12, 12))
+            pygame.draw.rect(s, (70, 70, 80), (sx - 6, sy - 6, 12, 12), 1)
         # The routes.
         for key, (_, kind) in EDGES.items():
             if not self.view.shown(key):
@@ -177,8 +177,9 @@ class TownMap:
         ui.text(window, "!   quest to take", (self.MAP.x + 4, y), ui.GREY, size=16)
         ui.text(window, "next step", (self.MAP.x + 102, y), ui.GREY, size=16)
         ui.text(window, "?   hand in", (self.MAP.x + 166, y), ui.GREY, size=16)
-        sx, sy = self._px(SAFFRON)
-        ui.text(window, "Saffron City (shut)", (sx, sy + 8), (170, 170, 180), size=14, align="center")
+        if "saffron" not in self.view.known:
+            sx, sy = self._px(SAFFRON)
+            ui.text(window, "Saffron City (shut)", (sx, sy + 8), (170, 170, 180), size=14, align="center")
         keys = "Arrows: choose   Enter: fly here   X: close" if self.fly is not None else "Arrows: choose   X: close"
         ui.text(window, keys, (r.right - 12, r.bottom - 15), ui.GREY, size=18, align="right")
         if self.message:

@@ -321,8 +321,9 @@ you are working on.
   `OverworldScene._boss_key`; or `Game.cleared`), it's an ordinary group
   at normal size on later trips (no boss loot, no chest, door open), unless
   a quest is at the step of defeating it (`quests.boss_wanted`).
-  `RIVAL_STARTER` in a boss group becomes the rival's starter, which beats
-  the player's (`Game.starter`, `Game.rival_starter`). Routes can have
+  `RIVAL_STARTER` (`_EVOLVED`, `_FINAL`: its next and last forms) in a
+  boss group or band becomes the rival's starter, which beats the player's
+  (`Game.starter`, `Game.rival_starter`; `instance.rival_species`). Routes can have
   map trainers (`Route.trainers`, `Trainer`: bands of Pokémon named for
   their team, e.g. "Crawler Swarm" (no human trainers in this game; each
   stands in for a Gen 1 trainer); each takes one of a map's

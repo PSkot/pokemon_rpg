@@ -123,6 +123,14 @@ MEADOW = Theme(
 LAVENDER = replace(MEADOW, key="lavender", name="Lavender Town",
                    sky=((58, 40, 96), (206, 140, 164)), tint=(176, 146, 200))
 
+# Saffron City: the meadow under a hazy city sky (a town: its pool is never met).
+SAFFRON = replace(MEADOW, key="saffron", name="Saffron City",
+                  sky=((120, 150, 190), (220, 214, 200)), tint=(214, 210, 205))
+
+# Saffron's gatehouses and Route 7 (short walks into the city, no wild
+# Pokémon): the city's look.
+ROUTE_7 = replace(SAFFRON, key="route_7", name="Route 7")
+
 # Viridian Forest: Red's and Blue's forest Pokémon together, at their Gen 1
 # levels. (Same map art as the meadow for now; a darker battle backdrop.)
 FOREST = Theme(
@@ -617,6 +625,26 @@ ROCKET_HIDEOUT = Theme(
     art="cave",
     cave=CaveLook(sky_top=(26, 26, 34), sky_bottom=(56, 56, 68), far_rock=(40, 40, 50), near_rock=(30, 30, 38),
                   glow=None, wall="rocket_hideout.png", dim=25, near_rocks=False),
+    doorway="",
+    built=True,
+)
+
+# Silph Co.'s tower in Saffron City, taken over by Team Rocket (quest
+# "silph_co"): office floors (painted wall and backdrop); no wild Pokémon,
+# only Rockets' bands.
+SILPH_CO = Theme(
+    "silph_co", "Silph Co.",
+    Palette(fill=(86, 92, 108), fill_dark=(60, 64, 78), fill_light=(118, 126, 146),
+            top=(150, 160, 180), top_dark=(112, 120, 140), top_light=(190, 198, 214),
+            platform=(70, 110, 160), platform_dark=(44, 72, 110), platform_light=(110, 150, 200)),
+    pool=(PoolEntry("koffing", 1, (48, 50)),),
+    backdrop=Backdrop(art="silph_co.png", sky_top=(40, 46, 62), sky_bottom=(80, 88, 108), hills=((60, 66, 82), (54, 60, 76)),
+                      field_far=(116, 124, 142), field_near=(96, 104, 122), stripe=(106, 114, 132),
+                      shadow=(60, 64, 78)),
+    ceiling=True,
+    art="cave",
+    cave=CaveLook(sky_top=(34, 38, 52), sky_bottom=(70, 78, 96), far_rock=(50, 56, 70), near_rock=(40, 44, 56),
+                  glow=None, wall="silph_co.png", dim=15, near_rocks=False),
     doorway="",
     built=True,
 )

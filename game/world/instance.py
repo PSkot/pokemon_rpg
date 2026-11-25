@@ -29,7 +29,7 @@ from ..mechanics.loot import COMMON_ONLY, EARLY_BOSS, MID_BOSS, Rarities
 from ..mechanics.pokemon import EVOLUTIONS, SPECIES
 from .level import Level, encounter, generate, stair_col
 from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTER_GYM, ROCK_TUNNEL, ROUTE_2,
-                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_11, ROUTE_12, ROUTE_13, ROUTE_14, ROUTE_15, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_18, FUCHSIA_GYM, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
+                     ROUTE_3, ROUTE_4, ROUTE_5, ROUTE_6, ROUTE_8, ROUTE_9, ROUTE_16, ROUTE_7, SILPH_CO, ROUTE_11, ROUTE_12, ROUTE_13, ROUTE_14, ROUTE_15, HIDDEN_SPRING, SKATE_ROAD, SKYWARD_CLIFFS, ROUTE_18, FUCHSIA_GYM, ROUTE_22, ROUTE_24, ROUTE_25, SS_ANNE,
                      UNDERGROUND, UNDERGROUND_WEST, VERMILION_GYM, CELADON_GYM, ROCKET_HIDEOUT, POKEMON_TOWER, PoolEntry,
                      Theme)
 from .spinners import carve, layout_of
@@ -39,6 +39,22 @@ from .towns import Folk
 # player's (`progress.Game.rival_starter`).
 RIVAL_STARTER = "rival_starter"
 RIVAL_STARTER_EVOLVED = "rival_starter_evolved"  # ... its next form (Charmander → Charmeleon)
+RIVAL_STARTER_FINAL = "rival_starter_final"  # ... its last form (Charizard)
+
+
+# What a shut Saffron gate says (before quest "saffron_gates").
+SAFFRON_SHUT = "The gate to Saffron City is shut. Orders from up high: nobody gets through."
+
+
+def rival_species(species: str, rival_starter: str) -> str:
+    """`species`, or for a rival stand-in the rival's starter at that form."""
+    if species == RIVAL_STARTER:
+        return rival_starter
+    if species == RIVAL_STARTER_EVOLVED:
+        return EVOLUTIONS[rival_starter].into
+    if species == RIVAL_STARTER_FINAL:
+        return EVOLUTIONS[EVOLUTIONS[rival_starter].into].into
+    return species
 
 
 @dataclass(frozen=True)
@@ -660,6 +676,55 @@ ROUTES = {r.key: r for r in [
               Trainer("route_15_beauty", "Moonlight Duo", (("clefable", 48), ("wigglytuff", 47)), 1, 70),
               Trainer("route_15_bird_keeper_2", "Last Gust", (("fearow", 48), ("pidgeot", 48)), 2, 25),
           )),
+    # Saffron City's gates (quest "saffron_gates": open once the Soul Badge
+    # is won and a guard has heard what's going on in Silph Co.): short walks
+    # through the gatehouses from Route 5 (north), Route 6 (south), the
+    # Route 8 Gate (east) and, by Route 7, Celadon City (west).
+    Route("saffron_north", "Saffron Gate", ROUTE_7, maps=1, towns=("route_5", "saffron"), wild=False, cols=34,
+          needs=("saffron_gates", "done"), blocked=SAFFRON_SHUT),
+    Route("saffron_south", "Saffron Gate", ROUTE_7, maps=1, towns=("saffron", "route_6"), wild=False, cols=34,
+          needs=("saffron_gates", "done"), blocked=SAFFRON_SHUT),
+    Route("saffron_east", "Saffron Gate", ROUTE_7, maps=1, towns=("saffron", "route_8_gate"), wild=False, cols=34,
+          needs=("saffron_gates", "done"), blocked=SAFFRON_SHUT),
+    Route("route_7", "Route 7", ROUTE_7, maps=1, towns=("celadon", "saffron"), wild=False, cols=44,
+          needs=("saffron_gates", "done"), blocked=SAFFRON_SHUT),
+    # Silph Co. (quest "silph_co"), as in Red/Blue: Team Rocket has taken the
+    # tower. A Rocket holding the Card Key bars 5F, the rival waits on 7F,
+    # and the Rocket Boss holds the President's office at the top (the
+    # Persian again, with Team Rocket's heavy hitters).
+    Route("silph_co", "Silph Co.", SILPH_CO, maps=6, towns=("saffron", "saffron"),
+          boss_chest="battle", boss_loot=MID_BOSS, wild=False, building="Silph Co.",
+          needs=("silph_co", "started"),
+          blocked="Silph Co.'s doors are locked tight. Through the glass, men in black pace the lobby.",
+          rooms=(
+              Room("1f", "1F", 70, (Stair("out", "saffron", 0), Stair("up", "3f", 1))),
+              Room("3f", "3F", 90, (Stair("down", "1f", 0.05), Stair("up", "5f", 0.95))),
+              Room("5f", "5F", 90, (Stair("down", "3f", 0.05), Stair("up", "7f", 0.95))),
+              Room("7f", "7F", 90, (Stair("down", "5f", 0.05), Stair("up", "9f", 0.95)),
+                   folk=((0.3, Folk("silph_worker", "Silph Worker", "chansey", 0, (
+                       "You came to help? Bless you! The Rockets locked us all in the meeting rooms.",
+                       "They're after the President, and his Master Ball. He's up on 11F. Please hurry!",
+                   ))),)),
+              Room("9f", "9F", 90, (Stair("down", "7f", 0.05), Stair("up", "11f", 0.95))),
+              # (the Boss guards the President's office, and the way back down)
+              Room("11f", "President's Office", 50, (Stair("down", "9f", 0.1), Stair("out", "saffron", 1)),
+                   boss_group=(("persian", 54), ("nidoking", 51), ("nidoqueen", 51), ("kangaskhan", 51)),
+                   trainer="Rocket Boss", prize=99),
+          ),
+          trainers=(  # (`map`: the room's place in `rooms`)
+              Trainer("silph_lobby", "Lobby Guards", (("raticate", 48), ("golbat", 48)), 0, 30),
+              Trainer("silph_3f_1", "Rocket Gang", (("koffing", 48), ("grimer", 48), ("arbok", 48)), 1, 30),
+              Trainer("silph_3f_2", "Rocket Gang", (("machoke", 49), ("hypno", 49)), 1, 30),
+              Trainer("silph_card_key_rocket", "Card Key Guard", (("weezing", 51), ("golbat", 50), ("arbok", 50)),
+                      2, 30, first=True, blocks=True, boss_loot=True),
+              Trainer("silph_5f", "Rocket Gang", (("primeape", 49), ("raticate", 49)), 2, 30),
+              Trainer("silph_rival", "Rival", (("pidgeot", 50), ("growlithe", 49), ("kadabra", 49),
+                                              (RIVAL_STARTER_FINAL, 52)), 3, 35, first=True, blocks=True,
+                      boss_loot=True),
+              Trainer("silph_7f", "Rocket Gang", (("golbat", 50), ("weezing", 50)), 3, 30),
+              Trainer("silph_9f_1", "Rocket Gang", (("machoke", 50), ("primeape", 50), ("arbok", 50)), 4, 30),
+              Trainer("silph_9f_2", "Rocket Elite", (("persian", 51), ("hypno", 51)), 4, 30),
+          )),
     # Route 2's north end, from the cave up to Pewter City: a short walk.
     Route("route_2_north", "Route 2", ROUTE_2, maps=1, towns=("pewter", "route_2"), wild=False, cols=40),
 ]}
@@ -862,7 +927,7 @@ class Recruit:
 STORY_ORDER = ("route_1", "route_22", "viridian_forest", "route_3", "mt_moon_cave", "route_4_east", "nugget_bridge",
                "route_25", "route_5_south", "underground_path", "route_6_south", "route_11", "digletts_cave",
                "route_9", "rock_tunnel", "route_8", "underground_west", "route_16", "route_12", "skate_road", "route_18_east",
-               "route_13", "route_14", "route_15")
+               "route_13", "route_14", "route_15", "silph_co")
 
 
 def from_route(first: str, route: str) -> bool:

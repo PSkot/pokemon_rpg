@@ -1303,6 +1303,53 @@ QUESTS = {q.key: q for q in [
         money=3000, xp=2800,
         rewards=(("medicine", "Hyper Potion", 3), ("medicine", "Full Heal", 3), ("gear", None, "Rare", 48)),
     ),
+    # Saffron City (Red/Blue's middle of Kanto), once the Soul Badge is won:
+    # Team Rocket has taken over Silph Co.; the gate guards, helpless, let
+    # the badge holder in (the gate routes need it done).
+    Quest(
+        "saffron_gates", "Saffron Under Siege",
+        "Something's wrong in Saffron City: its gates have been shut for weeks. Now that you hold the Soul Badge, "
+        "the guards at the Route 8 Gate or on Route 5 might tell you why.",
+        requires=("soul_badge",),
+        steps=(Step("talk", "route_8_guard", "Ask a Saffron gate guard what's going on (the Route 8 Gate or Route 5)",
+                    alt=("route_5_guard",),
+                    dialogue=(("Gate Guard", "That's the Soul Badge! You beat Koga? Then listen..."),
+                              ("Gate Guard", "Team Rocket has taken over Silph Co. They've got the President "
+                                             "locked up, and the whole city's afraid to step outside."),
+                              ("Gate Guard", "We're only guards: we can't stand up to them. But you can. The gates "
+                                             "are open for you. Please, save Saffron!"),
+                              ("", "Saffron City's gates are open: from Route 5, Route 6, the Route 8 Gate, and "
+                                   "Route 7 by Celadon City."))),),
+        money=1500, xp=1500,
+    ),
+    Quest(
+        "silph_co", "Silph Co. Siege",
+        "Team Rocket holds Silph Co.'s tower in Saffron City, floor by floor. Somewhere inside is a Card Key that "
+        "opens its locked floors, and at the top, the President they're after.",
+        requires=("saffron_gates",),
+        steps=(Step("reach", "saffron", "Go into Saffron City (by any of its gates)"),
+               Step("defeat", "silph_card_key_rocket", "Fight your way into Silph Co. (Saffron City) and take the "
+                                                       "Card Key from the Rocket on 5F",
+                    dialogue=(("Rocket", "No! The Card Key! The Boss is gonna kill me..."),
+                              ("", "You picked up the Card Key! It opens Silph Co.'s locked floors.")),
+                    gives=("Card Key",)),
+               Step("defeat", "silph_rival", "Get past your rival on 7F",
+                    dialogue=(("Rival", "Hah! I came to see what the fuss was about, and you STILL beat me?"),
+                              ("Rival", "Fine. Go on up and play hero. I've got better things to do."))),
+               Step("defeat", "silph_co", "Defeat the Rocket Boss in the President's office (11F)",
+                    takes=("Card Key",),
+                    dialogue=(("Persian", "You again! Twice now you've ruined Team Rocket's plans..."),
+                              ("Persian", "Silph Co. is yours. But Team Rocket will rise again. Remember that."),
+                              ("", "The Persian bounds out of the window and across the rooftops."),
+                              ("President", "You saved us! Silph Co. owes you everything."),
+                              ("President", "The Rockets were trying to steal this Lapras from our labs. It's "
+                                            "taken a liking to you: please, take it with you."))),),
+        money=3200, xp=3000,
+        rewards=(("pokemon", "lapras", 48), ("medicine", "Hyper Potion", 3), ("medicine", "Max Potion", 2),
+                 ("gear", None, "Epic", 52)),
+        done_dialogue=(("", "With Team Rocket gone, Saffron City breathes again. Sabrina's gym and the Fighting "
+                            "Dojo will open their doors soon."),),
+    ),
     # The Safari Zone Warden lost his Gold Teeth in the Safari Zone (as in
     # Red/Blue): they lie in a dead end of its deepest zone (world/safari.py).
     # He gives HM04 Strength for them.

@@ -762,6 +762,52 @@ back outside. Saving inside saves outside (a visit doesn't outlast a save).
   **Rare** gear piece (item level 48), on top of the clan's prize and the
   gym's fancy chest.
 
+### Saffron Under Siege
+
+- **Starts:** automatically when *The Soul Badge* is done.
+- **Before:** Saffron City's four gates are shut (`instance.SAFFRON_SHUT`);
+  its guards stand at the Route 5 stop and the Route 8 Gate.
+- **Steps:** talk to a gate guard (the Route 8 Gate's, or Route 5's,
+  `Step.alt`): Team Rocket has taken over Silph Co., and the guards open the
+  gates for the badge holder.
+- **Then:** the gates open (routes "saffron_north" from Route 5,
+  "saffron_south" to Route 6, "saffron_east" to the Route 8 Gate, "route_7"
+  from Celadon City (a doorway at col 58): short gatehouse walks, no wild
+  Pokémon, `needs` ("saffron_gates", "done")), and the guards leave their
+  posts (`Folk.gone_after`).
+- **Rewards:** ₽1,500, 1,500 XP.
+
+### Saffron City
+
+The middle of Kanto (town "saffron", 104 tiles): a Pokémon Center, a Poké
+Mart (with Max Potions; gear counter item level 48–52, Uncommon to Epic),
+the **Silph Co.** tower (its own art, 160×256), the **Saffron Gym** and the
+**Fighting Dojo** (both shut for now: Parts B and C), Mr. Psychic's House
+(shut). Townsfolk: a Kadabra, the Dojo's Machoke, a Pidgeotto. Its gates
+lead to Route 7 (west, to Celadon), Route 5 (north), Route 6 (south) and
+the Route 8 Gate (east).
+
+### Silph Co. Siege
+
+- **Starts:** automatically when *Saffron Under Siege* is done.
+- **Silph Co.** (route "silph_co", theme `SILPH_CO`: office floors, painted
+  wall; walked from the tower's door; no wild Pokémon): 1F, 3F, 5F, 7F, 9F
+  and the President's Office (11F), up a stair at each floor's end. Rocket
+  bands (Lv48–51) on every floor; on **5F** the **Card Key Guard** (Weezing
+  51, Golbat 50, Arbok 50) bars the stairs up; on **7F** the **rival** (Pidgeot
+  50, Growlithe 49, Kadabra 49 and their starter's last form 52,
+  `RIVAL_STARTER_FINAL`) bars them, and a Silph worker (Chansey) waits; at
+  the top, the **Rocket Boss** (Persian 54, Nidoking 51, Nidoqueen 51,
+  Kangaskhan 51) guards the office and the way back out.
+- **Steps:** reach Saffron City; beat the Card Key Guard (the **Card
+  Key**); beat the rival; beat the Rocket Boss (takes the Card Key).
+- **Balance:** a party of three at Lv50/49/49: the rival with 2 Hyper
+  Potions about 65%, the Rocket Boss with 3 Hyper Potions and a Revive about
+  71% (`tools/balance_sim.py`).
+- **Rewards:** ₽3,200, 3,000 XP, **Lapras (Lv48) joins** (the party, or the
+  reserve), 3 Hyper Potions, 2 Max Potions and an **Epic** gear piece (item
+  level 52). Then: Sabrina's gym and the Fighting Dojo (next parts).
+
 ### Route 12
 
 From the Route 11 Gate's east doorway (past its Snorlax) up to Lavender

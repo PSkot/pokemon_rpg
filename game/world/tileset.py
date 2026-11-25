@@ -645,7 +645,7 @@ def _gradient(surface: pygame.Surface, top, bottom) -> None:
 
 BUILDING_CELL = (128, 128)  # cells of the building sheets (houses.png, functional_buildings.png) ...
 BUILDING_CELLS = {"pokemon_tower.png": (160, 256), "battle_tower.png": (160, 256), "dept_store.png": (160, 160),
-                  "celadon_mansion.png": (160, 160)}  # ... unless a sheet has its own (the Pokémon Tower)
+                  "celadon_mansion.png": (160, 160), "silph_co.png": (160, 256)}  # ... unless a sheet has its own (the Pokémon Tower)
 OUTLINE = (48, 28, 16)
 BUILDING_SINK = 1  # px a building's base sits into the ground (over the grass edge)
 

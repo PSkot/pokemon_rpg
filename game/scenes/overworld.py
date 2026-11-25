@@ -24,10 +24,10 @@ from ..engine import hats, touch, ui
 from ..engine.scene import Scene, Transition
 from ..mechanics.items import ITEMS, Gear, Range
 from ..mechanics.loot import BOSS_GEAR, TRAINER_GEAR, LootTable, ball_loot, boss_loot, chest_loot, dress, wild_loot
-from ..mechanics.pokemon import EVOLUTIONS, SPECIES, Monster, animations
+from ..mechanics.pokemon import SPECIES, Monster, animations
 from ..world import tileset
 from ..world import tower
-from ..world.instance import RIVAL_STARTER, RIVAL_STARTER_EVOLVED, Instance, Stair, Trainer
+from ..world.instance import Instance, Stair, Trainer, rival_species
 from ..world.level import EMPTY, PLATFORM, SOLID, TILE, Level, Spawn, extra_member
 from ..world.player import FOOT_SINK, SKATE_LIFT, Controls, Player
 from ..world import quests
@@ -653,10 +653,9 @@ class OverworldScene(MapScene):
         placed = dict(zip([0] if first else [], first))
         offset = len(placed)
         placed |= {offset + i: t for i, t in zip(_spread(len(level.spawns) - offset, len(rest)), rest)}
-        rival = {RIVAL_STARTER: game.rival_starter, RIVAL_STARTER_EVOLVED: EVOLUTIONS[game.rival_starter].into}
         for i, trainer in placed.items():
             if i < len(level.spawns):  # (the rival's starter depends on the player's)
-                level.spawns[i].encounter = [(rival.get(sp, sp), lv) for sp, lv in trainer.team]
+                level.spawns[i].encounter = [(rival_species(sp, game.rival_starter), lv) for sp, lv in trainer.team]
         # Each one fighting after the first gives every wild group a chance
         # (`EXTRA_FOE_CHANCE`) of one more Pokémon: with two, about half have
         # one more; with three, one more on average (the same ones each time
@@ -689,10 +688,10 @@ class OverworldScene(MapScene):
         elif level.boss and route.boss_extra and quests.active_limit(game) >= 2:
             level.boss.encounter = list(level.boss.encounter) + list(route.boss_extra)  # (more of them for a pair)
         if level.boss:  # the rival's starter depends on the player's
-            level.boss.encounter = [(rival.get(species, species), lv) for species, lv in level.boss.encounter]
+            level.boss.encounter = [(rival_species(species, game.rival_starter), lv) for species, lv in level.boss.encounter]
         if level.boss and beaten:
             if not route.boss_after:  # (the group it led, without the extras for a pair)
-                level.boss.encounter = [(rival.get(sp, sp), lv) for sp, lv in (room.boss_group if room else
+                level.boss.encounter = [(rival_species(sp, game.rival_starter), lv) for sp, lv in (room.boss_group if room else
                                                                                 route.boss_group or level.boss.encounter)]
             self.trainer = ""
             self.wild.append(WildPokemon(level.boss, level=level))

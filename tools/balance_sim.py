@@ -37,7 +37,7 @@ from game.mechanics.status import STATUSES  # noqa: E402
 from game.mechanics.talents import TREES  # noqa: E402
 from game.scenes.battle import Action, BattleScene  # noqa: E402
 from game.mechanics.sky import SKY_MOVES  # noqa: E402
-from game.world.instance import RIVAL_STARTER, RIVAL_STARTER_EVOLVED, ROUTES  # noqa: E402
+from game.world.instance import ROUTES, rival_species  # noqa: E402
 
 RIVAL_OF = {"bulbasaur": "charmander", "charmander": "squirtle", "squirtle": "bulbasaur"}
 
@@ -168,8 +168,7 @@ def fight(party: list[Monster], enemies: list[Monster], trainer: str = "", boss:
 def enemy_team(group, boss_rarities, rival_starter: str, boss: bool, trainer: bool, talents: bool = True):
     team = []
     for i, (species, level) in enumerate(group):
-        species = {RIVAL_STARTER: rival_starter, RIVAL_STARTER_EVOLVED: EVOLUTIONS[rival_starter].into}.get(species,
-                                                                                                          species)
+        species = rival_species(species, rival_starter)
         m = Monster.create(species, level, talents="half" if (boss or trainer) and talents else "none")
         if boss or trainer:
             dress(m, boss_rarities, BOSS_GEAR if boss and i == 0 else TRAINER_GEAR)
@@ -209,6 +208,7 @@ STORY = [
     ("Skate Road: Tony", "skate_road", (45, 44), False, {"Hyper Potion": 3}),
     ("Route 15: Thornwood Gang", "route_15", (45, 44), False, {"Hyper Potion": 3}),
     ("Fuchsia Gym (2 waves + clan)", "fuchsia_gym", (47, 46), False, {"Hyper Potion": 3, "Full Heal": 2}),
+    ("Silph Co.: Rocket Boss", "silph_co", (50, 49), False, {"Hyper Potion": 3, "Revive": 1}),
 ]
 # How many fight in each story battle: 1 (solo), 2, or 3 from the S.S. Anne on.
 TEAM_SIZE = {"Vermilion Gym (2 waves + battalion)": 3, "Diglett's Cave boss": 3, "Rock Tunnel Hiker Crew": 3,
@@ -216,7 +216,7 @@ TEAM_SIZE = {"Vermilion Gym (2 waves + battalion)": 3, "Diglett's Cave boss": 3,
              "Moon Stone: Moonlit Crater (Clefable)": 3, "Thunder Stone: Power Plant (Electabuzz)": 3,
              "Rocket Hideout Boss": 3, "Snorlax west (Snack Pack)": 3, "Snorlax east (Dream Eaters)": 3,
              "Hidden Spring (Spring Squatters)": 3, "Skate Road: Tony": 3, "Route 15: Thornwood Gang": 3,
-             "Fuchsia Gym (2 waves + clan)": 3}
+             "Fuchsia Gym (2 waves + clan)": 3, "Silph Co.: Rocket Boss": 3}
 PARTNERS = ["pidgey", "rattata", "nidoran_m", "spearow", "caterpie", "pikachu"]
 
 
