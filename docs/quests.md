@@ -719,18 +719,20 @@ back outside. Saving inside saves outside (a visit doesn't outlast a save).
   **Deep Woods** (forest), **Ancient Marsh** (teal dusk). So the scenery
   never tells a right door from a wrong one.
 - **Tall grass** on every map (drawn over the player): each step in it
-  has an 8% chance of a wild Pokémon: Scyther (any zone), Chansey (the
-  Marsh only). It **challenges you to its game** (Play or Decline: declining
+  has an 8% chance of a wild Pokémon, by zone (`Zone.grass`, weights):
+  Outer Grassland Tauros 3, Pinsir 2, Scyther 2; Deep Woods Pinsir 3,
+  Scyther 3, Tauros 1; Ancient Marsh Scyther 2, Tauros 2, Pinsir 1 and the
+  rare Chansey 1. It **challenges you to its game** (Play or Decline: declining
   costs nothing; see `mechanics.md`, *Safari games*). The score earns
-  **Kudos** with that species (Egg Catch ×1 per point, Fruit Slice ×0.6: a
-  good game of either is worth about 30); at **100** it joins the team (the
+  **Kudos** with that species (Egg Catch and Rodeo ×1 per point, Fruit
+  Slice ×0.6, Pinch! ×0.45: a good game of any is worth about 30–35); at **100** it joins the team (the
   party, or the reserve), at its zone's level: Lv40 (Outer Grassland), 43
   (Deep Woods), 46 (Ancient Marsh). Kudos are saved (`Game.kudos`), so it
   can take several visits; after it has joined, its games earn nothing more.
   Kudos show after each game, at the Safari desk and in the quest log.
-- **Recruitable here:** Chansey and Scyther (the species with a game). Red/
-  Blue's other Safari-only Pokémon (Tauros, Pinsir, Kangaskhan, Exeggcute,
-  Rhyhorn; Dratini by fishing) could come later, each with its own game.
+- **Recruitable here:** Chansey, Scyther, Tauros and Pinsir (the species
+  with a game). Red/Blue's other Safari-only Pokémon (Kangaskhan,
+  Exeggcute, Rhyhorn; Dratini by fishing) come next, each with its own game.
 - **Key items:** the Warden's **Gold Teeth** in a dead end of the Marsh;
   **HM03 Surf** at the heart (the true path's end: the "Secret House").
 

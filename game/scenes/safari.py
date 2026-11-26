@@ -176,7 +176,8 @@ class SafariScene(OverworldScene):
         from ..world import quests
         from .safari_games import GAMES
         name = SPECIES[species].name
-        verdict = ("The {} looks impressed!" if score >= 30 else "The {} nods." if score >= 15
+        worth = safari.kudos_for(GAMES[species], score)  # (the games score on different scales)
+        verdict = ("The {} looks impressed!" if worth >= 30 else "The {} nods." if worth >= 15
                    else "The {} doesn't look impressed.").format(name)
         pages = [("", f"You scored {score}! {verdict}")]
         if safari.joined(self.game, species):

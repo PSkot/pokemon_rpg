@@ -15,7 +15,7 @@ Sections:
 - items: random gear at every rarity and slot rolls; medicine and key items add;
 - moves: every move is used in a battle scene (its effect too), drawn;
 - battles: a few battles played out round by round to a win or a loss;
-- safari: both Safari minigames play to the end;
+- safari: every Safari minigame plays to the end;
 - puzzles: the Saffron Gym's warp pads always lead through to the arena;
   Strength's boulders push off their ladders (and don't without it);
 - packs: running from a pack puts the player back where they came from;
@@ -291,14 +291,16 @@ def check_safari() -> int:
     from game.scenes import safari_games as sg
     from game.world.safari import ZONES
     n = 0
-    for cls, species in ((sg.EggCatch, "chansey"), (sg.FruitSlice, "scyther")):
+    for species in sg.GAMES:  # (every game: a few taps and drags, keys too)
+        cls = sg.game_for(species)
         try:
             g = cls(Scene(), species, ZONES[0].theme.backdrop, lambda s: None, seed=3)
             for i in range(60 * 60):
                 g.update(1 / 60)
                 if i % 20 == 0:
                     g.pointer((320 + (i % 200) - 100, 200), i % 40 == 0)
-                    g.draw(CANVAS)
+                    g.handle_event(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_SPACE))
+                    frame(g)
                 if g.over:
                     break
             assert g.over, f"{species}'s game never ended"

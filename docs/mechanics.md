@@ -1025,9 +1025,25 @@ ends with the score (Enter or a tap goes back to the map).
   Swipe through them (hold the mouse button, or a finger); each berry
   after the first in one swipe (within 0.5 s) is worth +1 more (a combo).
   A perfect bot scores 50–67; doing nothing, 0.
+- **Rodeo** (Tauros; `safari_games_2.py`): ride a bucking Tauros. Its
+  tilt (−1 to 1) pulls itself further (×1.6) and bucks kick it every
+  0.5–1.1 s, harder and more often as it goes; lean against it
+  (Left/Right, or touch and hold either half of the screen: 3.2 a second²).
+  Each second within 0.4 of level scores +1, within 0.15 +2 (the balance
+  bar: yellow, green); at 1 you're thrown: −4, and 1.2 s to climb back on.
+  A bot that leans against tilt and spin scores 19–45 (33 on average); a
+  sloppy one about 10; doing nothing, about 1.
+- **Pinch!** (Pinsir): logs roll along a run at the height of Pinsir's
+  horns, 150 px/s at first and 260 at the end, one every 0.6–1.0 s
+  (0.3 less by the end): a log (64%), a big log (14%) or a Geodude (22%).
+  Pinch (Space, Enter, Up, or a tap) as one is between the horns: within
+  4 px of the middle +3 (Perfect), 11 px +2, else +1 (a big log +1 more);
+  a Geodude −4; snapping at nothing −1 (no mashing). A perfect bot scores
+  83–103, a half-careful one about 76, a masher about 4.
 - Scores never go below 0.
-- **Kudos** (`safari.KUDOS_RATE`, `KUDOS_NEEDED`): Egg Catch's score ×1,
-  Fruit Slice's ×0.6, rounded; 100 Kudos with a species and it joins, at
+- **Kudos** (`safari.KUDOS_RATE`, `KUDOS_NEEDED`): Egg Catch's and
+  Rodeo's score ×1, Fruit Slice's ×0.6, Pinch!'s ×0.45, rounded (the
+  verdict after a game goes by Kudos: 30+ impressed, 15+ a nod); 100 Kudos with a species and it joins, at
   its zone's level (`Zone.level`: 40 / 43 / 46).
 
 ## Fly
