@@ -468,7 +468,7 @@ you are working on.
   or in dev mode): post-story content. Its lobby (`TowerLobbyScene`,
   `rooms/tower_*.png`) has Mew floating, drawn 2× (`props/mew.png`), with
   `MewMenu`: Climb (heals, floor 1), gem exchange (`GEM_GEAR`: 12 of a gem
-  for a piece, slot picked; `GEM_POKEMON`: Dratini/Chansey/Lapras, each
+  for a piece, slot picked; `GEM_POKEMON`: Dratini/Mr. Mime/Lapras/Aerodactyl, each
   once, "mew:<species>" in `Game.trainers`). 25 floors (`TOWER_ROUTES`,
   "tower_1".."tower_25", `Route.tower` = the floor): each a gym-like hall of
   waves then a master's band (`trainer`), Lv32 → Lv65

@@ -1724,6 +1724,7 @@ that slot at that rarity, with random affixes.
 | Pokémon (each once, `Game.trainers` "mew:<species>") | Level | Price |
 | --- | --- | --- |
 | Dratini | 30 | 20 Jade |
+| Mr. Mime | 35 | 20 Sapphire |
 | Lapras | 40 | 25 Ruby |
 | Aerodactyl | 50 | 25 Diamond |
 
