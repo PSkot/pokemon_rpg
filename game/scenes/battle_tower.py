@@ -270,7 +270,7 @@ class MewMenu:
     OPTIONS = ("Climb the tower", "Gem exchange: gear", "Gem exchange: Pokémon", "How it works", "Leave")
     ROW_H, PAD = 17, 9
     CONFIRM, BACK = ShopMenu.CONFIRM, ShopMenu.BACK
-    GREETING = "Mew! ♪  (Mew loops around you, giggling. It seems to run this place.)"
+    GREETING = "Mew!~ (Mew loops around you, giggling. It seems to run this place.)"
     HELP = ("Twenty-five floors, each a hall of waves and a master's band; every fifth master is a giant.",
             "Floors 1-5 are open; the next fives open at 6, 7 and 8 badges, and the last five "
             "once you're the Champion.",
@@ -363,7 +363,7 @@ class MewMenu:
             if self.list_mode == "gear":
                 gear = tower.gem_gear(self.item, SLOTS[self.slot])
                 self.bag.add(gear)
-                self.message = f"Mew! ✦ ({gear.name}, Lv{gear.level} {gear.rarity.name}.)"
+                self.message = f"Mew!~ ({gear.name}, Lv{gear.level} {gear.rarity.name}.)"
             else:
                 species, level = row[0], row[1]
                 monster = Monster.create(species, level)
