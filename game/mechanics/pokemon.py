@@ -204,7 +204,7 @@ SPECIES.update({
     "machoke": _animated("machoke", "Machoke", (80, 100, 70, 45, 50), ("fighting",), exp=146, hit=5),
     "machamp": _animated("machamp", "Machamp", (90, 130, 80, 55, 65), ("fighting",), exp=193, hit=4),
     "graveler": _animated("graveler", "Graveler", (55, 95, 115, 35, 45), ("rock", "ground"), exp=134, hit=5),
-    "golem": _placeholder("076_golem", "Golem", (80, 110, 130, 45, 55), ('rock', 'ground'), exp=177),
+    "golem": _animated("golem", "Golem", (80, 110, 130, 45, 55), ("rock", "ground"), exp=177, hit=4),
     "alakazam": _animated("alakazam", "Alakazam", (55, 50, 45, 120, 135), ("psychic",), exp=186, hit=6),
     "magneton": _animated("magneton", "Magneton", (50, 60, 95, 70, 120), ("electric",), exp=161, hit=6),
     "electrode": _animated("electrode", "Electrode", (60, 50, 70, 140, 80), ("electric",), exp=150, hit=3),
@@ -235,7 +235,7 @@ SPECIES.update({
     # (the Pokémon Tower's)
     "cubone": _animated("cubone", "Cubone", (50, 50, 95, 35, 40), ("ground",), exp=87, hit=5),
     "marowak": _animated("marowak", "Marowak", (60, 80, 110, 45, 50), ("ground",), exp=124, hit=3),
-    "gengar": _placeholder("094_gengar", "Gengar", (60, 65, 60, 110, 130), ('ghost', 'poison'), exp=190),
+    "gengar": _animated("gengar", "Gengar", (60, 65, 60, 110, 130), ("ghost", "poison"), exp=190, hit=5),
     "chansey": _animated("chansey", "Chansey", (250, 5, 5, 50, 105), ('normal',), exp=255, hit=4),
     "scyther": _animated("scyther", "Scyther", (70, 110, 80, 105, 55), ('bug', 'flying'), exp=187, hit=4),
     "kangaskhan": _animated("kangaskhan", "Kangaskhan", (105, 95, 80, 90, 40), ("normal",), exp=175, hit=4),

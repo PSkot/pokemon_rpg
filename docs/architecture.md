@@ -780,7 +780,8 @@ you are working on.
   regenerated with clearer steps), Hitmonchan (48 px), Hitmonlee (48 px,
   rerolled for its long legs, mirrored to face right; walk regenerated: the
   first kicked) and Machamp (56 px; the Dojo's Karate Master), Machoke as
-  their style reference; Golbat, Arbok,
+  their style reference; Golem (56 px) and Gengar (48 px; the swaps), with
+  Graveler and Haunter as their style references; Golbat, Arbok,
   Persian and Machoke were made by Claude the same way (48 px canvases,
   the pre-evolution's sprite as style reference; the base padded into the
   64 px cell, then pixminimax rows ending on the base so they loop; tiny
