@@ -1242,6 +1242,20 @@ the **Leaf Stone** (`The evolution stones`).
 
 ---
 
+### Haunter, Marowak, Magneton, Dragonair and Dragonite
+
+For the lines recruited in the Pokémon Tower and the Power Plant, and
+Dratini (from Mew's gem exchange). Each: defeat some wild Pokémon, report
+back, evolve.
+
+| | Boo! (`evolve_gastly`) | A Mother's Bone (`evolve_cubone`) | Three of a Kind (`evolve_magnemite`) | Shedding Scales (`evolve_dratini`) | Lord of the Skies' Rival (`evolve_dragonair`) |
+| --- | --- | --- | --- | --- | --- |
+| Giver | Haunter, Lavender Town | Jigglypuff, Lavender Town | Electrode, Route 10 Pokémon Center | Seaking, Fuchsia City | Pidgeotto, Saffron City (after *Shedding Scales*) |
+| 1. | Defeat 6 Haunter (the Pokémon Tower) | Defeat 8 Gastly (the Pokémon Tower) | Defeat 8 Magnemite (the Power Plant) | Defeat 8 Goldeen (Routes 12 and 13) | Defeat 10 Fearow (Routes 15, 16 and 18) |
+| 2. Talk | Report to Haunter | Report to Jigglypuff | Report to Electrode | Report to Seaking | Report to Pidgeotto |
+| Last | Gastly into Haunter (Lv25) | Cubone into Marowak (Lv28) | Magnemite into Magneton (Lv30) | Dratini into Dragonair (Lv30) | Dragonair into Dragonite (Lv55) |
+| Rewards | ₽1,500, 1,300 XP | ₽1,500, 1,300 XP | ₽1,400, 1,200 XP | ₽1,800, 1,600 XP | ₽4,000, 3,800 XP |
+
 ## Recruitment
 
 How the party grows (`world/instance.py` `RECRUITS`, quests made in

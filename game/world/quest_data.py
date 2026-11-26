@@ -1496,6 +1496,83 @@ QUESTS = {q.key: q for q in [
         money=3000, xp=2800,
         done_dialogue=(("Graveler", "Bring me another Haunter. Grrrock."),),
     ),
+    # The Pokémon Tower's and the Power Plant's lines (recruited there), and
+    # Dratini's (from Mew): their evolution quests.
+    Quest(
+        "evolve_gastly", "Boo!",
+        "Lavender's Haunter says a Gastly grows into a Haunter once it has out-spooked the tower's other "
+        "ghosts.",
+        giver="lavender_haunter",
+        offer=(("Haunter", "Hee hee! Your Gastly is spooky. But is it SPOOKY?"),
+               ("Haunter", "The Haunter in the tower think they're the scariest. Beat 6 of them, then come back "
+                           "and boo at me.")),
+        steps=(hunt("haunter", 6, "the Pokémon Tower"),
+               Step("talk", "lavender_haunter", "Report to Haunter (Lavender Town)", town="lavender",
+                    dialogue=(("Haunter", "BOO! ...Hee hee, you didn't even flinch. Your Gastly's ready."),)),
+               Step("evolve", "gastly", "Evolve your Gastly into Haunter (party screen: E)")),
+        money=1500, xp=1300,
+    ),
+    Quest(
+        "evolve_cubone", "A Mother's Bone",
+        "Lavender's Jigglypuff says the Gastly in the Pokémon Tower torment the Cubone that mourn there. Chase "
+        "them off, and your Cubone will find its courage.",
+        giver="lavender_jigglypuff",
+        offer=(("Jigglypuff", "Puff... Your Cubone wears its mother's skull. Just like the ones in the tower."),
+               ("Jigglypuff", "The Gastly up there won't let them grieve in peace. Chase 8 of them off, for "
+                              "them.")),
+        steps=(hunt("gastly", 8, "the Pokémon Tower"),
+               Step("talk", "lavender_jigglypuff", "Report to Jigglypuff (Lavender Town)", town="lavender",
+                    dialogue=(("Jigglypuff", "Jiggly... The tower's quiet. Listen: the Cubone are singing."),
+                              ("Jigglypuff", "Your Cubone's holding its bone a little higher. It's ready to "
+                                             "grow up."))),
+               Step("evolve", "cubone", "Evolve your Cubone into Marowak (party screen: E)")),
+        money=1500, xp=1300,
+    ),
+    Quest(
+        "evolve_magnemite", "Three of a Kind",
+        "Route 10's Electrode says three Magnemite link up into a Magneton once they've soaked up enough "
+        "current, and the Power Plant has plenty.",
+        giver="route_10_electrode",
+        offer=(("Electrode", "BZZRT! A Magnemite! It needs two friends and a LOT of current to become a "
+                             "Magneton."),
+               ("Electrode", "Beat 8 Magnemite at the Power Plant. Their spare magnets will stick to yours. "
+                             "BZZT!")),
+        steps=(hunt("magnemite", 8, "the Power Plant"),
+               Step("talk", "route_10_electrode", "Report to Electrode (Route 10 Pokémon Center)", town="route_10",
+                    dialogue=(("Electrode", "BZZRT! It's buzzing like a generator! Three magnets, one mind."),)),
+               Step("evolve", "magnemite", "Evolve your Magnemite into Magneton (party screen: E)")),
+        money=1400, xp=1200,
+    ),
+    Quest(
+        "evolve_dratini", "Shedding Scales",
+        "Fuchsia's Seaking says a Dratini sheds its skin and grows once it has swum against the currents with "
+        "the fish of the eastern routes.",
+        giver="fuchsia_seaking",
+        offer=(("Seaking", "Blub! A Dratini? They're said to live where the water's deepest. And to grow, they "
+                           "swim."),
+               ("Seaking", "Race the Goldeen on Routes 12 and 13. Beat 8 of them, then come back. Blub.")),
+        steps=(hunt("goldeen", 8, "Routes 12 and 13"),
+               Step("talk", "fuchsia_seaking", "Report to Seaking (Fuchsia City)", town="fuchsia",
+                    dialogue=(("Seaking", "Blub blub! Look at its skin: it's peeling. It's about to shed!"),)),
+               Step("evolve", "dratini", "Evolve your Dratini into Dragonair (party screen: E)")),
+        money=1800, xp=1600,
+    ),
+    Quest(
+        "evolve_dragonair", "Lord of the Skies' Rival",
+        "Saffron's Pidgeotto says a Dragonair becomes a Dragonite only once it has shown the sky's own rulers "
+        "who's boss.",
+        giver="saffron_pidgeotto", requires=("evolve_dratini",),
+        offer=(("Pidgeotto", "Coo! A Dragonair! They say it can change the weather. But to fly, it needs "
+                             "wings."),
+               ("Pidgeotto", "The Fearow on Routes 15 to 18 think they rule the skies. Beat 10 of them, and "
+                             "the sky will make room.")),
+        steps=(hunt("fearow", 10, "Routes 15, 16 and 18"),
+               Step("talk", "saffron_pidgeotto", "Report to Pidgeotto (Saffron City)", town="saffron",
+                    dialogue=(("Pidgeotto", "Coo... The Fearow have gone quiet. Every bird in Kanto is "
+                                            "watching your Dragonair."),)),
+               Step("evolve", "dragonair", "Evolve your Dragonair into Dragonite (party screen: E)")),
+        money=4000, xp=3800,
+    ),
     # The Safari Zone Warden lost his Gold Teeth in the Safari Zone (as in
     # Red/Blue): they lie in a dead end of its deepest zone (world/safari.py).
     # He gives HM04 Strength for them.
