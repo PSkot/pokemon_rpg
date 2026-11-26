@@ -1126,16 +1126,42 @@ class Instance:
 
 
 # The swaps' trials (world/swaps.py): the borrowed Pokémon goes in alone.
+def _swap_trial(key: str, name: str, theme: Theme, waves: tuple[Wave, ...], master: tuple[str, int], master_name: str,
+                loan: tuple[str, ...], town: str, folk: str, line: str) -> Route:
+    return Route(f"trial_{key}", name, theme, maps=1, towns=(town, town), boss=True, boss_group=(master,), boss_scale=2,
+                 trainer=master_name, boss_chest="battle", waves=waves, wave_team=1, wave_species=loan, wild=False,
+                 folk=folk, cols=30, folk_line=line)
+
+
 ROUTES.update({r.key: r for r in [
-    # Kadabra -> Alakazam (quest swap_kadabra): Saffron's Machoke lends
-    # itself; its gauntlet is Normal and Rock Pokémon, which Fighting moves
-    # hit hard.
-    Route("trial_swap_kadabra", "The Dojo Gauntlet", FIGHTING_DOJO, maps=1, towns=("saffron", "saffron"),
-          boss=True, boss_group=(("kangaskhan", 46),), boss_scale=2, trainer="Dojo Senior", boss_chest="battle",
-          waves=(Wave("Street Toughs", (("raticate", 43), ("persian", 43)), 0),
-                 Wave("Rock Crushers", (("graveler", 44), ("onix", 44)), 0)),
-          wave_team=1, wave_species=("machoke", "machamp"), wild=False, folk="saffron_machoke", cols=30,
-          folk_line="Machoke: OSS! The Dojo Gauntlet! You and me, no one else. Hup!"),
+    # Kadabra -> Alakazam: Saffron's Machoke; Normal and Rock Pokémon, which
+    # Fighting moves hit hard.
+    _swap_trial("swap_kadabra", "The Dojo Gauntlet", FIGHTING_DOJO, (
+        Wave("Street Toughs", (("raticate", 43), ("persian", 43)), 0),
+        Wave("Rock Crushers", (("graveler", 44), ("onix", 44)), 0)), ("kangaskhan", 46), "Dojo Senior",
+        ("machoke", "machamp"), "saffron", "saffron_machoke",
+        "Machoke: OSS! The Dojo Gauntlet! You and me, no one else. Hup!"),
+    # Machoke -> Machamp: Saffron's Kadabra; Fighting and Poison Pokémon,
+    # which Psychic moves hit hard.
+    _swap_trial("swap_machoke", "The Mind Hall", SAFFRON_GYM, (
+        Wave("Brawlers", (("primeape", 46), ("machoke", 46)), 0),
+        Wave("Venom Pair", (("arbok", 47), ("weezing", 47)), 0)), ("machamp", 49), "Iron Fist",
+        ("kadabra", "alakazam"), "saffron", "saffron_kadabra",
+        "Kadabra: ...The Mind Hall. Fists won't help in there. I will. Come."),
+    # Graveler -> Golem: Lavender's Haunter; Normal and Fighting Pokémon,
+    # whose moves pass right through a ghost, then a Psychic master.
+    _swap_trial("swap_graveler", "The Haunting", POKEMON_TOWER, (
+        Wave("Fist Fighters", (("machoke", 40), ("primeape", 40)), 0),
+        Wave("Rowdies", (("raticate", 41), ("persian", 41)), 0)), ("hypno", 43), "Dream Keeper",
+        ("haunter", "gengar"), "lavender", "lavender_haunter",
+        "Haunter: Hee hee! Up the tower we go. Boo at everything that moves!"),
+    # Haunter -> Gengar: Route 10's Graveler; Electric and Fire Pokémon,
+    # which Ground and Rock moves hit hard, then a giant Charizard.
+    _swap_trial("swap_haunter", "The Deep Tunnel", ROCK_TUNNEL, (
+        Wave("Sparks", (("magneton", 40), ("electabuzz", 40)), 0),
+        Wave("Embers", (("magmar", 41), ("arcanine", 41)), 0)), ("charizard", 43), "Cave Dragon",
+        ("graveler", "golem"), "route_10", "route_10_graveler",
+        "Graveler: Grrrock. Deep into the tunnel. Stay close. Well, I'll stay close."),
 ]})
 
 from . import tower  # noqa: E402,F401  (the Battle Tower's floors join ROUTES)

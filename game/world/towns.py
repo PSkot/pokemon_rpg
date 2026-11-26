@@ -439,6 +439,11 @@ TOWNS = {t.key: t for t in [
                "HUP! I'm the smith's apprentice. Well, I carry his coal. Someday he'll let me swing the hammer!",
                "Rock Tunnel's boulders make the best weights. Two hundred lifts before breakfast!",
            )),
+           # Swap quest: Graveler -> Golem (world/swaps.py).
+           Folk("lavender_haunter", "Haunter", "haunter", 35, (
+               "Hee hee hee! Since Mr. Fuji came home, the tower's ghosts are nice and calm. Boring!",
+               "Rocks are so SOLID. I've always wondered what being solid feels like. Hee hee.",
+           )),
            Folk("lavender_jigglypuff", "Jigglypuff", "jigglypuff", 56, (
                "Puff... Lavender Town is so quiet. Everyone whispers here.",
                "Jiggly... Some say a lost Pokémon's mother still waits at the top of the tower.",

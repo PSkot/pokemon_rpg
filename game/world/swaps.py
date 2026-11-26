@@ -34,13 +34,26 @@ class Swap:
     partner: str   # the townsfolk's key
     loan: str      # the species they lend
     stay: tuple[str, ...]  # what the player's Pokémon "says" in the partner's spot while it's away ("{name}")
+    again: str = ""  # the partner, swapping another one after the quest ("{name}": the one that goes)
 
 
 SWAPS = {s.quest: s for s in [
     Swap("swap_kadabra", "kadabra", "alakazam", "saffron_machoke", "machoke", (
         "Your {name} floats cross-legged in front of the Dojo, bending a spoon while the black belts do push-ups.",
         "Your {name} is watching the black belts spar very closely. It seems to be taking notes. In its head.",
-    )),
+    ), "Another {name}? OSS! A few rounds with the black belts, and..."),
+    Swap("swap_machoke", "machoke", "machamp", "saffron_kadabra", "kadabra", (
+        "Your {name} sits cross-legged by the gym, glaring at a spoon. The spoon isn't bending. Yet.",
+        "Your {name} is doing push-ups with its eyes shut. \"Kadabra says the mind lifts too,\" it seems to think.",
+    ), "...Another {name}. I see it already: four arms. Close your eyes..."),
+    Swap("swap_graveler", "graveler", "golem", "lavender_haunter", "haunter", (
+        "Your {name} stands guard by the Pokémon Tower. Even the ghosts give it a wide berth.",
+        "Your {name} is helping Mr. Fuji carry flowers up to the tower. Very, very carefully.",
+    ), "Hee hee! Another {name}? A night in the tower, and..."),
+    Swap("swap_haunter", "haunter", "gengar", "route_10_graveler", "graveler", (
+        "Your {name} floats in the mouth of Rock Tunnel, scaring Zubat for fun.",
+        "Your {name} is trying to lift a boulder. Its hands go right through it.",
+    ), "Grrrock. Another {name}? A week in the tunnel, and..."),
 ]}
 BY_PARTNER = {s.partner: s for s in SWAPS.values()}
 
@@ -79,7 +92,7 @@ def out(game, swap: Swap) -> list[Line]:
         from .quests import fit_party  # (quests.py imports this module)
         fit_party(game)
     game.away[swap.quest] = mine
-    return [("", f"Your {mine.name} goes with {SPECIES[swap.loan].name}'s friends to train."),
+    return [("", f"Your {mine.name} stays behind with {SPECIES[swap.loan].name}'s friends, to train."),
             ("", f"{loan.name} (Lv{loan.level}) joined your party, on loan!")]
 
 
@@ -129,7 +142,7 @@ def repeat(game, folk: str) -> list[Line]:
         return []
     before = mine.name
     mine.evolve(swap.into)
-    return [(SPECIES[swap.loan].name, f"Another {before}? OSS! A few rounds with my friends, and..."),
+    return [(SPECIES[swap.loan].name, swap.again.format(name=before)),
             ("", f"Your {before} came back as {mine.name}!")]
 
 

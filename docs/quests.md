@@ -986,6 +986,11 @@ stepping back past its swap) brings your Pokémon home unevolved.
 | Quest | Partner (lends) | Trial | Evolves | Rewards |
 | --- | --- | --- | --- | --- |
 | Mind and Muscle (`swap_kadabra`), after *The Fighting Dojo* | Saffron's Machoke, by the Dojo (Machoke) | **The Dojo Gauntlet** (the Dojo's look): Street Toughs (Raticate 43, Persian 43); Rock Crushers (Graveler 44, Onix 44); then a giant Kangaskhan 46 (the Dojo Senior). About 62% with 3 Hyper Potions at Lv50 (balance sim) | Kadabra into Alakazam | ₽3,500, 3,200 XP |
+| The Spoon and the Fist (`swap_machoke`), after *The Marsh Badge* | Saffron's Kadabra (Kadabra) | **The Mind Hall** (Saffron Gym's look): Brawlers (Primeape 46, Machoke 46); Venom Pair (Arbok 47, Weezing 47); then a giant Machamp 49 (Iron Fist). About 62% at Lv54 | Machoke into Machamp | ₽3,800, 3,500 XP |
+| Stone and Spirit (`swap_graveler`), after *The Pokémon Tower* | Lavender's Haunter, by the tower (Haunter) | **The Haunting** (the tower's look): Fist Fighters (Machoke 40, Primeape 40) and Rowdies (Raticate 41, Persian 41), whose Normal and Fighting moves can't touch a ghost; then a giant Hypno 43 (the Dream Keeper). About 72% at Lv42 | Graveler into Golem | ₽3,000, 2,800 XP |
+| Spirit and Stone (`swap_haunter`), after *The Pokémon Tower* | Route 10's Graveler (Graveler) | **The Deep Tunnel** (Rock Tunnel's look): Sparks (Magneton 40, Electabuzz 40), whose Electric moves can't touch it; Embers (Magmar 41, Arcanine 41); then a giant Charizard 43 (the Cave Dragon). About 69% at Lv42 | Haunter into Gengar | ₽3,000, 2,800 XP |
+
+(The player can't get a Gastly or Haunter yet: *Spirit and Stone* waits for one.)
 
 ## The evolution stones
 

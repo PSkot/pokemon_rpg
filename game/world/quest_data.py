@@ -1424,6 +1424,78 @@ QUESTS = {q.key: q for q in [
         money=3500, xp=3200,
         done_dialogue=(("Machoke", "Bring me another Kadabra any time. Hup!"),),
     ),
+    Quest(
+        "swap_machoke", "The Spoon and the Fist",
+        "Saffron's Kadabra wants to know what it's like to be strong. Swap for a while: your Machoke trains its "
+        "mind with Sabrina's students, and Kadabra goes with you.",
+        giver="saffron_kadabra", requires=("marsh_badge",), needs_species=("machoke",),
+        offer=(("Kadabra", "...Your Machoke. So much strength. So little thought. I could help with that."),
+               ("Kadabra", "Swap with me for a while. It trains its mind at the gym; I see the world through a "
+                           "fighter's fists."),
+               ("Kadabra", "A Machoke that thinks before it punches grows... two more arms. Talk to me when you're "
+                           "ready.")),
+        steps=(Step("talk", "saffron_kadabra", "Swap your Machoke for Kadabra (Saffron City)", town="saffron",
+                    swap="out",
+                    dialogue=(("Kadabra", "...Done. Your Machoke is already staring at a spoon. Good."),
+                              ("Kadabra", "Now, the Mind Hall. Just me. Talk to your Machoke when we're ready."))),
+               Step("defeat", "trial_swap_machoke", "Pass the Mind Hall with Kadabra alone (Saffron City)",
+                    dialogue=(("Kadabra", "...Not bad. For someone without psychic powers. Let's fetch your "
+                                          "Machoke."),)),
+               Step("talk", "saffron_kadabra", "Swap back (Saffron City)", town="saffron", swap="back",
+                    dialogue=(("", "Your Machoke walks over from the gym. Calm. Focused. And it has more arms than "
+                                   "before."),
+                              ("Kadabra", "It learned to think. I learned to hit. A fair swap.")))),
+        money=3800, xp=3500,
+        done_dialogue=(("Kadabra", "Bring me another Machoke. I'll know when you do."),),
+    ),
+    Quest(
+        "swap_graveler", "Stone and Spirit",
+        "Lavender's Haunter has always wondered what being solid feels like. Swap for a while: your Graveler keeps "
+        "watch at the Pokémon Tower, and Haunter goes with you.",
+        giver="lavender_haunter", requires=("pokemon_tower",), needs_species=("graveler",),
+        offer=(("Haunter", "Hee hee! Your Graveler is SO solid. I can't even float through it!"),
+               ("Haunter", "Let's swap! It guards the tower with Mr. Fuji, and I come along with you."),
+               ("Haunter", "A night among ghosts loosens up a rock. It'll come back... rounder. Talk to me when "
+                           "you're ready!")),
+        steps=(Step("talk", "lavender_haunter", "Swap your Graveler for Haunter (Lavender Town)", town="lavender",
+                    swap="out",
+                    dialogue=(("Haunter", "Hee hee! Your Graveler's already scaring the ghosts. Good rock."),
+                              ("Haunter", "Now, the Haunting! Just me! Talk to your Graveler when we're ready."))),
+               Step("defeat", "trial_swap_graveler", "Get through the Haunting with Haunter alone (Lavender Town)",
+                    dialogue=(("Haunter", "Hee hee hee! Their punches went right through me! Let's go and get your "
+                                          "Graveler."),)),
+               Step("talk", "lavender_haunter", "Swap back (Lavender Town)", town="lavender", swap="back",
+                    dialogue=(("", "Your Graveler rolls down from the tower. It's... a lot bigger, and a lot "
+                                   "rounder."),
+                              ("Haunter", "It learned to let things pass. I learned to stand my ground. Hee hee!")))),
+        money=3000, xp=2800,
+        done_dialogue=(("Haunter", "Bring me another Graveler any time. Boo!"),),
+    ),
+    Quest(
+        "swap_haunter", "Spirit and Stone",
+        "Route 10's Graveler wants to know what it's like to float through walls. Swap for a while: your Haunter "
+        "haunts Rock Tunnel, and Graveler goes with you.",
+        giver="route_10_graveler", requires=("pokemon_tower",), needs_species=("haunter",),
+        offer=(("Graveler", "Grrrock. Your Haunter just floated through my boulder. Through it."),
+               ("Graveler", "Swap with me. It haunts the tunnel for a while, and I come along with you."),
+               ("Graveler", "A week underground makes anything heavier. Even a ghost. Talk to me when you're "
+                            "ready.")),
+        steps=(Step("talk", "route_10_graveler", "Swap your Haunter for Graveler (Route 10 Pokémon Center)",
+                    town="route_10", swap="out",
+                    dialogue=(("Graveler", "Grrrock. Your Haunter's already in the tunnel. The Zubat are not "
+                                           "happy."),
+                              ("Graveler", "Now, the Deep Tunnel. Just me. Talk to your Haunter when we're "
+                                           "ready."))),
+               Step("defeat", "trial_swap_haunter", "Get through the Deep Tunnel with Graveler alone (Route 10 "
+                                                    "Pokémon Center)",
+                    dialogue=(("Graveler", "Grrrock! Not even a dragon could move me. Let's fetch your "
+                                           "Haunter."),)),
+               Step("talk", "route_10_graveler", "Swap back (Route 10 Pokémon Center)", town="route_10", swap="back",
+                    dialogue=(("", "Your Haunter drifts out of the tunnel. It's heavier now. It even has legs."),
+                              ("Graveler", "It learned to stand. I learned to let go. Grrrock.")))),
+        money=3000, xp=2800,
+        done_dialogue=(("Graveler", "Bring me another Haunter. Grrrock."),),
+    ),
     # The Safari Zone Warden lost his Gold Teeth in the Safari Zone (as in
     # Red/Blue): they lie in a dead end of its deepest zone (world/safari.py).
     # He gives HM04 Strength for them.
