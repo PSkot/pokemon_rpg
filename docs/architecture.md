@@ -233,7 +233,10 @@ you are working on.
   `quests.evolve`, finishes the quest); once done, members that leveled
   up in a won battle and reached the level evolve (`BattleScene.evolves`,
   `_evolve`: X stops it, retried at the next level-up). The map player
-  takes the lead Pokémon's species (`Player.become`).
+  takes the lead Pokémon's species (`Player.become`). Trade evolutions
+  are swaps (`world/swaps.py`, `Step.swap`): the player's Pokémon waits in
+  `Game.away` (saved whole, gear included) while the partner's joins
+  (`Monster.loan`, saved), then comes back evolved (`Monster.evolve(into)`).
 - Medicine (`items.MEDICINE`: potions, Revive, status cures) is counted in
   `Bag.medicine` and used from the battle's Item menu (taking the user's
   turn; items act before all moves and always work: no status,

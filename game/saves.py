@@ -84,7 +84,7 @@ TALENTS_VERSION = 8  # saves from before talents (skill trees) keep their equipp
 def _monster(m: Monster) -> dict:
     return {"species": m.species.key, "level": m.level, "xp": m.xp, "hp": m.hp, "status": m.status,
             "sleep_rounds": m.sleep_rounds, "gear": {slot: _gear(g) for slot, g in m.gear.items()},
-            "talents": m.talents, "equipped": m.equipped, "sv": TALENTS_VERSION}
+            "talents": m.talents, "equipped": m.equipped, "sv": TALENTS_VERSION, "loan": m.loan}
 
 
 def _load_monster(d: dict) -> Monster:
@@ -94,6 +94,7 @@ def _load_monster(d: dict) -> Monster:
     m = Monster(SPECIES[d["species"]], d["level"], hp=d["hp"], gear=gear, status=d["status"],
                 sleep_rounds=d["sleep_rounds"], xp=d["xp"], talents=list(talents),
                 equipped=list(d.get("equipped", [])))
+    m.loan = d.get("loan", "")
     if not m.equipped:  # (nothing equipped: e.g. a line that only had Tackle until its moves came in)
         m.equipped = m.known[1:][-MAX_EQUIPPED:]
     return m
@@ -122,6 +123,7 @@ def snapshot(scene) -> dict:
         "slots": game.slots,
         "tower_best": game.tower_best,
         "repel": game.repel,
+        "away": {key: _monster(m) for key, m in game.away.items()},
         "visited": sorted(game.visited),
         "kudos": game.kudos,
         "shop_visits": game.shop_visits,
@@ -249,6 +251,7 @@ def load(info: SaveInfo):
                 game.trainers.add("boss:snorlax_wakes")
         game.tower_best = data.get("tower_best", 0)
         game.repel = data.get("repel", 0)
+        game.away = {key: _load_monster(d) for key, d in data.get("away", {}).items()}
         game.visited = set(data.get("visited", []))  # (older saves: the Town Map works out the rest)
         game.kudos = {k: int(v) for k, v in data.get("kudos", {}).items()}
         game.shop_visits = dict(data.get("shop_visits", {}))

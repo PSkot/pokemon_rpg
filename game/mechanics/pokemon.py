@@ -416,6 +416,7 @@ class Monster:
     talents: list[str] = field(default_factory=list)   # talent keys picked (one per tier at most)
     equipped: list[str] = field(default_factory=list)  # keys of the moves it uses, besides Fight
     scale: int = 1  # drawn this many times bigger (bosses); not saved
+    loan: str = ""  # on loan from townsfolk: the swap quest's key (world/swaps.py)
 
     def __post_init__(self):
         if self.hp < 0:

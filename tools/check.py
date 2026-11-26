@@ -19,7 +19,8 @@ Sections:
 - puzzles: the Saffron Gym's warp pads always lead through to the arena;
   Strength's boulders push off their ladders (and don't without it);
 - packs: running from a pack puts the player back where they came from;
-  a Repel lets the player through weaker wild packs.
+  a Repel lets the player through weaker wild packs;
+- swaps: each swap quest plays through, and nobody's gear is lost.
 
 Prints one line per section and every failure with its traceback; exits
 non-zero if anything failed.
@@ -400,10 +401,57 @@ def check_packs() -> int:
     return n
 
 
+def check_swaps() -> int:
+    """Each swap quest plays through: the player's Pokémon goes (wearing
+    gear), the borrowed one joins (and is given gear), then the player's
+    comes back evolved with its gear, and the borrowed one's gear is in the
+    bag. A reset mid-swap brings the player's Pokémon home as it went."""
+    from game.mechanics.items import ITEMS, Gear
+    from game.mechanics.pokemon import Monster
+    from game.world import quests, swaps
+    n = 0
+    for swap in swaps.SWAPS.values():
+        for reset in (False, True):
+            try:
+                g = new_game()
+                g.slots = 3
+                mine = Monster.create(swap.mine, 45)
+                g.party.append(mine)
+                worn = Gear.roll(next(iter(ITEMS)), "Rare", level=40)
+                g.bag.gear.append(worn)
+                g.bag.equip(mine, worn)
+                quest = quests.QUESTS[swap.quest]
+                for req in quest.requires:
+                    while not quests.is_done(g, req):
+                        quests.step_forward(g, req)
+                quests.talk(g, swap.partner)  # (the offer)
+                quests.talk(g, swap.partner)  # (the swap)
+                loan = swaps.loaned(g, swap)
+                assert loan and swaps.away(g, swap) is mine, "didn't swap"
+                given = Gear.roll(list(ITEMS)[3], "Common", level=10)
+                g.bag.gear.append(given)
+                g.bag.equip(loan, given)
+                if reset:
+                    quests.reset(g, swap.quest)
+                    assert mine in g.party and mine.species.key == swap.mine, "reset lost the Pokémon"
+                else:
+                    quests.step_forward(g, swap.quest)  # (the trial)
+                    quests.talk(g, swap.partner)
+                    assert quests.is_done(g, swap.quest), "not done"
+                    assert mine in g.party and mine.species.key == swap.into, "didn't come back evolved"
+                assert worn in mine.gear.values(), "its gear was lost"
+                assert given in g.bag.gear and not swaps.loaned(g, swap), "the loan's gear wasn't returned"
+                assert not g.away, "still away"
+                n += 1
+            except Exception:
+                fail(f"swap {swap.quest} (reset {reset})")
+    return n
+
+
 SECTIONS = {
     "imports": check_imports, "places": check_places, "quests": check_quests, "saves": check_saves,
     "items": check_items, "moves": check_moves, "battles": check_battles, "safari": check_safari,
-    "puzzles": check_puzzles, "packs": check_packs,
+    "puzzles": check_puzzles, "packs": check_packs, "swaps": check_swaps,
 }
 SLOW = {"moves", "battles"}
 

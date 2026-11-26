@@ -20,8 +20,7 @@ from ..dev import DEV
 from ..engine import ui
 from ..engine.animation import Animation
 from ..engine.scene import Transition
-from ..world import tileset
-from ..world import quests
+from ..world import quests, swaps, tileset
 from ..world.quests import QUESTS
 from ..world.quest_data import RECRUIT_BOARD, SMITH
 from ..world.instance import ROUTES, Instance
@@ -149,7 +148,8 @@ class TownScene(MapScene):
     @property
     def folk(self) -> list[Folk]:
         """The town's townsfolk who are here (not gone after their quest: `Folk.gone_after`)."""
-        return [f for f in self.town.folk if not (f.gone_after and quests.gone(self.game, f.gone_after))]
+        return [swaps.stand_in(self.game, f) for f in self.town.folk
+                if not (f.gone_after and quests.gone(self.game, f.gone_after))]
 
     def _building_at_player(self) -> Building | None:
         return next((b for b in self.town.buildings

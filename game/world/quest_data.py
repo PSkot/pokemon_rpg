@@ -55,6 +55,9 @@ class Step:
     # Fighting Dojo's Hitmonlee or Hitmonchan): (folk, species, level, what's
     # said then).
     joins: tuple[tuple[str, str, int, str], ...] = ()
+    # talk: "out" sends the player's Pokémon away and theirs joins on loan;
+    # "back" swaps back, the player's evolved (a swap quest, world/swaps.py).
+    swap: str = ""
 
     @property
     def targets(self) -> tuple[str, ...]:
@@ -1392,6 +1395,34 @@ QUESTS = {q.key: q for q in [
         money=3000, xp=2900,
         rewards=(("medicine", "Hyper Potion", 2), ("gear", None, "Rare", 54)),
         done_dialogue=(("", "The other one bows, and heads back to training."),),
+    ),
+    # The swaps (world/swaps.py): the trade evolutions, done by swapping
+    # with townsfolk for a while. Theirs joins on loan and fights a trial
+    # alone; then the player's comes back evolved, wearing what it wore.
+    Quest(
+        "swap_kadabra", "Mind and Muscle",
+        "Saffron's Machoke wants to know how a Kadabra thinks. Swap for a while: your Kadabra trains with the "
+        "Dojo, and Machoke goes with you.",
+        giver="saffron_machoke", requires=("fighting_dojo",), needs_species=("kadabra",),
+        offer=(("Machoke", "OSS! Your Kadabra... it beat me without touching me! How?!"),
+               ("Machoke", "Let's swap for a while! Your Kadabra trains with us at the Dojo, and I go with you."),
+               ("Machoke", "Muscle learns mind, mind learns muscle. That's how a Kadabra becomes something "
+                           "more. Talk to me when you're ready to swap!")),
+        steps=(Step("talk", "saffron_machoke", "Swap your Kadabra for Machoke (Saffron City, by the Dojo)",
+                    town="saffron", swap="out",
+                    dialogue=(("Machoke", "OSS! Partners! Don't worry about your Kadabra: the black belts will "
+                                          "look after it."),
+                              ("Machoke", "First we run the Dojo Gauntlet. Just me! Talk to your Kadabra by the "
+                                          "Dojo when we're ready."))),
+               Step("defeat", "trial_swap_kadabra", "Run the Dojo Gauntlet with Machoke alone (by the Dojo, Saffron "
+                                                    "City)",
+                    dialogue=(("Machoke", "HUUUP! We did it! Let's go and see how your Kadabra is doing."),)),
+               Step("talk", "saffron_machoke", "Swap back (Saffron City, by the Dojo)", town="saffron", swap="back",
+                    dialogue=(("", "Your Kadabra floats out of the Dojo. It's... bigger. Much bigger."),
+                              ("Machoke", "OSS! I learned to think before I punch. It learned to punch with its "
+                                          "mind!")))),
+        money=3500, xp=3200,
+        done_dialogue=(("Machoke", "Bring me another Kadabra any time. Hup!"),),
     ),
     # The Safari Zone Warden lost his Gold Teeth in the Safari Zone (as in
     # Red/Blue): they lie in a dead end of its deepest zone (world/safari.py).

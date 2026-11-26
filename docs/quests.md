@@ -958,6 +958,35 @@ Electrode 44) and **Deep Sea Haul** (Seaking 44, Shellder 43, Horsea 43).
 
 ---
 
+## Swaps (the trade evolutions)
+
+`world/swaps.py`. Red/Blue's trade evolutions (Kadabra, Machoke, Graveler,
+Haunter) come from a swap with townsfolk instead: each partner wants to
+learn from your Pokémon's line, so you swap for a while.
+
+1. **Offer:** talking to the partner with one of that species in the
+   party or reserve (`Quest.needs_species`) starts the quest.
+2. **Swap** (`Step.swap` "out"): your Pokémon goes away (the first of that
+   species, party first), kept whole, gear and all (`Game.away`). The
+   partner joins **on loan** in its place (or at the party's front, if
+   yours was in the reserve), at the level of your strongest, with its
+   talents picked (`Monster.loan`; the party screen says "On loan").
+   While yours is away it stands in the partner's spot in town
+   (`swaps.stand_in`), and can't be used.
+3. **Trial:** the borrowed Pokémon goes in **alone** (a solo trial, like
+   the starters'; talk to your Pokémon in the partner's spot to start it).
+4. **Swap back** (`Step.swap` "back"): yours comes home **evolved**,
+   healed, still wearing everything it wore. Anything you put on the
+   borrowed one goes back to the bag.
+
+Once done, the partner evolves another of that species straight away
+(`swaps.repeat`, party only). In dev mode, resetting a swap quest (or
+stepping back past its swap) brings your Pokémon home unevolved.
+
+| Quest | Partner (lends) | Trial | Evolves | Rewards |
+| --- | --- | --- | --- | --- |
+| Mind and Muscle (`swap_kadabra`), after *The Fighting Dojo* | Saffron's Machoke, by the Dojo (Machoke) | **The Dojo Gauntlet** (the Dojo's look): Street Toughs (Raticate 43, Persian 43); Rock Crushers (Graveler 44, Onix 44); then a giant Kangaskhan 46 (the Dojo Senior). About 62% with 3 Hyper Potions at Lv50 (balance sim) | Kadabra into Alakazam | ₽3,500, 3,200 XP |
+
 ## The evolution stones
 
 Each stone has one quest, given by a townsperson once the **Rainbow

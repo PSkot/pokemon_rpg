@@ -30,6 +30,7 @@ from ..mechanics.loot import Reward
 from ..mechanics.pokemon import MAX_LEVEL, SPECIES, Monster, line_base
 from .instance import RECRUITS, ROUTES, from_route
 from .progress import MAX_PARTY
+from . import swaps
 from .quest_data import QUESTS, Line, Quest, Step
 
 
@@ -162,6 +163,10 @@ def talk(game, folk: str) -> Event:
         s = current(game, quest.key)
         if s.kind == "talk" and folk in s.targets and s.takes and not all(i in game.bag.key_items for i in s.takes):
             return Event(dialogue=list(s.waiting))
+        if (s.kind == "talk" and folk in s.targets and s.swap == "out"
+                and not swaps.candidate(game, swaps.SWAPS[quest.key])):
+            name = SPECIES[swaps.SWAPS[quest.key].mine].name
+            return Event(dialogue=[("", f"(You'll need a {name} with you, in the party or the reserve.)")])
     for quest in active(game):  # (which of a step's alternatives it was: either Snorlax)
         s = current(game, quest.key)
         if s.kind == "talk" and s.alt and folk in s.targets:
@@ -175,6 +180,8 @@ def talk(game, folk: str) -> Event:
                 event.dialogue += quest.offer
                 _start(game, quest.key, event)
                 break
+    if not event:  # (a swap partner, after its quest: another one, straight away)
+        event.dialogue += swaps.repeat(game, folk)
     return event
 
 
@@ -420,6 +427,8 @@ def reset(game, key: str) -> None:
     at = step(game, key) or 0
     for s in reversed(quest.steps[:at]):
         _undo_step(game, s)
+    if key in swaps.SWAPS:  # (the player's Pokémon comes home, as it went)
+        swaps.back(game, swaps.SWAPS[key], evolve=False)
     game.quests.pop(key, None)
     game.quest_counts.pop(key, None)
     game.trainers -= {t for t in game.trainers if t.startswith(_choice_key(key, ""))}
@@ -438,7 +447,10 @@ def step_back(game, key: str) -> None:
     at = step(game, key)
     if not at:
         return
-    _undo_step(game, QUESTS[key].steps[at - 1])
+    undone = QUESTS[key].steps[at - 1]
+    _undo_step(game, undone)
+    if undone.swap == "out":  # (the player's Pokémon comes home, as it went)
+        swaps.back(game, swaps.SWAPS[key], evolve=False)
     game.quests[key] = at - 1
     game.quest_counts.pop(key, None)
 
@@ -499,6 +511,10 @@ def _advance(game, quest: Quest, event: Event) -> None:
         if item in game.bag.key_items:
             game.bag.key_items.remove(item)
     game.bag.key_items += [i for i in s.gives if i not in game.bag.key_items or i in STACKING]
+    if s.swap == "out":
+        event.dialogue += swaps.out(game, swaps.SWAPS[quest.key])
+    elif s.swap == "back":
+        event.dialogue += swaps.back(game, swaps.SWAPS[quest.key])
     if s.joins:  # the one picked joins (by the townsfolk talked to)
         folk, species, level, line = next((j for j in s.joins if chosen(game, quest.key, j[0])), s.joins[0])
         where = game.add_member(Monster.create(species, level), active_limit(game))

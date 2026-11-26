@@ -290,6 +290,8 @@ class SummaryScene(Scene):
             game = getattr(self.return_to, "game", None)
             if game and quests.can_evolve(game, m):
                 ui.text(window, "Evolve!", (PARTY_WINDOW.right - 10, y + 2), GREEN, size=20, align="right")
+            elif m.loan:  # (borrowed from townsfolk: world/swaps.py)
+                ui.text(window, "On loan", (PARTY_WINDOW.right - 10, y + 2), (150, 200, 255), size=20, align="right")
             ui.text(window, f"Lv{m.level}  {m.hp}/{m.max_hp}", (PARTY_WINDOW.x + 22, y + ROW_H - 3),
                     ui.GREY, size=22)
             if m.status:

@@ -1125,4 +1125,17 @@ class Instance:
         return level
 
 
+# The swaps' trials (world/swaps.py): the borrowed Pokémon goes in alone.
+ROUTES.update({r.key: r for r in [
+    # Kadabra -> Alakazam (quest swap_kadabra): Saffron's Machoke lends
+    # itself; its gauntlet is Normal and Rock Pokémon, which Fighting moves
+    # hit hard.
+    Route("trial_swap_kadabra", "The Dojo Gauntlet", FIGHTING_DOJO, maps=1, towns=("saffron", "saffron"),
+          boss=True, boss_group=(("kangaskhan", 46),), boss_scale=2, trainer="Dojo Senior", boss_chest="battle",
+          waves=(Wave("Street Toughs", (("raticate", 43), ("persian", 43)), 0),
+                 Wave("Rock Crushers", (("graveler", 44), ("onix", 44)), 0)),
+          wave_team=1, wave_species=("machoke", "machamp"), wild=False, folk="saffron_machoke", cols=30,
+          folk_line="Machoke: OSS! The Dojo Gauntlet! You and me, no one else. Hup!"),
+]})
+
 from . import tower  # noqa: E402,F401  (the Battle Tower's floors join ROUTES)
