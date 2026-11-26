@@ -30,7 +30,8 @@ GAME_TIME = 30.0
 COUNTDOWN = 2.4  # "3, 2, 1, Go!" before the clock starts
 W, H = settings.LOGICAL_SIZE
 # The species with a game, and which (safari_games_2.py has the later ones).
-GAMES = {"chansey": "egg_catch", "scyther": "fruit_slice", "tauros": "rodeo", "pinsir": "pinch"}
+GAMES = {"chansey": "egg_catch", "scyther": "fruit_slice", "tauros": "rodeo", "pinsir": "pinch",
+         "kangaskhan": "wheres_baby", "exeggcute": "egg_pop"}
 
 
 def _icon(species: str, height: int) -> pygame.Surface:
@@ -56,6 +57,12 @@ class Challenge:
         "pinch": ("Pinch!", ["Logs roll past between Pinsir's horns: pinch them!",
                              "Dead centre is a Perfect. Big logs are worth more. Not the Geodude!",
                              "Pinch: Space or Enter, or tap."]),
+        "wheres_baby": ("Where's Baby?", ["Its baby hides in a bush, and the bushes shuffle.",
+                                          "Pick the one it's in. Right picks in a row are worth more!",
+                                          "Pick: Left/Right and Space, or tap the bush."]),
+        "egg_pop": ("Egg Pop!", ["Eggs pop up out of the nests: bop the awake ones!",
+                                 "Not the sleeping ones. Cracked golden eggs are lucky.",
+                                 "Bop: Left, Up/Space, Right for the nests, or tap one."]),
     }
 
     def __init__(self, species: str):
@@ -396,4 +403,6 @@ def _segment_hits(a, b, c, r) -> bool:
 def game_for(species: str):
     """The game scene class for `species` (see GAMES)."""
     from .safari_games_2 import Pinch, Rodeo  # (they build on this module)
-    return {"egg_catch": EggCatch, "fruit_slice": FruitSlice, "rodeo": Rodeo, "pinch": Pinch}[GAMES[species]]
+    from .safari_games_3 import EggPop, WheresBaby
+    return {"egg_catch": EggCatch, "fruit_slice": FruitSlice, "rodeo": Rodeo, "pinch": Pinch,
+            "wheres_baby": WheresBaby, "egg_pop": EggPop}[GAMES[species]]

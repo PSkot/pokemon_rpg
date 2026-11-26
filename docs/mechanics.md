@@ -1040,9 +1040,23 @@ ends with the score (Enter or a tap goes back to the map).
   4 px of the middle +3 (Perfect), 11 px +2, else +1 (a big log +1 more);
   a Geodude −4; snapping at nothing −1 (no mashing). A perfect bot scores
   83–103, a half-careful one about 76, a masher about 4.
+- **Where's Baby?** (Kangaskhan; `safari_games_3.py`): the baby peeks out
+  of one of three bushes for 1 s, then the bushes shuffle (3 + the round's
+  number of swaps, at most 9; each 0.5 s at first, 0.035 s quicker a
+  round, at least 0.2 s); pick its bush (Left/Right and Space, or tap). A
+  right pick +2, +1 more for each right one in a row before it (up to +6);
+  a wrong one −1. A bot that always knows scores 36, one right 80% of the
+  time about 26, guessing about 9.
+- **Egg Pop** (Exeggcute): eggs pop out of three nests (one every
+  0.45–0.8 s, 0.25 less by the end, and only where there's room), staying
+  1 s at first and 0.55 s at the end. Bop one (Left, Up/Space, Right, or
+  tap the nest): an awake egg (62%) +1, a cracked golden one (10%) +3, a
+  sleeping one (28%) −2; an empty nest −1. A quick, careful bot scores
+  51–66, a slower one about 40, one that bops everything about 27.
 - Scores never go below 0.
-- **Kudos** (`safari.KUDOS_RATE`, `KUDOS_NEEDED`): Egg Catch's and
-  Rodeo's score ×1, Fruit Slice's ×0.6, Pinch!'s ×0.45, rounded (the
+- **Kudos** (`safari.KUDOS_RATE`, `KUDOS_NEEDED`): Egg Catch's, Rodeo's
+  and Where's Baby?'s score ×1, Egg Pop's ×0.75, Fruit Slice's ×0.6,
+  Pinch!'s ×0.45, rounded (the
   verdict after a game goes by Kudos: 30+ impressed, 15+ a nod); 100 Kudos with a species and it joins, at
   its zone's level (`Zone.level`: 40 / 43 / 46).
 
