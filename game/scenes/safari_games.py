@@ -31,7 +31,7 @@ COUNTDOWN = 2.4  # "3, 2, 1, Go!" before the clock starts
 W, H = settings.LOGICAL_SIZE
 # The species with a game, and which (safari_games_2.py has the later ones).
 GAMES = {"chansey": "egg_catch", "scyther": "fruit_slice", "tauros": "rodeo", "pinsir": "pinch",
-         "kangaskhan": "wheres_baby", "exeggcute": "egg_pop"}
+         "kangaskhan": "wheres_baby", "exeggcute": "egg_pop", "rhyhorn": "rock_smash", "dratini": "upstream"}
 
 
 def _icon(species: str, height: int) -> pygame.Surface:
@@ -63,6 +63,12 @@ class Challenge:
         "egg_pop": ("Egg Pop!", ["Eggs pop up out of the nests: bop the awake ones!",
                                  "Not the sleeping ones. Cracked golden eggs are lucky.",
                                  "Bop: Left, Up/Space, Right for the nests, or tap one."]),
+        "rock_smash": ("Rock Smash!", ["Boulders roll at Rhyhorn: charge and smash them!",
+                                       "Press to charge, press again to smash. Big rocks need more.",
+                                       "Press: Space or Enter, or tap."]),
+        "upstream": ("Upstream!", ["Swim up the river: slip between the rocks, grab the pearls.",
+                                   "Dratini sinks unless you swim: each press sends it up.",
+                                   "Swim: Space or Up, or tap."]),
     }
 
     def __init__(self, species: str):
@@ -403,6 +409,7 @@ def _segment_hits(a, b, c, r) -> bool:
 def game_for(species: str):
     """The game scene class for `species` (see GAMES)."""
     from .safari_games_2 import Pinch, Rodeo  # (they build on this module)
-    from .safari_games_3 import EggPop, WheresBaby
+    from .safari_games_3 import EggPop, RockSmash, Upstream, WheresBaby
     return {"egg_catch": EggCatch, "fruit_slice": FruitSlice, "rodeo": Rodeo, "pinch": Pinch,
-            "wheres_baby": WheresBaby, "egg_pop": EggPop}[GAMES[species]]
+            "wheres_baby": WheresBaby, "egg_pop": EggPop, "rock_smash": RockSmash,
+            "upstream": Upstream}[GAMES[species]]

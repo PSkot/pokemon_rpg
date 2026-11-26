@@ -720,21 +720,21 @@ back outside. Saving inside saves outside (a visit doesn't outlast a save).
   never tells a right door from a wrong one.
 - **Tall grass** on every map (drawn over the player): each step in it
   has an 8% chance of a wild Pokémon, by zone (`Zone.grass`, weights):
-  Outer Grassland Tauros 3, Pinsir 2, Scyther 2, Exeggcute 2; Deep Woods
-  Kangaskhan 3, Pinsir 3, Scyther 2, Tauros 1, Exeggcute 1; Ancient Marsh
-  Kangaskhan 2, Exeggcute 2, Scyther 2, Tauros 1, Pinsir 1 and the rare
-  Chansey 1. It **challenges you to its game** (Play or Decline: declining
+  Outer Grassland Tauros 3, Pinsir 2, Scyther 2, Exeggcute 2, Rhyhorn 1;
+  Deep Woods Kangaskhan 3, Pinsir 3, Scyther 2, Tauros 1, Exeggcute 1,
+  Rhyhorn 1; Ancient Marsh Rhyhorn 2, Dratini 2, Kangaskhan 2, Exeggcute 2,
+  Scyther 1, Tauros 1, Pinsir 1 and the rare Chansey 1. It **challenges you to its game** (Play or Decline: declining
   costs nothing; see `mechanics.md`, *Safari games*). The score earns
-  **Kudos** with that species (Egg Catch, Rodeo and Where's Baby? ×1 per
-  point, Egg Pop ×0.75, Fruit Slice ×0.6, Pinch! ×0.45: a good game of any
-  is worth about 30–35); at **100** it joins the team (the
+  **Kudos** with that species (Egg Catch, Rodeo, Where's Baby? and
+  Upstream ×1 per point, Rock Smash ×0.85, Egg Pop ×0.75, Fruit Slice
+  ×0.6, Pinch! ×0.45: a good game of any is worth about 30–35); at **100** it joins the team (the
   party, or the reserve), at its zone's level: Lv40 (Outer Grassland), 43
   (Deep Woods), 46 (Ancient Marsh). Kudos are saved (`Game.kudos`), so it
   can take several visits; after it has joined, its games earn nothing more.
   Kudos show after each game, at the Safari desk and in the quest log.
-- **Recruitable here:** Chansey, Scyther, Tauros, Pinsir, Kangaskhan and
-  Exeggcute (the species with a game). Rhyhorn and Dratini (Red/Blue: by
-  fishing) come next, each with its own game.
+- **Recruitable here:** all of Red/Blue's Safari Pokémon, each with its
+  own game: Chansey, Scyther, Tauros, Pinsir, Kangaskhan, Exeggcute,
+  Rhyhorn and Dratini (Red/Blue: by fishing; also from Mew).
 - **Key items:** the Warden's **Gold Teeth** in a dead end of the Marsh;
   **HM03 Surf** at the heart (the true path's end: the "Secret House").
 

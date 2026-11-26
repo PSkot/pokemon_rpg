@@ -43,7 +43,7 @@ GRASS_CHANCE = 0.08      # per step in tall grass: an encounter
 GOLD_TEETH, SURF = "Gold Teeth", "HM03 Surf"
 KUDOS_NEEDED = 100
 KUDOS_RATE = {"egg_catch": 1.0, "fruit_slice": 0.6, "rodeo": 1.0, "pinch": 0.45,
-              "wheres_baby": 1.0, "egg_pop": 0.75}  # Kudos per point of a game's score
+              "wheres_baby": 1.0, "egg_pop": 0.75, "rock_smash": 0.85, "upstream": 1.0}  # Kudos per point of a game's score
 
 
 @dataclass(frozen=True)
@@ -59,14 +59,15 @@ class Zone:
 ZONES = (
     Zone("Outer Grassland", replace(MEADOW, key="safari_1", name="Safari Zone",
                                     pool=(PoolEntry("tauros", 1, (30, 32)),)),
-         (("tauros", 3), ("pinsir", 2), ("scyther", 2), ("exeggcute", 2)), 40),
+         (("tauros", 3), ("pinsir", 2), ("scyther", 2), ("exeggcute", 2), ("rhyhorn", 1)), 40),
     Zone("Deep Woods", replace(FOREST, key="safari_2", name="Safari Zone",
                                pool=(PoolEntry("pinsir", 1, (35, 38)),)),
-         (("kangaskhan", 3), ("pinsir", 3), ("scyther", 2), ("tauros", 1), ("exeggcute", 1)), 43),
+         (("kangaskhan", 3), ("pinsir", 3), ("scyther", 2), ("tauros", 1), ("exeggcute", 1), ("rhyhorn", 1)), 43),
     Zone("Ancient Marsh", replace(MEADOW, key="safari_3", name="Safari Zone",
                                   pool=(PoolEntry("chansey", 1, (40, 44)),),
                                   sky=((40, 70, 64), (170, 190, 150)), tint=(150, 190, 160)),
-         (("kangaskhan", 2), ("exeggcute", 2), ("scyther", 2), ("tauros", 1), ("pinsir", 1), ("chansey", 1)), 46),
+         (("rhyhorn", 2), ("dratini", 2), ("kangaskhan", 2), ("exeggcute", 2), ("scyther", 1), ("tauros", 1),
+          ("pinsir", 1), ("chansey", 1)), 46),
 )
 
 

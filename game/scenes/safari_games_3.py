@@ -8,6 +8,13 @@ use): keyboard and touch both work in each.
 - Exeggcute, **Egg Pop** (`EggPop`): eggs pop up out of three nests; bop
   the awake ones (Left, Up/Space, Right for the nests, or tap one), not
   the sleeping ones. A cracked egg's lucky; bopping an empty nest costs.
+- Rhyhorn, **Rock Smash** (`RockSmash`): boulders roll at Rhyhorn. Press
+  to start charging (the meter rises, then falls back), press again to
+  smash the nearest one in reach: big ones need a fuller charge. One that
+  rolls into Rhyhorn costs, and stuns it.
+- Dratini, **Upstream** (`Upstream`): Dratini swims up a river, sinking
+  unless you press (or tap): each press sends it up. Slip through the
+  gaps between the rocks and grab the pearls.
 """
 
 from __future__ import annotations
@@ -262,3 +269,244 @@ def _egg(canvas: pygame.Surface, x: int, y: int, kind: str, squash: float) -> No
     if kind == "lucky":  # a crack
         pygame.draw.lines(canvas, (160, 110, 30), False,
                           [(body.x + 4, body.y + 8), (x - 3, body.y + 12), (x + 2, body.y + 7), (body.right - 4, body.y + 11)], 1)
+
+
+_RIVER: list[pygame.Surface] = []
+
+
+def _river() -> pygame.Surface:
+    """Upstream's water: deep blue, darker towards the bed (made once)."""
+    if not _RIVER:
+        water = pygame.Surface((W, BED - SURFACE), pygame.SRCALPHA)
+        for y in range(BED - SURFACE):
+            k = y / (BED - SURFACE)
+            water.fill((round(80 - 50 * k), round(150 - 70 * k), round(220 - 70 * k), 225), (0, y, W, 1))
+        _RIVER.append(water)
+    return _RIVER[0]
+
+
+# --- Rhyhorn: Rock Smash -------------------------------------------------------
+
+SMASH_KEYS = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_z, pygame.K_UP)
+RHYHORN_X = 120          # its horn's tip
+SMASH_Y = 300            # the ground the boulders roll on
+REACH = 70               # px in front of the horn a charge reaches
+CHARGE_TIME = 0.8        # seconds from empty to full (then it falls back: it's timing, not holding)
+ROCKS = {"small": (12, 0.3, 1), "medium": (17, 0.6, 2), "big": (23, 0.85, 4)}  # radius, charge needed, points
+BUMP_COST, BOUNCE_COST = 2, 1
+STUN_TIME = 0.6
+
+
+class RockSmash(MiniGame):
+    TITLE = "Rock Smash"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.rocks: list[list] = []   # [size, x, spin]
+        self.next_rock = 0.6
+        self.charging: float | None = None  # seconds charged, while charging
+        self.dash = 0.0               # seconds left of the dash forward
+        self.stun = 0.0
+        self.bits: list[list] = []    # [x, y, vx, vy, age, color]
+        self.rhyhorn = _icon("rhyhorn", 58)
+
+    def handle_event(self, event: pygame.event.Event) -> None:
+        super().handle_event(event)
+        if event.type == pygame.KEYDOWN and event.key in SMASH_KEYS and self.playing:
+            self._press()
+
+    def pointer(self, pos, drag) -> None:
+        if not drag:
+            self._press()
+
+    @property
+    def power(self) -> float:
+        """The charge, 0..1: up, then back down (and up again)."""
+        if self.charging is None:
+            return 0.0
+        k = (self.charging / CHARGE_TIME) % 2
+        return k if k <= 1 else 2 - k
+
+    def _press(self) -> None:
+        if self.stun or self.dash:
+            return
+        if self.charging is None:
+            self.charging = 0.0
+            return
+        power, self.charging = self.power, None
+        self.dash = 0.18
+        rock = min((r for r in self.rocks if r[1] - ROCKS[r[0]][0] <= RHYHORN_X + REACH), key=lambda r: r[1],
+                   default=None)
+        if rock is None:
+            return
+        radius, need, points = ROCKS[rock[0]]
+        if power >= need:
+            self.rocks.remove(rock)
+            self.pop(rock[1], SMASH_Y - 2 * radius - 14, points)
+            for _ in range(5 + radius // 3):
+                self.bits.append([rock[1], SMASH_Y - radius, self.rng.uniform(-60, 160), self.rng.uniform(-240, -80),
+                                  0.0, (120, 110, 100)])
+        else:  # not hard enough: it bounces back a little
+            rock[1] += 40
+            self.pop(rock[1], SMASH_Y - 2 * radius - 14, -BOUNCE_COST)
+
+    def play(self, dt: float) -> None:
+        progress = 1 - self.time_left / GAME_TIME
+        self.stun = max(0.0, self.stun - dt)
+        self.dash = max(0.0, self.dash - dt)
+        if self.charging is not None:
+            self.charging += dt
+        self.next_rock -= dt
+        if self.next_rock <= 0:
+            self.next_rock = self.rng.uniform(1.0, 1.6) - 0.45 * progress
+            size = self.rng.choices(tuple(ROCKS), weights=(45, 35, 20))[0]
+            self.rocks.append([size, W + 30.0, 0.0])
+        speed = 90 + 90 * progress
+        for rock in self.rocks:
+            rock[1] -= speed * dt
+            rock[2] += speed * dt / ROCKS[rock[0]][0]
+        for rock in [r for r in self.rocks if r[1] - ROCKS[r[0]][0] <= RHYHORN_X - 6]:  # it rolled into Rhyhorn
+            self.rocks.remove(rock)
+            self.stun, self.charging = STUN_TIME, None
+            self.pop(RHYHORN_X, SMASH_Y - 60, -BUMP_COST)
+        for b in self.bits:
+            b[3] += 600 * dt
+            b[0] += b[2] * dt
+            b[1] += b[3] * dt
+            b[4] += dt
+        self.bits = [b for b in self.bits if b[4] < 0.9]
+
+    def draw_play(self, canvas: pygame.Surface) -> None:
+        pygame.draw.line(canvas, (110, 90, 70), (0, SMASH_Y + 1), (W, SMASH_Y + 1), 2)
+        zone = pygame.Surface((REACH, 4), pygame.SRCALPHA)  # how far a charge reaches
+        zone.fill((255, 230, 90, 110))
+        canvas.blit(zone, (RHYHORN_X, SMASH_Y + 3))
+        shake = round(math.sin(self.t * 50) * 2) if self.stun else 0
+        forward = round(18 * math.sin(math.pi * self.dash / 0.18)) if self.dash else 0
+        crouch = round(self.power * 3)
+        canvas.blit(self.rhyhorn, self.rhyhorn.get_rect(bottomright=(RHYHORN_X + forward + shake, SMASH_Y + 2 + crouch)))
+        for size, x, spin in self.rocks:
+            radius = ROCKS[size][0]
+            centre = (round(x), SMASH_Y - radius)
+            pygame.draw.circle(canvas, (70, 62, 56), centre, radius + 1)
+            pygame.draw.circle(canvas, (140, 128, 116), centre, radius)
+            pygame.draw.circle(canvas, (170, 160, 148), (centre[0] - radius // 3, centre[1] - radius // 3), radius // 3)
+            for k in range(3):  # cracks, turning as it rolls
+                a = spin + k * 2.1
+                pygame.draw.line(canvas, (90, 80, 72), centre,
+                                 (centre[0] + math.cos(a) * radius * 0.8, centre[1] + math.sin(a) * radius * 0.8), 1)
+        for x, y, _, _, _, color in self.bits:
+            pygame.draw.rect(canvas, color, (round(x), round(y), 4, 4))
+        # The charge meter, with marks for what each size needs.
+        bar = pygame.Rect(40, 324, 160, 8)
+        pygame.draw.rect(canvas, (30, 30, 40), bar)
+        fill = (255, 120, 60) if self.power >= ROCKS["big"][1] else (255, 210, 80)
+        pygame.draw.rect(canvas, fill, (bar.x, bar.y, round(bar.w * self.power), bar.h))
+        for _, need, _ in ROCKS.values():
+            x = bar.x + round(bar.w * need)
+            pygame.draw.line(canvas, (255, 255, 255), (x, bar.y - 2), (x, bar.bottom + 1))
+        pygame.draw.rect(canvas, (0, 0, 0), bar, 1)
+
+    def draw_overlay(self, window: pygame.Surface) -> None:
+        super().draw_overlay(window)
+        if self.t < 6 and not self.over:
+            ui.text(window, "Press to charge, press again to smash: bigger rocks need more!", (W / 2, 100), ui.WHITE,
+                    size=22, align="center")
+
+
+# --- Dratini: Upstream ---------------------------------------------------------
+
+SWIM_KEYS = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_z, pygame.K_UP)
+DRATINI_X = 150
+SURFACE, BED = 150, 320   # the river's surface and bed
+SINK = 300                # px/s² it drifts down
+KICK = -140               # px/s a press sends it up (about 33 px)
+GAP = 104                 # px of open water between a rock pair (narrower as it goes)
+ROCK_W = 34
+HIT_COST, PEARL, PASS = 3, 2, 1
+SAFE_TIME = 0.8           # seconds it can't be hit again after a bump
+
+
+class Upstream(MiniGame):
+    TITLE = "Upstream"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.y, self.vy = (SURFACE + BED) / 2, 0.0
+        self.rocks: list[list] = []   # [x, gap top, passed]
+        self.pearls: list[list] = []  # [x, y]
+        self.next_rock = 0.6
+        self.safe = 0.0
+        self.dratini = _icon("dratini", 30)
+
+    def handle_event(self, event: pygame.event.Event) -> None:
+        super().handle_event(event)
+        if event.type == pygame.KEYDOWN and event.key in SWIM_KEYS and self.playing:
+            self.vy = KICK
+
+    def pointer(self, pos, drag) -> None:
+        if not drag:
+            self.vy = KICK
+
+    def _gap(self) -> float:
+        return GAP - 24 * (1 - self.time_left / GAME_TIME)
+
+    def play(self, dt: float) -> None:
+        progress = 1 - self.time_left / GAME_TIME
+        self.safe = max(0.0, self.safe - dt)
+        self.vy = min(220.0, self.vy + SINK * dt)
+        self.y = max(SURFACE + 8, min(BED - 8, self.y + self.vy * dt))
+        if self.y >= BED - 8:
+            self.vy = min(self.vy, 0.0)
+        speed = 120 + 60 * progress
+        self.next_rock -= dt
+        if self.next_rock <= 0:
+            self.next_rock = self.rng.uniform(1.3, 1.7) - 0.4 * progress
+            top = self.rng.uniform(SURFACE + 10, BED - 10 - self._gap())
+            self.rocks.append([W + 20.0, top, False])
+            self.pearls.append([W + 20.0 + self.rng.uniform(70, 110), self.rng.uniform(SURFACE + 20, BED - 20)])
+        for rock in self.rocks:
+            rock[0] -= speed * dt
+            if not rock[2] and rock[0] + ROCK_W / 2 < DRATINI_X:
+                rock[2] = True
+                self.pop(DRATINI_X, self.y - 24, PASS)
+        for pearl in self.pearls:
+            pearl[0] -= speed * dt
+        hit = next((r for r in self.rocks if abs(r[0] - DRATINI_X) < ROCK_W / 2 + 8
+                    and not r[1] + 6 < self.y < r[1] + self._gap() - 6), None)
+        if hit and not self.safe:
+            self.safe = SAFE_TIME
+            hit[2] = True  # (no point for it)
+            self.pop(DRATINI_X, self.y - 24, -HIT_COST)
+        for pearl in [p for p in self.pearls if math.hypot(p[0] - DRATINI_X, p[1] - self.y) < 16]:
+            self.pearls.remove(pearl)
+            self.pop(pearl[0], pearl[1] - 16, PEARL)
+        self.rocks = [r for r in self.rocks if r[0] > -40]
+        self.pearls = [p for p in self.pearls if p[0] > -20]
+
+    def draw_play(self, canvas: pygame.Surface) -> None:
+        canvas.blit(_river(), (0, SURFACE))
+        for i in range(0, W, 24):  # ripples on the surface, drifting by
+            x = (i - self.t * 60) % W
+            pygame.draw.line(canvas, (200, 230, 255), (x, SURFACE), (x + 10, SURFACE), 1)
+        pygame.draw.rect(canvas, (90, 80, 60), (0, BED, W, 8))
+        gap = self._gap()
+        for x, top, _ in self.rocks:
+            for y0, y1 in ((SURFACE - 6, top), (top + gap, BED + 4)):
+                r = pygame.Rect(round(x - ROCK_W / 2), round(y0), ROCK_W, round(y1 - y0))
+                pygame.draw.rect(canvas, (70, 62, 56), r.inflate(2, 2), border_radius=10)
+                pygame.draw.rect(canvas, (132, 122, 112), r, border_radius=10)
+                pygame.draw.rect(canvas, (166, 156, 144), (r.x + 4, r.y + 4, 7, max(2, r.h - 8)), border_radius=3)
+        for x, y in self.pearls:
+            pygame.draw.circle(canvas, (250, 246, 255), (round(x), round(y)), 5)
+            pygame.draw.circle(canvas, (200, 190, 230), (round(x) + 1, round(y) + 1), 2)
+        tilt = max(-25.0, min(25.0, -self.vy / 8))
+        img = pygame.transform.rotate(self.dratini, tilt)
+        if not self.safe or int(self.safe * 12) % 2:  # (blinking while it can't be hit)
+            canvas.blit(img, img.get_rect(center=(DRATINI_X, round(self.y))))
+
+    def draw_overlay(self, window: pygame.Surface) -> None:
+        super().draw_overlay(window)
+        if self.t < 6 and not self.over:
+            ui.text(window, "Swim up with each press or tap: slip between the rocks, grab the pearls!", (W / 2, 100),
+                    ui.WHITE, size=22, align="center")

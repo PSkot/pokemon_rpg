@@ -1053,10 +1053,25 @@ ends with the score (Enter or a tap goes back to the map).
   tap the nest): an awake egg (62%) +1, a cracked golden one (10%) +3, a
   sleeping one (28%) −2; an empty nest −1. A quick, careful bot scores
   51–66, a slower one about 40, one that bops everything about 27.
+- **Rock Smash** (Rhyhorn): boulders roll at Rhyhorn (90 px/s at first,
+  180 at the end; one every 1.0–1.6 s, 0.45 less by the end): small (45%),
+  medium (35%) or big (20%). Press (Space, Enter, Up, or a tap) to start
+  charging: the meter fills in 0.8 s, then falls back and fills again; press
+  again to smash the nearest boulder within 70 px of the horn. A charge of
+  at least 0.3 / 0.6 / 0.85 smashes a small / medium / big one: +1 / +2 /
+  +4; too weak, −1 and it bounces back. One that reaches Rhyhorn: −2, and
+  it's stunned for 0.6 s. A well-timed bot scores 27–50 (38 on average);
+  mashing, 0.
+- **Upstream** (Dratini): Dratini sinks (300 px/s²) unless you press
+  (Space, Up, or a tap: each sends it up at 140 px/s, about 33 px). Rock
+  pairs come every 1.3–1.7 s (0.4 less by the end) with a gap of 104 px
+  narrowing to 80; each passed +1, each pearl +2, a bump −3 (then 0.8 s
+  safe). A careful bot scores 24–35, a sloppy one about 20; tapping at
+  random, 0.
 - Scores never go below 0.
-- **Kudos** (`safari.KUDOS_RATE`, `KUDOS_NEEDED`): Egg Catch's, Rodeo's
-  and Where's Baby?'s score ×1, Egg Pop's ×0.75, Fruit Slice's ×0.6,
-  Pinch!'s ×0.45, rounded (the
+- **Kudos** (`safari.KUDOS_RATE`, `KUDOS_NEEDED`): Egg Catch's, Rodeo's,
+  Where's Baby?'s and Upstream's score ×1, Rock Smash's ×0.85, Egg Pop's
+  ×0.75, Fruit Slice's ×0.6, Pinch!'s ×0.45, rounded (the
   verdict after a game goes by Kudos: 30+ impressed, 15+ a nod); 100 Kudos with a species and it joins, at
   its zone's level (`Zone.level`: 40 / 43 / 46).
 
