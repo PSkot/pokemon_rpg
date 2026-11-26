@@ -1018,7 +1018,8 @@ counting the way there.
 - **Live Wires** (`thunder_stone`, the Route 10 **Voltorb**): the
   abandoned **Power Plant** (route "power_plant", 70 tiles, the Vermilion
   Gym's steel look), its **loose current** paralysing on touch, wild
-  Voltorb, Magnemite, Magneton and Electrode (Lv36–39), then the **Live
+  Voltorb, Magnemite, Magneton and Electrode (Lv36–39; a rare Electabuzz,
+  38–40), then the **Live
   Wire Gang**: a giant Electabuzz 45 with Magneton 41 and Electrode 41.
   About 78% won. **Thunder Stone**.
 - Rewards: ₽1,500 and 1,400 XP each, besides the stone.
@@ -1303,6 +1304,15 @@ How the party grows (`world/instance.py` `RECRUITS`, quests made in
 | Machop | 8 | Rock Tunnel | 29–31 | Lv34 |
 | Onix | 4 | Rock Tunnel | 30–32 | Lv35 |
 | Growlithe | 6 | Route 8 | 31–33 | Lv36 |
+| Gastly | 8 | Pokémon Tower | 37–39 | Lv42 |
+| Cubone | 6 | Pokémon Tower | 37–39 | Lv42 |
+| Magnemite | 6 | Power Plant | 35–37 | Lv40 |
+| Electabuzz | 3 | Power Plant | 36–38 | Lv41 |
+
+The Power Plant's are met in its wild packs: once *Live Wires* is done, a
+doorway on Route 10 (by the Pokémon Center) leads back in any time
+(`Route.needs` ("thunder_stone", "done")), where Electabuzz now turns up
+too (rarely).
 
 Not every Pokémon comes this way: the starters, and those only met with
 trainers (Geodude, Onix, the S.S. Anne's Machop, Tentacool and

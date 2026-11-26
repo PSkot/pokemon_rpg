@@ -35,6 +35,14 @@ from .themes import (CERULEAN_GYM, DIGLETTS_CAVE, FOREST, MEADOW, MT_MOON, PEWTE
 from .spinners import carve, layout_of
 from .towns import Folk
 
+# The Power Plant (route "power_plant", recruitment too): the Vermilion Gym's
+# machine hall, full of Electric Pokémon.
+POWER_PLANT = replace(VERMILION_GYM, key="power_plant", name="Power Plant", decor="vermilion_gym",
+                      pool=(PoolEntry("voltorb", 3, (36, 38)), PoolEntry("magnemite", 3, (36, 38)),
+                            PoolEntry("magneton", 1, (37, 39)), PoolEntry("electrode", 1, (37, 39)),
+                            PoolEntry("electabuzz", 1, (38, 40))),
+                      group_sizes=((2, 50), (3, 50)))
+
 # Stands in a boss group for the rival's starter, which depends on the
 # player's (`progress.Game.rival_starter`).
 RIVAL_STARTER = "rival_starter"
@@ -960,12 +968,12 @@ ROUTES.update({r.key: r for r in [
     # The Thunder Stone: the abandoned Power Plant, its loose current
     # crackling over the floor (`puzzle` "sparks": paralysis), full of wild
     # Electric Pokémon, and a giant Electabuzz's gang at the generator.
-    Route("power_plant", "Power Plant",
-          replace(VERMILION_GYM, key="power_plant", name="Power Plant", decor="vermilion_gym",
-                  pool=(PoolEntry("voltorb", 3, (36, 38)), PoolEntry("magnemite", 3, (36, 38)),
-                        PoolEntry("magneton", 1, (37, 39)), PoolEntry("electrode", 1, (37, 39))),
-                  group_sizes=((2, 50), (3, 50))),
-          maps=1, towns=("route_10", "route_10"), boss=True,
+    # (Once its quest is done, a doorway on Route 10 leads back in: its wild
+    # Magnemite and Electabuzz can be recruited, as in Red/Blue.)
+    Route("power_plant", "Power Plant", POWER_PLANT,
+          maps=1, towns=("route_10", "route_10"), boss=True, needs=("thunder_stone", "done"),
+          blocked="The path down the river to the old Power Plant. Sparks crackle at the end of it. (Voltorb, at "
+                  "the Pokémon Center, knows the way in.)",
           boss_group=(("electabuzz", 45), ("magneton", 41), ("electrode", 41)), boss_scale=2,
           trainer="Live Wire Gang", boss_chest="battle", prize=40, boss_loot=MID_BOSS, cols=70, puzzle="sparks",
           folk="route_10_voltorb"),
@@ -1043,6 +1051,12 @@ RECRUITS = {r.species: r for r in [
     Recruit("machop", 8, ROCK_TUNNEL, 31),
     Recruit("onix", 4, ROCK_TUNNEL, 32),
     Recruit("growlithe", 6, ROUTE_8, 33),
+    # The Pokémon Tower's ghosts and Cubone; the Power Plant's Magnemite and
+    # Electabuzz (its doorway on Route 10 opens once "thunder_stone" is done).
+    Recruit("gastly", 8, POKEMON_TOWER, 39),
+    Recruit("cubone", 6, POKEMON_TOWER, 39),
+    Recruit("magnemite", 6, POWER_PLANT, 37),
+    Recruit("electabuzz", 3, POWER_PLANT, 38),
 ]}
 
 

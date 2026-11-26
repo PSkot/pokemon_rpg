@@ -397,8 +397,8 @@ TOWNS = {t.key: t for t in [
     # last stop before Rock Tunnel.
     Town("route_10", "Route 10 Pokémon Center", 44, (
         Building("Pokémon Center", (FUNCTIONAL, 0), 18),
-    ), exits=(("left", "route_9"), ("right", "rock_tunnel")), home_col=14,
-         folk=(Folk("route_10_voltorb", "Voltorb", "voltorb", 32, (
+    ), exits=(("left", "route_9"), ("right", "rock_tunnel"), (27, "power_plant")), home_col=14,
+         folk=(Folk("route_10_voltorb", "Voltorb", "voltorb", 36, (
              "Bzzt! The Power Plant is down the river from here. It's been shut for ages... Bzzt.",
              "Rock Tunnel is right there. Pitch dark! Even we Voltorb don't glow enough to light it.",
          )),
@@ -408,7 +408,7 @@ TOWNS = {t.key: t for t in [
                    "Four arms, and I still can't scratch my own back. It's a rock thing.",
                )),
                # Evolution quest: Voltorb -> Electrode.
-               Folk("route_10_electrode", "Electrode", "electrode", 28, (
+               Folk("route_10_electrode", "Electrode", "electrode", 32, (
                    "BZZRT! Don't startle me. Things get... explosive when I'm startled.",
                    "A Voltorb grows into an Electrode once it's ready (Lv30), and once it's proved it can hold a charge.",
                )))),
