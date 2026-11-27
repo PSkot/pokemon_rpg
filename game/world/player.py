@@ -1,5 +1,6 @@
 """The player character: walking, running and jumping around a map's tiles."""
 
+import math
 from dataclasses import dataclass
 
 import pygame
@@ -43,6 +44,13 @@ SKATE_LIFT = 9          # px: the deck's height over the ground
 SKATE_KICK = 0.9        # a 1-tile step up is a ramp: it launches the board up at this × its speed (px/s)
 SKATE_KICK_MAX = 330    # ... at most
 
+# Surfing (on a water map's water, world/hms.py): the Water Pokémon
+# carrying the player swims along the surface (as fast as walking and
+# running), sunk SURF_SINK px into it and bobbing SURF_BOB px; it can jump
+# from the water as from the ground.
+SURF_BOB = 1.5
+SURF_BOB_SPEED = 4.0  # radians per second
+
 # Jump sheet row: crouch, leap (rising), airborne (falling), landing.
 JUMP_CROUCH, JUMP_RISE, JUMP_FALL, JUMP_LAND = range(4)
 
@@ -70,6 +78,8 @@ class Player:
         self.skating = False          # on a board (the skate road): momentum, `vx`
         self.vx = 0.0                 # skating: horizontal speed, positive = right
         self.board = 0                # skating: which board (`tileset.SKATEBOARDS` row)
+        self.surfing = False          # on the water (a water map): swimming
+        self.t = 0.0                  # seconds on the map (the swimmer's bobbing)
 
     def become(self, species: Species) -> None:
         """Look like `species` (the lead Pokémon, e.g. after it evolves)."""
@@ -112,6 +122,12 @@ class Player:
 
     def update(self, dt: float, c: Controls, level: Level) -> None:
         self.state_time += dt
+        self.t += dt
+        self._update(dt, c, level)
+        self.surfing = (self.on_ground and level.water_at(self.x)
+                        and abs(self.feet_y - level.ground_y(self.x)) < 0.5)
+
+    def _update(self, dt: float, c: Controls, level: Level) -> None:
 
         if self.on_ground and self.state != "squat" and c.jump:
             self.set_state("squat")
@@ -232,6 +248,9 @@ class Player:
         """Draw the player; `monster` is the Pokémon it is (for its hat)."""
         anim, i, flip = self.anim, self.frame_index, self.facing < 0
         lift = SKATE_LIFT if self.skating else 0
+        if self.surfing:
+            from .water import SURF_SINK  # (drawing only)
+            lift = -SURF_SINK + round(SURF_BOB * math.sin(self.t * SURF_BOB_SPEED))
         box = anim.place(i, self.x, self.feet_y + FOOT_SINK - lift, flip)
         if self.skating:
             from .tileset import draw_skateboard  # (drawing only)

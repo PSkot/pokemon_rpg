@@ -533,6 +533,19 @@ you are working on.
   30 s of `play`, the score) entered from `SafariScene._encounter` and
   handing the score back through `on_done`; taps (mouse or touch, with
   `drag` while held) are the swipes and basket moves.
+- HMs used from the bag (`world/hms.py`): HM03 Surf adds "surf" to
+  `Game.hms` and teaches the move to Water Pokémon (`Monster.hms`, saved;
+  `talent_core.HM_MOVES`: `TalentTree.learned` falls back on it, so talents
+  and the move screens treat it like any move; `Game.add_member` and
+  loading a save teach newcomers). Water maps (`Theme.sea`, themes `SEA`
+  and `RIVER`): `level._sea` lays out water (`WATER` tiles, "~": their top
+  is a floor, like ground) and islands; `water.py` draws the water with the
+  tiles and its see-through front over everyone (`MapScene.draw`);
+  `tileset._open_sea` is the open sea's background (code-drawn art; the
+  river uses the meadow's). `Player.surfing` while on the water;
+  `MapScene.rider` (`hms.surfer`: the party's first Water Pokémon) is who
+  the player looks like there. `TownScene` shuts a water route's doorway
+  while `hms.can_surf` says why not.
 - The skate road (`Theme.skate`): `level._downhill` steps the ground down
   to the right; `Player.skating` gives the player momentum (`vx`, 1-tile
   steps are ramps) and draws a board under it (`tileset.draw_skateboard`,

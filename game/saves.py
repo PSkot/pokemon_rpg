@@ -84,7 +84,8 @@ TALENTS_VERSION = 8  # saves from before talents (skill trees) keep their equipp
 def _monster(m: Monster) -> dict:
     return {"species": m.species.key, "level": m.level, "xp": m.xp, "hp": m.hp, "status": m.status,
             "sleep_rounds": m.sleep_rounds, "gear": {slot: _gear(g) for slot, g in m.gear.items()},
-            "talents": m.talents, "equipped": m.equipped, "sv": TALENTS_VERSION, "loan": m.loan}
+            "talents": m.talents, "equipped": m.equipped, "sv": TALENTS_VERSION, "loan": m.loan,
+            "hms": m.hms}
 
 
 def _load_monster(d: dict) -> Monster:
@@ -93,7 +94,7 @@ def _load_monster(d: dict) -> Monster:
     talents = d.get("talents", []) if d.get("sv", 1) >= TALENTS_VERSION else []
     m = Monster(SPECIES[d["species"]], d["level"], hp=d["hp"], gear=gear, status=d["status"],
                 sleep_rounds=d["sleep_rounds"], xp=d["xp"], talents=list(talents),
-                equipped=list(d.get("equipped", [])))
+                equipped=list(d.get("equipped", [])), hms=list(d.get("hms", [])))
     m.loan = d.get("loan", "")
     if not m.equipped:  # (nothing equipped: e.g. a line that only had Tackle until its moves came in)
         m.equipped = m.known[1:][-MAX_EQUIPPED:]
@@ -126,6 +127,7 @@ def snapshot(scene) -> dict:
         "away": {key: _monster(m) for key, m in game.away.items()},
         "visited": sorted(game.visited),
         "kudos": game.kudos,
+        "hms": sorted(game.hms),
         "shop_visits": game.shop_visits,
         "shop_bought": game.shop_bought,
         "location": scene.location(),
@@ -254,6 +256,9 @@ def load(info: SaveInfo):
         game.away = {key: _load_monster(d) for key, d in data.get("away", {}).items()}
         game.visited = set(data.get("visited", []))  # (older saves: the Town Map works out the rest)
         game.kudos = {k: int(v) for k, v in data.get("kudos", {}).items()}
+        game.hms = set(data.get("hms", []))
+        from .world.hms import teach_all
+        teach_all(game)  # (anyone that should know an HM move and doesn't yet)
         game.shop_visits = dict(data.get("shop_visits", {}))
         game.shop_bought = {town: list(bought) for town, bought in data.get("shop_bought", {}).items()}
         where = data["location"]

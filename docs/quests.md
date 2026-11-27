@@ -736,7 +736,9 @@ back outside. Saving inside saves outside (a visit doesn't outlast a save).
   own game: Chansey, Scyther, Tauros, Pinsir, Kangaskhan, Exeggcute,
   Rhyhorn and Dratini (Red/Blue: by fishing; also from Mew).
 - **Key items:** the Warden's **Gold Teeth** in a dead end of the Marsh;
-  **HM03 Surf** at the heart (the true path's end: the "Secret House").
+  **HM03 Surf** at the heart (the true path's end: the "Secret House"):
+  used from the bag, it teaches Water Pokémon Surf and opens water maps
+  (`mechanics.md`, Surf).
 
 ### The Warden's Teeth
 

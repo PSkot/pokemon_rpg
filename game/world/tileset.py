@@ -12,7 +12,8 @@ from functools import cache
 import pygame
 
 from .. import settings
-from .level import EMPTY, PLATFORM, ROWS, SOLID, TILE, Level
+from . import water
+from .level import EMPTY, PLATFORM, ROWS, SOLID, TILE, WATER, Level
 from .themes import Palette, Theme
 
 FAR, NEAR = 0.2, 0.5  # how fast the farthest and nearest background layers scroll (× the camera)
@@ -152,6 +153,13 @@ def _puddle(s, x, y, rng, p):
     s.set_at((x - w // 4, y - 1), (190, 230, 255))
 
 
+def _shell(s, x, y, rng, p):
+    """A little seashell on the sand (the sea's islands)."""
+    color = rng.choice(((240, 170, 160), (250, 236, 214), (236, 196, 120)))
+    pygame.draw.polygon(s, color, [(x - 3, y), (x + 3, y), (x, y - 4)])
+    pygame.draw.line(s, (150, 104, 90), (x, y - 3), (x, y - 1))
+
+
 def _moonstone(s, x, y, rng, p):
     """A faint violet glint (Mt. Moon)."""
     pygame.draw.polygon(s, (150, 130, 210), [(x - 2, y), (x + 2, y), (x + 1, y - 5), (x - 1, y - 5)])
@@ -199,6 +207,7 @@ DECOR = {  # theme -> [(chance per ground tile, draw)] (code-drawn themes; the m
     "vermilion_gym": [],  # (steel floor plates)
     "digletts_cave": [(0.08, _rock)],  # (dirt the Diglett dug out)
     "tower_1": [], "tower_2": [], "tower_3": [], "tower_4": [], "tower_5": [],
+    "sea": [(0.10, _rock), (0.06, _shell)],
     "celadon_gym": [(0.10, _flower)],  # (flowers in the moss)  # (the Battle Tower's polished floors)
 }
 
@@ -249,6 +258,8 @@ def _render_woods(level: Level, surface: pygame.Surface) -> None:
     h = surface.get_height()
     # Soil everywhere under the grass, speckled like the tileset's soil.
     for col in range(level.cols):
+        if level.tile(col, level.surface[col]) == WATER:
+            continue
         top = _surface_px(level, col) + GROUND_ROWS
         surface.fill(SOIL, (col * TILE, top, TILE, h - top))
         for _ in range(round(TILE * (h - top) * SOIL_SPECK_DENSITY)):
@@ -274,6 +285,9 @@ def _render_woods(level: Level, surface: pygame.Surface) -> None:
         while end + 1 < level.cols and level.surface[end + 1] == level.surface[col]:
             end += 1
         width = (end - col + 1) * TILE
+        if level.tile(col, level.surface[col]) == WATER:  # (water: no grass)
+            col = end + 1
+            continue
         strip = pygame.Surface((width, SURFACE_Y + GROUND_ROWS), pygame.SRCALPHA)
         x = -rng.randint(0, 29)
         while x < width:
@@ -313,6 +327,7 @@ def render(level: Level) -> pygame.Surface:
                     rect = pygame.Rect(col * TILE, row * TILE, TILE, TILE)
                     _platform_tile(surface, rect, p, level.tile(col - 1, row) != PLATFORM,
                                    level.tile(col + 1, row) != PLATFORM, theme)
+        water.render(level, surface)
         return surface
     surface = pygame.Surface((level.width, ROWS * TILE), pygame.SRCALPHA)
     decor = []
@@ -347,6 +362,7 @@ def render(level: Level) -> pygame.Surface:
                                level.tile(col + 1, row) != PLATFORM, theme)
     for draw, x, y, rng in decor:  # on top of the tiles they stick out over
         draw(surface, x, y, rng, p)
+    water.render(level, surface)
     return surface
 
 
@@ -514,6 +530,38 @@ def _meadow(level: Level, rng: random.Random) -> list[tuple[pygame.Surface, floa
     return layers
 
 
+HORIZON = 206  # y of the far sea's horizon (open water maps)
+
+
+def _open_sea(level: Level, rng: random.Random) -> list[tuple[pygame.Surface, float]]:
+    """Open water's background: sky and clouds over a far sea, its
+    horizon flat, with a distant island now and then and glints on it."""
+    w, h = _layer_width(level, FAR), settings.LOGICAL_SIZE[1]
+    far = pygame.Surface((w, h))
+    _gradient(far, *(level.theme.sky or MEADOW_SKY))
+    clouds = [cell.subsurface(cell.get_bounding_rect()) for cell in (_cells(CLOUDS[0])[i] for i in CLOUDS[1])]
+    x = rng.randint(0, 60)
+    while x < w:
+        cloud = rng.choice(clouds)
+        far.blit(cloud, (x, rng.randint(14, 110)))
+        x += cloud.get_width() + rng.randint(50, 160)
+    top, deep = level.theme.water
+    sea = pygame.Surface((w, h - HORIZON))
+    _gradient(sea, tuple(round(a * 0.55 + b * 0.45) for a, b in zip(top, (196, 228, 244))), deep)
+    x = rng.randint(40, 200)
+    while x < w:  # distant islands, hazy, on the horizon
+        iw, ih = rng.randint(30, 90), rng.randint(6, 18)
+        haze = tuple(round(a * 0.5 + b * 0.5) for a, b in zip(level.theme.palette.top_dark, (170, 200, 220)))
+        pygame.draw.ellipse(far, haze, (x, HORIZON - ih, iw, ih * 2))
+        x += iw + rng.randint(160, 420)
+    far.blit(sea, (0, HORIZON))
+    far.fill(top, (0, HORIZON, w, 1))
+    for _ in range(w // 6):  # glints on the far water
+        gx, gy = rng.randrange(w), rng.randint(HORIZON + 3, h - 1)
+        far.fill(water.CREST, (gx, gy, rng.randint(2, 5), 1))
+    return [(far, FAR)]
+
+
 def _tinted(image: pygame.Surface, tint) -> pygame.Surface:
     """`image` multiplied by `tint` (its alpha kept)."""
     out = image.copy()
@@ -527,6 +575,8 @@ def backgrounds(level: Level) -> list[tuple[pygame.Surface, float]]:
     rng = random.Random(level.seed)
     if level.theme.art == "woods":
         return _meadow(level, rng)
+    if level.theme.sea:
+        return _open_sea(level, rng)
     h = settings.LOGICAL_SIZE[1]
     far_w, near_w = _layer_width(level, FAR), _layer_width(level, NEAR)
     far = pygame.Surface((far_w, h))

@@ -670,6 +670,10 @@ KEY_ITEMS = {
           "could put it to good use...",
     RIBBON: "A special ribbon, given for proving your team. Use it (here, in Key items): one more Pokémon "
             "can fight at your side. Then fill the new place with Mr. Mime, at any Recruitment Center.",
+    "HM03 Surf": "A hidden machine found in the heart of the Safari Zone. Use it (here, in Key items): your Water "
+                 "Pokémon learn Surf, and can carry you across the water. You need one in your team.",
+    "HM04 Strength": "A hidden machine from the Safari Zone's Warden. Its technique, Strength, pushes big boulders "
+                     "out of the way.",
     "HM05 Flash": "A hidden machine from Professor Oak's aide on Route 2. Its technique, Flash, lights up dark "
                   "caves.",
     "Metapod Shell": "An empty Metapod shell, hard as steel. Use it on a Caterpie at Lv7 or higher: it evolves "

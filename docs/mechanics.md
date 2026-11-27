@@ -1083,6 +1083,31 @@ outdoor route (not a cave, tunnel, building, gym, trial or the Battle
 Tower). It lands by the town's Pokémon Center, which becomes the respawn
 town.
 
+## Surf
+
+`game/world/hms.py`, `level._sea`, `Player.surfing`
+
+**HM03 Surf** (found at the heart of the Safari Zone) is used from the
+bag (Key items), with at least one Water Pokémon in the team (the party).
+Every Water Pokémon of the player's (party, reserve, away on loan) learns
+**Surf** (Water, 95 power, 100% accuracy), outside its line's moves
+(`Monster.hms`): equipped if it has a free move slot, else on the talent
+screen's moves list (M). Water Pokémon that join later learn it too.
+Wild and trainers' Pokémon never know it.
+
+**Water maps** (`Theme.sea`): open water **5 tiles deep** (`SEA_LEVEL`),
+with a 7-tile shore at each end (1 tile above the water) and, between
+stretches of **7–18** tiles of water, islands **3–9** tiles wide standing
+**1–3** tiles above it, or (35%) a lone rock 1–2 wide, 3 tiles up (a full
+jump from the water reaches about 3.9). Their doorways are shut without
+Surf used and a Water Pokémon in the team ("The water is deep...").
+On the water the party's **first Water Pokémon** carries the player: it
+shows instead of the lead, swims as fast as walking and running
+(70 / 150 px/s) and can jump as from the ground; back on land the lead
+shows again. Swimmers (and wild Pokémon on the water) sit 9 px into the
+water (`water.SURF_SINK`), bobbing 1.5 px. Chests and Poké Balls are
+never on the water (only on land or platforms).
+
 ## Wild Pokémon
 
 `game/world/themes.py`, `game/world/level.py`

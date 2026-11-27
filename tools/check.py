@@ -450,10 +450,60 @@ def check_swaps() -> int:
     return n
 
 
+def check_surf() -> int:
+    """HM03 Surf: used from the bag (only with a Water Pokémon), it teaches
+    Surf (kept in a save, taught to newcomers); water maps generate, can be
+    surfed across and drawn; a water route is shut without it."""
+    from game import saves
+    from game.mechanics.pokemon import Monster
+    from game.scenes.overworld import OverworldScene
+    from game.world import hms
+    from game.world.instance import Instance, Route
+    from game.world.player import Controls
+    from game.world.themes import RIVER, SEA
+    n = 0
+    try:
+        g = new_game()
+        g.bag.key_items.append(hms.SURF_ITEM)
+        assert hms.can_surf(g) and "Water" in hms.use(g, hms.SURF_ITEM) and not g.hms, "no Water Pokémon"
+        g.party[1] = Monster.create("wartortle", 40)
+        assert "learned Surf" in hms.use(g, hms.SURF_ITEM) and not hms.can_surf(g), "use"
+        assert "surf" in g.party[1].known and g.party[1].move("surf").name == "Surf", "taught"
+        assert "surf" not in g.party[0].known, "only Water Pokémon"
+        g.add_member(Monster.create("staryu", 30), room=1)
+        assert "surf" in g.reserve[-1].known, "taught to newcomers"
+        back = saves._load_monster(saves._monster(g.party[1]))
+        assert "surf" in back.known, "saved"
+        assert "surf" not in Monster.create("tentacool", 40).known, "wild ones don't know it"
+        n += 1
+        for theme in (SEA, RIVER):
+            for seed in range(4):
+                route = Route(f"check_{theme.key}", theme.name, theme, maps=1, towns=("route_10", "route_10"))
+                scene = OverworldScene(Instance(route, "route_10", seed=seed), g)
+                scene.wild = []
+                surfed = False
+                for i in range(int(40 / DT)):  # right along the map, hopping
+                    scene.player.update(DT, Controls(right=True, run=True, jump=i % 40 == 0, jump_held=True),
+                                        scene.level)
+                    surfed |= scene.player.surfing and scene.rider.species.key == "wartortle"
+                    if i % 200 == 0:
+                        frame(scene)
+                assert surfed, f"{theme.key} {seed}: never surfed"
+                assert scene.player.x > scene.level.exit_x - 64, f"{theme.key} {seed}: stuck at {scene.player.x:.0f}"
+                lv = scene.level  # (chests and balls on platforms over the water are fine)
+                assert not any(lv.water_at(x) and abs(y - lv.ground_y(x)) < 1 for x, y in lv.chests + lv.balls), \
+                    "a chest or ball on the water"
+                n += 1
+    except Exception:
+        fail("surf")
+    return n
+
+
 SECTIONS = {
     "imports": check_imports, "places": check_places, "quests": check_quests, "saves": check_saves,
     "items": check_items, "moves": check_moves, "battles": check_battles, "safari": check_safari,
     "puzzles": check_puzzles, "packs": check_packs, "swaps": check_swaps,
+    "surf": check_surf,
 }
 SLOW = {"moves", "battles"}
 

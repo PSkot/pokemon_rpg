@@ -1,7 +1,8 @@
 """A map: a grid of tiles, randomly generated from a theme, plus what's on it.
 
 The grid holds solid ground ("#"), one-way platforms ("=", you can jump up
-through them and land on top) and empty space ("."). Positions are in
+through them and land on top), water ("~": its top is a floor to Surf on,
+see world/hms.py) and empty space ("."). Positions are in
 logical pixels; a tile is TILE px square. Maps scroll sideways and are one
 screen high (the last row is partly below the screen).
 """
@@ -15,7 +16,7 @@ from .themes import Theme
 TILE = 16
 ROWS = 23
 
-EMPTY, SOLID, PLATFORM = ".", "#", "="
+EMPTY, SOLID, PLATFORM, WATER = ".", "#", "=", "~"
 
 # Generation.
 WIDTH = (90, 120)          # map width in tiles
@@ -30,6 +31,16 @@ BOULDER_FLAT = 7           # ... and of one under a Strength boulder (room to pu
 STAIR_ROOM = 4             # tiles kept clear of Pokémon, chests and platforms each side of a stair
 CHEST_CHANCE = 0.4         # each chest spot gets a chest this often (chests are rare)
 BALLS = (0, 2)             # Poké Balls lying around a map (one item each)
+# Water maps (`Theme.sea`): open water at SEA_LEVEL tiles deep, broken by
+# islands and rocks 1 to 3 tiles above it (a full jump from the water
+# reaches 3), with land at both ends (the doorways).
+SEA_LEVEL = 5
+SHORE = 7                  # land tiles at each end ...
+SHORE_HEIGHT = SEA_LEVEL + 1
+OPEN_WATER = (7, 18)       # tiles of water between islands
+ISLAND = (3, 9)            # an island's width ...
+ISLAND_RISE = (1, 3)       # ... and how far it stands above the water
+ROCK_CHANCE = 0.35         # an island is a lone rock (1-2 tiles wide) this often
 
 
 @dataclass
@@ -82,8 +93,17 @@ class Level:
         return (self.cols - 7) * TILE
 
     def ground_y(self, x: float) -> float:
-        """The top of the ground at `x`."""
+        """The top of the ground (or the water) at `x`."""
         return self.surface[min(self.cols - 1, max(0, int(x // TILE)))] * TILE
+
+    def water_at(self, x: float) -> bool:
+        """Whether the column at `x` is water (its top is the water's surface)."""
+        col = min(self.cols - 1, max(0, int(x // TILE)))
+        return self.grid[min(ROWS - 1, self.surface[col])][col] == WATER
+
+    @property
+    def has_water(self) -> bool:
+        return any(self.grid[min(ROWS - 1, row)][col] == WATER for col, row in enumerate(self.surface))
 
     # ------------------------------------------------------------- collision
 
@@ -152,6 +172,22 @@ def _downhill(rng: random.Random, cols: int, flat_start: int, flat_end: int) -> 
     return heights + [heights[-1]] * flat_end
 
 
+def _sea(rng: random.Random, cols: int, flat_end: int) -> tuple[list[int], list[bool]]:
+    """A height per column for a water map, and which columns are water:
+    a shore at each end (`flat_end` at the right), and in between open
+    water broken by islands and rocks."""
+    heights, water = [SHORE_HEIGHT] * SHORE, [False] * SHORE
+    while len(heights) < cols - flat_end:
+        n = rng.randint(*OPEN_WATER)
+        heights, water = heights + [SEA_LEVEL] * n, water + [True] * n
+        rock = rng.random() < ROCK_CHANCE
+        n = rng.randint(1, 2) if rock else rng.randint(*ISLAND)
+        h = SEA_LEVEL + (ISLAND_RISE[1] if rock else rng.randint(*ISLAND_RISE))
+        heights, water = heights + [h] * n, water + [False] * n
+    heights, water = heights[:cols - flat_end], water[:cols - flat_end]
+    return heights + [SHORE_HEIGHT] * flat_end, water + [False] * flat_end
+
+
 def _flatten(heights: list[int], col: int, flat: int = STAIR_FLAT) -> None:
     """Make the ground flat for `flat` tiles each side of `col`, then
     ease the ground on either side so no step is more than 2."""
@@ -209,9 +245,13 @@ def generate(theme: Theme, seed: int, final: bool = False, cols: int | None = No
     end = ARENA if final else FLAT_ENDS
     if final:
         cols += ARENA - FLAT_ENDS
-    heights = ([4] * cols if theme.built  # (a ship's deck: level all through)
-               else _downhill(rng, cols, FLAT_ENDS, end) if theme.skate
-               else _walk(rng, cols, *GROUND, start=4, flat_start=FLAT_ENDS, flat_end=end))
+    water = [False] * cols
+    if theme.sea:
+        heights, water = _sea(rng, cols, end)
+    else:
+        heights = ([4] * cols if theme.built  # (a ship's deck: level all through)
+                   else _downhill(rng, cols, FLAT_ENDS, end) if theme.skate
+                   else _walk(rng, cols, *GROUND, start=4, flat_start=FLAT_ENDS, flat_end=end))
     stair_cols = [stair_col(at, cols) for at in stairs]
     for at, col in zip(stairs, stair_cols):
         _flatten(heights, col, BOULDER_FLAT if at in wide else STAIR_FLAT)
@@ -220,7 +260,8 @@ def generate(theme: Theme, seed: int, final: bool = False, cols: int | None = No
         return all(abs(col - c) > STAIR_ROOM for c in stair_cols)
 
     surface = [ROWS - h for h in heights]
-    grid = [[SOLID if row >= surface[col] else EMPTY for col in range(cols)] for row in range(ROWS)]
+    grid = [[(WATER if water[col] else SOLID) if row >= surface[col] else EMPTY for col in range(cols)]
+            for row in range(ROWS)]
 
     ceiling = [0] * cols
     if theme.ceiling:
@@ -261,7 +302,7 @@ def generate(theme: Theme, seed: int, final: bool = False, cols: int | None = No
             spot = ((first + last + 1) / 2 * TILE, row * TILE)
         else:
             c = rng.randint(FLAT_ENDS, cols - end)
-            spot = (c * TILE + TILE / 2, surface[c] * TILE) if clear(c) else None
+            spot = (c * TILE + TILE / 2, surface[c] * TILE) if clear(c) and not water[c] else None
         if spot and spot not in level.chests:
             level.chests.append(spot)
 
@@ -281,11 +322,11 @@ def generate(theme: Theme, seed: int, final: bool = False, cols: int | None = No
         if level.platforms and extra.random() < 0.5:
             row, first, last = extra.choice(level.platforms)
             c = extra.randint(first, last)
-            spot = (c * TILE + TILE / 2, row * TILE)
+            spot, wet = (c * TILE + TILE / 2, row * TILE), False
         else:
             c = extra.randint(FLAT_ENDS, cols - end - 1)
-            spot = (c * TILE + TILE / 2, surface[c] * TILE)
-        if clear(c) and all(abs(c - t) > 1 for t in taken):
+            spot, wet = (c * TILE + TILE / 2, surface[c] * TILE), water[c]
+        if clear(c) and not wet and all(abs(c - t) > 1 for t in taken):
             level.balls.append(spot)
             taken.add(c)
     return level

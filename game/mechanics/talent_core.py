@@ -31,6 +31,12 @@ class LearnedMove:
         return key_of(self.name)
 
 
+# Moves taught by a hidden machine (`Monster.hms`), outside any line's
+# learnset: an HM used from the bag teaches its move to every Pokémon of the
+# player's of its type (world/hms.py). Talents change them like any move.
+HM_MOVES = {"surf": LearnedMove("Surf")}
+
+
 # --- changing a move ---------------------------------------------------------
 
 ADDED = {"status_chance", "stage_chance", "confuse", "flinch", "seed", "bind", "shield", "drain", "heal",
@@ -196,7 +202,7 @@ class TalentTree:
         return self.moves[0]
 
     def learned(self, key: str) -> LearnedMove | None:
-        return next((m for m in self.moves if m.key == key), None)
+        return next((m for m in self.moves if m.key == key), None) or HM_MOVES.get(key)
 
     def known(self, level: int, stage: int) -> list[str]:
         """The keys of the moves known at `level` and evolution `stage`."""

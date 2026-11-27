@@ -44,6 +44,7 @@ class Game:
     visited: set[str] = field(default_factory=set)  # towns and routes been to (the Town Map, world/townmap.py)
     kudos: dict[str, int] = field(default_factory=dict)  # Safari Zone: species -> Kudos earned (world/safari.py)
     away: dict[str, Monster] = field(default_factory=dict)  # swap quest key -> the player's Pokémon away (world/swaps.py)
+    hms: set[str] = field(default_factory=set)  # the HMs used from the bag (world/hms.py: their moves' keys)
 
     def arrive(self, town: str) -> None:
         """The player arrived in `town` from a route: its gear counter restocks."""
@@ -78,7 +79,10 @@ class Game:
 
     def add_member(self, monster: Monster, room: int) -> str:
         """A new Pokémon joins: the party if it has fewer than `room`, else
-        the reserve. Returns which ("party" or "reserve")."""
+        the reserve. Returns which ("party" or "reserve"). It's taught the
+        HM moves in use that its type can learn (world/hms.py)."""
+        from .hms import teach  # (hms.py imports this module)
+        teach(self, monster)
         if len(self.party) < room:
             self.party.append(monster)
             return "party"

@@ -11,6 +11,7 @@ from ..engine import hats
 from ..engine.animation import Animation, load_sheet
 from .items import SLOTS, Gear, boosted
 from .moves import Move
+from .talent_core import HM_MOVES
 from .talents import MAX_EQUIPPED, TALENT_MODS, TREES, TalentTree, _selects, apply_changes, stand_in_tree
 from .status import SLEEP_ROUNDS, STATUSES
 
@@ -417,6 +418,7 @@ class Monster:
     equipped: list[str] = field(default_factory=list)  # keys of the moves it uses, besides Fight
     scale: int = 1  # drawn this many times bigger (bosses); not saved
     loan: str = ""  # on loan from townsfolk: the swap quest's key (world/swaps.py)
+    hms: list[str] = field(default_factory=list)  # HM moves it was taught (talent_core.HM_MOVES keys)
 
     def __post_init__(self):
         if self.hp < 0:
@@ -465,8 +467,9 @@ class Monster:
 
     @property
     def known(self) -> list[str]:
-        """The keys of the moves it knows (by its level and evolution stage)."""
-        return self.tree.known(self.level, self.species.stage)
+        """The keys of the moves it knows (by its level and evolution stage),
+        then the HM moves it was taught."""
+        return self.tree.known(self.level, self.species.stage) + [k for k in self.hms if k in HM_MOVES]
 
     def _learn_new(self, before: list[str]) -> list[str]:
         """Moves known now but not in `before`: equipped while there's room.

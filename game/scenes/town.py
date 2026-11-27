@@ -20,7 +20,7 @@ from ..dev import DEV
 from ..engine import ui
 from ..engine.animation import Animation
 from ..engine.scene import Transition
-from ..world import quests, swaps, tileset
+from ..world import hms, quests, swaps, tileset
 from ..world.quests import QUESTS
 from ..world.quest_data import RECRUIT_BOARD, SMITH
 from ..world.instance import ROUTES, Instance
@@ -232,6 +232,9 @@ class TownScene(MapScene):
         route = ROUTES[door[1]] if door else None
         if route and route.needs_from in ("", self.town.key) and not quests.open_for(self.game, route.needs):
             self.show(quest_ui.Dialogue([("", quests.blocked_text(self.game, ROUTES[door[1]]))]))
+            return
+        if route and route.theme.sea and (why := hms.can_surf(self.game)) and not DEV.open_doors:
+            self.show(quest_ui.Dialogue([("", why)]))  # (a water route: Surf, with a Water Pokémon)
             return
         building = None if door else self._building_at_player()
         if building and building.inside == "mart":

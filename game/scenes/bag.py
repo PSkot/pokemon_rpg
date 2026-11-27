@@ -22,7 +22,7 @@ from ..mechanics.items import (EFFECT_COLOR, KEY_ITEMS, MEDICINE, RARITIES, RIBB
                                money_text)
 from ..mechanics.pokemon import SPECIES, STONE_EVOLUTIONS
 from ..mechanics.status import STATUSES
-from ..world import quests
+from ..world import hms, quests
 from ..world.progress import MAX_PARTY
 from ..world.towns import TOWNS
 
@@ -143,6 +143,9 @@ class BagScreen:
             self.message = quests.use_ribbon(self.game)
             entries = self._entries()  # (it's used up)
             self.choice = min(self.choice, max(0, len(entries) - 1))
+            return
+        if POCKETS[self.pocket] == "Key items" and item in hms.HMS:
+            self.message = hms.use(self.game, item)
             return
         if POCKETS[self.pocket] == "Key items" and not quests.evolution_target(item) and item not in STONE_EVOLUTIONS:
             self.message = "There's no use for it right now."

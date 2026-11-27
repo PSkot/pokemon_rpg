@@ -92,6 +92,10 @@ class Theme:
     # The skate road: the ground steps down all the way to the right
     # (`level._downhill`), and everyone rides a board (`Player.skating`).
     skate: bool = False
+    # A water map (`level._sea`): open water with islands, crossed by Surf
+    # (world/hms.py); `water` is its colours (top, deep).
+    sea: bool = False
+    water: tuple[Color, Color] = ((72, 152, 216), (30, 70, 140))
 
     @property
     def decor_key(self) -> str:
@@ -482,6 +486,40 @@ ROUTE_15 = Theme(
     ),
     backdrop=MEADOW_BACKDROP,
 )
+
+# Water maps (`Theme.sea`, crossed with Surf: world/hms.py). Their
+# Pokémon (levels to be set with their routes) swim or sit on the rocks.
+SEA_BACKDROP = Backdrop(sky_top=(96, 164, 232), sky_bottom=(200, 230, 246),
+                        hills=((150, 196, 220), (130, 180, 210)), field_far=(72, 152, 216),
+                        field_near=(52, 128, 200), stripe=(90, 170, 228), shadow=(28, 72, 140))
+SEA_POOL = (
+    PoolEntry("tentacool", 35, (44, 47)),
+    PoolEntry("tentacruel", 10, (46, 48)),
+    PoolEntry("shellder", 15, (44, 47)),
+    PoolEntry("staryu", 15, (44, 47)),
+    PoolEntry("horsea", 15, (44, 47)),
+    PoolEntry("seadra", 10, (46, 48)),
+)
+
+# The open sea (Routes 19 and 20): sandy rock islands, the far sea and
+# sky behind (`tileset._open_sea`).
+SEA = Theme(
+    "sea", "Sea Route",
+    Palette(fill=(176, 150, 112), fill_dark=(142, 116, 84), fill_light=(204, 180, 140),
+            top=(226, 206, 150), top_dark=(196, 172, 118), top_light=(244, 230, 186),
+            platform=(150, 104, 64), platform_dark=(100, 66, 36), platform_light=(186, 140, 92)),
+    pool=SEA_POOL,
+    backdrop=SEA_BACKDROP,
+    art="sea",
+    decor="sea",
+    sea=True,
+)
+
+# A river through the meadow (Route 10, down to the Power Plant): grassy
+# banks and islands, the meadow behind.
+RIVER = replace(SEA, key="river", name="River", palette=MEADOW.palette, art="woods", decor="",
+                water=((70, 150, 210), (28, 74, 132)))
+
 
 # Rock Tunnel, from the Route 10 Pokémon Center to Lavender Town: pitch
 # dark (Flash lights a circle around the player); Gen 1's Zubat, Geodude,

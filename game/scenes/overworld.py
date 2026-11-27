@@ -26,11 +26,12 @@ from ..engine.scene import Scene, Transition
 from ..mechanics.items import ITEMS, Gear, Range
 from ..mechanics.loot import BOSS_GEAR, TRAINER_GEAR, LootTable, ball_loot, boss_loot, chest_loot, dress, wild_loot
 from ..mechanics.pokemon import SPECIES, Monster, animations
-from ..world import tileset
+from ..world import hms, tileset, water
 from ..world import tower
 from ..world.instance import Instance, Stair, Trainer, rival_species
 from ..world.level import EMPTY, PLATFORM, SOLID, TILE, Level, Spawn, extra_member
 from ..world.player import FOOT_SINK, SKATE_LIFT, Controls, Player
+from ..world.water import SURF_SINK
 from ..world import quests
 from ..world.spinners import layout_of
 from ..world.progress import Game
@@ -165,6 +166,8 @@ class WildPokemon:
             back = abs(pos - lead) % 2 == 1 and not self.boss
             # (sunk into the ground like the player, `FOOT_SINK`: the sheets' feet are drawn at a 3/4 angle)
             feet = ground + (self.members[i].foot_sink + FOOT_SINK) * self.scales[i] - (BACK_ROW_LIFT if back else 0)
+            if self.level and self.level.water_at(x):  # (swimming)
+                feet += SURF_SINK
             spots.append((back, (i == 0) != self.boss, self.members[i], anims[i], x, feet))
         spots.sort(key=lambda s: (not s[0], s[1]))
         return [(sp, anim, x, feet, back) for back, _, sp, anim, x, feet in spots]
@@ -454,6 +457,7 @@ class MapScene(Scene):
         self.layer = pygame.Surface((level.width, settings.LOGICAL_SIZE[1]), pygame.SRCALPHA)
         self.player = Player(level.start_x, level.ground_y(level.start_x), self.party[0].species)
         self.player.skating = level.theme.skate  # (the skate road: on a board)
+        self.has_water = level.has_water
         # The panel showing (a ui.ListPanel, or a quest_ui screen with
         # handle_key); the map waits. Then the queued ones, in turn.
         self.panel = None
@@ -566,8 +570,7 @@ class MapScene(Scene):
         self.t += dt
         if self.panel:
             return
-        lead = self.party[0]  # (it may have evolved or learned moves since)
-        self.player.become(lead.species)
+        self.player.become(self.rider.species)  # (it may have evolved since)
         keys = touch.pressed()  # (keyboard and touch buttons)
         self.player.update(dt, self.steer(Controls(
             left=keys[pygame.K_LEFT],
@@ -577,8 +580,15 @@ class MapScene(Scene):
             jump_held=keys[pygame.K_SPACE],
         )), self.level)
         self.jump = False
+        self.player.become(self.rider.species)  # (on the water, or back on land)
         self.moved()
         self._follow()
+
+    @property
+    def rider(self) -> Monster:
+        """Who the player is: the lead, or on the water the Water Pokémon
+        carrying them (world/hms.py)."""
+        return (self.player.surfing and hms.surfer(self.game)) or self.party[0]
 
     def draw_front(self, layer: pygame.Surface) -> None:
         """What's drawn over the player (the Safari Zone's tall grass)."""
@@ -596,8 +606,10 @@ class MapScene(Scene):
         # view is copied to the screen.
         self.layer.fill((0, 0, 0, 0))
         self.draw_things(self.layer)
-        self.player.draw(self.layer, self.debug, self.party[0])
+        self.player.draw(self.layer, self.debug, self.rider)
         self.draw_front(self.layer)
+        if self.has_water:
+            water.draw_front(self.layer, self.level, self.t, self.camera, settings.LOGICAL_SIZE[0])
         prompt = None if self.panel else self.prompt()
         if prompt:
             draw_prompt(self.layer, *prompt, self.t)
